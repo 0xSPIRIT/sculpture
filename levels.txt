@@ -1,0 +1,73 @@
+Some ideas for the levels-- don't take it as gospel. Some of these
+would be subject to change after I can actually feel the real gameplay.
+
+Note: you unlock tools and recipes as you go along.
+
+Level 1 - "Alaska"
+  You make a house from stone and wood, while snowing.
+Level 2 - "Conversion"
+  You make a glass sculpture by taking sand and converting it to
+  glass using a furnace. After that you pour the glass down to make
+  a glass mug / cup.
+Level 3 - "Masonry"
+  You make a little fireplace out of stone and make some patterns
+  on the stone.
+Level 4 - "Remainder"
+  You convert the smoke coming out from a factory into usable
+  material, place it using the placer, then carve out a pattern.
+Level 5 - "Carbon Copy"
+  There's a very well-made sculpture (made out of diamond) on the
+  left, and you have to use the dirt and stone to create something
+  as close to it as possible-- it would be impossible to create
+  something good, so the title is sarcastic.
+Level 6 - "Metamorphosis"
+  You start with a completed painting / scene, and you need to strip
+  down its parts into something completely different- the highlight
+  outline for what you need to create is comically different to
+  what you're seeing.
+Level 7 - "Procedure Lullaby"
+  You start with a nature setting- a house (made of stone), some
+  gravel, and a pond of an unknown substance next to the house. You
+  break all these up and process them; you see a new recipe where
+  you can mix the liquid + gravel to make concrete. It pours out
+  of your placer, and fills the space given that you set up stone
+  boundaries. All that to make, albiet a perfect, concrete block.
+  Lullaby - Innocence of spending this much time to do something
+            incredibly unimportant in hindsight.
+Level 8 - "Polished Turd"
+  The same well-made sculpture from level 5 is back, but you now
+  have more tools. The sculpture isn't made out of diamond anymore
+  so you have the ability to break it down and use its materials
+  to make proper diamond. It's made out of coal (carbon). You then
+  smelt this at very high heat (the furnace has a hard fucking time)
+  then you get your diamond. You place it using the placer (shaving
+  cream) and chisel out the excess. The shape itself is relatively
+  complex, but not fucking crazy. You do your best, but make it
+  impossible to get right [also the diamond is not as good as the
+  other one] The title is a cynical attitute towards the piece you
+  made since, yeah, it's not that good, but you think it's horrible.
+Level 9 - "Showpiece"
+  You start with coal, cobblestone, dirt, and trees, and you need to
+  turn them, respectively, into diamond, quartz, and wood. The dirt
+  is destroyed. You make this into a shape of a game controller, as
+  seen in the inspiration picture. Most of the controller is quartz,
+  with pieces of wood in the raised circles for D-pad and buttons, and
+  diamond for the sticks and pause/play.
+Level 10 - "Glass Body"
+  You are shown a very nice sculpture of complete glass, of a woman
+  with lots of curves-- lots of work. You start with a whole heap
+  of sand. It's shown the sculpture must be a specific height. So,
+  you get to work converting sand to glass using the furnace. It
+  comes out in batches, so you get some, place some, chisel some,
+  and repeat. At some point the furnace breaks down after heating
+  up however, limiting the output to 1 glass cell per minute or so.
+  This represents your willpower returning to 0; the crushing reality
+  that you won't be able to finish. You submit to finishing the
+  sculpture half-finished, and the camera pans in 3D space, showing
+  how flat the sculpture is in space, until it completely disappears.
+  Note: the furnace overheating and stopping work is shown to have
+        happened in previous levels, but it wasn't an issue since
+        there wasn't much else material to use after it broke.
+  Note2: The name "Glass Body" represents the innate nature of
+         this project, that it *will* fail, and it is brittle like
+         glass, due to my unskillfulness and too much ambition.
