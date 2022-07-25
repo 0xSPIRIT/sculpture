@@ -55,19 +55,22 @@ Level 9 - "Showpiece"
   diamond for the sticks and pause/play.
 Level 10 - "Glass Body"
   You are shown a very nice sculpture of complete glass, of a woman
-  with lots of curves-- lots of work. You start with a whole heap
-  of sand. It's shown the sculpture must be a specific height. So,
-  you get to work converting sand to glass using the furnace. It
-  comes out in batches, so you get some, place some, chisel some,
-  and repeat. At some point the furnace breaks down after heating
-  up however, limiting the output to 1 glass cell per minute or so.
-  This represents your willpower returning to 0; the crushing reality
-  that you won't be able to finish. You submit to finishing the
-  sculpture half-finished, and the camera pans in 3D space, showing
-  how flat the sculpture is in space, until it completely disappears.
+  with lots of curves-- lots of work. You start with a whole heap of
+  sand. So, you get to work converting sand to glass using the
+  furnace. It comes out in batches, so you get some, place some,
+  chisel some, and repeat. At some point the furnace breaks down after
+  heating up however, limiting the output to 1 glass cell per minute
+  or so.  This represents your willpower returning to 0; the crushing
+  reality that you won't be able to finish. You submit to finishing
+  the sculpture half-finished, and the camera pans in 3D space,
+  showing how flat the sculpture is in space, until it completely
+  disappears.
   Note: the furnace overheating and stopping work is shown to have
         happened in previous levels, but it wasn't an issue since
         there wasn't much else material to use after it broke.
-  Note2: The name "Glass Body" represents the innate nature of
-         this project, that it *will* fail, and it is brittle like
-         glass, due to my unskillfulness and too much ambition.
+  Note2: The name "Glass Body" represents the innate nature of this
+         project, that it *will* fail, and it is brittle, due to my
+         unskillfulness and too much ambition.
+
+The pieces you're meant to replicate represent your own ideas for what
+you want to make, not societal expectations.

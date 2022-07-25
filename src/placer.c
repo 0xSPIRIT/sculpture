@@ -17,7 +17,7 @@ void placer_init(int num) {
     placers[num] = calloc(1, sizeof(struct Placer));
     struct Placer *placer = placers[num];
 
-    placer->state = PLACER_PLACE_RECT_MODE;
+    placer->state = PLACER_PLACE_CIRCLE_MODE;
     placer->index = num;
     placer->x = gw/2;
     placer->y = gh/2;
@@ -27,8 +27,9 @@ void placer_init(int num) {
     placer->object_index = -1;
     placer->did_click = 0;
     placer->contains_current = 0;
-    placer->contains_type = CELL_COAL;
-    placer->contains_amount = 2000;
+    placer->contains_type = CELL_DIRT;
+    placer->contains_amount = 5000;
+    placer->did_take_hard = 0;
 
     placer->rect.x = placer->rect.y = -1;
 
@@ -53,6 +54,19 @@ void placer_tick(struct Placer *placer) {
     placer->x = mx;
     placer->y = my;
 
+    // TODO: Put fading text in the screen.
+    static int p = 0;
+    if (keys[SDL_SCANCODE_P]) {
+        if (!p) {
+            if (placer->state == PLACER_SUCK_MODE) {
+                placer->state = PLACER_PLACE_CIRCLE_MODE;
+            } else {
+                placer->state = PLACER_SUCK_MODE;
+            }
+            p = 1;
+        }
+    } else p = 0;
+
     switch (placer->state) {
     case PLACER_PLACE_CIRCLE_MODE: {
         static int pressed = 0;
@@ -76,7 +90,7 @@ void placer_tick(struct Placer *placer) {
             int did_set_object = 1;
 
             while ((len == 0 || sqrt((fx-px)*(fx-px) + (fy-py)*(fy-py)) < len) && placer->contains_amount > 0) {
-                int radius = 3;
+                int radius = placer->radius;
                 for (int y = -radius; y <= radius; y++) {
                     for (int x = -radius; x <= radius; x++) {
                         if (x*x + y*y > radius*radius) continue;
@@ -105,9 +119,11 @@ void placer_tick(struct Placer *placer) {
             placer->did_click = did_set_object;
         } else {
             if (placer->did_click) {
-                object_set_blobs(placer->object_index, 0);
-                object_set_blobs(placer->object_index, 1);
-                object_set_blobs(placer->object_index, 2);
+                if (placer->object_index != -1) {
+                    object_set_blobs(placer->object_index, 0);
+                    object_set_blobs(placer->object_index, 1);
+                    object_set_blobs(placer->object_index, 2);
+                }
                 placer->did_click = 0;
             } 
             pressed = 0;
@@ -199,17 +215,113 @@ void placer_tick(struct Placer *placer) {
         break;
     }
     case PLACER_SUCK_MODE:;
-        /* int px = placer->x, py = placer->y; */
-        // Todo for later: make it a single line that it sucks up from
-        // the bottom of the placer, and do it in for loop from prev
-        // position to current position.
+        if (gui.popup) break;
 
-        /* int line_y = placer->y + placer->h; */
+        int index = clamp_to_grid(mx, my, 1, 0, 0, 0);
+        if (index != -1 && distance((SDL_Point){mx, my}, (SDL_Point){index%gw, index/gw}) < 3) {
+            placer->x = index%gw;
+            placer->y = index/gw;
+        }
+
+        int can_continue = 0;
+        if (placer->did_take_hard) {
+            static int pressed = 0;
+            if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                if (!pressed) {
+                    can_continue = 1;
+                    pressed = 1;
+                }
+            } else {
+                pressed = 0;
+            }
+        } else if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+            can_continue = 1;
+        }
+
+        if (!can_continue) break;
+
+        float x = px;
+        float y = py;
+
+        float dx = mx - x;
+        float dy = my - y;
+        float len = sqrt((dx*dx)+(dy*dy));
+        float ux, uy;
+        if (len == 0) {
+            ux = 0;
+            uy = 0;
+            len = 1;
+        } else {
+            ux = dx/len;
+            uy = dy/len;
+        }
+
+        while (distance((SDL_Point){x, y}, (SDL_Point){px, py}) < len) {
+            placer->did_take_hard = 0;
+
+            // Suck up in a circle.
+            const int r = placer->radius;
+            for (int dy = -r; dy <= r; dy++) {
+                for (int dx = -r; dx <= r; dx++) {
+                    int xx = x+dx;
+                    int yy = y+dy;
+                    if (dx*dx + dy*dy > r*r) continue;
+                    if (xx < 0 || yy < 0 || xx >= gw || yy >= gh) continue;
+                    int type = grid[xx+yy*gw].type;
+                    if (type == 0) continue;
+                    if (cell_is_hard(grid[xx+yy*gw].type)) {
+                        placer->did_take_hard = 1;
+                    }
+                    if (placer->contains_type == type || placer->contains_type == 0 || placer->contains_amount == 0) {
+                        placer->contains_type = type;
+                        placer->contains_amount++;
+                        set(xx, yy, 0, -1);
+                    }
+                }
+            }
+
+            x += ux;
+            y += uy;
+            if (ux == 0 && uy == 0) break;
+        }
+
+        objects_reevaluate();
         break;
     }
+
+    gui.overlay = (struct Overlay){
+        placer->x + placer->w/2 + 3, placer->y - placer->h
+    };
+    char string[256] = {0};
+    overlay_get_string(placer->contains_type, placer->contains_amount, string);
+    strcpy(gui.overlay.str[0], "Placer");
+    if (placer->state == PLACER_PLACE_CIRCLE_MODE) {
+        strcpy(gui.overlay.str[1], "Mode: [PLACE]");
+    } if (placer->state == PLACER_SUCK_MODE) {
+        strcpy(gui.overlay.str[1], "Mode: [TAKE]");
+    } 
+    strcpy(gui.overlay.str[2], string);
 }
 
 void placer_draw(struct Placer *placer) {
+    if (!gui.popup && (placer->state == PLACER_SUCK_MODE || placer->state == PLACER_PLACE_CIRCLE_MODE)) {
+        int radius = placer->radius;
+        int fx = placer->x;
+        int fy = placer->y;
+        for (int y = -radius; y <= radius; y++) {
+            for (int x = -radius; x <= radius; x++) {
+                if (x*x + y*y > radius*radius) continue;
+                if (x+fx < 0 || x+fx >= gw || y+fy < 0 || y+fy >= gh) continue;
+                if (placer->state == PLACER_SUCK_MODE) {
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 64);
+                } else {
+                    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 64);
+                }
+                SDL_RenderDrawPoint(renderer, x+fx, y+fy);
+            }
+        }
+    }
+
     SDL_Rect dst = {
         placer->x - placer->w/2, placer->y - placer->h,
         placer->w, placer->h

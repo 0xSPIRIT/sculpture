@@ -26,6 +26,32 @@ void get_name_from_type(int type, char *out) {
     }
 }
 
+void get_name_from_tool(int type, char *out) {
+    switch (type) {
+    case TOOL_CHISEL_SMALL:  strcpy(out, "Small Chisel"); break;
+    case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel"); break;
+    case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel"); break;
+    case TOOL_KNIFE:         strcpy(out, "Knife"); break;
+    case TOOL_POINT_KNIFE:   strcpy(out, "Point Knife"); break;
+    case TOOL_DRILL:         strcpy(out, "Drill"); break;
+    case TOOL_PLACER:        strcpy(out, "Placer"); break;
+    case TOOL_GRABBER:       strcpy(out, "Grabber"); break;
+    }
+}
+
+void get_path_from_tool(int type, char *out) {
+    switch (type) {
+    case TOOL_CHISEL_SMALL:  strcpy(out, "../res/chisel_small.png"); break;
+    case TOOL_CHISEL_MEDIUM: strcpy(out, "../res/chisel_medium.png"); break;
+    case TOOL_CHISEL_LARGE:  strcpy(out, "../res/chisel_large.png"); break;
+    case TOOL_KNIFE:         strcpy(out, "../res/knife.png"); break;
+    case TOOL_POINT_KNIFE:   strcpy(out, "../res/point_knife.png"); break;
+    case TOOL_DRILL:         strcpy(out, "../res/drill.png"); break;
+    case TOOL_PLACER:        strcpy(out, "../res/placer.png"); break;
+    case TOOL_GRABBER:       strcpy(out, "../res/pointer.png"); break;
+    }
+}
+
 void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel) {
     Uint32 *const target_pixel = (Uint32 *) ((Uint8 *) surface->pixels
                                              + y * surface->pitch
@@ -107,4 +133,25 @@ int is_point_in_rect(SDL_Point p, SDL_Rect r) {
     if (p.x >= r.x && p.x <= r.x+r.w && p.y >= r.y && p.y <= r.y+r.h)
         return 1;
     return 0;
+}
+
+void draw_text(TTF_Font *font, const char *str, SDL_Color col, int align_left, int align_bottom, int x, int y, int *out_w, int *out_h) {
+    SDL_Surface *surf = TTF_RenderText_Blended(font, str, col);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
+            
+    SDL_Rect dst = { x, y, surf->w, surf->h };
+
+    if (align_left) dst.x -= surf->w;
+    if (align_bottom) dst.y -= surf->h;
+
+    if (out_w)
+        *out_w = surf->w;
+    if (out_h)
+        *out_h = surf->h;
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderCopy(renderer, texture, NULL, &dst);
+
+    SDL_FreeSurface(surf);
+    SDL_DestroyTexture(texture);
 }

@@ -52,6 +52,7 @@ int main(void) {
     bool running = true;
     while (running) {
         SDL_Event event;
+        int prev_tool = current_tool;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) running = false;
             if (event.type == SDL_MOUSEWHEEL) {
@@ -66,10 +67,14 @@ int main(void) {
                     }
                 } else if (current_tool == TOOL_PLACER) {
                     struct Placer *placer = placers[current_placer];
-                    placer->contains_type += event.wheel.y;
-                    if (placer->contains_type < CELL_NONE+1) placer->contains_type = CELL_NONE+1;
-                    if (placer->contains_type >= CELL_MAX) placer->contains_type = CELL_MAX-1;
-                    printf("Placer Index: %d\n", placer->contains_type); fflush(stdout);
+                    if (keys[SDL_SCANCODE_LCTRL]) {
+                        placer->contains_type += event.wheel.y;
+                        if (placer->contains_type < CELL_NONE+1) placer->contains_type = CELL_NONE+1;
+                        if (placer->contains_type >= CELL_MAX) placer->contains_type = CELL_MAX-1;
+                    } else {
+                        placer->radius += event.wheel.y;
+                        placer->radius = clamp(placer->radius, 1, 5);
+                    }
                 }
             }
             if (event.type == SDL_KEYDOWN) {
@@ -77,19 +82,20 @@ int main(void) {
                 case SDLK_ESCAPE:
                     running = false;
                     break;
-                case SDLK_n:
-                    if (level_current+1 < 10) {
-                        level_set_current(++level_current);
-                    }
+                /* case SDLK_p: */
+                /*     for (int y = 0; y < gh; y++) { */
+                /*         for (int x = 0; x < gw; x++) { */
+                /*             printf("%03d ", objects[0].blob_data[1].blobs[x+y*gw]); */
+                /*         } */
+                /*         printf("\n"); */
+                /*     } */
+                /*     fflush(stdout); */
+                /*     break; */
+                case SDLK_SPACE:
+                    paused = !paused;
                     break;
-                case SDLK_p:
-                    for (int y = 0; y < gh; y++) {
-                        for (int x = 0; x < gw; x++) {
-                            printf("%03d ", objects[0].blob_data[1].blobs[x+y*gw]);
-                        }
-                        printf("\n");
-                    }
-                    fflush(stdout);
+                case SDLK_n:
+                    step_one = 1;
                     break;
                 case SDLK_b:
                     do_draw_blobs = !do_draw_blobs;
@@ -98,11 +104,17 @@ int main(void) {
                     do_draw_objects = !do_draw_objects;
                     break;
                 case SDLK_u:
-                    objects_reevalute();
+                    objects_reevaluate();
                     printf("Updated!\n"); fflush(stdout);
                     break;
                 case SDLK_q:
                     printf("Cell %d: Type: %d, Object: %d\n", mx+my*gw, grid[mx+my*gw].type, grid[mx+my*gw].object); fflush(stdout);
+                    break;
+                case SDLK_i:
+                    grid_show_ghost = !grid_show_ghost;
+                    printf("%d\n", grid_show_ghost); fflush(stdout);
+                    break;
+                case SDLK_f:
                     break;
                 case SDLK_0:
                     current_tool = TOOL_CHISEL_SMALL;
@@ -152,6 +164,10 @@ int main(void) {
                 }
             }
         }
+
+        if (prev_tool != current_tool) {
+            gui.overlay.x = gui.overlay.y = -1;
+        }
         
         pmx = mx;
         pmy = my;
@@ -162,11 +178,13 @@ int main(void) {
         mx = real_mx/S;
         my = real_my/S;
 
+        my -= GUI_H/S;
+
         level_tick();
         level_draw();
     }
 
-    levels_free();
+    levels_deinit();
     gui_deinit();
     drill_deinit();
     chisel_deinit(&chisel_small);

@@ -80,7 +80,7 @@ void chisel_tick() {
     }
 
     if (hammer.state == HAMMER_STATE_IDLE && !chisel->changing_angle && !chisel->click_cooldown) {
-        int index = clamp_to_grid(mx, my, !chisel->face_mode, 0, 1);
+        int index = clamp_to_grid(mx, my, !chisel->face_mode, 0, 1, 1);
         if (index != -1) {
             chisel->x = index%gw;
             chisel->y = index/gw;
@@ -102,7 +102,7 @@ void chisel_tick() {
     }
 
     static int pressed_f = 0;
-    if (keys[SDL_SCANCODE_F]) {
+    if (keys[SDL_SCANCODE_S]) {
         if (!pressed_f) {
             chisel->face_mode = !chisel->face_mode;
             chisel->w = chisel->face_mode ? chisel->face_w : chisel->outside_w;
@@ -191,13 +191,13 @@ void chisel_tick() {
                     }
                 }
 
-                objects_reevalute();
+                objects_reevaluate();
             }
         }
         chisel->click_cooldown--;
         if (chisel->click_cooldown == 0) {
             chisel->line = NULL;
-            int index = clamp_to_grid(mx, my, !chisel->face_mode, 0, 1);
+            int index = clamp_to_grid(mx, my, !chisel->face_mode, 0, 1, 1);
             chisel->x = index%gw;
             chisel->y = index/gw;
         }

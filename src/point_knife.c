@@ -32,7 +32,7 @@ void point_knife_deinit() {
 }
 
 void point_knife_tick() {
-    int index = clamp_to_grid(mx, my, !point_knife.face_mode, 1, 1);
+    int index = clamp_to_grid(mx, my, !point_knife.face_mode, 1, 1, 1);
     
     float px = point_knife.x;
     float py = point_knife.y;
@@ -89,7 +89,7 @@ void point_knife_tick() {
                     set((int)point_knife.x, (int)point_knife.y, 0, -1);
                 }
                 cooldown = 12;
-                objects_reevalute();
+                objects_reevaluate();
             }
             pressed = 1;
         }
@@ -119,12 +119,12 @@ static int array_clamped_to_grid(int px, int py, int outside, int on_edge, int *
     int *array = calloc(gw*gh, sizeof(int));
     int count = 0;
     
-    struct Cell *grid_copy = calloc(gw*gh, sizeof(int));
+    struct Cell *grid_copy = calloc(gw*gh, sizeof(struct Cell));
     memcpy(grid_copy, grid, sizeof(struct Cell)*gw*gh);
 
     int x = 0;
     while (x < 17) {
-        int i = clamp_to_grid(px, py, outside, on_edge, 0);
+        int i = clamp_to_grid(px, py, outside, on_edge, 0, 1);
         if (i == -1) break;
         if (get_neighbour_count(i%gw, i/gw, 2) <= 21) { /* Must be identical to the statement above */
             array[count++] = i;

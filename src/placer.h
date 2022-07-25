@@ -22,11 +22,15 @@ struct Placer {
     int w, h;
     SDL_Texture *texture;
 
+    int radius;
+
     int object_index; // What object index to set the cells to.
     int did_click;    // Did we actually place down any material?
 
     int contains_type, contains_amount;
     int contains_current;
+
+    int did_take_hard; // Did we pick up a hard cell last frame?
 };
 
 extern struct Placer *placers[PLACER_COUNT];

@@ -14,6 +14,7 @@
 #include "grabber.h"
 #include "grid.h"
 #include "gui.h"
+#include "util.h"
 
 struct Level levels[MAX_LEVELS];
 int level_current = 0, level_count = 0;
@@ -23,13 +24,12 @@ static int level_add(const char *name, char *desired_image, char *initial_image)
     level->index = level_count-1;
     strcpy(level->name, name);
     level->popup_time_current = 0;
-    level->popup_time_max = 15;
-    level->is_intro = 1;
+    level->popup_time_max = 2;
+    level->state = LEVEL_STATE_INTRO;
 
     int w, h;
     level_get_cells_from_image(desired_image, &level->desired_grid, &level->w, &level->h);
     level_get_cells_from_image(initial_image, &level->initial_grid, &w, &h);
-
     SDL_assert(w == level->w);
     SDL_assert(h == level->h);
 
@@ -82,7 +82,7 @@ void level_set_current(int lvl) {
     render_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gw, gh);
 
     S = window_width/gw;
-    SDL_assert(S == (window_height/gh)); // Make sure W==H
+    SDL_assert(gw==gh);
 
     chisel_init(&chisel_small);
     chisel_init(&chisel_medium);
@@ -99,7 +99,7 @@ void level_set_current(int lvl) {
     memcpy(grid, levels[lvl].desired_grid, sizeof(struct Cell)*gw*gh);
 }
 
-void levels_free() {
+void levels_deinit() {
     for (int i = 0; i < level_count; i++) {
         free(levels[i].desired_grid);
         free(levels[i].initial_grid);
@@ -111,14 +111,59 @@ void level_tick() {
     if (gui.popup) return;
     
     struct Level *level = &levels[level_current];
-    if (!level->is_intro) {
+    switch (level->state) {
+    case LEVEL_STATE_INTRO:
+        level->popup_time_current++;
+        if (level->popup_time_current >= level->popup_time_max) {
+            level->popup_time_current = 0;
+            level->state = LEVEL_STATE_PLAY;
+            for (int i = 0; i < gw*gh; i++) {
+                grid[i] = (struct Cell){.type = level->initial_grid[i].type, .object = -1, .depth = 255};
+            }
+            objects_reevaluate();
+        }
+        break;
+    case LEVEL_STATE_OUTRO:
+        if (keys[SDL_SCANCODE_N]) {
+            if (level_current+1 < 10) {
+                level_set_current(++level_current);
+            }
+        }
+
+        {
+            static int p = 0;
+            if (keys[SDL_SCANCODE_F]) {
+                if (!p) {
+                    levels[level_current].state = LEVEL_STATE_PLAY;
+                    keys[SDL_SCANCODE_F] = 0;
+                    p = 1;
+                }
+            } else p = 0;
+        }
+        break;
+    case LEVEL_STATE_PLAY:
+        {
+            static int p = 0;
+            if (keys[SDL_SCANCODE_F]) {
+                if (!p) {
+                    levels[level_current].state = LEVEL_STATE_OUTRO;
+                    keys[SDL_SCANCODE_F] = 0;
+                    p = 1;
+                }
+            } else p = 0;
+        }
+
         grid_tick();
     
         for (int i = 0; i < object_count; i++) {
             object_tick(i);
         }
 
-        if (current_tool == TOOL_GRABBER) {
+        if (my < 0) { // If the mouse is in the GUI window...
+            SDL_ShowCursor(1);
+            SDL_SetCursor(normal_cursor);
+            break;
+        } else if (current_tool == TOOL_GRABBER) {
             if (SDL_GetCursor() != grabber_cursor) {
                 SDL_ShowCursor(1);
                 SDL_SetCursor(grabber_cursor);
@@ -148,16 +193,7 @@ void level_tick() {
             grabber_tick();
             break;
         }
-    } else {
-        level->popup_time_current++;
-        if (level->popup_time_current >= level->popup_time_max) {
-            level->popup_time_current = 0;
-            level->is_intro = 0;
-            memset(level->desired_grid, 0, sizeof(struct Cell)*gw*gh);
-            for (int i = 0; i < gw*gh; i++) {
-                grid[i] = (struct Cell){.type = 0, .object = -1, .depth = 255};
-            }
-        }
+        break;
     }
 }
 
@@ -167,9 +203,11 @@ void level_draw() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    if (level->is_intro) {
+    switch (level->state) {
+    case LEVEL_STATE_INTRO:
         level_draw_intro();
-    } else {
+        break;
+    case LEVEL_STATE_OUTRO: case LEVEL_STATE_PLAY:
         SDL_SetRenderTarget(renderer, render_tex);
         
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -204,10 +242,96 @@ void level_draw() {
 
         gui_draw();
 
+        SDL_Rect dst = {
+            0, GUI_H,
+            window_width, window_height-GUI_H
+        };
+
         SDL_SetRenderTarget(renderer, NULL);
-        SDL_RenderCopy(renderer, render_tex, NULL, NULL);
+        SDL_RenderCopy(renderer, render_tex, NULL, &dst);
+
+        break;
     }
-        
+
+    if (level->state == LEVEL_STATE_OUTRO) {
+        SDL_Rect rect = {S*gw/8, S*gh/8, S*3*gw/4, S*3*gh/4};
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderFillRect(renderer, &rect);
+
+        const int margin = 36;
+
+        { // Level name
+            char string[256] = {0};
+            sprintf(string, "Level %d - \"%s\"", level_current+1, level->name);
+
+            int x = rect.x + margin;
+            int y = rect.y + margin;
+
+            draw_text(font, string, (SDL_Color){0,0,0,255}, 0, 0, x, y, NULL, NULL);
+        }
+
+        // Desired and Your grid.
+        for (int i = 0; i < 2; i++) {
+            char string[256] = {0};
+            if (!i) {
+                strcpy(string, "What you intended");
+            } else {
+                strcpy(string, "The result");
+            }
+
+            int dx = rect.x + margin;
+            int dy = rect.y + 100;
+            if (i) { // If your grid, put it on the right
+                dx += rect.w - margin - 2*level->w - margin;
+            }
+
+            draw_text(font, string, (SDL_Color){0, 0, 0, 255}, 0, 0, dx, dy, NULL, NULL);
+
+            for (int y = 0; y < gh; y++) {
+                for (int x = 0; x < gw; x++) {
+                    SDL_Rect r;
+                    switch (i) {
+                    case 0: // Desired
+                        if (!level->desired_grid[x+y*gw].type) {
+                            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                        }  else {
+                            SDL_Color col = pixel_from_index(level->desired_grid, x+y*gw);
+                            SDL_SetRenderDrawColor(renderer, col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
+                        }
+                        break;
+                    case 1: // Yours
+                        if (!grid[x+y*gw].type) {
+                            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                        }  else {
+                            SDL_Color col = pixel_from_index(grid, x+y*gw);
+                            SDL_SetRenderDrawColor(renderer, col.r, col.g, col.b, col.a);
+                        }
+                        break;
+                    }
+                    r = (SDL_Rect){ 2*x + dx, 2*y + dy + 32, 2, 2 };
+                    SDL_RenderFillRect(renderer, &r);
+                }
+            }
+        }
+
+        draw_text(font,
+                  "Next Level [n]",
+                  (SDL_Color){0, 91, 0, 255},
+                  1, 1,
+                  rect.x + rect.w - margin,
+                  rect.y + rect.h - margin,
+                  NULL,
+                  NULL);
+        draw_text(font,
+                  "Close [f]",
+                  (SDL_Color){0, 91, 0, 255},
+                  0, 1,
+                  rect.x + margin,
+                  rect.y + rect.h - margin,
+                  NULL,
+                  NULL);
+    }
+    
     overlay_draw(&gui.overlay);
     
     SDL_RenderPresent(renderer);
@@ -224,7 +348,7 @@ void level_draw_intro() {
     for (int y = 0; y < gh; y++) {
         for (int x = 0; x < gw; x++) {
             if (level->desired_grid[x+y*gw].type == 0) continue;
-            SDL_Color col = pixel_from_index(x+y*gw);
+            SDL_Color col = pixel_from_index(level->desired_grid, x+y*gw);
             SDL_SetRenderDrawColor(renderer, col.r, col.g, col.b, 255);
             SDL_RenderDrawPoint(renderer, x, y);
         }
@@ -272,6 +396,10 @@ void level_get_cells_from_image(char *path, struct Cell **out, int *out_w, int *
                 cell = CELL_MARBLE;
             } else if (r == 0 && g == 255 && b == 0) {
                 cell = CELL_LEAF;
+            } else if (r == 128 && g == 128 && b == 128) {
+                cell = CELL_COBBLESTONE;
+            } else if (r == 128 && g == 80 && b == 0) {
+                cell = CELL_WOOD_LOG;
             }
 
             (*out)[x+y*w].type = cell;

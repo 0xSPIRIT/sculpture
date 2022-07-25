@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+#define GUI_H 96
+
 enum {
     TOOL_CHISEL_SMALL,
     TOOL_CHISEL_MEDIUM,
@@ -12,7 +14,8 @@ enum {
     TOOL_POINT_KNIFE,
     TOOL_DRILL,
     TOOL_PLACER,
-    TOOL_GRABBER
+    TOOL_GRABBER,
+    TOOL_COUNT
 };
 
 enum {
@@ -47,7 +50,7 @@ extern TTF_Font *font, *title_font;
 
 extern SDL_Cursor *grabber_cursor, *normal_cursor;
 
-extern int mx, my; // In fake game coordinates (pixel art scaled)
+extern int mx, my; // Fake in game coordinates (pixel art scaled)
 extern int real_mx, real_my; // In real window coordinates
 extern int pmx, pmy;
 extern Uint32 mouse;
@@ -59,7 +62,5 @@ extern int window_width, window_height;
 extern float delta_time;
 
 extern Uint8 *keys;
-
-extern struct Vectorizer *v;
 
 #endif  /* GLOBALS_H_ */

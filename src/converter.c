@@ -107,37 +107,40 @@ void converter_tick() {
             (float)real_mx/S, (float)real_my/S
         };
         strcpy(gui.overlay.str[0], "Converter");
-        strcpy(gui.overlay.str[1], "HOT");
         switch (converter.heat_state) {
         case HEAT_TOO_HOT:
-            sprintf(str_b, "[TOO HOT %.2f]", (float)converter.cooldown_time_current/60.0);
+            sprintf(str_b, "Mode: [TOO HOT %.2f]", (float)converter.cooldown_time_current/60.0);
             strcpy(gui.overlay.str[1], str_b);
             break;
         case HEAT_OVERHEATING:;
-            sprintf(str_b, "[OVERHEATING %.2f]", (float)converter.cooldown_time_current/60.0);
+            sprintf(str_b, "Mode: [OVERHEATING %.2f]", (float)converter.cooldown_time_current/60.0);
             strcpy(gui.overlay.str[1], str_b);
             break;
         case HEAT_HOT:
-            strcpy(gui.overlay.str[1], "[HOT]");
+            strcpy(gui.overlay.str[1], "Mode: [HOT]");
             break;
         case HEAT_COLD:
-            strcpy(gui.overlay.str[1], "[COLD]");
+            strcpy(gui.overlay.str[1], "Mode: [COLD]");
             break;
         }
         strcpy(gui.overlay.str[2], string);
         SDL_ShowCursor(0);
-    } else if (is_holding_placer(converter)) {
-        // We have a placer that we're holding that is not on the top / bottom.
-        // Show the stats of it.
-        gui.overlay = (struct Overlay){
-            (float)real_mx/S, (float)real_my/S
-        };
-        char string[256] = {0};
-        overlay_get_string(placer->contains_type, placer->contains_amount, string);
-        strcpy(gui.overlay.str[0], "Placer");
-        strcpy(gui.overlay.str[1], string);
-        SDL_ShowCursor(0);
-    } else {
+    }
+
+    // Note: we're taking care of this in placer.c now.
+
+    /*  else if (is_holding_placer(converter)) { */
+    /*     // We have a placer that we're holding that is not on the top / bottom. */
+    /*     // Show the stats of it. */
+    /*     gui.overlay = (struct Overlay){ */
+    /*         (float)real_mx/S, (float)real_my/S */
+    /*     }; */
+    /*     char string[256] = {0}; */
+    /*     overlay_get_string(placer->contains_type, placer->contains_amount, string); */
+    /*     strcpy(gui.overlay.str[0], "Placer"); */
+    /*     strcpy(gui.overlay.str[1], string); */
+    /*     SDL_ShowCursor(0); */
+    /* }  */ else {
         gui.overlay.x = -1;
         gui.overlay.y = -1;
         SDL_ShowCursor(1);
@@ -213,10 +216,12 @@ void converter_tick() {
     static int outp = 0;
     if (mouse & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {
         if (!outp) {
-            if (converter.state != STATE_OUT && converter.contains_amount > 0 && converter.placer_bottom)
+            if (converter.state != STATE_OUT && converter.contains_amount > 0 && converter.placer_bottom && (converter.placer_bottom->contains_type == converter.contains_type || converter.placer_bottom->contains_amount == 0)) {
                 converter.state = STATE_OUT;
-            else
+                converter.placer_bottom->contains_type = converter.contains_type;
+            } else {
                 converter.state = STATE_OFF;
+            }
             outp = 1;
         }
     } else {

@@ -9,6 +9,7 @@
 #include "util.h"
 #include "chisel.h"
 #include "grabber.h"
+#include "level.h"
 
 struct Cell *grid;
 int gw, gh;
@@ -18,6 +19,7 @@ struct Object objects[MAX_OBJECTS];
 int object_count = 0, object_current = 0;
 
 int do_draw_blobs = 0, do_draw_objects = 0;
+int paused = 0, step_one = 0;
 
 static SDL_Surface *bark_surface, *glass_surface, *wood_plank_surface, *diamond_surface, *ice_surface, *grass_surface;
 
@@ -57,11 +59,11 @@ void grid_deinit(void) {
     SDL_FreeSurface(grass_surface);
 }
 
-SDL_Color pixel_from_index(int i) {
+SDL_Color pixel_from_index(struct Cell *cells, int i) {
     SDL_Color color;
     int r, amt;
 
-    switch (grid[i].type) {
+    switch (cells[i].type) {
     case CELL_MARBLE:
         color = (SDL_Color){230+(i*i*i)%25, 230+(i*i*i*i)%25, 230+(i*i*i*i*i*i)%25, 255};
         break;
@@ -95,7 +97,7 @@ SDL_Color pixel_from_index(int i) {
         r = rand() % 100 < 5;
         amt = 25;
         color = get_pixel(glass_surface, i%gw, i/gw);
-        if (r || get_neighbour_count_of_object(i%gw, i/gw, 1, grid[i].object) < 8) {
+        if (r || get_neighbour_count_of_object(i%gw, i/gw, 1, cells[i].object) < 8) {
             color.a = 240;
         }
         break;
@@ -127,42 +129,42 @@ SDL_Color pixel_from_index(int i) {
         color = (SDL_Color){100, 100, 100, 255};
         break;
     }
-    if (grid[i].type != CELL_GLASS && cell_is_hard(grid[i].type))
-        color.a = grid[i].depth;
+    if (cells[i].type != CELL_GLASS && cell_is_hard(cells[i].type))
+        color.a = cells[i].depth;
     return color;
 }
 
-void move_by_velocity(int x, int y) {
-	struct Cell *p = &grid[x+y*gw];
+/* void move_by_velocity(int x, int y) { */
+/* 	struct Cell *p = &grid[x+y*gw]; */
 
-	if (p->vx == 0 && p->vy == 0) {
-		return;
-	}
+/* 	if (p->vx == 0 && p->vy == 0) { */
+/* 		return; */
+/* 	} */
 
-	float vlen = sqrt(p->vx*p->vx + p->vy*p->vy);
-	float dx = p->vx / vlen;
-	float dy = p->vy / vlen;
-	float xx = 0.;
-	float yy = 0.;
+/* 	float vlen = sqrt(p->vx*p->vx + p->vy*p->vy); */
+/* 	float dx = p->vx / vlen; */
+/* 	float dy = p->vy / vlen; */
+/* 	float xx = 0.; */
+/* 	float yy = 0.; */
 
-    while (1) {
-		xx += dx;
-		yy += dy;
+/*     while (1) { */
+/* 		xx += dx; */
+/* 		yy += dy; */
 
-		int tx = (int) (x+xx);
-		int ty = (int) (y+yy);
+/* 		int tx = (int) (x+xx); */
+/* 		int ty = (int) (y+yy); */
 
-        if (tx < 0 || ty < 0 || tx >= gw || ty >= gh || grid[tx+ty*gw].type != 0) {
-            xx -= dx;
-            yy -= dy;
-			break;
-		}
-		if (xx*xx+yy*yy >= vlen*vlen) {
-			break;
-		}
-	}
-	swap((int)x, (int)y, (int)round(x+xx), (int)round(y+yy));
-}
+/*         if (tx < 0 || ty < 0 || tx >= gw || ty >= gh || grid[tx+ty*gw].type != 0) { */
+/*             xx -= dx; */
+/*             yy -= dy; */
+/* 			break; */
+/* 		} */
+/* 		if (xx*xx+yy*yy >= vlen*vlen) { */
+/* 			break; */
+/* 		} */
+/* 	} */
+/* 	swap((int)x, (int)y, (int)round(x+xx), (int)round(y+yy)); */
+/* } */
 
 void swap(int x1, int y1, int x2, int y2) {
     if (x1 < 0 || x1 >= gw || y1 < 0 || y1 >= gh) return;
@@ -233,27 +235,23 @@ int object_does_exist(int obj) {
     return 0;
 }
 
-static int condition_x(int x, int dir_x) {
-    if (dir_x == 1) {
-        return x < gw;
-    } else if (dir_x == -1) {
-        return x >= 0;
-    }
-    return 0;
-}
+static int frames = 0;
 
 void grid_tick(void) {
-    int start_x;
-    int dir_x;
+    if (!step_one)
+        if (paused) return;
 
-    start_x = 0;
-    dir_x = 1;
+    if (step_one) step_one = 0;
 
-    for (int i = 0; i < gw*gh; i++)
-        grid[i].updated = 0;
-    
+    frames++;
+   
     for (int y = gh-1; y >= 0; y--) {
-        for (int x = start_x; condition_x(x, dir_x); x += dir_x) {
+        for (int q = 0; q < gw; q++) {
+            int x = q;
+            if (frames%2 == 0) {
+                x = gw - 1 - x;
+            }
+
             // Make sure we're only dealing with non-objects.
             if (!grid[x+y*gw].type || grid[x+y*gw].object != -1 || grid[x+y*gw].updated) continue;
 
@@ -263,14 +261,19 @@ void grid_tick(void) {
             case CELL_WATER:
                 if (y+1 < gh && !grid[x+(y+1)*gw].type) {
                     swap(x, y, x, y+1);
-                } else if (y+1 < gh && x+1 < gw && !grid[x+1+(y+1)*gw].type) {
+                } else if (x+1 < gw && y+1 < gh && !grid[x+1+(y+1)*gw].type) {
                     swap(x, y, x+1, y+1);
-                } else if (y+1 < gh && x-1 >= 0 && !grid[x-1+(y+1)*gw].type) {
+                } else if (x-1 >= 0 && y+1 < gh && !grid[x-1+(y+1)*gw].type) {
                     swap(x, y, x-1, y+1);
-                } else if (x+1 < gw && !grid[x+1+y*gw].type) {
-                    swap(x, y, x-1, y);
-                } else if (x-1 >= 0 && !grid[x-1+y*gw].type) {
-                    swap(x, y, x-1, y);
+                } else {
+                    if (x+1 < gw && !grid[x+1+y*gw].type && x-1 >= 0 && !grid[x-1+y*gw].type) {
+                        int dx = (rand()%2==0)?1:-1;
+                        swap(x, y, x+dx, y);
+                    } else if (x+1 < gw && !grid[x+1+y*gw].type) {
+                        swap(x, y, x+1, y);
+                    } else if (x-1 >= 0 && !grid[x-1+y*gw].type) {
+                        swap(x, y, x-1, y);
+                    }
                 }
                 break;
             case CELL_SAND:
@@ -297,23 +300,42 @@ void grid_tick(void) {
         grid[i].updated = 0;
 
     for (int y = 0; y < gh; y++) {
-        for (int x = start_x; condition_x(x, dir_x); x += dir_x) {
+        for (int q = 0; q < gw; q++) {
+            int x = q;
+            if (frames%2 == 0) {
+                x = gw - 1 - x;
+            }
+
             if (!grid[x+y*gw].type || grid[x+y*gw].object != -1 || grid[x+y*gw].updated) continue;
             grid[x+y*gw].updated = 1;
             int t = grid[x+y*gw].type;
+            if (t == CELL_DUST) {
+                if (rand()%100 <= 5) {
+                    set(x, y, 0, -1);
+                }
+            }
             if (t == CELL_STEAM || t == CELL_SMOKE || t == CELL_DUST) {
-                if (y-1 >= 0 && !grid[x+(y-1)*gw].type) {
-                    swap(x, y, x, y-1);
-                } else if (y-1 >= 0 && x-1 >= 0 && !grid[x-1+(y-1)*gw].type) {
-                    swap(x, y, x-1, y-1);
-                } else if (y-1 >= 0 && x+1 < gw && !grid[x+1+(y-1)*gw].type) {
-                    swap(x, y, x+1, y-1);
+                if (rand()%100 < 35) {
+                    int dx, dy;
+                    if (x-1 >= 0 && !grid[x-1+y*gw].type && x+1 < gw && !grid[x+1+y*gw].type) {
+                        dx = (rand()%2==0)?1:-1;
+                    }
+                    if (y-1 >= 0 && !grid[x+(y-1)*gw].type && y+1 < gh && !grid[x+(y+1)*gw].type) {
+                        dy = (rand()%2==0)?1:-1;
+                        if (rand()%50 == 0 && dy == -1) dy = 1;
+                    }
+                    swap(x, y, x+dx, y+dy);
                 }
 
-                srand(time(0));
-
-                if (x+1 < gw && !grid[x+1+y*gw].type && x-1 < gw && !grid[x-1+y*gw].type) {
-                    srand(x+y*gw);
+                if (y-1 < 0) {
+                    set(x, y, 0, -1);
+                } else if (!grid[x+(y-1)*gw].type) {
+                    swap(x, y, x, y-1);
+                } else if (x-1 >= 0 && !grid[x-1+(y-1)*gw].type) {
+                    swap(x, y, x-1, y-1);
+                } else if (x+1 < gw && !grid[x+1+(y-1)*gw].type) {
+                    swap(x, y, x+1, y-1);
+                } else if (x+1 < gw && !grid[x+1+y*gw].type && x-1 < gw && !grid[x-1+y*gw].type) {
                     if (rand()%2 == 0) {
                         swap(x, y, x+1, y);
                     } else {
@@ -323,24 +345,40 @@ void grid_tick(void) {
                     swap(x, y, x+1, y);
                 } else if (x-1 < gw && !grid[x-1+y*gw].type) {
                     swap(x, y, x-1, y);
-                } else if (y-1 < 0) {
-                    set(x, y, 0, -1);
                 }
             }
         }
     }
+    for (int i = 0; i < gw*gh; i++)
+        grid[i].updated = 0;
 }
 
 static int outlines_total[256*256] = {0}; // 256x256 seems to be more than the max level size.
 static int outlines_total_count = 0;
 
 void grid_draw(int draw_lines) {
+    // Draw inspiration ghost
+    if (grid_show_ghost) {
+        for (int y = 0; y < gh; y++) {
+            for (int x = 0; x < gw; x++) {
+                if (!levels[level_current].desired_grid[x+y*gw].type) continue;
+
+                SDL_Color col = pixel_from_index(levels[level_current].desired_grid, x+y*gw);
+                float b = col.r + col.g + col.b;
+                b /= 3.;
+                b = (int)clamp((int)b, 0, 255);
+                SDL_SetRenderDrawColor(renderer, b/2, b/4, b, 200 + sin((2*x+2*y+SDL_GetTicks())/700.0)*10);
+                SDL_RenderDrawPoint(renderer, x, y);
+            }
+        }
+    }
+
     // Draw main grid
     for (int y = 0; y < gh; y++) {
         for (int x = 0; x < gw; x++) {
             if (!grid[x+y*gw].type) continue;
 
-            SDL_Color col = pixel_from_index(x+y*gw);
+            SDL_Color col = pixel_from_index(grid, x+y*gw);
             if (DRAW_PRESSURE && objects[object_count-1].blob_data[chisel->size].blobs[x+y*gw]) {
                 Uint8 c = (Uint8)(255 * ((float)objects[object_count-1].blob_data[chisel->size].blob_pressures[objects[object_count-1].blob_data[chisel->size].blobs[x+y*gw]] / MAX_PRESSURE));
                 SDL_SetRenderDrawColor(renderer, c, c, c, 255);
@@ -348,19 +386,6 @@ void grid_draw(int draw_lines) {
                 SDL_SetRenderDrawColor(renderer, col.r, col.g, col.b, col.a);
             }
             SDL_RenderDrawPoint(renderer, x, y);
-        }
-    }
-
-    // Draw ghost
-    if (grid_show_ghost) {
-        for (int y = 0; y < gh; y++) {
-            for (int x = 0; x < gw; x++) {
-                if (!grid[x+y*gw].type) continue;
-
-                SDL_Color col = pixel_from_index(x+y*gw);
-                SDL_SetRenderDrawColor(renderer, col.r, col.g, col.b, col.a/2);
-                SDL_RenderDrawPoint(renderer, x, y);
-            }
         }
     }
 
@@ -665,9 +690,11 @@ static void mark_neighbours(int x, int y, int obj, int pobj) {
 // to split that into two separate objects.
 // We don't want to bind together two objects which happen to be touching,
 // though-- only break apart things.
-void objects_reevalute(void) {
+void objects_reevaluate(void) {
     // Remember, we're resetting all blob data as well, so we will
     // have to reset that at the end.
+
+    // Todo: free the blob data.
     memset(objects, 0, MAX_OBJECTS * sizeof(struct Object));
     for (int i = 0; i < MAX_OBJECTS; i++) {
         for (int j = 0; j < 3; j++) {
@@ -804,7 +831,7 @@ void draw_objects(void) {
 }
 
 // Returns the closest index to the point (px, py)
-int clamp_to_grid(int px, int py, int outside, int on_edge, int set_current_object) {
+int clamp_to_grid(int px, int py, int outside, int on_edge, int set_current_object, int must_be_hard) {
     int closest_index = -1;
     float closest_distance = gw*gh; // Arbitrarily high number
     for (int y = 0; y < gh; y++) {
@@ -819,9 +846,17 @@ int clamp_to_grid(int px, int py, int outside, int on_edge, int set_current_obje
             int condition;
             if (outside) {
                 if (on_edge) {
-                    condition = (get_neighbour_count(x, y, 1) < 8 && is_any_neighbour_hard(x, y));
+                    if (must_be_hard) {
+                        condition = get_neighbour_count(x, y, 1) < 8 && is_any_neighbour_hard(x, y);
+                    } else {
+                        condition = get_neighbour_count(x, y, 1) < 8;
+                    }
                 } else {
-                    condition = (get_neighbour_count(x, y, 1) >= 1) && is_any_neighbour_hard(x, y);
+                    if (must_be_hard) {
+                        condition = (get_neighbour_count(x, y, 1) >= 1) && is_any_neighbour_hard(x, y);
+                    } else {
+                        condition = get_neighbour_count(x, y, 1) >= 1;
+                    }
                 }
             } else {
                 condition = 1;

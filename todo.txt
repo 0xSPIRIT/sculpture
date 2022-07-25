@@ -1,17 +1,12 @@
-Today:
+Today
 
-- Create way to view the desired grid for a level.
-- Set level 1's desired_grid to the house (from image)
-- Create an end level screen (activated by button, do GUI later)
-    - Show difference between yours and desired_grid.
-    - Go to next level
-- Add a way for the placer to pick up certain particles. Only non-hard
-  objects are allowed. (placer suck mode)
+x Add a proper GUI.
+- Add proper GUI button sprites instead of just reusing the sprites.
 
-
-- Add dust to chiseling.
+- Make face chiseling look better... somehow. Figure out a solution
 
 Polish
+- Add dust to chiseling.
 - Fix the crashes [do some wacky shit lots of placements while running
   in gdb] usually has to do with changing the tool as well. Also
   it sometimes removes some cells in the middle of the screen?? OOB
