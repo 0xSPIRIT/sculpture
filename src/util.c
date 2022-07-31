@@ -39,19 +39,20 @@ void get_name_from_tool(int type, char *out) {
     }
 }
 
-void get_path_from_tool(int type, char *out) {
+void get_file_from_tool(int type, char *out) {
     switch (type) {
-    case TOOL_CHISEL_SMALL:  strcpy(out, "../res/chisel_small.png"); break;
-    case TOOL_CHISEL_MEDIUM: strcpy(out, "../res/chisel_medium.png"); break;
-    case TOOL_CHISEL_LARGE:  strcpy(out, "../res/chisel_large.png"); break;
-    case TOOL_KNIFE:         strcpy(out, "../res/knife.png"); break;
-    case TOOL_POINT_KNIFE:   strcpy(out, "../res/point_knife.png"); break;
-    case TOOL_DRILL:         strcpy(out, "../res/drill.png"); break;
-    case TOOL_PLACER:        strcpy(out, "../res/placer.png"); break;
-    case TOOL_GRABBER:       strcpy(out, "../res/pointer.png"); break;
+    case TOOL_CHISEL_SMALL:  strcpy(out, "chisel_small.png"); break;
+    case TOOL_CHISEL_MEDIUM: strcpy(out, "chisel_medium.png"); break;
+    case TOOL_CHISEL_LARGE:  strcpy(out, "chisel_large.png"); break;
+    case TOOL_KNIFE:         strcpy(out, "knife.png"); break;
+    case TOOL_POINT_KNIFE:   strcpy(out, "point_knife.png"); break;
+    case TOOL_DRILL:         strcpy(out, "drill.png"); break;
+    case TOOL_PLACER:        strcpy(out, "placer.png"); break;
+    case TOOL_GRABBER:       strcpy(out, "pointer.png"); break;
     }
 }
 
+// Stolen from stackoverflow somewhere.
 void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel) {
     Uint32 *const target_pixel = (Uint32 *) ((Uint8 *) surface->pixels
                                              + y * surface->pitch
@@ -63,13 +64,35 @@ SDL_Color get_pixel(SDL_Surface *surf, int x, int y) {
     if (x >= surf->w) x %= surf->w;
     if (y >= surf->h) y %= surf->h;
     int bpp = surf->format->BytesPerPixel;
+    SDL_assert(bpp == 3 || bpp == 4);
+
     Uint8 *pixels = surf->pixels;
     SDL_Color color;
-    color.r = pixels[bpp * (x+y*surf->w) + 0];
-    color.g = pixels[bpp * (x+y*surf->w) + 1];
-    color.b = pixels[bpp * (x+y*surf->w) + 2];
-    if (bpp == 4)
+
+    if (surf->format->format == SDL_PIXELFORMAT_ABGR8888) {
+        color.a = pixels[bpp * (x+y*surf->w) + 0];
+        color.b = pixels[bpp * (x+y*surf->w) + 1];
+        color.g = pixels[bpp * (x+y*surf->w) + 2];
+        color.r = pixels[bpp * (x+y*surf->w) + 3];
+    } else if (surf->format->format == SDL_PIXELFORMAT_RGBA8888) {
+        color.r = pixels[bpp * (x+y*surf->w) + 0];
+        color.g = pixels[bpp * (x+y*surf->w) + 1];
+        color.b = pixels[bpp * (x+y*surf->w) + 2];
         color.a = pixels[bpp * (x+y*surf->w) + 3];
+    } else if (surf->format->format == SDL_PIXELFORMAT_RGB888) {
+        color.r = pixels[bpp * (x+y*surf->w) + 0];
+        color.g = pixels[bpp * (x+y*surf->w) + 1];
+        color.b = pixels[bpp * (x+y*surf->w) + 2];
+    } else if (surf->format->format == SDL_PIXELFORMAT_BGR888) {
+        color.b = pixels[bpp * (x+y*surf->w) + 0];
+        color.g = pixels[bpp * (x+y*surf->w) + 1];
+        color.r = pixels[bpp * (x+y*surf->w) + 2];
+    } /* else { */
+    /*     printf("BPP: %d\n", bpp); fflush(stdout); */
+    /*     fprintf(stderr, "Unsupported pixel format %d!\n", surf->format->format); */
+    /*     exit(1); */
+    /* } */
+
     return color;
 }
 
@@ -91,6 +114,10 @@ int min(int a, int b) {
     return b;
 }
 
+float lerp(float a, float b, float t) {
+    return a + t*(b-a); // or a(1-t) + tb
+}
+
 int clamp(int a, int min, int max) {
     if (a < min) return min;
     if (a > max) return max;
@@ -103,12 +130,12 @@ float clampf(float a, float min, float max) {
     return a;
 }
 
-float distance(SDL_Point a, SDL_Point b) {
-    return sqrtf((b.x-a.x)*(b.x-a.x) + (b.y-a.y)*(b.y-a.y));
+float distance(float ax, float ay, float bx, float by) {
+    return sqrtf((bx-ax)*(bx-ax) + (by-ay)*(by-ay));
 }
 
 int is_point_on_line(SDL_Point p, SDL_Point a, SDL_Point b) {
-    return (distance(a, p) + distance(b, p)) == distance(a, b);
+    return (distance(a.x, a.y, p.x, p.y) + distance(b.x, b.y, p.x, p.y)) == distance(a.x, a.y, b.x, b.y);
 }
 
 // Taken from stackoverflow
@@ -133,6 +160,25 @@ int is_point_in_rect(SDL_Point p, SDL_Rect r) {
     if (p.x >= r.x && p.x <= r.x+r.w && p.y >= r.y && p.y <= r.y+r.h)
         return 1;
     return 0;
+}
+
+// Stolen from https://stackoverflow.com/a/2049593
+static float sign(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
+    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+}
+
+int is_point_in_triangle(SDL_Point pt, SDL_Point v1, SDL_Point v2, SDL_Point v3) {
+    float d1, d2, d3;
+    int has_neg, has_pos;
+
+    d1 = sign(pt, v1, v2);
+    d2 = sign(pt, v2, v3);
+    d3 = sign(pt, v3, v1);
+
+    has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+    has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+    return !(has_neg && has_pos);
 }
 
 void draw_text(TTF_Font *font, const char *str, SDL_Color col, int align_left, int align_bottom, int x, int y, int *out_w, int *out_h) {

@@ -8,7 +8,8 @@ Level 1 - "Alaska"
 Level 2 - "Conversion"
   You make a glass sculpture by taking sand and converting it to
   glass using a furnace. After that you pour the glass down to make
-  a glass mug / cup.
+  a glass mug / cup. Note: perhaps make something more thematically
+  relevent than a mug.
 Level 3 - "Masonry"
   You make a little fireplace out of stone and make some patterns
   on the stone.
@@ -35,17 +36,19 @@ Level 7 - "Procedure Lullaby"
   Lullaby - Innocence of spending this much time to do something
             incredibly unimportant in hindsight.
 Level 8 - "Polished Turd"
-  The same well-made sculpture from level 5 is back, but you now
-  have more tools. The sculpture isn't made out of diamond anymore
-  so you have the ability to break it down and use its materials
-  to make proper diamond. It's made out of coal (carbon). You then
-  smelt this at very high heat (the furnace has a hard fucking time)
-  then you get your diamond. You place it using the placer (shaving
-  cream) and chisel out the excess. The shape itself is relatively
-  complex, but not fucking crazy. You do your best, but make it
-  impossible to get right [also the diamond is not as good as the
-  other one] The title is a cynical attitute towards the piece you
-  made since, yeah, it's not that good, but you think it's horrible.
+  (Low resolution)
+  The same well-made sculpture from level 5 is back, but you now have
+  more tools. You have a bunch of dirt in a little scene, and you
+  smelt it to get coal. You then smelt this at very high heat (the
+  furnace has a hard fucking time) then you get your diamond. You
+  place it using the placer (shaving cream) and chisel out the
+  excess. The shape itself is relatively complex, but not fucking
+  crazy (it's in low res to make it easier on the player). You do your
+  best, but make it impossible to get right [also the diamond is not
+  as good as the other one] The title can be interpreted as a cynical
+  attitute towards the piece you made since, yeah, it's not that good,
+  but you think it's horrible. Or, it can be interpreted as converting
+  literal dirt into diamond.
 Level 9 - "Showpiece"
   You start with coal, cobblestone, dirt, and trees, and you need to
   turn them, respectively, into diamond, quartz, and wood. The dirt
@@ -55,8 +58,9 @@ Level 9 - "Showpiece"
   diamond for the sticks and pause/play.
 Level 10 - "Glass Body"
   You are shown a very nice sculpture of complete glass, of a woman
-  with lots of curves-- lots of work. You start with a whole heap of
-  sand. So, you get to work converting sand to glass using the
+  with lots of curves-- lots of work. Multiple materials in layers,
+  symbolising how "deep" the work would be. You start with a whole
+  heap of sand. So, you get to work converting sand to glass using the
   furnace. It comes out in batches, so you get some, place some,
   chisel some, and repeat. At some point the furnace breaks down after
   heating up however, limiting the output to 1 glass cell per minute
@@ -71,6 +75,8 @@ Level 10 - "Glass Body"
   Note2: The name "Glass Body" represents the innate nature of this
          project, that it *will* fail, and it is brittle, due to my
          unskillfulness and too much ambition.
+
+Note3: Possibly make Level 10 look really easy? May be more poignant.
 
 The pieces you're meant to replicate represent your own ideas for what
 you want to make, not societal expectations.

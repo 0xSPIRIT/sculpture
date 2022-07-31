@@ -21,6 +21,7 @@ enum {
 struct Converter {
     int x, y;
     int w, h;
+
     SDL_Texture *texture;
 
     SDL_Texture *off_texture, *on_texture, *output_texture;

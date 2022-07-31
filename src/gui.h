@@ -13,6 +13,7 @@ struct Overlay {
     float x, y;
     char str[MAX_OVERLAY_LEN][MAX_OVERLAY_LINE_LEN];
     int w, h;
+    int is_gui; // Is the overlay from a gui button?
 };
 
 struct GUI {
@@ -27,7 +28,8 @@ struct Button {
     int x, y, w, h;
     int index;
     SDL_Texture *texture;
-    char *overlay_text;
+    char overlay_text[128];
+    int activated;
     void (*on_pressed)();
 };
 

@@ -1,19 +1,21 @@
 Today
 
-x Add a proper GUI.
-- Add proper GUI button sprites instead of just reusing the sprites.
+x Improve particle simulation.
+    x MoveByVelocity
+    x Water
+    x Sand
+- Make the large chisel's blobs be other shape not squares.
+- Liquid versions of everything; especially when placing glass /
+  anything that was heated from a converter; it should not act as an
+  object yet.
+    - Simply make it separate object types. No need for a liquid
+      member variable.
+- Level Implementations.
 
-- Make face chiseling look better... somehow. Figure out a solution
-
-Polish
-- Add dust to chiseling.
-- Fix the crashes [do some wacky shit lots of placements while running
-  in gdb] usually has to do with changing the tool as well. Also
-  it sometimes removes some cells in the middle of the screen?? OOB
-  array?
-- Figure out a simple way to explain all this to the player. Esp
-  overheating and placers with the converter.
 - Make the blobs for each different type of stone different to give
   them a different feel.
-- Make a better GUI for switching tools, and especially different
-  placers. The F1-3 system we have going on is whack.
+- Better GUI for switching placers.
+- Figure out a simple way to explain all this to the player. Esp
+  overheating and placers with the converter.
+- Make face chiseling look better... somehow. Figure out a solution
+- Make chisel dust not weird and glitchy.

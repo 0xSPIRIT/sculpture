@@ -5,6 +5,8 @@
 #include "globals.h"
 #include "grid.h"
 
+// God, this tool is essentially useless.
+
 struct Drill drill;
 
 void drill_init() {
@@ -30,7 +32,7 @@ void drill_tick() {
         float dy = sin(2*M_PI * ((drill.angle+180) / 360.0));
         drill.x += dx;
         drill.y += dy;
-        SDL_WarpMouseInWindow(window, (int)(drill.x * S), (int)(drill.y * S));
+        SDL_WarpMouseInWindow(window, (int)(drill.x * S), GUI_H + (int)(drill.y * S));
         mx = (int)drill.x;
         my = (int)drill.y;
     } else if (keys[SDL_SCANCODE_LCTRL]) {

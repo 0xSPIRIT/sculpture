@@ -6,6 +6,7 @@
 
 #define CHISEL_TIME 0           /* The amount of frames the chisel moves. 0 = instant */
 #define CHISEL_COOLDOWN 3
+#define CHISEL_FORGIVING_AIM 0
 
 enum {
 	HAMMER_STATE_IDLE,
@@ -38,6 +39,8 @@ struct Chisel {
     int w, h;
     int face_w, face_h;
     int outside_w, outside_h;
+    int *highlights; // List of indices into grid for highlighting the blobs.
+    int highlight_count;
 };
 
 extern struct Chisel *chisel;
@@ -53,6 +56,7 @@ void chisel_init(struct Chisel *type);
 void chisel_deinit();
 void chisel_tick();
 void chisel_draw();
+int chisel_goto_blob(int remove, float ux, float uy, float len);
 
 void chisel_update_texture();
 

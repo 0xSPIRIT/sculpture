@@ -82,7 +82,7 @@ void converter_tick() {
     if (converter.placer_top && is_point_in_rect((SDL_Point){mx, my}, (SDL_Rect){converter.placer_top->x-converter.placer_top->w/2, converter.placer_top->y-converter.placer_top->h, converter.placer_top->w, converter.placer_top->h})) {
         struct Placer *p = converter.placer_top;
         gui.overlay = (struct Overlay){
-            (float)real_mx/S, (float)real_my/S
+            (float)real_mx/S, (float)real_my/S - GUI_H/S
         };
         char string[256] = {0};
         overlay_get_string(p->contains_type, p->contains_amount, string);
@@ -92,7 +92,7 @@ void converter_tick() {
     } else if (converter.placer_bottom && is_point_in_rect((SDL_Point){mx, my}, (SDL_Rect){converter.placer_bottom->x-converter.placer_bottom->w/2, converter.placer_bottom->y-converter.placer_bottom->h, converter.placer_bottom->w, converter.placer_bottom->h})) {
         struct Placer *p = converter.placer_bottom;
         gui.overlay = (struct Overlay){
-            (float)real_mx/S, (float)real_my/S
+            (float)real_mx/S, (float)real_my/S - GUI_H/S
         };
         char string[256] = {0};
         overlay_get_string(p->contains_type, p->contains_amount, string);
@@ -104,16 +104,16 @@ void converter_tick() {
         char str_b[256] = {0};
         overlay_get_string(converter.contains_type, converter.contains_amount, string);
         gui.overlay = (struct Overlay){
-            (float)real_mx/S, (float)real_my/S
+            (float)real_mx/S, (float)real_my/S - GUI_H/S
         };
         strcpy(gui.overlay.str[0], "Converter");
         switch (converter.heat_state) {
         case HEAT_TOO_HOT:
-            sprintf(str_b, "Mode: [TOO HOT %.2f]", (float)converter.cooldown_time_current/60.0);
+            sprintf(str_b, "Mode: [TOO HOT] %.2f seconds left", (float)converter.cooldown_time_current/60.0);
             strcpy(gui.overlay.str[1], str_b);
             break;
         case HEAT_OVERHEATING:;
-            sprintf(str_b, "Mode: [OVERHEATING %.2f]", (float)converter.cooldown_time_current/60.0);
+            sprintf(str_b, "Mode: [OVERHEATING] %.2f seconds left", (float)converter.cooldown_time_current/60.0);
             strcpy(gui.overlay.str[1], str_b);
             break;
         case HEAT_HOT:

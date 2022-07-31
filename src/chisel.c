@@ -61,6 +61,11 @@ void chisel_init(struct Chisel *type) {
     chisel->w = chisel->outside_w;
     chisel->h = chisel->outside_h;
 
+    chisel->highlights = calloc(gw*gh, sizeof(int));
+    chisel->highlight_count = 0;
+
+    chisel->spd = 3.;
+
     SDL_FreeSurface(surf);
 }
 
@@ -74,7 +79,7 @@ void chisel_tick() {
     int p = chisel->changing_angle;
     chisel->changing_angle = keys[SDL_SCANCODE_LCTRL];
     if (p && !chisel->changing_angle) {
-        SDL_WarpMouseInWindow(window, (int)chisel->x*S, (int)chisel->y*S);
+        SDL_WarpMouseInWindow(window, (int)chisel->x*S, GUI_H + (int)chisel->y*S);
         mx = (int)chisel->x;
         my = (int)chisel->y;
     }
@@ -84,6 +89,35 @@ void chisel_tick() {
         if (index != -1) {
             chisel->x = index%gw;
             chisel->y = index/gw;
+
+            // Highlight the current blob.
+            { // This is a fake chiseling- we're resetting position afterwards.
+                float chisel_dx = cos(2*M_PI * ((chisel->angle+180) / 360.0));
+                float chisel_dy = sin(2*M_PI * ((chisel->angle+180) / 360.0));
+                float dx = chisel->spd * chisel_dx;
+                float dy = chisel->spd * chisel_dy;
+                float len = sqrt(dx*dx + dy*dy);
+                float ux = dx/len;
+                float uy = dy/len;
+
+                struct Chisel copy = *chisel;
+
+                int blob_highlight = chisel_goto_blob(0, ux, uy, len);
+
+                *chisel = copy;
+
+                if (blob_highlight != -1) {
+                    memset(chisel->highlights, 0, chisel->highlight_count);
+                    chisel->highlight_count = 0;
+
+                    for (int i = 0; i < gw*gh; i++) {
+                        Uint32 b = objects[object_current].blob_data[chisel->size].blobs[i];
+                        if (b == blob_highlight) {
+                            chisel->highlights[chisel->highlight_count++] = i;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -144,55 +178,12 @@ void chisel_tick() {
                     chisel->y += uy;
                     chisel_update_texture();
                 }
-                SDL_WarpMouseInWindow(window, (int)(chisel->x * S), (int)(chisel->y * S));
-                mx = chisel->x;
-                my = chisel->y;
-            } else if (object_current != -1) {
-                while (sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y)) < len) {
-                    // If we come into contact with a cell, locate its blob
-                    // then remove it. We only remove one blob per chisel,
-                    // so we stop our speed right here.
-
-                    int b = objects[object_current].blob_data[chisel->size].blobs[(int)chisel->x + ((int)chisel->y)*gw];
-                    if (b > 0 && !chisel->did_remove) {
-                        // We want to have the chisel end up right at the edge of the
-                        // blob itself, to make it seem like it really did knock that
-                        // entire thing out.
-                        // So, we continue at our current direction until we reach
-                        // another blob, and we backtrack one.
-
-                        while (objects[object_current].blob_data[chisel->size].blobs[(int)chisel->x + ((int)chisel->y)*gw] == b) {
-                            chisel->x += ux;
-                            chisel->y += uy;
-                            /* if (sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y)) >= len) break; */
-                        }
-
-                        chisel->x -= ux;
-                        chisel->y -= uy;
-
-                        if ((float)objects[object_current].blob_data[chisel->size].blob_pressures[b] / MAX_PRESSURE < 0.75) {
-                            object_remove_blob(object_current, b, chisel->size);
-                            SDL_WarpMouseInWindow(window, (int)(chisel->x * S), (int)(chisel->y * S));
-                        }
-
-                        chisel->did_remove = 1;
-
-                        chisel->click_cooldown = CHISEL_COOLDOWN-CHISEL_TIME-1;
-                        break;
-                    }
-
-                    chisel->x += ux;
-                    chisel->y += uy;
-                }
-                int b = objects[object_current].blob_data[chisel->size].blobs[(int)chisel->x + ((int)chisel->y)*gw];
-                if (b > 0 && !chisel->did_remove) {
-                    if ((float)objects[object_current].blob_data[chisel->size].blob_pressures[b] / MAX_PRESSURE < 0.75) {
-                        object_remove_blob(object_current, b, chisel->size);
-                    }
-                }
-
-                objects_reevaluate();
+            } else if (!chisel->did_remove && object_current != -1) {
+                chisel_goto_blob(1, ux, uy, len);
             }
+            SDL_WarpMouseInWindow(window, (int)(chisel->x * S), GUI_H + (int)(chisel->y * S));
+            mx = chisel->x;
+            my = chisel->y;
         }
         chisel->click_cooldown--;
         if (chisel->click_cooldown == 0) {
@@ -276,6 +267,91 @@ void chisel_update_texture() {
 void chisel_draw() {
     chisel_update_texture();
     SDL_RenderCopy(renderer, chisel->render_texture, NULL, NULL);
+
+    // Draw the highlights for blobs now.
+    /* for (int i = 0; i < chisel->highlight_count; i++) { */
+    /*     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 64); */
+    /*     SDL_RenderDrawPoint(renderer, chisel->highlights[i]%gw, chisel->highlights[i]/gw); */
+    /* } */
+}
+
+// if remove == 1, delete the blob
+// else, highlight it and don't change anything about the chisel's state.
+// ux, uy = unit vector for the direction of chisel.
+// px, py = initial positions.
+// Returns the blob it reaches only if remove == 0.
+int chisel_goto_blob(int remove, float ux, float uy, float len) {
+    float px = chisel->x, py = chisel->y;
+
+    while (sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y)) < len) {
+        // If we come into contact with a cell, locate its blob
+        // then remove it. We only remove one blob per chisel,
+        // so we stop our speed right here.
+
+        Uint32 b = objects[object_current].blob_data[chisel->size].blobs[(int)chisel->x + ((int)chisel->y)*gw];
+        if (b > 0 && !remove) {
+            if (grid[(int)chisel->x + ((int)chisel->y)*gw].type == 0) b = -1;
+            return b;
+        } else if (remove && b > 0 && !chisel->did_remove) {
+            // We want to have the chisel end up right at the edge of the
+            // blob itself, to make it seem like it really did knock that
+            // entire thing out.
+            // So, we continue at our current direction until we reach
+            // another blob, and we backtrack one.
+
+            while (objects[object_current].blob_data[chisel->size].blobs[(int)chisel->x + ((int)chisel->y)*gw] == b) {
+                chisel->x += ux;
+                chisel->y += uy;
+            }
+
+            chisel->x -= ux;
+            chisel->y -= uy;
+
+            if (blob_can_destroy(object_current, chisel->size, b)) {
+                object_remove_blob(object_current, b, chisel->size, 0);
+                SDL_WarpMouseInWindow(window, (int)(chisel->x * S), GUI_H + (int)(chisel->y * S));
+            }
+
+            chisel->did_remove = 1;
+
+            chisel->click_cooldown = CHISEL_COOLDOWN-CHISEL_TIME-1;
+            break;
+        }
+
+        chisel->x += ux;
+        chisel->y += uy;
+    }
+    Uint32 b = objects[object_current].blob_data[chisel->size].blobs[(int)chisel->x + ((int)chisel->y)*gw];
+    if (!remove) {
+        if (grid[(int)chisel->x + ((int)chisel->y)*gw].type == 0) b = -1;
+        return b;
+    }
+
+    // remove=1 from here on out.
+
+    // Do a last-ditch effort if a blob is around a certain radius in order for the player
+    // not to feel frustrated if it's a small blob or it's one pixel away.
+    if (CHISEL_FORGIVING_AIM && !chisel->did_remove) {
+        const float r = 2;
+        for (int y = -r; y <= r; y++) {
+            for (int x = -r; x <= r; x++) {
+                if (x*x + y*y > r*r) continue;
+                int xx = chisel->x + x;
+                int yy = chisel->y + y;
+                Uint32 blob = objects[object_current].blob_data[chisel->size].blobs[xx+yy*gw];
+                if (blob > 0) {
+                    object_remove_blob(object_current, blob, chisel->size, 0);
+                    chisel->did_remove = 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (remove && chisel->did_remove)
+        objects_reevaluate();
+
+    return -1;
 }
 
 void hammer_init() {

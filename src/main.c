@@ -19,6 +19,7 @@
 #include "level.h"
 #include "cursor.h"
 #include "gui.h"
+#include "chisel_blocker.h"
 
 int main(void) {
     SDL_Init(SDL_INIT_VIDEO);
@@ -27,8 +28,6 @@ int main(void) {
 
     font = TTF_OpenFont("../res/cour.ttf", 19);
     title_font = TTF_OpenFont("../res/cour.ttf", 45);
-    SDL_assert(font);
-    SDL_assert(title_font);
 
     srand(time(0));
 
@@ -82,15 +81,6 @@ int main(void) {
                 case SDLK_ESCAPE:
                     running = false;
                     break;
-                /* case SDLK_p: */
-                /*     for (int y = 0; y < gh; y++) { */
-                /*         for (int x = 0; x < gw; x++) { */
-                /*             printf("%03d ", objects[0].blob_data[1].blobs[x+y*gw]); */
-                /*         } */
-                /*         printf("\n"); */
-                /*     } */
-                /*     fflush(stdout); */
-                /*     break; */
                 case SDLK_SPACE:
                     paused = !paused;
                     break;
@@ -107,14 +97,21 @@ int main(void) {
                     objects_reevaluate();
                     printf("Updated!\n"); fflush(stdout);
                     break;
-                case SDLK_q:
-                    printf("Cell %d: Type: %d, Object: %d\n", mx+my*gw, grid[mx+my*gw].type, grid[mx+my*gw].object); fflush(stdout);
+                case SDLK_d:
+                    debug_mode = 1;
                     break;
+                case SDLK_q: {
+                    struct Cell *c;
+                    if (keys[SDL_SCANCODE_LSHIFT]) {
+                        c = &fg_grid[mx+my*gw];
+                    } else {
+                        c = &grid[mx+my*gw];
+                    }
+                    printf("Cell %d: Type: %d, Object: %d, Time: %d, Vx: %f, Vy: %f\n", mx+my*gw, c->type, c->object, c->time, c->vx, c->vy); fflush(stdout);
+                    break;
+                }
                 case SDLK_i:
                     grid_show_ghost = !grid_show_ghost;
-                    printf("%d\n", grid_show_ghost); fflush(stdout);
-                    break;
-                case SDLK_f:
                     break;
                 case SDLK_0:
                     current_tool = TOOL_CHISEL_SMALL;
@@ -185,17 +182,6 @@ int main(void) {
     }
 
     levels_deinit();
-    gui_deinit();
-    drill_deinit();
-    chisel_deinit(&chisel_small);
-    chisel_deinit(&chisel_medium);
-    chisel_deinit(&chisel_large);
-    hammer_deinit();
-    knife_deinit();
-    point_knife_deinit();
-    for (int i = 0; i < PLACER_COUNT; i++)
-        placer_deinit(i);
-    grabber_deinit();
     
     TTF_CloseFont(font);
     TTF_CloseFont(title_font);

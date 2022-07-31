@@ -5,6 +5,7 @@
 #include "util.h"
 #include "placer.h"
 #include "chisel.h"
+#include "chisel_blocker.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -23,13 +24,18 @@ void gui_init() {
 
     for (int i = 0; i < TOOL_COUNT; i++) {
         char name[128] = {0};
+        char filename[128] = {0};
         char path[128] = {0};
+
         get_name_from_tool(i, name);
-        get_path_from_tool(i, path);
+        get_file_from_tool(i, filename);
+
+        sprintf(path, "../res/buttons/%s", filename);
         gui.tool_buttons[i] = button_allocate(path, name, click_gui_tool_button);
         gui.tool_buttons[i]->x = cum;
         gui.tool_buttons[i]->y = 0;
         gui.tool_buttons[i]->index = i;
+        gui.tool_buttons[i]->activated = i == current_tool;
 
         cum += gui.tool_buttons[i]->w;
     }
@@ -92,6 +98,10 @@ void gui_tick() {
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_tick(gui.tool_buttons[i]);
         }
+        if (real_my >= GUI_H && gui.overlay.is_gui) {
+            gui.overlay.x = gui.overlay.y = -1;
+            gui.overlay.is_gui = 0;
+        }
     }
 
     gui.popup_y += gui.popup_y_vel;
@@ -102,10 +112,15 @@ void gui_draw() {
     {
         SDL_Texture *old = SDL_GetRenderTarget(renderer);
 
+        SDL_SetTextureBlendMode(gui_texture, SDL_BLENDMODE_BLEND);
         SDL_SetRenderTarget(renderer, gui_texture);
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
         SDL_RenderClear(renderer);
+
+        SDL_SetRenderDrawColor(renderer, 64, 64, 64, 255);
+        SDL_Rect r = { 0, 0, gw, GUI_H/S };
+        SDL_RenderFillRect(renderer, &r);
 
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_draw(gui.tool_buttons[i]);
@@ -168,7 +183,9 @@ void overlay_draw(struct Overlay *overlay) {
             color = (SDL_Color){255,255,255,255};
 
         surfaces[i] = TTF_RenderText_Solid(font, overlay->str[i], color);
+        SDL_assert(surfaces[i]);
         textures[i] = SDL_CreateTextureFromSurface(renderer, surfaces[i]);
+        SDL_assert(textures[i]);
         dsts[i] = (SDL_Rect){ S * overlay->x + margin, height + S * overlay->y + margin, surfaces[i]->w, surfaces[i]->h };
         dsts[i].y += GUI_H;
 
@@ -207,16 +224,12 @@ void overlay_get_string(int type, int amt, char *out_str) {
 struct Button *button_allocate(char *image, const char *overlay_text, void (*on_pressed)(int)) {
     struct Button *b = calloc(1, sizeof(struct Button));
     SDL_Surface *surf = IMG_Load(image);
-    printf("%s\n", image); fflush(stdout);
     b->w = surf->w;
     b->h = surf->h;
     b->texture = SDL_CreateTextureFromSurface(renderer, surf);
     SDL_FreeSurface(surf);
 
-    if (b->overlay_text) {
-        b->overlay_text = calloc(strlen(overlay_text), 1);
-        strcpy(b->overlay_text, overlay_text);
-    }
+    strcpy(b->overlay_text, overlay_text);
     b->on_pressed = on_pressed;
     return b;
 }
@@ -225,13 +238,21 @@ void button_tick(struct Button *b) {
     int gui_mx = real_mx / S;
     int gui_my = real_my / S;
 
-    if (gui_mx >= b->x && gui_mx <= b->x+b->w &&
-        gui_my >= b->y && gui_my <= b->y+b->h) {
+    if (gui_mx >= b->x && gui_mx < b->x+b->w &&
+        gui_my >= b->y && gui_my < b->y+b->h) {
+        gui.overlay = (struct Overlay){
+            (float)real_mx/S, (float)real_my/S - GUI_H/S
+        };
+        gui.overlay.is_gui = 1;
+
+        if (strlen(b->overlay_text))
+            strcpy(gui.overlay.str[0], b->overlay_text);
 
         static int p = 0;
         if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
             if (!p) {
                 b->on_pressed(b->index);
+                b->activated = 1;
                 p = 1;
             }
         } else p = 0;
@@ -239,21 +260,30 @@ void button_tick(struct Button *b) {
 }
 
 void button_draw(struct Button *b) {
+    int gui_mx = real_mx / S;
+    int gui_my = real_my / S;
+
     SDL_Rect dst = {
         b->x, b->y, b->w, b->h
     };
+    if (b->activated) {
+        SDL_SetTextureColorMod(b->texture, 200, 200, 200);
+    } else if (gui_mx >= b->x && gui_mx < b->x+b->w &&
+               gui_my >= b->y && gui_my < b->y+b->h) {
+        SDL_SetTextureColorMod(b->texture, 230, 230, 230);
+    } else {
+        SDL_SetTextureColorMod(b->texture, 255, 255, 255);
+    }
     SDL_RenderCopy(renderer, b->texture, NULL, &dst);
 }
 
 void button_deallocate(struct Button *b) {
-    if (b->overlay_text)
-        free(b->overlay_text);
     SDL_DestroyTexture(b->texture);
 }
 
 void click_gui_tool_button(int type) {
-    printf("Type %d\n", type); fflush(stdout);
     current_tool = type;
+    chisel_blocker_mode = 0;
     switch (current_tool) {
     case TOOL_CHISEL_SMALL:
         chisel = &chisel_small;
@@ -275,4 +305,9 @@ void click_gui_tool_button(int type) {
         hammer.normal_dist = hammer.dist = chisel->w+4;
         break;
     }
+
+    for (int i = 0; i < TOOL_COUNT; i++) {
+        gui.tool_buttons[i]->activated = 0;
+    }
+    gui.overlay.x = gui.overlay.y = -1;
 }

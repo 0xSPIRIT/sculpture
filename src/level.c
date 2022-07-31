@@ -15,6 +15,7 @@
 #include "grid.h"
 #include "gui.h"
 #include "util.h"
+#include "chisel_blocker.h"
 
 struct Level levels[MAX_LEVELS];
 int level_current = 0, level_count = 0;
@@ -24,7 +25,7 @@ static int level_add(const char *name, char *desired_image, char *initial_image)
     level->index = level_count-1;
     strcpy(level->name, name);
     level->popup_time_current = 0;
-    level->popup_time_max = 2;
+    level->popup_time_max = 5;
     level->state = LEVEL_STATE_INTRO;
 
     int w, h;
@@ -87,6 +88,7 @@ void level_set_current(int lvl) {
     chisel_init(&chisel_small);
     chisel_init(&chisel_medium);
     chisel_init(&chisel_large);
+    chisel_blocker_init();
     hammer_init();
     knife_init();
     point_knife_init();
@@ -100,6 +102,18 @@ void level_set_current(int lvl) {
 }
 
 void levels_deinit() {
+    chisel_deinit(&chisel_small);
+    chisel_deinit(&chisel_medium);
+    chisel_deinit(&chisel_large);
+    hammer_deinit();
+    knife_deinit();
+    point_knife_deinit();
+    gui_deinit();
+    drill_deinit();
+
+    for (int i = 0; i < PLACER_COUNT; i++)
+        placer_deinit(i);
+    grabber_deinit();
     for (int i = 0; i < level_count; i++) {
         free(levels[i].desired_grid);
         free(levels[i].initial_grid);
@@ -107,10 +121,13 @@ void levels_deinit() {
 }
 
 void level_tick() {
-    gui_tick();
+    struct Level *level = &levels[level_current];
+
+    if (level->state != LEVEL_STATE_INTRO) {
+        gui_tick();
+    }
     if (gui.popup) return;
     
-    struct Level *level = &levels[level_current];
     switch (level->state) {
     case LEVEL_STATE_INTRO:
         level->popup_time_current++;
@@ -172,6 +189,9 @@ void level_tick() {
             SDL_SetCursor(normal_cursor);
         }
     
+        chisel_blocker_tick();
+        if (chisel_blocker_mode) break;
+        
         switch (current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE:
             chisel_tick();
@@ -193,6 +213,7 @@ void level_tick() {
             grabber_tick();
             break;
         }
+
         break;
     }
 }
@@ -236,6 +257,8 @@ void level_draw() {
             grabber_draw();
             break;
         }
+
+        chisel_blocker_draw();
 
         draw_blobs();
         draw_objects();

@@ -39,7 +39,7 @@ void knife_tick() {
         SDL_ShowCursor(1);
     } else {
         if (did_lctrl) {
-            SDL_WarpMouseInWindow(window, (int)knife.x*S, (int)knife.y*S);
+            SDL_WarpMouseInWindow(window, (int)knife.x*S, GUI_H + (int)knife.y*S);
             mx = (int)knife.x;
             my = (int)knife.y;
         }

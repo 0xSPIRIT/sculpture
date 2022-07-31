@@ -27,7 +27,7 @@ void placer_init(int num) {
     placer->object_index = -1;
     placer->did_click = 0;
     placer->contains_current = 0;
-    placer->contains_type = CELL_DIRT;
+    placer->contains_type = CELL_WATER;
     placer->contains_amount = 5000;
     placer->did_take_hard = 0;
 
@@ -135,7 +135,7 @@ void placer_tick(struct Placer *placer) {
         if (!gui.popup && mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
             if (!pressed) {
                 if (cell_is_hard(placer->contains_type)) {
-                    placer->object_index = object_count;
+                    placer->object_index = object_count++;
                 }
                 pressed = 1;
             }
@@ -204,12 +204,11 @@ void placer_tick(struct Placer *placer) {
                 placer->rect.w = 0;
                 placer->rect.h = 0;
 
-                object_count++;
-                printf("Count: %d\n", object_count); fflush(stdout);
-
-                object_set_blobs(placer->object_index, 0);
-                object_set_blobs(placer->object_index, 1);
-                object_set_blobs(placer->object_index, 2);
+                if (placer->object_index != -1) {
+                    object_set_blobs(placer->object_index, 0);
+                    object_set_blobs(placer->object_index, 1);
+                    object_set_blobs(placer->object_index, 2);
+                }
             }
         }
         break;
@@ -217,11 +216,11 @@ void placer_tick(struct Placer *placer) {
     case PLACER_SUCK_MODE:;
         if (gui.popup) break;
 
-        int index = clamp_to_grid(mx, my, 1, 0, 0, 0);
-        if (index != -1 && distance((SDL_Point){mx, my}, (SDL_Point){index%gw, index/gw}) < 3) {
-            placer->x = index%gw;
-            placer->y = index/gw;
-        }
+        /* int index = clamp_to_grid(mx, my, 1, 0, 0, 0); */
+        /* if (index != -1) { */
+        /*     placer->x = index%gw; */
+        /*     placer->y = index/gw; */
+        /* } */
 
         int can_continue = 0;
         if (placer->did_take_hard) {
@@ -256,7 +255,7 @@ void placer_tick(struct Placer *placer) {
             uy = dy/len;
         }
 
-        while (distance((SDL_Point){x, y}, (SDL_Point){px, py}) < len) {
+        while (distance(x, y, px, py) < len) {
             placer->did_take_hard = 0;
 
             // Suck up in a circle.
@@ -295,7 +294,7 @@ void placer_tick(struct Placer *placer) {
     char string[256] = {0};
     overlay_get_string(placer->contains_type, placer->contains_amount, string);
     strcpy(gui.overlay.str[0], "Placer");
-    if (placer->state == PLACER_PLACE_CIRCLE_MODE) {
+    if (placer->state == PLACER_PLACE_CIRCLE_MODE || placer->state == PLACER_PLACE_RECT_MODE) {
         strcpy(gui.overlay.str[1], "Mode: [PLACE]");
     } if (placer->state == PLACER_SUCK_MODE) {
         strcpy(gui.overlay.str[1], "Mode: [TAKE]");

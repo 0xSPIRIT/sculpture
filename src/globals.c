@@ -21,4 +21,6 @@ float delta_time = 0.f;
 
 int current_tool = TOOL_GRABBER;
 
+int debug_mode;
+
 TTF_Font *font, *title_font;

@@ -45,6 +45,7 @@ extern SDL_Renderer *renderer;
 extern SDL_Texture *render_tex;
 
 extern int current_tool;
+extern int debug_mode;
 
 extern TTF_Font *font, *title_font;
 

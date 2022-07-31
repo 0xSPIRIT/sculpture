@@ -8,22 +8,28 @@
 
 #define DRAW_PRESSURE 0
 
+#define GRAV 1
+#define MAX_GRAV 8
+
 #include <SDL2/SDL.h>
 
 struct Cell {
     int type;
     int object; // Object index the cell belongs. -1 for none
     int temp; // Temporary variable for algorithms.
-    int updated;
+    int updated; // Updated for the frame yet?
     Uint8 depth;
+    int time; // Time since set.
+    float vx, vy; // Velocity
+    float vx_acc, vy_acc; // When vel < 0.5, we need to keep track of that.
 };
-extern struct Cell *grid;
+
+extern struct Cell *grid, *fg_grid;
 extern int gw, gh;
 extern int grid_show_ghost;
 
-
 struct BlobData {
-    int *blobs; // Grid with numbers corresponding to different cells
+    Uint32 *blobs; // Grid (gw, gh) with blob IDs as ints
     int *blob_pressures; // Index into this using the blob index.
     int blob_count;
 };
@@ -35,24 +41,29 @@ extern struct Object objects[MAX_OBJECTS];
 extern int object_count, object_current;
 
 extern int do_draw_blobs, do_draw_objects;
-extern int paused, step_one;
+extern int paused, step_one, frames;
 
 void grid_init(int w, int h);
 void grid_deinit(void);
 void set(int x, int y, int val, int object);
 void grid_tick(void);
+void grid_fg_tick(void);
 void grid_draw(int draw_lines);
 SDL_Color pixel_from_index(struct Cell *cells, int i);
 
-void move_by_velocity(int x, int y);
+void move_by_velocity(struct Cell *arr, int x, int y);
 
+void swap_arr(struct Cell *grid, int x1, int y1, int x2, int y2);
 void swap(int x1, int y1, int x2, int y2);
+
+int blob_can_destroy(int obj, int chisel_size, int blob);
+
 void object_tick(int obj);
 int object_does_exist(int obj);
 void object_blobs_set_pressure(int obj, int chisel_size);
 void object_set_blobs(int object_index, int chisel_size);
-void object_remove_blob(int object, int blob, int chisel_size);
-void object_darken_blob(struct Object *obj, int blob, int amt, int chisel_size);
+void object_remove_blob(int object, Uint32 blob, int chisel_size, int replace_dust);
+void object_darken_blob(struct Object *obj, Uint32 blob, int amt, int chisel_size);
 void objects_reevaluate(void);
 int object_attempt_move(int object, int dx, int dy);
 

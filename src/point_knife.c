@@ -6,6 +6,9 @@
 #include "grid.h"
 #include "globals.h"
 
+// This tool is pretty much useless now.
+// Maybe find another use for it?
+
 struct PointKnife point_knife;
 
 static int array_clamped_to_grid(int px, int py, int outside, int on_edge, int *o_arr, int *o_count);
@@ -107,6 +110,8 @@ void point_knife_draw() {
             SDL_RenderDrawPoint(renderer, index%gw, index/gw);
         }
     }
+
+    // One more thing...
 
     const SDL_Rect dst = {
         point_knife.x, point_knife.y,
