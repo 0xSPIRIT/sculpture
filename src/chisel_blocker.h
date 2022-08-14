@@ -3,15 +3,23 @@
 
 #include <SDL2/SDL.h>
 
+enum {
+    CHISEL_BLOCKER_OFF,
+    CHISEL_BLOCKER_LINE_MODE,
+    CHISEL_BLOCKER_CURVE_MODE,
+};
+
 struct Line {
     int x1, y1, x2, y2;
 };
 
 struct ChiselBlocker {
-    SDL_Point control_points[4]; // The bezier control points.
+    int state;
+    
+    SDL_Point control_points[4]; // The bezier or line control points.
     int point_count;
 
-    struct Line lines[2]; // The lines that extend at the ends.
+    struct Line lines[2]; // The lines that extend at the ends for the bezier.
     int current_point; // -1 for none
     int active; // Not to be confused with chisel_blocker_mode.
 

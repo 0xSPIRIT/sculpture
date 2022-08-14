@@ -4,6 +4,7 @@
 
 #include "globals.h"
 #include "grid.h"
+#include "util.h"
 
 // God, this tool is essentially useless.
 
@@ -32,7 +33,8 @@ void drill_tick() {
         float dy = sin(2*M_PI * ((drill.angle+180) / 360.0));
         drill.x += dx;
         drill.y += dy;
-        SDL_WarpMouseInWindow(window, (int)(drill.x * S), GUI_H + (int)(drill.y * S));
+        /* SDL_WarpMouseInWindow(window, (int)(drill.x * S), GUI_H + (int)(drill.y * S)); */
+        move_mouse_to_grid_position(drill.x, drill.y);
         mx = (int)drill.x;
         my = (int)drill.y;
     } else if (keys[SDL_SCANCODE_LCTRL]) {
@@ -42,10 +44,10 @@ void drill_tick() {
         drill.y = my;
     }
 
-    float dx = drill.x - mx;
-    float dy = drill.y - my;
-    float dist = sqrt(dx*dx + dy*dy);
-    SDL_ShowCursor(dist > 2);
+    /* float dx = drill.x - mx; */
+    /* float dy = drill.y - my; */
+    /* float dist = sqrt(dx*dx + dy*dy); */
+    /* SDL_ShowCursor(dist > 2); */
 }
 
 void drill_draw() {

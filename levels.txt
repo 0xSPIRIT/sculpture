@@ -5,34 +5,37 @@ Note: you unlock tools and recipes as you go along.
 
 Level 1 - "Alaska"
   You make a house from stone and wood, while snowing.
-Level 2 - "Conversion"
+Level 2 - "Masonry"
+  You make a little fireplace out of stone and make some patterns
+  on the stone. (Not on the desired. This teaches you not to copy)
+Level 3 - "Conversion"
   You make a glass sculpture by taking sand and converting it to
   glass using a furnace. After that you pour the glass down to make
   a glass mug / cup. Note: perhaps make something more thematically
   relevent than a mug.
-Level 3 - "Masonry"
-  You make a little fireplace out of stone and make some patterns
-  on the stone.
 Level 4 - "Remainder"
   You convert the smoke coming out from a factory into usable
   material, place it using the placer, then carve out a pattern.
+  Steam -> Water -> Ice
+  Sculpture: https://pixnio.com/free-images/2019/09/07/2019-09-07-12-08-15.jpg
 Level 5 - "Carbon Copy"
   There's a very well-made sculpture (made out of diamond) on the
-  left, and you have to use the dirt and stone to create something
-  as close to it as possible-- it would be impossible to create
-  something good, so the title is sarcastic.
+  inspiration, and you have to use the dirt and stone to create
+  something as close to it as possible-- it would be impossible to
+  create something good, so the title is sarcastic.
+  The sculpture is of a dolphin / swan / bird.
 Level 6 - "Metamorphosis"
   You start with a completed painting / scene, and you need to strip
   down its parts into something completely different- the highlight
   outline for what you need to create is comically different to
   what you're seeing.
-Level 7 - "Procedure Lullaby"
+Level 7.- "Procedure Lullaby"
   You start with a nature setting- a house (made of stone), some
-  gravel, and a pond of an unknown substance next to the house. You
-  break all these up and process them; you see a new recipe where
-  you can mix the liquid + gravel to make concrete. It pours out
-  of your placer, and fills the space given that you set up stone
-  boundaries. All that to make, albiet a perfect, concrete block.
+  gravel, and a pond of water next to the house. You break all these
+  up and process them; you see a new recipe where you can mix the
+  liquid + gravel to make concrete. It pours out of your placer, and
+  fills the space given that you set up stone boundaries. All that to
+  make, albiet a perfect, concrete block.
   Lullaby - Innocence of spending this much time to do something
             incredibly unimportant in hindsight.
 Level 8 - "Polished Turd"

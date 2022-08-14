@@ -10,7 +10,7 @@ struct PointKnife {
     int w, h;
     SDL_Texture *texture;
 
-    int face_mode;
+    bool face_mode;
 
     int *highlights;
     int highlight_count;

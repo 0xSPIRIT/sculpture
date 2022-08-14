@@ -5,6 +5,7 @@
 
 #include "globals.h"
 #include "grid.h"
+#include "util.h"
 
 struct Knife knife;
 
@@ -36,14 +37,15 @@ void knife_tick() {
     if (keys[SDL_SCANCODE_LCTRL]) {
         knife.angle = 180 + 360 * (atan2(my - knife.y, mx - knife.x)) / (2*M_PI);
         did_lctrl = 1;
-        SDL_ShowCursor(1);
+        /* SDL_ShowCursor(1); */
     } else {
         if (did_lctrl) {
-            SDL_WarpMouseInWindow(window, (int)knife.x*S, GUI_H + (int)knife.y*S);
+            /* SDL_WarpMouseInWindow(window, (int)knife.x*S, GUI_H + (int)knife.y*S); */
+            move_mouse_to_grid_position(knife.x, knife.y);
             mx = (int)knife.x;
             my = (int)knife.y;
         }
-        SDL_ShowCursor(0);
+        /* SDL_ShowCursor(0); */
 
         knife.x = mx;
         knife.y = my;
@@ -64,6 +66,7 @@ void knife_tick() {
         while (sqrt((knife.x-px)*(knife.x-px) + (knife.y-py)*(knife.y-py)) < len) {
             for (int y = knife.y-knife.h/2; y < knife.y+knife.h/2; y++) {
                 for (int x = knife.x-knife.h/2; x < knife.x+knife.h/2; x++) {
+                    if (is_in_bounds(x, y)) continue;
                     if (knife.pixels[x+y*gw] == 0xFFFFFF && grid[x+y*gw].type) {
                         grid[x+y*gw].depth = 256-64;
                     }

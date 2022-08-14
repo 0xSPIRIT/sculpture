@@ -30,7 +30,7 @@ struct Button {
     SDL_Texture *texture;
     char overlay_text[128];
     int activated;
-    void (*on_pressed)();
+    void (*on_pressed)(int);
 };
 
 extern struct GUI gui;
@@ -41,6 +41,8 @@ void gui_deinit();
 void gui_tick();
 void gui_draw();
 
+void overlay_reset(struct Overlay *overlay);
+void overlay_set_position(struct Overlay *overlay);
 void overlay_draw(struct Overlay *overlay);
 
 void overlay_get_string(int type, int amt, char *out_str);

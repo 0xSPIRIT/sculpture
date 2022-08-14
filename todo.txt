@@ -1,21 +1,19 @@
-Today
+This is what we WILL do today.
 
-x Improve particle simulation.
-    x MoveByVelocity
-    x Water
-    x Sand
-- Make the large chisel's blobs be other shape not squares.
-- Liquid versions of everything; especially when placing glass /
-  anything that was heated from a converter; it should not act as an
-  object yet.
-    - Simply make it separate object types. No need for a liquid
-      member variable.
-- Level Implementations.
+Refactor:
+x Bounds checking with grid[] access.
+x Replace ints with booleans where useful.
 
+Features / Bug Fixes:
+x Chisel FG stuff.
+x Make popup box shift if it's off the screen to the right or bottom.
+x Reformat some of the weird jumbled converter.c code.
+x Create Level Remainder
+    x Source cells for steam.
+    x Create the actual level.
+
+Later
 - Make the blobs for each different type of stone different to give
   them a different feel.
 - Better GUI for switching placers.
-- Figure out a simple way to explain all this to the player. Esp
-  overheating and placers with the converter.
 - Make face chiseling look better... somehow. Figure out a solution
-- Make chisel dust not weird and glitchy.

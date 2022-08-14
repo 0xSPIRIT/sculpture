@@ -35,6 +35,8 @@ struct Converter {
     int heat_time_current, heat_time_max;
     int cooldown_time_current, cooldown_time_max;
 
+    int spd;
+
     int contains_type;
     float contains_amount;
 };

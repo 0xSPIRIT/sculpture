@@ -26,7 +26,6 @@ void placer_init(int num) {
     placer->texture = SDL_CreateTextureFromSurface(renderer, surf);
     placer->object_index = -1;
     placer->did_click = 0;
-    placer->contains_current = 0;
     placer->contains_type = CELL_WATER;
     placer->contains_amount = 5000;
     placer->did_take_hard = 0;
@@ -70,6 +69,7 @@ void placer_tick(struct Placer *placer) {
     switch (placer->state) {
     case PLACER_PLACE_CIRCLE_MODE: {
         static int pressed = 0;
+        
         if (placer->contains_amount > 0 && !gui.popup && mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
             if (!pressed) {
                 if (cell_is_hard(placer->contains_type)) {
@@ -89,17 +89,24 @@ void placer_tick(struct Placer *placer) {
 
             int did_set_object = 1;
 
+            placer->did_set_new = 0;
+
             while ((len == 0 || sqrt((fx-px)*(fx-px) + (fy-py)*(fy-py)) < len) && placer->contains_amount > 0) {
                 int radius = placer->radius;
                 for (int y = -radius; y <= radius; y++) {
                     for (int x = -radius; x <= radius; x++) {
                         if (x*x + y*y > radius*radius) continue;
-                        if (x+fx < 0 || x+fx >= gw || y+fy < 0 || y+fy >= gh) continue;
+                        if (!is_in_boundsf(x+fx, y+fy)) continue;
                         if (placer->contains_amount <= 0) {
                             placer->contains_amount = 0;
                             goto end1;
                         }
-                        if (grid[(int)(x+fx)+(int)(fy+y)*gw].type == placer->contains_type) continue; // Don't overwrite anything.
+
+                        if (cell_is_hard(placer->contains_type) && (grid[(int)(x+fx)+(int)(fy+y)*gw].type == 0 || grid[(int)(x+fx)+(int)(fy+y)*gw].object == placer->object_index)) {
+                            placer->did_set_new = 1;
+                        }
+
+                        if (grid[(int)(x+fx)+(int)(fy+y)*gw].type) continue;
                         int object_index = placer->object_index;
                         if (!cell_is_hard(placer->contains_type)) {
                             object_index = -1;
@@ -114,11 +121,19 @@ void placer_tick(struct Placer *placer) {
                 fx += ux;
                 fy += uy;
             }
+
             placer->x = (int)fx;
             placer->y = (int)fy;
+
+            // Stop drawing / reset everything if we stopped.
+            if (!placer->did_set_new) {
+                goto mouse_released;
+            }
+
             placer->did_click = did_set_object;
         } else {
             if (placer->did_click) {
+            mouse_released:
                 if (placer->object_index != -1) {
                     object_set_blobs(placer->object_index, 0);
                     object_set_blobs(placer->object_index, 1);
@@ -161,13 +176,6 @@ void placer_tick(struct Placer *placer) {
                 if (placer_rect_w == 0) placer_rect_w = 1;
                 int h = abs(placer->contains_amount / placer_rect_w);
                 placer->rect.h = clamp(placer->rect.h, -h, h);
-
-                /* area = abs((placer->rect.w) * (placer->rect.h)); */
-
-                /* if (area < placer->contains_amount) { */
-                /*     int diff = placer->contains_amount - area; */
-                /*     placer->rect.w--; */
-                /* } */
             }
         } else {
             pressed = 0;
@@ -183,6 +191,7 @@ void placer_tick(struct Placer *placer) {
             
                 for (int y = placer->rect.y; y <= placer->rect.y+placer->rect.h; y++) {
                     for (int x = placer->rect.x; x <= placer->rect.x+placer->rect.w; x++) {
+                        if (!is_in_bounds(x, y)) continue;
                         if (placer->contains_amount <= 0) {
                             placer->contains_amount = 0;
                             goto end2;
@@ -262,13 +271,16 @@ void placer_tick(struct Placer *placer) {
             const int r = placer->radius;
             for (int dy = -r; dy <= r; dy++) {
                 for (int dx = -r; dx <= r; dx++) {
+                    if (dx*dx + dy*dy > r*r)  continue;
+
                     int xx = x+dx;
                     int yy = y+dy;
-                    if (dx*dx + dy*dy > r*r) continue;
-                    if (xx < 0 || yy < 0 || xx >= gw || yy >= gh) continue;
+                    if (!is_in_bounds(xx, yy)) continue;
+
                     int type = grid[xx+yy*gw].type;
                     if (type == 0) continue;
-                    if (cell_is_hard(grid[xx+yy*gw].type)) {
+
+                    if (cell_is_hard(type)) {
                         placer->did_take_hard = 1;
                     }
                     if (placer->contains_type == type || placer->contains_type == 0 || placer->contains_amount == 0) {

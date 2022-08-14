@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <unistd.h>
 
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
@@ -25,15 +26,15 @@ int main(void) {
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
-
+    
     font = TTF_OpenFont("../res/cour.ttf", 19);
     title_font = TTF_OpenFont("../res/cour.ttf", 45);
-
+    
     srand(time(0));
-
+    
     normal_cursor = SDL_GetCursor();
     grabber_cursor = init_system_cursor();
-
+    
     window = SDL_CreateWindow("Alaska",
                               SDL_WINDOWPOS_UNDEFINED,
                               SDL_WINDOWPOS_UNDEFINED,
@@ -41,14 +42,15 @@ int main(void) {
                               window_height,
                               0);
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
-
     render_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, window_width/S, window_height/S);
-    
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
+    
     levels_setup();
-
+    
     bool running = true;
+    
+    level_draw();
+
     while (running) {
         SDL_Event event;
         int prev_tool = current_tool;
@@ -76,6 +78,8 @@ int main(void) {
                     }
                 }
             }
+            
+            int selected_tool = 0;
             if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
                 case SDLK_ESCAPE:
@@ -95,7 +99,6 @@ int main(void) {
                     break;
                 case SDLK_u:
                     objects_reevaluate();
-                    printf("Updated!\n"); fflush(stdout);
                     break;
                 case SDLK_d:
                     debug_mode = 1;
@@ -107,47 +110,57 @@ int main(void) {
                     } else {
                         c = &grid[mx+my*gw];
                     }
-                    printf("Cell %d: Type: %d, Object: %d, Time: %d, Vx: %f, Vy: %f\n", mx+my*gw, c->type, c->object, c->time, c->vx, c->vy); fflush(stdout);
+                    char name[256] = {0};
+                    get_name_from_type(c->type, name);
+                    printf("Cell %d, %d: Type: %s, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f\n", mx, my, name, c->rand, c->object, c->time, c->vx, c->vy); fflush(stdout);
                     break;
                 }
                 case SDLK_i:
                     grid_show_ghost = !grid_show_ghost;
                     break;
-                case SDLK_0:
+                case SDLK_1:
                     current_tool = TOOL_CHISEL_SMALL;
                     chisel = &chisel_small;
                     for (int i = 0; i < object_count; i++)
                         object_set_blobs(i, 0);
-                    hammer.normal_dist = hammer.dist = chisel->w+4;
+                    hammer.normal_dist = hammer.dist = chisel->w+2;
+                    selected_tool = 1;
                     break;
-                case SDLK_1:
+                case SDLK_2:
                     current_tool = TOOL_CHISEL_MEDIUM;
                     chisel = &chisel_medium;
                     for (int i = 0; i < object_count; i++)
                         object_set_blobs(i, 1);
                     hammer.normal_dist = hammer.dist = chisel->w+4;
+                    selected_tool = 1;
                     break;
-                case SDLK_2:
+                case SDLK_3:
                     current_tool = TOOL_CHISEL_LARGE;
                     chisel = &chisel_large;
                     for (int i = 0; i < object_count; i++)
                         object_set_blobs(i, 2);
                     hammer.normal_dist = hammer.dist = chisel->w+4;
-                    break;
-                case SDLK_3:
-                    current_tool = TOOL_KNIFE;
+                    selected_tool = 1;
                     break;
                 case SDLK_4:
-                    current_tool = TOOL_POINT_KNIFE;
+                    current_tool = TOOL_KNIFE;
+                    selected_tool = 1;
                     break;
                 case SDLK_5:
-                    current_tool = TOOL_DRILL;
+                    current_tool = TOOL_POINT_KNIFE;
+                    selected_tool = 1;
                     break;
                 case SDLK_6:
-                    current_tool = TOOL_PLACER;
+                    current_tool = TOOL_DRILL;
+                    selected_tool = 1;
                     break;
                 case SDLK_7:
+                    current_tool = TOOL_PLACER;
+                    selected_tool = 1;
+                    break;
+                case SDLK_8:
                     current_tool = TOOL_GRABBER;
+                    selected_tool = 1;
                     break;
                 case SDLK_F1:
                     current_placer = 0;
@@ -160,8 +173,12 @@ int main(void) {
                     break;
                 }
             }
+            if (selected_tool) {
+                gui.tool_buttons[current_tool]->on_pressed(gui.tool_buttons[current_tool]->index);
+                gui.tool_buttons[current_tool]->activated = 1;
+            }
         }
-
+        
         if (prev_tool != current_tool) {
             gui.overlay.x = gui.overlay.y = -1;
         }
@@ -171,24 +188,24 @@ int main(void) {
         
         mouse = (Uint32) SDL_GetMouseState(&real_mx, &real_my);
         keys = (Uint8*) SDL_GetKeyboardState(NULL);
-
+        
         mx = real_mx/S;
         my = real_my/S;
-
+        
         my -= GUI_H/S;
-
+        
         level_tick();
         level_draw();
     }
-
+    
     levels_deinit();
     
     TTF_CloseFont(font);
     TTF_CloseFont(title_font);
-
+    
     grid_deinit();
     SDL_DestroyTexture(render_tex);
-
+    
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();

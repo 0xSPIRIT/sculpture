@@ -21,7 +21,7 @@ void point_knife_init() {
     point_knife.w = surf->w;
     point_knife.h = surf->h;
     point_knife.texture = SDL_CreateTextureFromSurface(renderer, surf);
-    point_knife.face_mode = 0;
+    point_knife.face_mode = false;
     point_knife.highlights = calloc(gw*gh, sizeof(int));
 
     point_knife.highlight_count = 0;
@@ -35,7 +35,7 @@ void point_knife_deinit() {
 }
 
 void point_knife_tick() {
-    int index = clamp_to_grid(mx, my, !point_knife.face_mode, 1, 1, 1);
+    int index = clamp_to_grid(mx, my, !point_knife.face_mode, true, true, true);
     
     float px = point_knife.x;
     float py = point_knife.y;
@@ -47,13 +47,13 @@ void point_knife_tick() {
         point_knife.highlight_count = array_clamped_to_grid(mx, my, !point_knife.face_mode, 1, point_knife.highlights, &point_knife.highlight_count);
     }
 
-    float dx = point_knife.x - mx;
-    float dy = point_knife.y - my;
-    float dist = sqrt(dx*dx + dy*dy);
-    SDL_ShowCursor(dist > 2);
+    /* float dx = point_knife.x - mx; */
+    /* float dy = point_knife.y - my; */
+    /* float dist = sqrt(dx*dx + dy*dy); */
+    /* SDL_ShowCursor(dist > 2); */
 
     static int pressed_f = 0;
-    if (keys[SDL_SCANCODE_F]) {
+    if (keys[SDL_SCANCODE_S]) {
         if (!pressed_f) {
             point_knife.face_mode = !point_knife.face_mode;
             pressed_f = 1;
@@ -129,7 +129,7 @@ static int array_clamped_to_grid(int px, int py, int outside, int on_edge, int *
 
     int x = 0;
     while (x < 17) {
-        int i = clamp_to_grid(px, py, outside, on_edge, 0, 1);
+        int i = clamp_to_grid(px, py, outside, on_edge, false, true);
         if (i == -1) break;
         if (get_neighbour_count(i%gw, i/gw, 2) <= 21) { /* Must be identical to the statement above */
             array[count++] = i;

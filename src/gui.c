@@ -40,7 +40,7 @@ void gui_init() {
         cum += gui.tool_buttons[i]->w;
     }
 
-    gui_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gw, GUI_H/S);
+    gui_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gw*S, GUI_H);
 
     converter_init();
 }
@@ -75,7 +75,7 @@ void gui_tick() {
     if (gui.popup) {
         if (SDL_GetCursor() != grabber_cursor) {
             SDL_SetCursor(grabber_cursor);
-            SDL_ShowCursor(1);
+            /* SDL_ShowCursor(1); */
         }
 
         if (gui.popup_y > gh-gui.popup_h) {
@@ -156,6 +156,15 @@ static void overlay_draw_box(struct Overlay *overlay, int w, int h) {
     SDL_RenderDrawRect(renderer, &r);
 }
 
+void overlay_reset(struct Overlay *overlay) {
+    memset(overlay, 0, sizeof(struct Overlay));
+}
+
+void overlay_set_position(struct Overlay *overlay) {
+    overlay->x = (float)real_mx/S;
+    overlay->y = (float)real_my/S - GUI_H/S;
+}
+
 // This happens outside of the pixel-art texture, so we must
 // multiply all values by scale.
 void overlay_draw(struct Overlay *overlay) {
@@ -194,7 +203,21 @@ void overlay_draw(struct Overlay *overlay) {
         if (surfaces[i]->w > highest_w) highest_w = surfaces[i]->w;
     }
 
+    bool clamped = false;
+
+    // Clamp the overlays if it goes outside the window.
+    if (overlay->x*S + highest_w >= S*gw) {
+        overlay->x -= highest_w/S;
+        for (int i = 0; i < count; i++)
+            dsts[i].x -= highest_w;
+        clamped = true;
+    }
+
     overlay_draw_box(overlay, highest_w + margin*2, height + margin*2);
+
+    if (clamped) {
+        overlay->x += highest_w;
+    }
 
     for (int i = 0; i < count; i++) {
         SDL_RenderCopy(renderer, textures[i], NULL, &dsts[i]);
@@ -235,8 +258,8 @@ struct Button *button_allocate(char *image, const char *overlay_text, void (*on_
 }
 
 void button_tick(struct Button *b) {
-    int gui_mx = real_mx / S;
-    int gui_my = real_my / S;
+    int gui_mx = real_mx;// / S;
+    int gui_my = real_my;// / S;
 
     if (gui_mx >= b->x && gui_mx < b->x+b->w &&
         gui_my >= b->y && gui_my < b->y+b->h) {
@@ -260,8 +283,8 @@ void button_tick(struct Button *b) {
 }
 
 void button_draw(struct Button *b) {
-    int gui_mx = real_mx / S;
-    int gui_my = real_my / S;
+    int gui_mx = real_mx;// / S;
+    int gui_my = real_my;// / S;
 
     SDL_Rect dst = {
         b->x, b->y, b->w, b->h
@@ -289,7 +312,7 @@ void click_gui_tool_button(int type) {
         chisel = &chisel_small;
         for (int i = 0; i < object_count; i++)
             object_set_blobs(i, 0);
-        hammer.normal_dist = hammer.dist = chisel->w+4;
+        hammer.normal_dist = hammer.dist = chisel->w+2;
         break;
     case TOOL_CHISEL_MEDIUM:
         chisel = &chisel_medium;

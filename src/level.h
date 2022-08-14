@@ -21,6 +21,7 @@ struct Level {
 
 extern struct Level levels[MAX_LEVELS];
 extern int level_current, level_count;
+extern int new_level;
 
 void levels_setup();
 void level_set_current(int lvl);

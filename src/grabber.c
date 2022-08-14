@@ -26,6 +26,8 @@ void grabber_tick() {
     grabber.x = mx;
     grabber.y = my;
 
+    SDL_assert(is_in_bounds(grabber.x, grabber.y));
+
     if (grabber.object_holding != -1) {
         int dx = (int)grabber.x-px;
         int dy = (int)grabber.y-py;
@@ -37,7 +39,7 @@ void grabber_tick() {
 
         /* int i = 0; */
         /* while (sqrt(vx*vx + vy*vy) < len) { */
-            object_attempt_move(grabber.object_holding, dx, dy);
+        object_attempt_move(grabber.object_holding, dx, dy);
         /*     vx += ux; */
         /*     vy += uy; */
         /* } */

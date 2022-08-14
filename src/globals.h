@@ -39,6 +39,12 @@ enum {
     CELL_MAX
 };
 
+enum {
+    STATE_SOLID,
+    STATE_LIQUID,
+    STATE_GAS
+};
+
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 

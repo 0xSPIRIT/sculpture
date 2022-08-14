@@ -4,12 +4,15 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+void move_mouse_to_grid_position(float x, float y);
 void get_name_from_type(int type, char *out);
 void get_name_from_tool(int type, char *out);
 void get_file_from_tool(int type, char *out);
 SDL_Color get_pixel(SDL_Surface *surf, int x, int y);
+Uint32 get_pixel_int(SDL_Surface *surf, int x, int y);
 void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel);
 int my_rand(int seed);
+float my_rand_float(int seed);
 int min(int a, int b);
 int max(int a, int b);
 float lerp(float a, float b, float t);

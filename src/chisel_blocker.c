@@ -10,6 +10,8 @@ struct ChiselBlocker chisel_blocker;
 int chisel_blocker_mode = 0;
 
 void chisel_blocker_init() {
+    chisel_blocker.state = CHISEL_BLOCKER_OFF;
+
     chisel_blocker.control_points[0] = (SDL_Point){gw/4, gh/2};
     chisel_blocker.control_points[1] = (SDL_Point){gw/2, gh/2};
     chisel_blocker.control_points[2] = (SDL_Point){3*gw/4, gh/2};
@@ -42,7 +44,7 @@ static void flood_fill(Uint32 *pixels, int x, int y, Uint32 value) {
 
 void chisel_blocker_tick() {
     static int b_pressed = 0;
-    if (current_tool >= TOOL_CHISEL_SMALL && current_tool <= TOOL_CHISEL_MEDIUM && keys[SDL_SCANCODE_C]) {
+    if (chisel_blocker.state != CHISEL_BLOCKER_OFF && current_tool == TOOL_CHISEL_MEDIUM && keys[SDL_SCANCODE_C]) {
         if (!b_pressed) {
             chisel_blocker_mode = !chisel_blocker_mode;
             b_pressed = 1;
@@ -51,10 +53,25 @@ void chisel_blocker_tick() {
         b_pressed = 0;
     }
 
-    if (!chisel_blocker_mode) return;
+    if (current_tool == TOOL_CHISEL_MEDIUM) {
+        static int pressed = 0;
+        if (keys[SDL_SCANCODE_L]) {
+            if (!pressed) {
+                chisel_blocker.state++;
+                if (chisel_blocker.state > CHISEL_BLOCKER_CURVE_MODE)
+                    chisel_blocker.state = CHISEL_BLOCKER_OFF;
+                pressed = 1;
+            }
+        } else {
+            pressed = 0;
+        }
+    }
 
-    SDL_ShowCursor(1);
-    SDL_SetCursor(grabber_cursor);
+    if (!chisel_blocker_mode || chisel_blocker.state == CHISEL_BLOCKER_OFF) return;
+
+    /* SDL_ShowCursor(1); */
+    if (SDL_GetCursor() != grabber_cursor)
+        SDL_SetCursor(grabber_cursor);
 
     static int rpressed = 0;
     if (mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
@@ -186,8 +203,12 @@ static SDL_FPoint bezier_tangent(float t, SDL_Point a, SDL_Point b, SDL_Point c,
 }
 
 void chisel_blocker_draw() {
-    if (!(current_tool >= TOOL_CHISEL_SMALL && current_tool <= TOOL_CHISEL_MEDIUM))
+    if (current_tool != TOOL_CHISEL_MEDIUM)
         return;
+
+    if (chisel_blocker.state == CHISEL_BLOCKER_OFF)
+        return;
+
     if (chisel_blocker_mode) {
         SDL_SetRenderDrawColor(renderer, 64, 64, 64, 64);
         SDL_RenderFillRect(renderer, NULL);
@@ -201,67 +222,101 @@ void chisel_blocker_draw() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
     SDL_RenderClear(renderer);
 
-    float x, y;
-    float px, py;
-
-    // Bezier calculation.
-    const float step = 0.001;
-    for (float t = 0.0; t < 1.0; t += step) {
-        float m1x = lerp(chisel_blocker.control_points[0].x, chisel_blocker.control_points[1].x, t);
-        float m1y = lerp(chisel_blocker.control_points[0].y, chisel_blocker.control_points[1].y, t);
-
-        float m2x = lerp(chisel_blocker.control_points[1].x, chisel_blocker.control_points[2].x, t);
-        float m2y = lerp(chisel_blocker.control_points[1].y, chisel_blocker.control_points[2].y, t);
-
-        float m3x = lerp(chisel_blocker.control_points[2].x, chisel_blocker.control_points[3].x, t);
-        float m3y = lerp(chisel_blocker.control_points[2].y, chisel_blocker.control_points[3].y, t);
-
-        float pax = lerp(m1x, m2x, t);
-        float pay = lerp(m1y, m2y, t);
-        float pbx = lerp(m2x, m3x, t);
-        float pby = lerp(m2y, m3y, t);
-
-        if (t != 0.0) {
-            px = x;
-            py = y;
-        }
-        x = lerp(pax, pbx, t);
-        y = lerp(pay, pby, t);
-
-        if (t == 0.0) {
-            px = x;
-            py = y;
-        }
-
-        if ((int)x == (int)px && (int)y == (int)py) continue;
-
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        /* SDL_RenderDrawPoint(renderer, (int)x, (int)y); */
-        SDL_RenderDrawLine(renderer, (int)px, (int)py, (int)x, (int)y);
-    }
-
-    SDL_Point p0 = chisel_blocker.control_points[0];
-    SDL_Point p1 = chisel_blocker.control_points[1];
-    if (!(p0.x == p1.x && p0.y == p1.y)) {
-        {
-            SDL_FPoint start = bezier_tangent(0, chisel_blocker.control_points[0], chisel_blocker.control_points[1], chisel_blocker.control_points[2], chisel_blocker.control_points[3]);
+    switch (chisel_blocker.state) {
+    case CHISEL_BLOCKER_LINE_MODE: {
+        for (int i = 0; i < 4-1; i++) {
+            struct Line line = {
+                chisel_blocker.control_points[i].x,
+                chisel_blocker.control_points[i].y,
+                chisel_blocker.control_points[i+1].x,
+                chisel_blocker.control_points[i+1].y
+            };
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            SDL_Point point = chisel_blocker.control_points[0];
-            chisel_blocker.lines[0] = (struct Line){ point.x - start.x, point.y - start.y, point.x - gw*start.x, point.y - gw*start.y };
-        }
-    
-        {
-            SDL_FPoint end = bezier_tangent(1, chisel_blocker.control_points[0], chisel_blocker.control_points[1], chisel_blocker.control_points[2], chisel_blocker.control_points[3]);
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-            SDL_Point point = chisel_blocker.control_points[3];
-            chisel_blocker.lines[1] = (struct Line){ point.x, point.y, point.x + gw*end.x, point.y + gw*end.y };
+            SDL_RenderDrawLine(renderer, line.x1, line.y1, line.x2, line.y2);
         }
         
         for (int i = 0; i < 2; i++) {
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            struct Line l = chisel_blocker.lines[i];
-            SDL_RenderDrawLine(renderer, l.x1, l.y1, l.x2, l.y2);
+            struct Line a = (struct Line){
+                chisel_blocker.control_points[i == 0 ? 0 : 3].x,
+                chisel_blocker.control_points[i == 0 ? 0 : 3].y,
+                chisel_blocker.control_points[i == 0 ? 1 : 2].x,
+                chisel_blocker.control_points[i == 0 ? 1 : 2].y,
+            };
+            float dx = a.x1 - a.x2;
+            float dy = a.y1 - a.y2;
+            float len = sqrt(dx*dx + dy*dy);
+            float ux = dx/len;
+            float uy = dy/len;
+            chisel_blocker.lines[i] = (struct Line){a.x1, a.y1, a.x1+ux*gw, a.y1+uy*gw};
         }
+
+        break;
+    }
+    case CHISEL_BLOCKER_CURVE_MODE: {
+        float x, y;
+        float px, py;
+
+        // Bezier calculation.
+        const float step = 0.02;
+        for (float t = 0.0; t < 1.0; t += step) {
+            float m1x = lerp(chisel_blocker.control_points[0].x, chisel_blocker.control_points[1].x, t);
+            float m1y = lerp(chisel_blocker.control_points[0].y, chisel_blocker.control_points[1].y, t);
+
+            float m2x = lerp(chisel_blocker.control_points[1].x, chisel_blocker.control_points[2].x, t);
+            float m2y = lerp(chisel_blocker.control_points[1].y, chisel_blocker.control_points[2].y, t);
+
+            float m3x = lerp(chisel_blocker.control_points[2].x, chisel_blocker.control_points[3].x, t);
+            float m3y = lerp(chisel_blocker.control_points[2].y, chisel_blocker.control_points[3].y, t);
+
+            float pax = lerp(m1x, m2x, t);
+            float pay = lerp(m1y, m2y, t);
+            float pbx = lerp(m2x, m3x, t);
+            float pby = lerp(m2y, m3y, t);
+
+            if (t != 0.0) {
+                px = x;
+                py = y;
+            }
+            x = lerp(pax, pbx, t);
+            y = lerp(pay, pby, t);
+
+            if (t == 0.0) {
+                px = x;
+                py = y;
+            }
+
+            if ((int)x == (int)px && (int)y == (int)py) continue;
+
+            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+            SDL_RenderDrawLine(renderer, (int)px, (int)py, (int)x, (int)y);
+
+            SDL_Point p0 = chisel_blocker.control_points[0];
+            SDL_Point p1 = chisel_blocker.control_points[1];
+            if (!(p0.x == p1.x && p0.y == p1.y)) {
+                {
+                    SDL_FPoint start = bezier_tangent(0, chisel_blocker.control_points[0], chisel_blocker.control_points[1], chisel_blocker.control_points[2], chisel_blocker.control_points[3]);
+                    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                    SDL_Point point = chisel_blocker.control_points[0];
+                    chisel_blocker.lines[0] = (struct Line){ point.x - start.x, point.y - start.y, point.x - gw*start.x, point.y - gw*start.y };
+                }
+    
+                {
+                    SDL_FPoint end = bezier_tangent(1, chisel_blocker.control_points[0], chisel_blocker.control_points[1], chisel_blocker.control_points[2], chisel_blocker.control_points[3]);
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                    SDL_Point point = chisel_blocker.control_points[3];
+                    chisel_blocker.lines[1] = (struct Line){ point.x, point.y, point.x + gw*end.x, point.y + gw*end.y };
+                }
+        
+            }
+        }
+        break;
+    }
+    }
+
+    for (int i = 0; i < 2; i++) {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        struct Line l = chisel_blocker.lines[i];
+        SDL_RenderDrawLine(renderer, l.x1, l.y1, l.x2, l.y2);
     }
 
     SDL_RenderReadPixels(renderer, NULL, 0, chisel_blocker.pixels, 4*gw);
@@ -291,8 +346,6 @@ void chisel_blocker_draw() {
             SDL_RenderDrawPoint(renderer, i%gw, i/gw);
         }
     }
-
-    if (!chisel_blocker_mode) return;
 
     for (int i = 0; i < chisel_blocker.point_count; i++) {
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);

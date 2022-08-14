@@ -1,0 +1,14 @@
+- Have some kind of recipe map showing converter_convert()?
+- Reduce wasted space in popup- only furnace needed.
+- Put toolbar on left instead of top? Leave space for metadata?
+
+For Level 2 (Conversion), we still need to get a shape.
+   Possibilities:
+     - Gravestone (too complex for level 2?)
+
+I think chiseling shapes is sort of too complex, but we'll need
+playtesting to make sure that is the case. If it is too complex, then
+we can change the chisel blocker to have more nodes, or have a line
+mode where it's a bunch of points you can move around with only
+straight lines. You can then switch between this mode (default) and
+the smooth mode (we'll do a pixelizer pass on this like Aseprite).

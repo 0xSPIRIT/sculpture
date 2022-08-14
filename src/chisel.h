@@ -1,12 +1,13 @@
 #ifndef CHISEL_H_
 #define CHISEL_H_
 
+#include <stdbool.h>
 #include <SDL2/SDL.h>
 #include "grid.h"
 
-#define CHISEL_TIME 0           /* The amount of frames the chisel moves. 0 = instant */
+#define CHISEL_TIME 0 /* The amount of frames the chisel moves. 0 = instant */
 #define CHISEL_COOLDOWN 3
-#define CHISEL_FORGIVING_AIM 0
+#define CHISEL_FORGIVING_AIM false // Do we check for surrounding cells?
 
 enum {
 	HAMMER_STATE_IDLE,
@@ -29,8 +30,8 @@ struct Chisel {
     float x, y;
     int changing_angle;
     int click_cooldown;
-	int did_remove;
-    int face_mode;
+	bool did_remove;
+    bool face_mode;
     struct Line *line;
     float spd;
     float angle;
@@ -56,8 +57,8 @@ void chisel_init(struct Chisel *type);
 void chisel_deinit();
 void chisel_tick();
 void chisel_draw();
-int chisel_goto_blob(int remove, float ux, float uy, float len);
+int chisel_goto_blob(bool remove, float ux, float uy, float len);
 
 void chisel_update_texture();
 
-#endif
+#endif /* CHISEL_H_ */

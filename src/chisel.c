@@ -52,7 +52,7 @@ void chisel_init(struct Chisel *type) {
 
     chisel->click_cooldown = 0;
     chisel->line = NULL;
-    chisel->face_mode = 0;
+    chisel->face_mode = false;
 
     chisel->render_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gw, gh);
     chisel->pixels = calloc(gw*gh, sizeof(Uint32));
@@ -75,46 +75,63 @@ void chisel_deinit(struct Chisel *type) {
     SDL_DestroyTexture(type->render_texture);
 }
 
+static void chisel_set_depth() {
+    switch (chisel->size) {
+    case 0:
+        grid[(int)chisel->x + ((int)chisel->y)*gw].depth = 128;
+        break;
+    case 1:
+        for (int y = 0; y < gh; y++) {
+            for (int x = 0; x < gw; x++) {
+                if (chisel->pixels[x+y*gw] == 0x9B9B9B) {
+                    grid[x+y*gw].depth = 128;
+                }
+            }
+        }
+        break;
+    }
+}
+
 void chisel_tick() {
     int p = chisel->changing_angle;
     chisel->changing_angle = keys[SDL_SCANCODE_LCTRL];
     if (p && !chisel->changing_angle) {
-        SDL_WarpMouseInWindow(window, (int)chisel->x*S, GUI_H + (int)chisel->y*S);
+        /* SDL_WarpMouseInWindow(window, (int)chisel->x*S, GUI_H + (int)chisel->y*S); */
+        move_mouse_to_grid_position(chisel->x, chisel->y);
         mx = (int)chisel->x;
         my = (int)chisel->y;
     }
 
     if (hammer.state == HAMMER_STATE_IDLE && !chisel->changing_angle && !chisel->click_cooldown) {
-        int index = clamp_to_grid(mx, my, !chisel->face_mode, 0, 1, 1);
+        int index = clamp_to_grid(mx, my, !chisel->face_mode, false, true, true);
         if (index != -1) {
             chisel->x = index%gw;
             chisel->y = index/gw;
 
             // Highlight the current blob.
-            { // This is a fake chiseling- we're resetting position afterwards.
-                float chisel_dx = cos(2*M_PI * ((chisel->angle+180) / 360.0));
-                float chisel_dy = sin(2*M_PI * ((chisel->angle+180) / 360.0));
-                float dx = chisel->spd * chisel_dx;
-                float dy = chisel->spd * chisel_dy;
-                float len = sqrt(dx*dx + dy*dy);
-                float ux = dx/len;
-                float uy = dy/len;
+            // This is a fake chiseling- we're resetting position afterwards.
+            float chisel_dx = cos(2*M_PI * ((chisel->angle+180) / 360.0));
+            float chisel_dy = sin(2*M_PI * ((chisel->angle+180) / 360.0));
+            float dx = chisel->spd * chisel_dx;
+            float dy = chisel->spd * chisel_dy;
+            float len = sqrt(dx*dx + dy*dy);
+            float ux = dx/len;
+            float uy = dy/len;
 
-                struct Chisel copy = *chisel;
+            struct Chisel copy = *chisel;
 
-                int blob_highlight = chisel_goto_blob(0, ux, uy, len);
+            int blob_highlight = chisel_goto_blob(false, ux, uy, len);
 
-                *chisel = copy;
+            *chisel = copy;
 
-                if (blob_highlight != -1) {
-                    memset(chisel->highlights, 0, chisel->highlight_count);
-                    chisel->highlight_count = 0;
+            if (blob_highlight != -1) {
+                memset(chisel->highlights, 0, chisel->highlight_count);
+                chisel->highlight_count = 0;
 
-                    for (int i = 0; i < gw*gh; i++) {
-                        Uint32 b = objects[object_current].blob_data[chisel->size].blobs[i];
-                        if (b == blob_highlight) {
-                            chisel->highlights[chisel->highlight_count++] = i;
-                        }
+                for (int i = 0; i < gw*gh; i++) {
+                    Uint32 b = objects[object_current].blob_data[chisel->size].blobs[i];
+                    if (b == blob_highlight) {
+                        chisel->highlights[chisel->highlight_count++] = i;
                     }
                 }
             }
@@ -122,18 +139,23 @@ void chisel_tick() {
     }
 
     if (chisel->changing_angle) {
-        chisel->angle = 180 + 360 * (atan2(my - chisel->y, mx - chisel->x)) / (2*M_PI);
-        /* if (!chisel->face_mode) { */
-            chisel->angle /= 45;
-            chisel->angle = ((int)chisel->angle) * 45;
-        /* } */
-        SDL_ShowCursor(1);
-    } else {
-        float dx = chisel->x - mx;
-        float dy = chisel->y - my;
-        float dist = sqrt(dx*dx + dy*dy);
-        SDL_ShowCursor(dist > 1);
-    }
+        float rmx = (float)real_mx / (float)S;
+        float rmy = (float)(real_my-GUI_H) / (float)S;
+        chisel->angle = 180 + 360 * (atan2(rmy - chisel->y, rmx - chisel->x)) / (2*M_PI);
+
+        float step = 45.0;
+        if (chisel->face_mode) {
+            step = 22.5;
+        }
+        chisel->angle /= step;
+        chisel->angle = ((int)chisel->angle) * step;
+        /* SDL_ShowCursor(1); */
+    }/*  else { */
+    /*     float dx = chisel->x - mx; */
+    /*     float dy = chisel->y - my; */
+    /*     float dist = sqrt(dx*dx + dy*dy); */
+    /*     SDL_ShowCursor(dist > 1); */
+    /* } */
 
     static int pressed_f = 0;
     if (keys[SDL_SCANCODE_S]) {
@@ -157,38 +179,48 @@ void chisel_tick() {
             // Cut out the stone.
             float px = chisel->x;
             float py = chisel->y;
-            float chisel_dx = cos(2*M_PI * ((chisel->angle+180) / 360.0));
-            float chisel_dy = sin(2*M_PI * ((chisel->angle+180) / 360.0));
-            float dx = chisel->spd * chisel_dx;
-            float dy = chisel->spd * chisel_dy;
-            float len = sqrt(dx*dx + dy*dy);
-            float ux = dx/len;
-            float uy = dy/len;
+            float ux = cos(2*M_PI * ((chisel->angle+180) / 360.0));
+            float uy = sin(2*M_PI * ((chisel->angle+180) / 360.0));
+            float len = chisel->spd;
+
+            switch ((int)chisel->angle) {
+            case 135:
+                ux = 1;
+                uy = -1;
+                break;
+            case 225:
+                ux = 1;
+                uy = 1;
+                break;
+            case 270:
+                ux = 0;
+                uy = 1;
+                break;
+            case 315:
+                ux = -1;
+                uy = 1;
+                break;
+            }
             
             if (chisel->face_mode) {
                 while (sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y)) < len) {
-                    for (int y = 0; y < gh; y++) {
-                        for (int x = 0; x < gw; x++) {
-                            if (chisel->pixels[x+y*gw] == 0x9B9B9B) {
-                                if (grid[x+y*gw].object != -1) grid[x+y*gw].depth = 128;
-                            }
-                        }
-                    }
                     chisel->x += ux;
                     chisel->y += uy;
+                    chisel_set_depth(chisel);
                     chisel_update_texture();
                 }
             } else if (!chisel->did_remove && object_current != -1) {
-                chisel_goto_blob(1, ux, uy, len);
+                chisel_goto_blob(true, ux, uy, len);
             }
-            SDL_WarpMouseInWindow(window, (int)(chisel->x * S), GUI_H + (int)(chisel->y * S));
+            /* SDL_WarpMouseInWindow(window, (int)(chisel->x * S), GUI_H + (int)(chisel->y * S)); */
+            move_mouse_to_grid_position(chisel->x, chisel->y);
             mx = chisel->x;
             my = chisel->y;
         }
         chisel->click_cooldown--;
         if (chisel->click_cooldown == 0) {
             chisel->line = NULL;
-            int index = clamp_to_grid(mx, my, !chisel->face_mode, 0, 1, 1);
+            int index = clamp_to_grid(mx, my, !chisel->face_mode, false, true, true);
             chisel->x = index%gw;
             chisel->y = index/gw;
         }
@@ -209,38 +241,40 @@ void chisel_update_texture() {
     int y = chisel->y;
 
     // Disgusting hardcoding to adjust the weird rotation SDL does.
-    if (chisel->size == 0 || chisel->size == 1) {
-        if (chisel->angle == 225) {
-            x += 1;
-            y += 2;
-        } else if (chisel->angle == 180) {
-            x++;
-            y++;
-        } else if (chisel->angle == 90 || chisel->angle == 45) {
-            x++;
-        } else if (chisel->angle == 135) {
-            x += 2;
-        }
-    } else {
-        if (chisel->angle == 0) {
-            y--;
-        } else if (chisel->angle == 270) {
-            y++;
-            x--;
-        } else if (chisel->angle == 225) {
-            y += 2;
-        } else if (chisel->angle == 180) {
-            x++;
-            y += 2;
-        } else if (chisel->angle == 90) {
-            x += 2;
-        } else if (chisel->angle == 45) {
-            y -= 2;
-        } else if (chisel->angle == 135) {
-            x += 2;
-            y++;
-        } else if (chisel->angle == 315) {
-            x--;
+    if (!chisel->face_mode) {
+        if (chisel->size == 0 || chisel->size == 1) {
+            if (chisel->angle == 225) {
+                x += 1;
+                y += 2;
+            } else if (chisel->angle == 180) {
+                x++;
+                y++;
+            } else if (chisel->angle == 90 || chisel->angle == 45) {
+                x++;
+            } else if (chisel->angle == 135) {
+                x += 2;
+            }
+        } else {
+            if (chisel->angle == 0) {
+                y--;
+            } else if (chisel->angle == 270) {
+                y++;
+                x--;
+            } else if (chisel->angle == 225) {
+                y += 2;
+            } else if (chisel->angle == 180) {
+                x++;
+                y += 2;
+            } else if (chisel->angle == 90) {
+                x += 2;
+            } else if (chisel->angle == 45) {
+                y -= 2;
+            } else if (chisel->angle == 135) {
+                x += 2;
+                y++;
+            } else if (chisel->angle == 315) {
+                x--;
+            }
         }
     }
     
@@ -280,8 +314,10 @@ void chisel_draw() {
 // ux, uy = unit vector for the direction of chisel.
 // px, py = initial positions.
 // Returns the blob it reaches only if remove == 0.
-int chisel_goto_blob(int remove, float ux, float uy, float len) {
+int chisel_goto_blob(bool remove, float ux, float uy, float len) {
     float px = chisel->x, py = chisel->y;
+
+    if (object_current == -1) return -1;
 
     while (sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y)) < len) {
         // If we come into contact with a cell, locate its blob
@@ -308,11 +344,13 @@ int chisel_goto_blob(int remove, float ux, float uy, float len) {
             chisel->y -= uy;
 
             if (blob_can_destroy(object_current, chisel->size, b)) {
-                object_remove_blob(object_current, b, chisel->size, 0);
-                SDL_WarpMouseInWindow(window, (int)(chisel->x * S), GUI_H + (int)(chisel->y * S));
+                object_remove_blob(object_current, b, chisel->size, 1);
+
+                /* SDL_WarpMouseInWindow(window, (int)(chisel->x * S), GUI_H + (int)(chisel->y * S)); */
+                move_mouse_to_grid_position(chisel->x, chisel->y);
             }
 
-            chisel->did_remove = 1;
+            chisel->did_remove = true;
 
             chisel->click_cooldown = CHISEL_COOLDOWN-CHISEL_TIME-1;
             break;
@@ -327,12 +365,12 @@ int chisel_goto_blob(int remove, float ux, float uy, float len) {
         return b;
     }
 
-    // remove=1 from here on out.
+    // remove=true from here on out.
 
     // Do a last-ditch effort if a blob is around a certain radius in order for the player
     // not to feel frustrated if it's a small blob or it's one pixel away.
     if (CHISEL_FORGIVING_AIM && !chisel->did_remove) {
-        const float r = 2;
+        const float r = 1;
         for (int y = -r; y <= r; y++) {
             for (int x = -r; x <= r; x++) {
                 if (x*x + y*y > r*r) continue;
@@ -340,16 +378,26 @@ int chisel_goto_blob(int remove, float ux, float uy, float len) {
                 int yy = chisel->y + y;
                 Uint32 blob = objects[object_current].blob_data[chisel->size].blobs[xx+yy*gw];
                 if (blob > 0) {
-                    object_remove_blob(object_current, blob, chisel->size, 0);
-                    chisel->did_remove = 1;
+                    object_remove_blob(object_current, blob, chisel->size, 1);
+                    chisel->did_remove = true;
                     break;
                 }
             }
         }
     }
 
-    if (remove && chisel->did_remove)
+    if (remove && chisel->did_remove) {
         objects_reevaluate();
+        // Here, we check for all the small objects that pop up from repeated
+        // chiseling that make chiseling an annoyance. We convert that to
+        // dust particles in order to get out of the player's way.
+        
+        for (int i = 0; i < object_count; i++) {
+            if (objects[i].cell_count <= 4) {
+                convert_object_to_dust(i);
+            }
+        }
+    }
 
     return -1;
 }
@@ -413,7 +461,7 @@ void hammer_tick() {
                 chisel->click_cooldown = CHISEL_COOLDOWN;
                 chisel->spd = 3.;
             }
-            chisel->did_remove = 0;
+            chisel->did_remove = false;
             hammer.state = HAMMER_STATE_IDLE;
         }
         break;

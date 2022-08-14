@@ -4,6 +4,7 @@
 #include <SDL2/SDL_image.h>
 
 #include <stdlib.h>
+#include <time.h>
 
 #include "globals.h"
 #include "chisel.h"
@@ -39,37 +40,37 @@ static int level_add(const char *name, char *desired_image, char *initial_image)
 
 void levels_setup() {
     level_add("Alaska",
-              "../res/lvl/desired/level_1.png",
-              "../res/lvl/initial/level_1.png");
-    level_add("Conversion",
-              "../res/lvl/desired/level_2.png",
-              "../res/lvl/initial/level_2.png");
+              "../res/lvl/desired/level 1.png",
+              "../res/lvl/initial/level 1.png");
     level_add("Masonry",
-              "../res/lvl/desired/level_1.png",
-              "../res/lvl/initial/level_1.png");
+              "../res/lvl/desired/level 2.png",
+              "../res/lvl/initial/level 2.png");
+    level_add("Conversion",
+              "../res/lvl/desired/level 3.png",
+              "../res/lvl/initial/level 3.png");
     level_add("Remainder",
-              "../res/lvl/desired/level_1.png",
-              "../res/lvl/initial/level_1.png");
+              "../res/lvl/desired/level 4.png",
+              "../res/lvl/initial/level 4.png");
     level_add("Carbon Copy",
-              "../res/lvl/desired/level_1.png",
-              "../res/lvl/initial/level_1.png");
+              "../res/lvl/desired/level 1.png",
+              "../res/lvl/initial/level 1.png");
     level_add("Metamorphosis",
-              "../res/lvl/desired/level_1.png",
-              "../res/lvl/initial/level_1.png");
+              "../res/lvl/desired/level 1.png",
+              "../res/lvl/initial/level 1.png");
     level_add("Procedure Lullaby",
-              "../res/lvl/desired/level_1.png",
-              "../res/lvl/initial/level_1.png");
+              "../res/lvl/desired/level 1.png",
+              "../res/lvl/initial/level 1.png");
     level_add("Polished Turd",
-              "../res/lvl/desired/level_1.png",
-              "../res/lvl/initial/level_1.png");
+              "../res/lvl/desired/level 1.png",
+              "../res/lvl/initial/level 1.png");
     level_add("Showpiece",
-              "../res/lvl/desired/level_1.png",
-              "../res/lvl/initial/level_1.png");
+              "../res/lvl/desired/level 1.png",
+              "../res/lvl/initial/level 1.png");
     level_add("Glass Body",
-              "../res/lvl/desired/level_1.png",
-              "../res/lvl/initial/level_1.png");
+              "../res/lvl/desired/level 1.png",
+              "../res/lvl/initial/level 1.png");
 
-    level_set_current(0);
+    level_set_current(3);
 }
 
 void level_set_current(int lvl) {
@@ -134,8 +135,9 @@ void level_tick() {
         if (level->popup_time_current >= level->popup_time_max) {
             level->popup_time_current = 0;
             level->state = LEVEL_STATE_PLAY;
+            srand(time(0));
             for (int i = 0; i < gw*gh; i++) {
-                grid[i] = (struct Cell){.type = level->initial_grid[i].type, .object = -1, .depth = 255};
+                grid[i] = (struct Cell){.type = level->initial_grid[i].type, .rand = rand(), .object = -1, .depth = 255};
             }
             objects_reevaluate();
         }
@@ -177,12 +179,12 @@ void level_tick() {
         }
 
         if (my < 0) { // If the mouse is in the GUI window...
-            SDL_ShowCursor(1);
+            /* SDL_ShowCursor(1); */
             SDL_SetCursor(normal_cursor);
             break;
         } else if (current_tool == TOOL_GRABBER) {
             if (SDL_GetCursor() != grabber_cursor) {
-                SDL_ShowCursor(1);
+                /* SDL_ShowCursor(1); */
                 SDL_SetCursor(grabber_cursor);
             }
         } else if (SDL_GetCursor() != normal_cursor) {
@@ -220,7 +222,7 @@ void level_tick() {
 
 void level_draw() {
     struct Level *level = &levels[level_current];
-    
+
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
@@ -234,7 +236,7 @@ void level_draw() {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        grid_draw(1);
+        grid_draw(0);
 
         switch (current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE:
@@ -277,7 +279,7 @@ void level_draw() {
     }
 
     if (level->state == LEVEL_STATE_OUTRO) {
-        SDL_Rect rect = {S*gw/8, S*gh/8, S*3*gw/4, S*3*gh/4};
+        SDL_Rect rect = {S*gw/8, GUI_H + S*gh/2 - (S*3*gh/4)/2, S*3*gw/4, S*3*gh/4};
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderFillRect(renderer, &rect);
 
@@ -396,7 +398,9 @@ void level_draw_intro() {
 // Image must be formatted as Uint32 RGBA.
 void level_get_cells_from_image(char *path, struct Cell **out, int *out_w, int *out_h) {
     SDL_Surface *surface = IMG_Load(path);
+    SDL_assert(surface);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_assert(texture);
 
     int w = surface->w;
     int h = surface->h;
@@ -413,18 +417,52 @@ void level_get_cells_from_image(char *path, struct Cell **out, int *out_w, int *
             Uint32 pixel = ((Uint32*)surface->pixels)[x+y*w];
             SDL_GetRGB(pixel, surface->format, &r, &g, &b);
 
-            int cell = 0;
+            int cell;
 
-            if (r == 255 && g == 255 && b == 255) {
+            if (r == 255 && g == 0 && b == 0) {
+                struct SourceCell *s = &source_cell[source_cell_count++];
+                s->x = x;
+                s->y = y;
+                s->type = CELL_STEAM;
+            } else if (r == 255 && g == 255 && b == 255) {
                 cell = CELL_MARBLE;
-            } else if (r == 0 && g == 255 && b == 0) {
-                cell = CELL_LEAF;
             } else if (r == 128 && g == 128 && b == 128) {
                 cell = CELL_COBBLESTONE;
+            } else if (r == 200 && r == 200 && g == 200) {
+                cell = CELL_QUARTZ;
             } else if (r == 128 && g == 80 && b == 0) {
                 cell = CELL_WOOD_LOG;
+            } else if (r == 200 && g == 80 && b == 0) {
+                cell = CELL_WOOD_PLANK;
+            } else if (r == 200 && g == 0 && b == 0) {
+                cell = CELL_DIRT;
+            } else if (r == 255 && g == 255 && b == 0) {
+                cell = CELL_SAND;
+            } else if (r == 180 && g == 180 && b == 180) {
+                cell = CELL_GLASS;
+            } else if (r == 0 && g == 0 && b == 255) {
+                cell = CELL_WATER;
+            } else if (r == 50 && g == 50 && b == 50) {
+                cell = CELL_COAL;
+            } else if (0) {
+                cell = CELL_STEAM;
+            } else if (r == 150 && g == 200 && b == 200) {
+                cell = CELL_DIAMOND;
+            } else if (r == 188 && g == 255 && b == 255) {
+                cell = CELL_ICE;
+            } else if (r == 0 && g == 255 && b == 0) {
+                cell = CELL_LEAF;
+            } else if (0) {
+                cell = CELL_SMOKE;
+            } else if (0) {
+                cell = CELL_DUST;
+            } else if (r == 0 && g == 0 && b == 0) {
+                cell = CELL_NONE;
+            } else {
+                fprintf(stderr, "Unknown color (%d, %d, %d) at (%d, %d) in file %s.\n", r, g, b, x, y, path);
+                fflush(stderr);
+                exit(1);
             }
-
             (*out)[x+y*w].type = cell;
         }
     }

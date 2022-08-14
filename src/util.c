@@ -4,6 +4,10 @@
 
 #include "globals.h"
 
+void move_mouse_to_grid_position(float x, float y) {
+    SDL_WarpMouseInWindow(window, (int)(x*S + S/2), GUI_H + (int)(y*S + S/2));
+}
+
 void get_name_from_type(int type, char *out) {
     switch (type) {
     case CELL_NONE:        strcpy(out, "nothing"); break;
@@ -64,36 +68,25 @@ SDL_Color get_pixel(SDL_Surface *surf, int x, int y) {
     if (x >= surf->w) x %= surf->w;
     if (y >= surf->h) y %= surf->h;
     int bpp = surf->format->BytesPerPixel;
-    SDL_assert(bpp == 3 || bpp == 4);
+    SDL_assert(bpp == 4);
 
-    Uint8 *pixels = surf->pixels;
+    Uint32 *pixels = (Uint32*)surf->pixels;
     SDL_Color color;
 
-    if (surf->format->format == SDL_PIXELFORMAT_ABGR8888) {
-        color.a = pixels[bpp * (x+y*surf->w) + 0];
-        color.b = pixels[bpp * (x+y*surf->w) + 1];
-        color.g = pixels[bpp * (x+y*surf->w) + 2];
-        color.r = pixels[bpp * (x+y*surf->w) + 3];
-    } else if (surf->format->format == SDL_PIXELFORMAT_RGBA8888) {
-        color.r = pixels[bpp * (x+y*surf->w) + 0];
-        color.g = pixels[bpp * (x+y*surf->w) + 1];
-        color.b = pixels[bpp * (x+y*surf->w) + 2];
-        color.a = pixels[bpp * (x+y*surf->w) + 3];
-    } else if (surf->format->format == SDL_PIXELFORMAT_RGB888) {
-        color.r = pixels[bpp * (x+y*surf->w) + 0];
-        color.g = pixels[bpp * (x+y*surf->w) + 1];
-        color.b = pixels[bpp * (x+y*surf->w) + 2];
-    } else if (surf->format->format == SDL_PIXELFORMAT_BGR888) {
-        color.b = pixels[bpp * (x+y*surf->w) + 0];
-        color.g = pixels[bpp * (x+y*surf->w) + 1];
-        color.r = pixels[bpp * (x+y*surf->w) + 2];
-    } /* else { */
-    /*     printf("BPP: %d\n", bpp); fflush(stdout); */
-    /*     fprintf(stderr, "Unsupported pixel format %d!\n", surf->format->format); */
-    /*     exit(1); */
-    /* } */
+    Uint32 pixel = pixels[x+y*surf->w];
 
+    SDL_GetRGBA(pixel, surf->format, &color.r, &color.g, &color.b, &color.a);
+    
     return color;
+}
+
+Uint32 get_pixel_int(SDL_Surface *surf, int x, int y) {
+    if (x >= surf->w) x %= surf->w;
+    if (y >= surf->h) y %= surf->h;
+    int bpp = surf->format->BytesPerPixel;
+    SDL_assert(bpp == 4);
+    Uint32 *pixels = (Uint32*)surf->pixels;
+    return pixels[x+y*surf->w];
 }
 
 static int a = 1103515245;
@@ -102,6 +95,10 @@ static int m = 2000000;
 
 int my_rand(int seed) {
     return (a * seed + c) % m;
+}
+
+float my_rand_float(int seed) {
+    return (float)my_rand(seed)/(float)m;
 }
 
 int max(int a, int b) {
@@ -115,7 +112,7 @@ int min(int a, int b) {
 }
 
 float lerp(float a, float b, float t) {
-    return a + t*(b-a); // or a(1-t) + tb
+    return a + t*(b-a); // or a(1-t) + tb -- same thing.
 }
 
 int clamp(int a, int min, int max) {
