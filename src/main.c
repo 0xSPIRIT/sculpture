@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <time.h>
 #include <unistd.h>
+#include <signal.h>
 
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
@@ -14,13 +15,14 @@
 #include "chisel.h"
 #include "knife.h"
 #include "point_knife.h"
-#include "drill.h"
+#include "blob_hammer.h"
 #include "placer.h"
 #include "grabber.h"
 #include "level.h"
 #include "cursor.h"
 #include "gui.h"
 #include "chisel_blocker.h"
+#include "input.h"
 
 int main(void) {
     SDL_Init(SDL_INIT_VIDEO);
@@ -46,12 +48,14 @@ int main(void) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     
     levels_setup();
-    
+
     bool running = true;
     
     level_draw();
 
     while (running) {
+        input_tick();
+
         SDL_Event event;
         int prev_tool = current_tool;
         while (SDL_PollEvent(&event)) {
@@ -78,7 +82,7 @@ int main(void) {
                     }
                 }
             }
-            
+           
             int selected_tool = 0;
             if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
@@ -103,16 +107,36 @@ int main(void) {
                 case SDLK_d:
                     debug_mode = 1;
                     break;
+                case SDLK_0: {
+                    print_blob_data(&objects[0], chisel->size);
+                    break;
+                };
                 case SDLK_q: {
                     struct Cell *c;
                     if (keys[SDL_SCANCODE_LSHIFT]) {
-                        c = &fg_grid[mx+my*gw];
+                        c = &pickup_grid[mx+my*gw];
                     } else {
                         c = &grid[mx+my*gw];
                     }
                     char name[256] = {0};
                     get_name_from_type(c->type, name);
-                    printf("Cell %d, %d: Type: %s, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f\n", mx, my, name, c->rand, c->object, c->time, c->vx, c->vy); fflush(stdout);
+
+                    int obj = c->object;
+                    if (obj == -1) obj = 0;
+
+                    SDL_assert(obj != -1);
+
+                    printf("Cell %d, %d: Type: %s, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
+                           mx,
+                           my,
+                           name,
+                           c->rand,
+                           c->object,
+                           c->time,
+                           c->vx,
+                           c->vy,
+                           objects[obj].blob_data[chisel->size].blobs[mx+my*gw]);
+                    fflush(stdout);
                     break;
                 }
                 case SDLK_i:
@@ -122,24 +146,24 @@ int main(void) {
                     current_tool = TOOL_CHISEL_SMALL;
                     chisel = &chisel_small;
                     for (int i = 0; i < object_count; i++)
-                        object_set_blobs(i, 0);
-                    hammer.normal_dist = hammer.dist = chisel->w+2;
+                        object_generate_blobs(i, 0);
+                    chisel_hammer.normal_dist = chisel_hammer.dist = chisel->w+2;
                     selected_tool = 1;
                     break;
                 case SDLK_2:
                     current_tool = TOOL_CHISEL_MEDIUM;
                     chisel = &chisel_medium;
                     for (int i = 0; i < object_count; i++)
-                        object_set_blobs(i, 1);
-                    hammer.normal_dist = hammer.dist = chisel->w+4;
+                        object_generate_blobs(i, 1);
+                    chisel_hammer.normal_dist = chisel_hammer.dist = chisel->w+4;
                     selected_tool = 1;
                     break;
                 case SDLK_3:
                     current_tool = TOOL_CHISEL_LARGE;
                     chisel = &chisel_large;
                     for (int i = 0; i < object_count; i++)
-                        object_set_blobs(i, 2);
-                    hammer.normal_dist = hammer.dist = chisel->w+4;
+                        object_generate_blobs(i, 2);
+                    chisel_hammer.normal_dist = chisel_hammer.dist = chisel->w+4;
                     selected_tool = 1;
                     break;
                 case SDLK_4:
@@ -151,7 +175,7 @@ int main(void) {
                     selected_tool = 1;
                     break;
                 case SDLK_6:
-                    current_tool = TOOL_DRILL;
+                    current_tool = TOOL_HAMMER;
                     selected_tool = 1;
                     break;
                 case SDLK_7:
@@ -182,18 +206,7 @@ int main(void) {
         if (prev_tool != current_tool) {
             gui.overlay.x = gui.overlay.y = -1;
         }
-        
-        pmx = mx;
-        pmy = my;
-        
-        mouse = (Uint32) SDL_GetMouseState(&real_mx, &real_my);
-        keys = (Uint8*) SDL_GetKeyboardState(NULL);
-        
-        mx = real_mx/S;
-        my = real_my/S;
-        
-        my -= GUI_H/S;
-        
+
         level_tick();
         level_draw();
     }

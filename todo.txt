@@ -1,19 +1,45 @@
-This is what we WILL do today.
+      --------------------------TODO----------------------------
 
-Refactor:
-x Bounds checking with grid[] access.
-x Replace ints with booleans where useful.
+x FIX THE LAYERED GRID BUG.
+x New Tool: Hammer. You hit a hard material and it breaks into its
+  blobs and falls to the ground (new layer). Then, you can pick them
+  up with placers.
+- Make Level 5 - "Carbon Copy"
+- Make rectangle placement work with setting objects placer.
 
-Features / Bug Fixes:
-x Chisel FG stuff.
-x Make popup box shift if it's off the screen to the right or bottom.
-x Reformat some of the weird jumbled converter.c code.
-x Create Level Remainder
-    x Source cells for steam.
-    x Create the actual level.
-
-Later
+- Remove really odd blobs generated using blob_generate_smart, also
+  single-celled blobs (isn't this impossible? Maybe it is.) Perhaps
+  redo the entire algorithm??
 - Make the blobs for each different type of stone different to give
   them a different feel.
 - Better GUI for switching placers.
 - Make face chiseling look better... somehow. Figure out a solution
+
+     ---------------------------Ideas----------------------------
+
+- Orb imagery! Use it in Diamond & Quartz!
+  Figures reaching for something that is offscreen
+  then we finally see it's the orb
+
+- Perhaps a new converter that requires a fuel source (water / coal?)
+  and can create more complex materials, eg. diamond, marble, quartz.
+  This creates a natural limitation for what materials you can create.
+
+- Have some kind of recipe map showing converter_convert()?
+- Reduce wasted space in popup- only furnace needed.
+- Put toolbar on left instead of top? Leave space for metadata?
+
+For Level 2 (Conversion), we still need to get a shape.
+It must be simple enough to be the second level (you're still getting
+used to the chiseling etc.) but also complex enough to be thematically
+relevent. I don't want any level to not be thematically tied because
+there's just so little of them and the game must be as polished as
+possible. However, if we can't figure out a good shape we could leave
+it as something simple for now, and iterate on it later.
+
+I think chiseling shapes is sort of too complex, but we'll need
+playtesting to make sure that is the case. If it is too complex, then
+we can change the chisel blocker to have more nodes, or have a line
+mode where it's a bunch of points you can move around with only
+straight lines. You can then switch between this mode (default) and
+the smooth mode (we'll do a pixelizer pass on this like Aseprite).

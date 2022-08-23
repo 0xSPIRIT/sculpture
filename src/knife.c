@@ -33,24 +33,20 @@ void knife_tick() {
     float px = knife.x;
     float py = knife.y;
     
-    static int did_lctrl = 0;
     if (keys[SDL_SCANCODE_LCTRL]) {
         knife.angle = 180 + 360 * (atan2(my - knife.y, mx - knife.x)) / (2*M_PI);
-        did_lctrl = 1;
         /* SDL_ShowCursor(1); */
-    } else {
-        if (did_lctrl) {
-            /* SDL_WarpMouseInWindow(window, (int)knife.x*S, GUI_H + (int)knife.y*S); */
-            move_mouse_to_grid_position(knife.x, knife.y);
-            mx = (int)knife.x;
-            my = (int)knife.y;
-        }
+    } else if (keys_released[SDL_SCANCODE_LCTRL]) {
+        /* SDL_WarpMouseInWindow(window, (int)knife.x*S, GUI_H + (int)knife.y*S); */
+        move_mouse_to_grid_position(knife.x, knife.y);
+        mx = (int)knife.x;
+        my = (int)knife.y;
         /* SDL_ShowCursor(0); */
+    }
 
+    if (!keys[SDL_SCANCODE_LCTRL]) {
         knife.x = mx;
         knife.y = my;
-
-        did_lctrl = 0;
     }
 
     if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {

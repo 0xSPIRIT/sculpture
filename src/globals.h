@@ -4,21 +4,23 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "input.h"
+
 #define GUI_H 96
 
-enum {
+enum Tool_Type {
     TOOL_CHISEL_SMALL,
     TOOL_CHISEL_MEDIUM,
     TOOL_CHISEL_LARGE,
     TOOL_KNIFE,
     TOOL_POINT_KNIFE,
-    TOOL_DRILL,
+    TOOL_HAMMER,
     TOOL_PLACER,
     TOOL_GRABBER,
     TOOL_COUNT
 };
 
-enum {
+enum Cell_Type {
     CELL_NONE,
     CELL_MARBLE,
     CELL_COBBLESTONE,
@@ -39,12 +41,6 @@ enum {
     CELL_MAX
 };
 
-enum {
-    STATE_SOLID,
-    STATE_LIQUID,
-    STATE_GAS
-};
-
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 
@@ -57,17 +53,11 @@ extern TTF_Font *font, *title_font;
 
 extern SDL_Cursor *grabber_cursor, *normal_cursor;
 
-extern int mx, my; // Fake in game coordinates (pixel art scaled)
-extern int real_mx, real_my; // In real window coordinates
-extern int pmx, pmy;
-extern Uint32 mouse;
-
 extern int S;
 
 extern int window_width, window_height;
 
 extern float delta_time;
 
-extern Uint8 *keys;
 
 #endif  /* GLOBALS_H_ */

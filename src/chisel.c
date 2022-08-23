@@ -8,11 +8,12 @@
 #include "vectorizer.h"
 #include "util.h"
 #include "grid.h"
+#include "blob_hammer.h" // For hammer state enum
 
 struct Chisel *chisel = &chisel_medium;
 struct Chisel chisel_small, chisel_medium, chisel_large;
 
-struct Hammer hammer;
+struct ChiselHammer chisel_hammer;
 
 void chisel_init(struct Chisel *type) {
     SDL_Surface *surf;
@@ -93,16 +94,18 @@ static void chisel_set_depth() {
 }
 
 void chisel_tick() {
-    int p = chisel->changing_angle;
-    chisel->changing_angle = keys[SDL_SCANCODE_LCTRL];
-    if (p && !chisel->changing_angle) {
+    bool prev_changing_angle = chisel->is_changing_angle;
+
+    chisel->is_changing_angle = keys[SDL_SCANCODE_LCTRL];
+
+    if (prev_changing_angle && !chisel->is_changing_angle) {
         /* SDL_WarpMouseInWindow(window, (int)chisel->x*S, GUI_H + (int)chisel->y*S); */
         move_mouse_to_grid_position(chisel->x, chisel->y);
         mx = (int)chisel->x;
         my = (int)chisel->y;
     }
 
-    if (hammer.state == HAMMER_STATE_IDLE && !chisel->changing_angle && !chisel->click_cooldown) {
+    if (chisel_hammer.state == HAMMER_STATE_IDLE && !chisel->is_changing_angle && !chisel->click_cooldown) {
         int index = clamp_to_grid(mx, my, !chisel->face_mode, false, true, true);
         if (index != -1) {
             chisel->x = index%gw;
@@ -138,7 +141,7 @@ void chisel_tick() {
         }
     }
 
-    if (chisel->changing_angle) {
+    if (chisel->is_changing_angle) {
         float rmx = (float)real_mx / (float)S;
         float rmy = (float)(real_my-GUI_H) / (float)S;
         chisel->angle = 180 + 360 * (atan2(rmy - chisel->y, rmx - chisel->x)) / (2*M_PI);
@@ -157,21 +160,15 @@ void chisel_tick() {
     /*     SDL_ShowCursor(dist > 1); */
     /* } */
 
-    static int pressed_f = 0;
-    if (keys[SDL_SCANCODE_S]) {
-        if (!pressed_f) {
-            chisel->face_mode = !chisel->face_mode;
-            chisel->w = chisel->face_mode ? chisel->face_w : chisel->outside_w;
-            chisel->h = chisel->face_mode ? chisel->face_h : chisel->outside_h;
-            chisel->texture = chisel->face_mode ? chisel->face_texture : chisel->outside_texture;
-            pressed_f = 1;
-        }
-    } else {
-        pressed_f = 0;
-    }
-    
+    if (keys_pressed[SDL_SCANCODE_S]) {
+        chisel->face_mode = !chisel->face_mode;
+        chisel->w = chisel->face_mode ? chisel->face_w : chisel->outside_w;
+        chisel->h = chisel->face_mode ? chisel->face_h : chisel->outside_h;
+        chisel->texture = chisel->face_mode ? chisel->face_texture : chisel->outside_texture;
+    }    
+
     if (mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-        chisel->changing_angle = 0;
+        chisel->is_changing_angle = 0;
     }
 
     if (chisel->click_cooldown) {
@@ -225,7 +222,7 @@ void chisel_tick() {
             chisel->y = index/gw;
         }
     }
-    hammer_tick();
+    chisel_hammer_tick();
 }
 
 void chisel_update_texture() {
@@ -277,7 +274,7 @@ void chisel_update_texture() {
             }
         }
     }
-    
+
     const SDL_Rect dst = {
         x, y - chisel->h/2,
         chisel->w, chisel->h
@@ -286,7 +283,7 @@ void chisel_update_texture() {
 
     SDL_RenderCopyEx(renderer, chisel->texture, NULL, &dst, chisel->angle, &center, SDL_FLIP_NONE);
 
-    hammer_draw();
+    chisel_hammer_draw();
 
     if (!chisel->face_mode) {
         SDL_SetRenderDrawColor(renderer, 127, 127, 127, 255);
@@ -380,117 +377,116 @@ int chisel_goto_blob(bool remove, float ux, float uy, float len) {
                 if (blob > 0) {
                     object_remove_blob(object_current, blob, chisel->size, 1);
                     chisel->did_remove = true;
-                    break;
+                    goto chisel_did_remove;
                 }
             }
         }
     }
 
-    if (remove && chisel->did_remove) {
+ chisel_did_remove:
+    if (chisel->did_remove) {
         objects_reevaluate();
         // Here, we check for all the small objects that pop up from repeated
         // chiseling that make chiseling an annoyance. We convert that to
         // dust particles in order to get out of the player's way.
         
+        bool did_remove = false;
         for (int i = 0; i < object_count; i++) {
             if (objects[i].cell_count <= 4) {
                 convert_object_to_dust(i);
+                did_remove = true;
             }
+        }
+        if (did_remove) {
+            objects_reevaluate();
         }
     }
 
     return -1;
 }
 
-void hammer_init() {
-    hammer.x = chisel->x;
-    hammer.y = chisel->y;
-    hammer.normal_dist = chisel->w+4;
-    hammer.dist = hammer.normal_dist;
-    hammer.time = 0;
-    hammer.angle = 0;
+void chisel_hammer_init() {
+    chisel_hammer.x = chisel->x;
+    chisel_hammer.y = chisel->y;
+    chisel_hammer.normal_dist = chisel->w+4;
+    chisel_hammer.dist = chisel_hammer.normal_dist;
+    chisel_hammer.time = 0;
+    chisel_hammer.angle = 0;
 
     SDL_Surface *surf = IMG_Load("../res/hammer.png");
-    hammer.w = surf->w;
-    hammer.h = surf->h;
-    hammer.texture = SDL_CreateTextureFromSurface(renderer, surf);
+    chisel_hammer.w = surf->w;
+    chisel_hammer.h = surf->h;
+    chisel_hammer.texture = SDL_CreateTextureFromSurface(renderer, surf);
     SDL_FreeSurface(surf);
 }
 
-void hammer_deinit() {
-    SDL_DestroyTexture(hammer.texture);
+void chisel_hammer_deinit() {
+    SDL_DestroyTexture(chisel_hammer.texture);
 }
 
-void hammer_tick() {
-    hammer.angle = chisel->angle;
+void chisel_hammer_tick() {
+    chisel_hammer.angle = chisel->angle;
 
-    float rad = (hammer.angle) / 360.0;
+    float rad = (chisel_hammer.angle) / 360.0;
     rad *= 2 * M_PI;
 
     const float off = 6;
 
     int dir = 1;
 
-    if (hammer.angle > 90 && hammer.angle < 270) {
+    if (chisel_hammer.angle > 90 && chisel_hammer.angle < 270) {
         dir = -1;
     }
     
-    hammer.x = chisel->x + hammer.dist * cos(rad) - dir * off * sin(rad);
-    hammer.y = chisel->y + hammer.dist * sin(rad) + dir * off * cos(rad);
-
-    static int prevclicked = 0;
+    chisel_hammer.x = chisel->x + chisel_hammer.dist * cos(rad) - dir * off * sin(rad);
+    chisel_hammer.y = chisel->y + chisel_hammer.dist * sin(rad) + dir * off * cos(rad);
 
     const int stop = 24;
     
-    switch (hammer.state) {
+    switch (chisel_hammer.state) {
     case HAMMER_STATE_WINDUP:
-        hammer.time++;
-        if (hammer.time < 3) {
-            hammer.dist += hammer.time * 4;
+        chisel_hammer.time++;
+        if (chisel_hammer.time < 3) {
+            chisel_hammer.dist += chisel_hammer.time * 4;
         } else {
-            hammer.time = 0;
-            hammer.state = HAMMER_STATE_SWING;
+            chisel_hammer.time = 0;
+            chisel_hammer.state = HAMMER_STATE_SWING;
         }
         break;
     case HAMMER_STATE_SWING:
-        hammer.dist -= 8;
-        if (hammer.dist < stop) {
-            hammer.dist = stop;
+        chisel_hammer.dist -= 8;
+        if (chisel_hammer.dist < stop) {
+            chisel_hammer.dist = stop;
             // Activate the chisel.
             if (chisel->click_cooldown == 0) {
                 chisel->click_cooldown = CHISEL_COOLDOWN;
                 chisel->spd = 3.;
             }
             chisel->did_remove = false;
-            hammer.state = HAMMER_STATE_IDLE;
+            chisel_hammer.state = HAMMER_STATE_IDLE;
         }
         break;
     case HAMMER_STATE_IDLE:
-        hammer.dist = hammer.normal_dist;
-        if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-            if (!prevclicked) {
-                hammer.state = HAMMER_STATE_WINDUP;
-                prevclicked = 1;
-            }
-        } else {
-            prevclicked = 0;
+        chisel_hammer.dist = chisel_hammer.normal_dist;
+        if (mouse_pressed[SDL_BUTTON_LEFT]) {
+            chisel_hammer.state = HAMMER_STATE_WINDUP;
         }
         break;
     }
 }
 
-void hammer_draw() {
+void chisel_hammer_draw() {
     const SDL_Rect dst = {
-        hammer.x, hammer.y - hammer.h/2,
-        hammer.w, hammer.h
+        chisel_hammer.x, chisel_hammer.y - chisel_hammer.h/2,
+        chisel_hammer.w, chisel_hammer.h
     };
-    const SDL_Point center = { 0, hammer.h/2 };
+    const SDL_Point center = { 0, chisel_hammer.h/2 };
 
     SDL_RendererFlip flip = SDL_FLIP_NONE;
 
-    if (hammer.angle > 90 && hammer.angle < 270) {
+    if (chisel_hammer.angle > 90 && chisel_hammer.angle < 270) {
         flip = SDL_FLIP_VERTICAL;
     }
 
-    SDL_RenderCopyEx(renderer, hammer.texture, NULL, &dst, hammer.angle, &center, flip);
+    SDL_RenderCopyEx(renderer, chisel_hammer.texture, NULL, &dst, chisel_hammer.angle, &center, flip);
 }

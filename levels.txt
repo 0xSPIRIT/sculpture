@@ -1,8 +1,3 @@
-Some ideas for the levels-- don't take it as gospel. Some of these
-would be subject to change after I can actually feel the real gameplay.
-
-Note: you unlock tools and recipes as you go along.
-
 Level 1 - "Alaska"
   You make a house from stone and wood, while snowing.
 Level 2 - "Masonry"
@@ -19,7 +14,7 @@ Level 4 - "Remainder"
   Steam -> Water -> Ice
   Sculpture: https://pixnio.com/free-images/2019/09/07/2019-09-07-12-08-15.jpg
 Level 5 - "Carbon Copy"
-  There's a very well-made sculpture (made out of diamond) on the
+  There's a very well-made sculpture (made out of marble) on the
   inspiration, and you have to use the dirt and stone to create
   something as close to it as possible-- it would be impossible to
   create something good, so the title is sarcastic.
@@ -55,10 +50,9 @@ Level 8 - "Polished Turd"
 Level 9 - "Showpiece"
   You start with coal, cobblestone, dirt, and trees, and you need to
   turn them, respectively, into diamond, quartz, and wood. The dirt
-  is destroyed. You make this into a shape of a game controller, as
-  seen in the inspiration picture. Most of the controller is quartz,
-  with pieces of wood in the raised circles for D-pad and buttons, and
-  diamond for the sticks and pause/play.
+  is destroyed. You make this into a shape of an orb, with hands
+  holding it. All the materials are used- diamond & quartz for the
+  orb and wood for the hands.
 Level 10 - "Glass Body"
   You are shown a very nice sculpture of complete glass, of a woman
   with lots of curves-- lots of work. Multiple materials in layers,

@@ -5,7 +5,7 @@
 
 #include "grid.h"
 
-struct PointKnife {
+struct Point_Knife {
     float x, y;
     int w, h;
     SDL_Texture *texture;
@@ -16,7 +16,7 @@ struct PointKnife {
     int highlight_count;
 };
 
-extern struct PointKnife point_knife;
+extern struct Point_Knife point_knife;
 
 void point_knife_init();
 void point_knife_deinit();

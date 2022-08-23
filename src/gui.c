@@ -54,22 +54,16 @@ void gui_deinit() {
 }
 
 void gui_tick() {
-    static int pressed = 0;
-    if (keys[SDL_SCANCODE_TAB]) {
-        if (!pressed) {
-            pressed = 1;
-            gui.popup = !gui.popup;
-            gui.popup_y_vel = 0;
-            gui.overlay.x = -1;
-            gui.overlay.y = -1;
-            converter.placer_top = converter.placer_bottom = NULL;
-            converter.state = STATE_OFF;
-            // Just in case the player had reset it.
-            if (current_placer == -1)
-                current_placer = 0;
-        }
-    } else {
-        pressed = 0;
+    if (keys_pressed[SDL_SCANCODE_TAB]) {
+        gui.popup = !gui.popup;
+        gui.popup_y_vel = 0;
+        gui.overlay.x = -1;
+        gui.overlay.y = -1;
+        converter.placer_top = converter.placer_bottom = NULL;
+        converter.state = STATE_OFF;
+        // Just in case the player had reset it.
+        if (current_placer == -1)
+            current_placer = 0;
     }
 
     if (gui.popup) {
@@ -109,6 +103,7 @@ void gui_tick() {
 }
 
 void gui_draw() {
+    // Draw the toolbar buttons.
     {
         SDL_Texture *old = SDL_GetRenderTarget(renderer);
 
@@ -271,14 +266,10 @@ void button_tick(struct Button *b) {
         if (strlen(b->overlay_text))
             strcpy(gui.overlay.str[0], b->overlay_text);
 
-        static int p = 0;
-        if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-            if (!p) {
-                b->on_pressed(b->index);
-                b->activated = 1;
-                p = 1;
-            }
-        } else p = 0;
+        if (mouse_pressed[SDL_BUTTON_LEFT]) {
+            b->on_pressed(b->index);
+            b->activated = 1;
+        }
     }
 }
 
@@ -311,21 +302,21 @@ void click_gui_tool_button(int type) {
     case TOOL_CHISEL_SMALL:
         chisel = &chisel_small;
         for (int i = 0; i < object_count; i++)
-            object_set_blobs(i, 0);
-        hammer.normal_dist = hammer.dist = chisel->w+2;
+            object_generate_blobs(i, 0);
+        chisel_hammer.normal_dist = chisel_hammer.dist = chisel->w+2;
         break;
     case TOOL_CHISEL_MEDIUM:
         chisel = &chisel_medium;
         for (int i = 0; i < object_count; i++)
-            object_set_blobs(i, 1);
-        hammer.normal_dist = hammer.dist = chisel->w+4;
+            object_generate_blobs(i, 1);
+        chisel_hammer.normal_dist = chisel_hammer.dist = chisel->w+4;
         break;
     case TOOL_CHISEL_LARGE:
         current_tool = TOOL_CHISEL_LARGE;
         chisel = &chisel_large;
         for (int i = 0; i < object_count; i++)
-            object_set_blobs(i, 2);
-        hammer.normal_dist = hammer.dist = chisel->w+4;
+            object_generate_blobs(i, 2);
+        chisel_hammer.normal_dist = chisel_hammer.dist = chisel->w+4;
         break;
     }
 

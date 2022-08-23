@@ -10,7 +10,7 @@
 #include "chisel.h"
 #include "knife.h"
 #include "point_knife.h"
-#include "drill.h"
+#include "blob_hammer.h"
 #include "placer.h"
 #include "grabber.h"
 #include "grid.h"
@@ -30,8 +30,18 @@ static int level_add(const char *name, char *desired_image, char *initial_image)
     level->state = LEVEL_STATE_INTRO;
 
     int w, h;
-    level_get_cells_from_image(desired_image, &level->desired_grid, &level->w, &level->h);
-    level_get_cells_from_image(initial_image, &level->initial_grid, &w, &h);
+    level_get_cells_from_image(desired_image,
+                               &level->desired_grid,
+                               NULL,
+                               NULL,
+                               &level->w,
+                               &level->h);
+    level_get_cells_from_image(initial_image,
+                               &level->initial_grid,
+                               level->source_cell,
+                               &level->source_cell_count,
+                               &w,
+                               &h);
     SDL_assert(w == level->w);
     SDL_assert(h == level->h);
 
@@ -52,8 +62,8 @@ void levels_setup() {
               "../res/lvl/desired/level 4.png",
               "../res/lvl/initial/level 4.png");
     level_add("Carbon Copy",
-              "../res/lvl/desired/level 1.png",
-              "../res/lvl/initial/level 1.png");
+              "../res/lvl/desired/level 5.png",
+              "../res/lvl/initial/level 5.png");
     level_add("Metamorphosis",
               "../res/lvl/desired/level 1.png",
               "../res/lvl/initial/level 1.png");
@@ -70,10 +80,10 @@ void levels_setup() {
               "../res/lvl/desired/level 1.png",
               "../res/lvl/initial/level 1.png");
 
-    level_set_current(3);
+    goto_level(0);
 }
 
-void level_set_current(int lvl) {
+void goto_level(int lvl) {
     level_current = lvl;
 
     if (grid)
@@ -90,13 +100,13 @@ void level_set_current(int lvl) {
     chisel_init(&chisel_medium);
     chisel_init(&chisel_large);
     chisel_blocker_init();
-    hammer_init();
+    blob_hammer_init();
+    chisel_hammer_init();
     knife_init();
     point_knife_init();
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_init(i);
     grabber_init();
-    drill_init();
     gui_init();
 
     memcpy(grid, levels[lvl].desired_grid, sizeof(struct Cell)*gw*gh);
@@ -106,11 +116,11 @@ void levels_deinit() {
     chisel_deinit(&chisel_small);
     chisel_deinit(&chisel_medium);
     chisel_deinit(&chisel_large);
-    hammer_deinit();
+    blob_hammer_deinit();
+    chisel_hammer_deinit();
     knife_deinit();
     point_knife_deinit();
     gui_deinit();
-    drill_deinit();
 
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_deinit(i);
@@ -145,34 +155,22 @@ void level_tick() {
     case LEVEL_STATE_OUTRO:
         if (keys[SDL_SCANCODE_N]) {
             if (level_current+1 < 10) {
-                level_set_current(++level_current);
+                goto_level(++level_current);
             }
         }
 
-        {
-            static int p = 0;
-            if (keys[SDL_SCANCODE_F]) {
-                if (!p) {
-                    levels[level_current].state = LEVEL_STATE_PLAY;
-                    keys[SDL_SCANCODE_F] = 0;
-                    p = 1;
-                }
-            } else p = 0;
+        if (keys_pressed[SDL_SCANCODE_F]) {
+            levels[level_current].state = LEVEL_STATE_PLAY;
+            keys[SDL_SCANCODE_F] = 0;
         }
         break;
     case LEVEL_STATE_PLAY:
-        {
-            static int p = 0;
-            if (keys[SDL_SCANCODE_F]) {
-                if (!p) {
-                    levels[level_current].state = LEVEL_STATE_OUTRO;
-                    keys[SDL_SCANCODE_F] = 0;
-                    p = 1;
-                }
-            } else p = 0;
+        if (keys_pressed[SDL_SCANCODE_F]) {
+            levels[level_current].state = LEVEL_STATE_OUTRO;
+            keys[SDL_SCANCODE_F] = 0;
         }
 
-        grid_tick();
+        simulation_tick();
     
         for (int i = 0; i < object_count; i++) {
             object_tick(i);
@@ -204,8 +202,8 @@ void level_tick() {
         case TOOL_POINT_KNIFE:
             point_knife_tick();
             break;
-        case TOOL_DRILL:
-            drill_tick();
+        case TOOL_HAMMER:
+            blob_hammer_tick();
             break;
         case TOOL_PLACER:
             if (!gui.popup) // We'll handle updating it in the converter.c
@@ -236,7 +234,7 @@ void level_draw() {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        grid_draw(0);
+        grid_draw();
 
         switch (current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE:
@@ -248,8 +246,8 @@ void level_draw() {
         case TOOL_POINT_KNIFE:
             point_knife_draw();
             break;
-        case TOOL_DRILL:
-            drill_draw();
+        case TOOL_HAMMER:
+            blob_hammer_draw();
             break;
         case TOOL_PLACER:
             if (!gui.popup) // We'll handle updating it in the converter.c
@@ -396,7 +394,14 @@ void level_draw_intro() {
 }
 
 // Image must be formatted as Uint32 RGBA.
-void level_get_cells_from_image(char *path, struct Cell **out, int *out_w, int *out_h) {
+// Gets cells based on pixels in the image.
+//
+// path - path to the image
+// out  - pointer to array of Cells (it's allocated in this function)
+// source_cells - pointer to a bunch of source cells (NULL if don't want). Must not be heap allocated.
+// out_source_cell_count - Pointer to the cell count. Updates in this func.
+// out_w & out_h - width and height of the image.
+void level_get_cells_from_image(char *path, struct Cell **out, struct Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h) {
     SDL_Surface *surface = IMG_Load(path);
     SDL_assert(surface);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -420,7 +425,7 @@ void level_get_cells_from_image(char *path, struct Cell **out, int *out_w, int *
             int cell;
 
             if (r == 255 && g == 0 && b == 0) {
-                struct SourceCell *s = &source_cell[source_cell_count++];
+                struct Source_Cell *s = &source_cells[(*out_source_cell_count)++];
                 s->x = x;
                 s->y = y;
                 s->type = CELL_STEAM;

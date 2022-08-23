@@ -9,13 +9,7 @@
 #define CHISEL_COOLDOWN 3
 #define CHISEL_FORGIVING_AIM false // Do we check for surrounding cells?
 
-enum {
-	HAMMER_STATE_IDLE,
-	HAMMER_STATE_WINDUP,
-	HAMMER_STATE_SWING
-};
-
-struct Hammer {
+struct ChiselHammer {
 	int state;
     float x, y;
 	float dist, normal_dist;
@@ -28,7 +22,7 @@ struct Hammer {
 struct Chisel {
     int size;
     float x, y;
-    int changing_angle;
+    bool is_changing_angle;
     int click_cooldown;
 	bool did_remove;
     bool face_mode;
@@ -46,12 +40,12 @@ struct Chisel {
 
 extern struct Chisel *chisel;
 extern struct Chisel chisel_small, chisel_medium, chisel_large;
-extern struct Hammer hammer;
+extern struct ChiselHammer chisel_hammer;
 
-void hammer_init();
-void hammer_deinit();
-void hammer_tick();
-void hammer_draw();
+void chisel_hammer_init();
+void chisel_hammer_deinit();
+void chisel_hammer_tick();
+void chisel_hammer_draw();
 
 void chisel_init(struct Chisel *type);
 void chisel_deinit();

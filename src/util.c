@@ -4,6 +4,7 @@
 
 #include "globals.h"
 
+// Moves the mouse to the middle of the grid cell, not the top-left.
 void move_mouse_to_grid_position(float x, float y) {
     SDL_WarpMouseInWindow(window, (int)(x*S + S/2), GUI_H + (int)(y*S + S/2));
 }
@@ -37,7 +38,7 @@ void get_name_from_tool(int type, char *out) {
     case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel"); break;
     case TOOL_KNIFE:         strcpy(out, "Knife"); break;
     case TOOL_POINT_KNIFE:   strcpy(out, "Point Knife"); break;
-    case TOOL_DRILL:         strcpy(out, "Drill"); break;
+    case TOOL_HAMMER:        strcpy(out, "Hammer"); break;
     case TOOL_PLACER:        strcpy(out, "Placer"); break;
     case TOOL_GRABBER:       strcpy(out, "Grabber"); break;
     }
@@ -50,7 +51,7 @@ void get_file_from_tool(int type, char *out) {
     case TOOL_CHISEL_LARGE:  strcpy(out, "chisel_large.png"); break;
     case TOOL_KNIFE:         strcpy(out, "knife.png"); break;
     case TOOL_POINT_KNIFE:   strcpy(out, "point_knife.png"); break;
-    case TOOL_DRILL:         strcpy(out, "drill.png"); break;
+    case TOOL_HAMMER:        strcpy(out, "hammer.png"); break;
     case TOOL_PLACER:        strcpy(out, "placer.png"); break;
     case TOOL_GRABBER:       strcpy(out, "pointer.png"); break;
     }

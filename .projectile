@@ -1,0 +1,6 @@
+-*.exe
+-*.pdb
+-*.dll
+-*.db*
+-/bin
+-/res

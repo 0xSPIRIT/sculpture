@@ -9,7 +9,7 @@
 // This tool is pretty much useless now.
 // Maybe find another use for it?
 
-struct PointKnife point_knife;
+struct Point_Knife point_knife;
 
 static int array_clamped_to_grid(int px, int py, int outside, int on_edge, int *o_arr, int *o_count);
 
@@ -51,22 +51,15 @@ void point_knife_tick() {
     /* float dy = point_knife.y - my; */
     /* float dist = sqrt(dx*dx + dy*dy); */
     /* SDL_ShowCursor(dist > 2); */
-
-    static int pressed_f = 0;
-    if (keys[SDL_SCANCODE_S]) {
-        if (!pressed_f) {
-            point_knife.face_mode = !point_knife.face_mode;
-            pressed_f = 1;
-        }
-    } else {
-        pressed_f = 0;
+    
+    if (keys_pressed[SDL_SCANCODE_S]) {
+        point_knife.face_mode = !point_knife.face_mode;
     }
 
     static int cooldown = -1;
-    static int pressed = 0;
 
-    if (point_knife.face_mode && mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        if (!pressed) {
+    if (mouse_pressed[SDL_BUTTON_LEFT]) {
+        if (point_knife.face_mode) {
             float dx = point_knife.x - px;
             float dy = point_knife.y - py;
             float len = sqrt(dx*dx + dy*dy);
@@ -82,11 +75,7 @@ void point_knife_tick() {
             }
             point_knife.x = (int)point_knife.x;
             point_knife.y = (int)point_knife.y;
-            
-            pressed = 1;
-        }
-    } else if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        if (!pressed) {
+        } else {
             if (cooldown == -1) {
                 if (get_neighbour_count((int)point_knife.x, (int)point_knife.y, 2) <= 21) { /* Must be identical to statement in array_clamped_to_grid */
                     set((int)point_knife.x, (int)point_knife.y, 0, -1);
@@ -94,10 +83,7 @@ void point_knife_tick() {
                 cooldown = 12;
                 objects_reevaluate();
             }
-            pressed = 1;
         }
-    } else {
-        pressed = 0;
     }
     if (cooldown >= 0) cooldown--;
 }

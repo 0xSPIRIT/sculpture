@@ -18,7 +18,7 @@ struct Placer {
 
     SDL_Rect rect;
     
-    int x, y;
+    int x, y, px, py;
     int w, h;
     SDL_Texture *texture;
 

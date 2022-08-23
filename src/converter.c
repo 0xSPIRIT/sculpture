@@ -62,7 +62,9 @@ void converter_deinit() {
     SDL_DestroyTexture(converter.texture);
 }
 
-static void converter_attempt_attach_placer() {
+// Affixes the placer to the converter for input or output
+static void converter_attempt_attach_to_placer() {
+    struct Placer *placer = get_current_placer();
     const int give = 5; // px of leeway
 
     // If we're still holding a placer, but clicking outside...
@@ -72,7 +74,7 @@ static void converter_attempt_attach_placer() {
     }
 
     // Top placer
-    if (my < (gui.popup_y + 10)+converter.h/2) {
+    if (my < converter.y+converter.h/2) {
         if (placer && !converter.placer_top) {
             converter.placer_top = placer;
         } else if (is_holding_placer(converter)) {
@@ -109,11 +111,11 @@ void converter_tick() {
     // Locking the placers in place which are connected to the converter.
     if (converter.placer_top) {
         converter.placer_top->x = 15;
-        converter.placer_top->y = gui.popup_y + 10 + 1;
+        converter.placer_top->y = converter.y + 1;
     }
     if (converter.placer_bottom) {
         converter.placer_bottom->x = 20;
-        converter.placer_bottom->y = gui.popup_y + 10 + converter.h + converter.placer_bottom->h - 1;
+        converter.placer_bottom->y = converter.y + converter.h + converter.placer_bottom->h - 1;
     } else if (!converter.placer_top && placer) {
         placer->x = mx;
         placer->y = my;
@@ -187,46 +189,26 @@ void converter_tick() {
     }
     
     // Code that assigns the placers to the converter.
-    static int mouse_pressed = 0;
-    if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        if (!mouse_pressed) {
-            if (current_tool == TOOL_PLACER)
-                converter_attempt_attach_placer();
-            mouse_pressed = 1;
+    if (mouse_pressed[SDL_BUTTON_LEFT] && current_tool == TOOL_PLACER)
+        converter_attempt_attach_to_placer();
+
+    if (mouse_pressed[SDL_BUTTON_RIGHT]) {
+        if (converter.state == STATE_OFF && converter.placer_top) {
+            converter.state = STATE_ON;
+        } else {
+            converter.state = STATE_OFF;
         }
-    } else {
-        mouse_pressed = 0;
     }
-    
-    static int mrp = 0;
-    if (mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-        if (!mrp) {
-            if (converter.state == STATE_OFF && converter.placer_top) {
-                converter.state = STATE_ON;
-            } else {
-                converter.state = STATE_OFF;
-            }
-            mrp = 1;
+
+    if (mouse_pressed[SDL_BUTTON_MIDDLE]) {
+        if (converter.state != STATE_OUT && converter.contains_amount > 0 && converter.placer_bottom && (converter.placer_bottom->contains_type == converter.contains_type || converter.placer_bottom->contains_amount == 0)) {
+            converter.state = STATE_OUT;
+            converter.placer_bottom->contains_type = converter.contains_type;
+        } else {
+            converter.state = STATE_OFF;
         }
-    } else {
-        mrp = 0;
-    }
-    
-    static int outp = 0;
-    if (mouse & SDL_BUTTON(SDL_BUTTON_MIDDLE)) {
-        if (!outp) {
-            if (converter.state != STATE_OUT && converter.contains_amount > 0 && converter.placer_bottom && (converter.placer_bottom->contains_type == converter.contains_type || converter.placer_bottom->contains_amount == 0)) {
-                converter.state = STATE_OUT;
-                converter.placer_bottom->contains_type = converter.contains_type;
-            } else {
-                converter.state = STATE_OFF;
-            }
-            outp = 1;
-        }
-    } else {
-        outp = 0;
-    }
-    
+    }    
+
     struct Placer *top = converter.placer_top;
     struct Placer *bottom = converter.placer_bottom;
     
@@ -381,7 +363,7 @@ int converter_convert(int input) {
         case CELL_DIRT:   return CELL_COAL;
         case CELL_COAL:   return CELL_DIAMOND;
             
-            // TODO: Remove this from the converter and make a wood converter.
+        // TODO: Remove this from the converter and make a wood converter.
         case CELL_WOOD_LOG:   return CELL_WOOD_PLANK;
         case CELL_WOOD_PLANK: return CELL_COAL;
             

@@ -13,7 +13,7 @@ struct Line {
     int x1, y1, x2, y2;
 };
 
-struct ChiselBlocker {
+struct Chisel_Blocker {
     int state;
     
     SDL_Point control_points[4]; // The bezier or line control points.
@@ -29,7 +29,7 @@ struct ChiselBlocker {
     int side;
 };
 
-extern struct ChiselBlocker chisel_blocker;
+extern struct Chisel_Blocker chisel_blocker;
 extern int chisel_blocker_mode; // Edit mode for the points.
 
 void chisel_blocker_init();

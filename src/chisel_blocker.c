@@ -6,7 +6,7 @@
 #include "globals.h"
 #include "util.h"
 
-struct ChiselBlocker chisel_blocker;
+struct Chisel_Blocker chisel_blocker;
 int chisel_blocker_mode = 0;
 
 void chisel_blocker_init() {
@@ -43,27 +43,15 @@ static void flood_fill(Uint32 *pixels, int x, int y, Uint32 value) {
 }
 
 void chisel_blocker_tick() {
-    static int b_pressed = 0;
-    if (chisel_blocker.state != CHISEL_BLOCKER_OFF && current_tool == TOOL_CHISEL_MEDIUM && keys[SDL_SCANCODE_C]) {
-        if (!b_pressed) {
-            chisel_blocker_mode = !chisel_blocker_mode;
-            b_pressed = 1;
-        }
-    } else {
-        b_pressed = 0;
+    if (chisel_blocker.state != CHISEL_BLOCKER_OFF && current_tool == TOOL_CHISEL_MEDIUM && keys_pressed[SDL_SCANCODE_C]) {
+        chisel_blocker_mode = !chisel_blocker_mode;
     }
 
     if (current_tool == TOOL_CHISEL_MEDIUM) {
-        static int pressed = 0;
-        if (keys[SDL_SCANCODE_L]) {
-            if (!pressed) {
-                chisel_blocker.state++;
-                if (chisel_blocker.state > CHISEL_BLOCKER_CURVE_MODE)
-                    chisel_blocker.state = CHISEL_BLOCKER_OFF;
-                pressed = 1;
-            }
-        } else {
-            pressed = 0;
+        if (keys_pressed[SDL_SCANCODE_L]) {
+            chisel_blocker.state++;
+            if (chisel_blocker.state > CHISEL_BLOCKER_CURVE_MODE)
+                chisel_blocker.state = CHISEL_BLOCKER_OFF;
         }
     }
 
@@ -73,20 +61,12 @@ void chisel_blocker_tick() {
     if (SDL_GetCursor() != grabber_cursor)
         SDL_SetCursor(grabber_cursor);
 
-    static int rpressed = 0;
-    if (mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
-        if (!rpressed) {
-            chisel_blocker.side = (chisel_blocker.side == 1) ? 2 : 1;
-            rpressed = 1;
-        }
-    } else {
-        rpressed = 0;
+    if (mouse_pressed[SDL_BUTTON_RIGHT]) {
+        chisel_blocker.side = (chisel_blocker.side == 1) ? 2 : 1;
     }
 
-    static int pressed = 0;
     if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        if (!pressed) {
-            pressed = 1;
+        if (mouse_pressed[SDL_BUTTON_LEFT]) {
             int found_point = 0;
             for (int i = 0; i < chisel_blocker.point_count; i++) {
                 SDL_Point p = chisel_blocker.control_points[i];
@@ -140,7 +120,6 @@ void chisel_blocker_tick() {
             }
         }
     } else {
-        pressed = 0;
         chisel_blocker.current_point = -1;
 
         SDL_Point p0 = chisel_blocker.control_points[0];
@@ -347,12 +326,14 @@ void chisel_blocker_draw() {
         }
     }
 
-    for (int i = 0; i < chisel_blocker.point_count; i++) {
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-        SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x, chisel_blocker.control_points[i].y);
-        SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x-1, chisel_blocker.control_points[i].y);
-        SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x+1, chisel_blocker.control_points[i].y);
-        SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x, chisel_blocker.control_points[i].y+1);
-        SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x, chisel_blocker.control_points[i].y-1);
+    if (chisel_blocker_mode) {
+        for (int i = 0; i < chisel_blocker.point_count; i++) {
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+            SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x, chisel_blocker.control_points[i].y);
+            SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x-1, chisel_blocker.control_points[i].y);
+            SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x+1, chisel_blocker.control_points[i].y);
+            SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x, chisel_blocker.control_points[i].y+1);
+            SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x, chisel_blocker.control_points[i].y-1);
+        }
     }
 }
