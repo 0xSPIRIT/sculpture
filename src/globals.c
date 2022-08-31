@@ -16,4 +16,4 @@ int current_tool = TOOL_GRABBER;
 
 int debug_mode;
 
-TTF_Font *font, *title_font;
+TTF_Font *font, *font_consolas, *title_font;

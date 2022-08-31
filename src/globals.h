@@ -38,7 +38,7 @@ enum Cell_Type {
     CELL_LEAF,
     CELL_SMOKE,
     CELL_DUST,
-    CELL_MAX
+    CELL_COUNT
 };
 
 extern SDL_Window *window;
@@ -49,7 +49,7 @@ extern SDL_Texture *render_tex;
 extern int current_tool;
 extern int debug_mode;
 
-extern TTF_Font *font, *title_font;
+extern TTF_Font *font, *font_consolas, *title_font;
 
 extern SDL_Cursor *grabber_cursor, *normal_cursor;
 

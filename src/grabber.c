@@ -4,6 +4,7 @@
 
 #include "grid.h"
 #include "globals.h"
+#include "undo.h"
 
 struct Grabber grabber;
 
@@ -26,7 +27,7 @@ void grabber_tick() {
     grabber.x = mx;
     grabber.y = my;
 
-    SDL_assert(is_in_bounds(grabber.x, grabber.y));
+    if (!is_in_bounds(grabber.x, grabber.y)) return;
 
     if (grabber.object_holding != -1) {
         int dx = (int)grabber.x-px;
@@ -51,6 +52,8 @@ void grabber_tick() {
         if (object != -1) grabber.object_holding = object;
     } else {
         grabber.object_holding = -1;
+        /* if (mouse_released[SDL_BUTTON_LEFT]) */
+        /*     save_state(); */
     }
 }
 

@@ -55,7 +55,7 @@ void converter_init() {
     converter.heat_state = HEAT_HOT;
     converter.cooldown_time_max = 160;
     converter.cooldown_time_current = -1;
-    converter.spd = 4;
+    converter.spd = 16;
 }
 
 void converter_deinit() {
@@ -206,7 +206,7 @@ void converter_tick() {
             converter.placer_bottom->contains_type = converter.contains_type;
         } else {
             converter.state = STATE_OFF;
-        }
+	}
     }    
 
     struct Placer *top = converter.placer_top;
@@ -273,6 +273,11 @@ void converter_tick() {
             converter.state = STATE_OFF;
         }
         
+        // We don't want to take out more than we have.
+        if (converter.contains_amount - amount_add < 0) {
+            amount_add = converter.contains_amount;
+        }
+
         converter.contains_amount -= amount_add;
         bottom->contains_amount += amount_add;
         

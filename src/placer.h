@@ -5,6 +5,8 @@
 
 #define PLACER_COUNT 3
 
+#define MAX_PLACE_SOLID_TIME 45 // Frames until cut off for solids.
+
 enum {
     PLACER_SUCK_MODE,
     PLACER_PLACE_RECT_MODE,
@@ -30,7 +32,7 @@ struct Placer {
 
     int contains_type, contains_amount;
 
-    int did_take_hard; // Did we pick up a hard cell last frame?
+    int placing_solid_time;
 };
 
 extern struct Placer *placers[PLACER_COUNT];

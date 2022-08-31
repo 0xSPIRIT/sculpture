@@ -6,6 +6,7 @@
 #include "placer.h"
 #include "chisel.h"
 #include "chisel_blocker.h"
+#include "cursor.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -68,7 +69,7 @@ void gui_tick() {
 
     if (gui.popup) {
         if (SDL_GetCursor() != grabber_cursor) {
-            SDL_SetCursor(grabber_cursor);
+            set_cursor(grabber_cursor);
             /* SDL_ShowCursor(1); */
         }
 
@@ -88,7 +89,7 @@ void gui_tick() {
     }
 
     if (!gui.popup) {
-        SDL_SetCursor(normal_cursor);
+        /* set_cursor(normal_cursor); */
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_tick(gui.tool_buttons[i]);
         }

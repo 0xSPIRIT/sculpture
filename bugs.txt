@@ -1,0 +1,1 @@
+- Rare crash in level 4, when hovering chisel over the steam.

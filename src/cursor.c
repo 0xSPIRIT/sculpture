@@ -79,3 +79,8 @@ SDL_Cursor *init_system_cursor() {
     sscanf(image[4+row], "%d,%d", &hot_x, &hot_y);
     return SDL_CreateCursor(data, mask, 32, 32, hot_x, hot_y);
 }
+
+void _set_cursor(SDL_Cursor *cursor, const char *file, int line) {
+    /* printf("Set to %p at file %s and line %d.\n", (void*)cursor, file, line); fflush(stdout); */
+    SDL_SetCursor(cursor);
+}

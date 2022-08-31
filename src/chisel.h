@@ -3,13 +3,13 @@
 
 #include <stdbool.h>
 #include <SDL2/SDL.h>
-#include "grid.h"
 
 #define CHISEL_TIME 0 /* The amount of frames the chisel moves. 0 = instant */
 #define CHISEL_COOLDOWN 3
 #define CHISEL_FORGIVING_AIM false // Do we check for surrounding cells?
+#define DRAW_CHISEL_HIGHLIGHTS false
 
-struct ChiselHammer {
+struct Chisel_Hammer {
 	int state;
     float x, y;
 	float dist, normal_dist;
@@ -40,7 +40,7 @@ struct Chisel {
 
 extern struct Chisel *chisel;
 extern struct Chisel chisel_small, chisel_medium, chisel_large;
-extern struct ChiselHammer chisel_hammer;
+extern struct Chisel_Hammer chisel_hammer;
 
 void chisel_hammer_init();
 void chisel_hammer_deinit();
@@ -51,7 +51,7 @@ void chisel_init(struct Chisel *type);
 void chisel_deinit();
 void chisel_tick();
 void chisel_draw();
-int chisel_goto_blob(bool remove, float ux, float uy, float len);
+Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len);
 
 void chisel_update_texture();
 

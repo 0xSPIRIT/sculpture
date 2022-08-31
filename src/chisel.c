@@ -5,15 +5,16 @@
 
 #include "globals.h"
 #include "grid.h"
-#include "vectorizer.h"
 #include "util.h"
 #include "grid.h"
 #include "blob_hammer.h" // For hammer state enum
+#include "chisel_blocker.h"
+#include "undo.h"
 
-struct Chisel *chisel = &chisel_medium;
 struct Chisel chisel_small, chisel_medium, chisel_large;
+struct Chisel *chisel = &chisel_medium;
 
-struct ChiselHammer chisel_hammer;
+struct Chisel_Hammer chisel_hammer;
 
 void chisel_init(struct Chisel *type) {
     SDL_Surface *surf;
@@ -79,13 +80,15 @@ void chisel_deinit(struct Chisel *type) {
 static void chisel_set_depth() {
     switch (chisel->size) {
     case 0:
-        grid[(int)chisel->x + ((int)chisel->y)*gw].depth = 128;
+        grid[(int)chisel->x + ((int)chisel->y)*gw].depth = 127;
         break;
     case 1:
         for (int y = 0; y < gh; y++) {
             for (int x = 0; x < gw; x++) {
                 if (chisel->pixels[x+y*gw] == 0x9B9B9B) {
-                    grid[x+y*gw].depth = 128;
+                    const int amt = 127;
+                    if (grid[x+y*gw].depth > amt)
+                        grid[x+y*gw].depth -= amt;
                 }
             }
         }
@@ -96,7 +99,7 @@ static void chisel_set_depth() {
 void chisel_tick() {
     bool prev_changing_angle = chisel->is_changing_angle;
 
-    chisel->is_changing_angle = keys[SDL_SCANCODE_LCTRL];
+    chisel->is_changing_angle = keys[SDL_SCANCODE_LSHIFT];
 
     if (prev_changing_angle && !chisel->is_changing_angle) {
         /* SDL_WarpMouseInWindow(window, (int)chisel->x*S, GUI_H + (int)chisel->y*S); */
@@ -123,11 +126,11 @@ void chisel_tick() {
 
             struct Chisel copy = *chisel;
 
-            int blob_highlight = chisel_goto_blob(false, ux, uy, len);
+            Uint32 blob_highlight = chisel_goto_blob(false, ux, uy, len);
 
             *chisel = copy;
 
-            if (blob_highlight != -1) {
+            if (blob_highlight > 0) {
                 memset(chisel->highlights, 0, chisel->highlight_count);
                 chisel->highlight_count = 0;
 
@@ -300,27 +303,34 @@ void chisel_draw() {
     SDL_RenderCopy(renderer, chisel->render_texture, NULL, NULL);
 
     // Draw the highlights for blobs now.
-    /* for (int i = 0; i < chisel->highlight_count; i++) { */
-    /*     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 64); */
-    /*     SDL_RenderDrawPoint(renderer, chisel->highlights[i]%gw, chisel->highlights[i]/gw); */
-    /* } */
+    if (DRAW_CHISEL_HIGHLIGHTS) {
+        for (int i = 0; i < chisel->highlight_count; i++) {
+            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 64);
+            SDL_RenderDrawPoint(renderer, chisel->highlights[i]%gw, chisel->highlights[i]/gw);
+        }
+    }
 }
 
-// if remove == 1, delete the blob
+// if remove, delete the blob
 // else, highlight it and don't change anything about the chisel's state.
 // ux, uy = unit vector for the direction of chisel.
 // px, py = initial positions.
 // Returns the blob it reaches only if remove == 0.
-int chisel_goto_blob(bool remove, float ux, float uy, float len) {
+Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len) {
+    bool did_hit_blocker = false;
     float px = chisel->x, py = chisel->y;
 
-    if (object_current == -1) return -1;
+    if (object_current == -1) return 0;
 
     while (sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y)) < len) {
+        // If we hit the chisel blocker, keep that in mind for later.
+        if (current_tool == TOOL_CHISEL_MEDIUM && chisel_blocker.state != CHISEL_BLOCKER_OFF && chisel_blocker.pixels[(int)chisel->x + ((int)chisel->y)*gw] != chisel_blocker.side) {
+            did_hit_blocker = true;
+        }
+
         // If we come into contact with a cell, locate its blob
         // then remove it. We only remove one blob per chisel,
         // so we stop our speed right here.
-
         Uint32 b = objects[object_current].blob_data[chisel->size].blobs[(int)chisel->x + ((int)chisel->y)*gw];
         if (b > 0 && !remove) {
             if (grid[(int)chisel->x + ((int)chisel->y)*gw].type == 0) b = -1;
@@ -345,9 +355,8 @@ int chisel_goto_blob(bool remove, float ux, float uy, float len) {
 
                 /* SDL_WarpMouseInWindow(window, (int)(chisel->x * S), GUI_H + (int)(chisel->y * S)); */
                 move_mouse_to_grid_position(chisel->x, chisel->y);
+                chisel->did_remove = true;
             }
-
-            chisel->did_remove = true;
 
             chisel->click_cooldown = CHISEL_COOLDOWN-CHISEL_TIME-1;
             break;
@@ -356,6 +365,7 @@ int chisel_goto_blob(bool remove, float ux, float uy, float len) {
         chisel->x += ux;
         chisel->y += uy;
     }
+
     Uint32 b = objects[object_current].blob_data[chisel->size].blobs[(int)chisel->x + ((int)chisel->y)*gw];
     if (!remove) {
         if (grid[(int)chisel->x + ((int)chisel->y)*gw].type == 0) b = -1;
@@ -366,7 +376,7 @@ int chisel_goto_blob(bool remove, float ux, float uy, float len) {
 
     // Do a last-ditch effort if a blob is around a certain radius in order for the player
     // not to feel frustrated if it's a small blob or it's one pixel away.
-    if (CHISEL_FORGIVING_AIM && !chisel->did_remove) {
+    if (did_hit_blocker || (CHISEL_FORGIVING_AIM && !chisel->did_remove)) {
         const float r = 1;
         for (int y = -r; y <= r; y++) {
             for (int x = -r; x <= r; x++) {
@@ -374,6 +384,7 @@ int chisel_goto_blob(bool remove, float ux, float uy, float len) {
                 int xx = chisel->x + x;
                 int yy = chisel->y + y;
                 Uint32 blob = objects[object_current].blob_data[chisel->size].blobs[xx+yy*gw];
+
                 if (blob > 0) {
                     object_remove_blob(object_current, blob, chisel->size, 1);
                     chisel->did_remove = true;
@@ -402,7 +413,7 @@ int chisel_goto_blob(bool remove, float ux, float uy, float len) {
         }
     }
 
-    return -1;
+    return 0;
 }
 
 void chisel_hammer_init() {
@@ -470,6 +481,7 @@ void chisel_hammer_tick() {
         chisel_hammer.dist = chisel_hammer.normal_dist;
         if (mouse_pressed[SDL_BUTTON_LEFT]) {
             chisel_hammer.state = HAMMER_STATE_WINDUP;
+            save_state();
         }
         break;
     }

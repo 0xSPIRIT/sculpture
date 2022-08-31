@@ -1,35 +1,29 @@
       --------------------------TODO----------------------------
 
-x FIX THE LAYERED GRID BUG.
-x New Tool: Hammer. You hit a hard material and it breaks into its
-  blobs and falls to the ground (new layer). Then, you can pick them
-  up with placers.
-- Make Level 5 - "Carbon Copy"
-- Make rectangle placement work with setting objects placer.
-
-- Remove really odd blobs generated using blob_generate_smart, also
-  single-celled blobs (isn't this impossible? Maybe it is.) Perhaps
-  redo the entire algorithm??
-- Make the blobs for each different type of stone different to give
-  them a different feel.
-- Better GUI for switching placers.
-- Make face chiseling look better... somehow. Figure out a solution
+x Placer: Make circle mode the only mode.
+          Perhaps add limit to continuous placement of solids.
+x Blobs: Better version of random swapping (don't let diagonals or
+         worse, complete singles). Remember, this is stone, not
+         butter. Maybe even normal 3x3 squares are too big blobs.
+- Undo System.
+- Chisel Blocker: Disable & turn on chisel highlights (not red
+                  highlight, more lowkey)
+- Converter: Design a completely different system with more
+             in-depth mechanics. At the moment it's just "cold"
+             and "hot" mode on a converter. Insp: minecraft
+             brewing potions, furnaces, and crafting.
 
      ---------------------------Ideas----------------------------
 
 - Orb imagery! Use it in Diamond & Quartz!
   Figures reaching for something that is offscreen
   then we finally see it's the orb
+- On the dust layer, check collisions on main grid.
 
-- Perhaps a new converter that requires a fuel source (water / coal?)
-  and can create more complex materials, eg. diamond, marble, quartz.
-  This creates a natural limitation for what materials you can create.
-
-- Have some kind of recipe map showing converter_convert()?
 - Reduce wasted space in popup- only furnace needed.
 - Put toolbar on left instead of top? Leave space for metadata?
 
-For Level 2 (Conversion), we still need to get a shape.
+For Level 3 (Conversion), we still need to get a shape.
 It must be simple enough to be the second level (you're still getting
 used to the chiseling etc.) but also complex enough to be thematically
 relevent. I don't want any level to not be thematically tied because

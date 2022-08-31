@@ -37,7 +37,6 @@ void knife_tick() {
         knife.angle = 180 + 360 * (atan2(my - knife.y, mx - knife.x)) / (2*M_PI);
         /* SDL_ShowCursor(1); */
     } else if (keys_released[SDL_SCANCODE_LCTRL]) {
-        /* SDL_WarpMouseInWindow(window, (int)knife.x*S, GUI_H + (int)knife.y*S); */
         move_mouse_to_grid_position(knife.x, knife.y);
         mx = (int)knife.x;
         my = (int)knife.y;

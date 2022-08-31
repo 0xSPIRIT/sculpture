@@ -5,6 +5,7 @@
 #include "grid.h"
 #include "globals.h"
 #include "util.h"
+#include "cursor.h"
 
 struct Chisel_Blocker chisel_blocker;
 int chisel_blocker_mode = 0;
@@ -59,7 +60,7 @@ void chisel_blocker_tick() {
 
     /* SDL_ShowCursor(1); */
     if (SDL_GetCursor() != grabber_cursor)
-        SDL_SetCursor(grabber_cursor);
+        set_cursor(grabber_cursor);
 
     if (mouse_pressed[SDL_BUTTON_RIGHT]) {
         chisel_blocker.side = (chisel_blocker.side == 1) ? 2 : 1;
@@ -328,7 +329,7 @@ void chisel_blocker_draw() {
 
     if (chisel_blocker_mode) {
         for (int i = 0; i < chisel_blocker.point_count; i++) {
-            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+            SDL_SetRenderDrawColor(renderer, 0, 255, 0, 100);
             SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x, chisel_blocker.control_points[i].y);
             SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x-1, chisel_blocker.control_points[i].y);
             SDL_RenderDrawPoint(renderer, chisel_blocker.control_points[i].x+1, chisel_blocker.control_points[i].y);

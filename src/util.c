@@ -1,6 +1,7 @@
 #include "util.h"
 
 #include <math.h>
+#include <string.h>
 
 #include "globals.h"
 
@@ -102,12 +103,16 @@ float my_rand_float(int seed) {
     return (float)my_rand(seed)/(float)m;
 }
 
+float randf(float size) {
+    return size * ((float)(rand()%RAND_MAX))/(float)RAND_MAX;
+}
+
 int max(int a, int b) {
     if (a > b) return a;
     return b;
 }
 
-int min(int a, int b) {
+int minimum(int a, int b) {
     if (a < b) return a;
     return b;
 }

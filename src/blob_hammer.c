@@ -7,6 +7,7 @@
 #include "globals.h"
 #include "grid.h"
 #include "util.h"
+#include "undo.h"
 
 struct Blob_Hammer blob_hammer;
 
@@ -86,7 +87,7 @@ void blob_hammer_tick() {
             blob_hammer.timer--;
         } else {
             blob_hammer.state = HAMMER_STATE_AFTERSWING;
-            blob_hammer.timer = min(4, blob_hammer.angle - blob_hammer.prev_angle);
+            blob_hammer.timer = minimum(4, blob_hammer.angle - blob_hammer.prev_angle);
             break;
         }
 
@@ -131,6 +132,8 @@ void blob_hammer_tick() {
                 blob_hammer.blobs_touched[i] = 0;
             }
             blob_hammer.blobs_touched_count = 0;
+
+            save_state();
             break;
         }
 

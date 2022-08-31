@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
-#include <unistd.h>
 #include <signal.h>
 
 #define SDL_MAIN_HANDLED
@@ -23,6 +22,8 @@
 #include "gui.h"
 #include "chisel_blocker.h"
 #include "input.h"
+#include "popup.h"
+#include "undo.h"
 
 int main(void) {
     SDL_Init(SDL_INIT_VIDEO);
@@ -30,6 +31,7 @@ int main(void) {
     TTF_Init();
     
     font = TTF_OpenFont("../res/cour.ttf", 19);
+    font_consolas = TTF_OpenFont("../res/consola.ttf", 24);
     title_font = TTF_OpenFont("../res/cour.ttf", 45);
     
     srand(time(0));
@@ -48,6 +50,8 @@ int main(void) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     
     levels_setup();
+
+    goto_level(0);
 
     bool running = true;
     
@@ -75,7 +79,7 @@ int main(void) {
                     if (keys[SDL_SCANCODE_LCTRL]) {
                         placer->contains_type += event.wheel.y;
                         if (placer->contains_type < CELL_NONE+1) placer->contains_type = CELL_NONE+1;
-                        if (placer->contains_type >= CELL_MAX) placer->contains_type = CELL_MAX-1;
+                        if (placer->contains_type >= CELL_COUNT) placer->contains_type = CELL_COUNT-1;
                     } else {
                         placer->radius += event.wheel.y;
                         placer->radius = clamp(placer->radius, 1, 5);
@@ -84,7 +88,7 @@ int main(void) {
             }
            
             int selected_tool = 0;
-            if (event.type == SDL_KEYDOWN) {
+            if (event.type == SDL_KEYDOWN && !text_field.active) {
                 switch (event.key.keysym.sym) {
                 case SDLK_ESCAPE:
                     running = false;
@@ -98,8 +102,20 @@ int main(void) {
                 case SDLK_b:
                     do_draw_blobs = !do_draw_blobs;
                     break;
+                case SDLK_g:
+                    if (keys[SDL_SCANCODE_LCTRL]) {
+                        set_text_field("Goto Level", "", goto_level_string_hook);
+                    }
+                    break;
                 case SDLK_o:
-                    do_draw_objects = !do_draw_objects;
+                    if (keys[SDL_SCANCODE_LCTRL]) {
+                        set_text_field("Output current grid to image:", "../", level_output_to_png);
+                    } else {
+                        do_draw_objects = !do_draw_objects;
+                    }
+                    break;
+                case SDLK_F5:
+                    view_save_state_linked_list();
                     break;
                 case SDLK_u:
                     objects_reevaluate();
@@ -107,10 +123,16 @@ int main(void) {
                 case SDLK_d:
                     debug_mode = 1;
                     break;
-                case SDLK_0: {
-                    print_blob_data(&objects[0], chisel->size);
+                case SDLK_z:
+                    if (keys[SDL_SCANCODE_LCTRL]) {
+                        undo();
+                    }
                     break;
-                };
+                case SDLK_r:
+                    if (keys[SDL_SCANCODE_LCTRL]) {
+                        redo();
+                    }
+                    break;
                 case SDLK_q: {
                     struct Cell *c;
                     if (keys[SDL_SCANCODE_LSHIFT]) {
@@ -126,9 +148,11 @@ int main(void) {
 
                     SDL_assert(obj != -1);
 
-                    printf("Cell %d, %d: Type: %s, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
+                    printf("Cell %d, %d: Pos: (%f, %f), Type: %s, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
                            mx,
                            my,
+                           c->vx_acc,
+                           c->vy_acc,
                            name,
                            c->rand,
                            c->object,
@@ -197,6 +221,9 @@ int main(void) {
                     break;
                 }
             }
+
+            text_field_tick(&event);
+
             if (selected_tool) {
                 gui.tool_buttons[current_tool]->on_pressed(gui.tool_buttons[current_tool]->index);
                 gui.tool_buttons[current_tool]->activated = 1;
@@ -214,6 +241,7 @@ int main(void) {
     levels_deinit();
     
     TTF_CloseFont(font);
+    TTF_CloseFont(font_consolas);
     TTF_CloseFont(title_font);
     
     grid_deinit();

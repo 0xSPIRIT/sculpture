@@ -27,9 +27,11 @@ void placer_init(int num) {
     placer->texture = SDL_CreateTextureFromSurface(renderer, surf);
     placer->object_index = -1;
     placer->did_click = 0;
-    placer->contains_type = CELL_WATER;
+    placer->contains_type = CELL_ICE;
     placer->contains_amount = 5000;
-    placer->did_take_hard = 0;
+    placer->radius = 2;
+
+    placer->placing_solid_time = 0;
 
     placer->rect.x = placer->rect.y = -1;
 
@@ -45,6 +47,7 @@ void placer_deinit(int i) {
     struct Placer *placer = placers[i];
     SDL_DestroyTexture(placer->texture);
     free(placer);
+    placers[i] = NULL;
 }
 
 // Places a circle down.
@@ -61,6 +64,13 @@ static void placer_place_circle(struct Placer *placer) {
     int did_set_object = 1;
 
     placer->did_set_new = 0;
+
+    if (is_cell_hard(placer->contains_type)) {
+        placer->placing_solid_time++;
+        if (placer->placing_solid_time >= MAX_PLACE_SOLID_TIME) {
+            return;
+        }
+    }
 
     while ((len == 0 || sqrt((fx-placer->px)*(fx-placer->px) + (fy-placer->py)*(fy-placer->py)) < len) && placer->contains_amount > 0) {
         int radius = placer->radius;
@@ -127,8 +137,6 @@ static void placer_set_and_resize_rect(struct Placer *placer) {
     placer->rect.w = mx - placer->rect.x;
     placer->rect.h = my - placer->rect.y;
 
-    printf("Set & Resize\n"); fflush(stdout);
-
     int area = abs((placer->rect.w) * (placer->rect.h));
     if (area > placer->contains_amount) {
         placer->rect.h = clamp(placer->rect.h, -placer->contains_amount, placer->contains_amount);
@@ -147,6 +155,9 @@ static void placer_set_and_resize_rect(struct Placer *placer) {
 
 static void placer_place_rect(struct Placer *placer) {
     if (placer->rect.x == -1) return;
+
+    placer->rect.w--;
+    placer->rect.h--;
     
     if (placer->rect.w < 0) {
         placer->rect.x += placer->rect.w;
@@ -157,6 +168,8 @@ static void placer_place_rect(struct Placer *placer) {
     placer->rect.w = abs(placer->rect.w);
     placer->rect.h = abs(placer->rect.h);
             
+    placer->object_index = object_count++;
+
     for (int y = placer->rect.y; y <= placer->rect.y+placer->rect.h; y++) {
         for (int x = placer->rect.x; x <= placer->rect.x+placer->rect.w; x++) {
             if (!is_in_bounds(x, y)) continue;
@@ -194,17 +207,7 @@ void placer_suck(struct Placer *placer) {
     if (gui.popup) return;
 
     int can_continue = 0;
-    if (placer->did_take_hard) {
-        static int pressed = 0;
-        if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-            if (!pressed) {
-                can_continue = 1;
-                pressed = 1;
-            }
-        } else {
-            pressed = 0;
-        }
-    } else if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+    if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
         can_continue = 1;
     }
 
@@ -227,8 +230,6 @@ void placer_suck(struct Placer *placer) {
     }
 
     while (distance(x, y, placer->px, placer->py) < len) {
-        placer->did_take_hard = 0;
-
         // Include the grid as well as pickup grid.
         const int r = placer->radius;
         for (int a = 0; a < 2; a++) {
@@ -246,9 +247,10 @@ void placer_suck(struct Placer *placer) {
                     int type = arr[xx+yy*gw].type;
                     if (type == 0) continue;
 
-                    if (is_cell_hard(type)) {
-                        placer->did_take_hard = 1;
+                    if (arr != pickup_grid && is_cell_hard(type)) {
+                        continue;
                     }
+                    
                     if (placer->contains_type == type || placer->contains_type == 0 || placer->contains_amount == 0) {
                         placer->contains_type = type;
                         placer->contains_amount++;
@@ -285,23 +287,23 @@ void placer_tick(struct Placer *placer) {
 
     // If the cell type is hard, use rectangle placing, otherwise use circle placing.
     if (placer->state != PLACER_SUCK_MODE) {
-        if (is_cell_hard(placer->contains_type)) {
-            placer->state = PLACER_PLACE_RECT_MODE;
-        } else {
+        /* if (is_cell_hard(placer->contains_type)) { */
+        /*     placer->state = PLACER_PLACE_RECT_MODE; */
+        /* } else { */
             placer->state = PLACER_PLACE_CIRCLE_MODE;
-        }
+        /* } */
     }
 
-    if (mouse_pressed[SDL_BUTTON_LEFT] &&
-        is_cell_hard(placer->contains_type) &&
-        placer->contains_amount > 0 &&
-        !gui.popup && mouse & SDL_BUTTON(SDL_BUTTON_LEFT))
-        {
-            placer->object_index = object_count++;
-        }
-    
     switch (placer->state) {
     case PLACER_PLACE_CIRCLE_MODE:
+        if (mouse_pressed[SDL_BUTTON_LEFT] &&
+            is_cell_hard(placer->contains_type) &&
+            placer->contains_amount > 0 &&
+            !gui.popup && mouse & SDL_BUTTON(SDL_BUTTON_LEFT))
+            {
+                placer->object_index = object_count++;
+            }
+    
         if (placer->contains_amount > 0 && !gui.popup && (mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
             placer_place_circle(placer);
         } else if (placer->did_click) {
@@ -310,6 +312,7 @@ void placer_tick(struct Placer *placer) {
                 object_generate_blobs(placer->object_index, 1);
                 object_generate_blobs(placer->object_index, 2);
             }
+            placer->placing_solid_time = 0;
             placer->did_click = 0;
         }
         break;
@@ -388,7 +391,6 @@ void placer_draw(struct Placer *placer) {
     SDL_RenderCopyEx(renderer, placer->texture, NULL, &dst, 0, NULL, flip);
 
     if (placer->rect.x != -1) {
-        printf("Happened\n"); fflush(stdout);
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         SDL_RenderDrawRect(renderer, &placer->rect);
     }

@@ -1,16 +1,13 @@
 #ifndef GRID_H_
 #define GRID_H_
 
-#define MAX_BLOB_CELLS 512
-
 // Maximum amounts of pressure for each chisel size.
 #define MAX_PRESSURE (chisel->size == 2 ? 48.0 : 120.0)
-#define PRESSURE_THRESHOLD 0.75
 
 #define MAX_OBJECTS 32
 #define NUM_GRID_LAYERS 3
 
-#define DRAW_PRESSURE 0
+#define DRAW_PRESSURE false
 
 #define GRAV 0.5
 #define MAX_GRAV 4
@@ -32,7 +29,7 @@ struct Cell {
 };
 
 extern struct Cell *grid_layers[NUM_GRID_LAYERS]; 
-extern struct Cell *grid, *fg_grid, *pickup_grid; // Pointers in grid_layers.
+extern struct Cell *grid, *fg_grid, *pickup_grid; // Pointers into grid_layers.
 
 extern int gw, gh;
 extern int grid_show_ghost;
@@ -68,21 +65,22 @@ int is_in_bounds(int x, int y);
 int is_in_boundsf(float x, float y);
 
 void move_by_velocity(struct Cell *arr, int x, int y);
-void move_by_velocity_2(struct Cell *arr, int x, int y);
+bool move_by_velocity_gas(struct Cell *arr, int x, int y);
 
 void swap_array(struct Cell *grid, int x1, int y1, int x2, int y2);
 void swap(int x1, int y1, int x2, int y2);
 void switch_blob_to_array(struct Cell *from, struct Cell *to, int obj, int blob, int chisel_size);
 
+float get_pressure_threshold(int chisel_size);
 void print_blob_data(struct Object *object, int chisel_size);
-int blob_can_destroy(int obj, int chisel_size, int blob);
+bool blob_can_destroy(int obj, int chisel_size, int blob);
 
 void object_tick(int obj);
 int object_does_exist(int obj);
 void object_get_cell_count(int obj);
 void object_blobs_set_pressure(int obj, int chisel_size);
 void object_generate_blobs(int object_index, int chisel_size);
-void object_remove_blob(int object, Uint32 blob, int chisel_size, int replace_dust);
+bool object_remove_blob(int object, Uint32 blob, int chisel_size, int replace_dust);
 void object_darken_blob(struct Object *obj, Uint32 blob, int amt, int chisel_size);
 void objects_reevaluate();
 int object_attempt_move(int object, int dx, int dy);
@@ -100,5 +98,6 @@ void draw_objects();
 
 int is_cell_hard(int type);
 int is_cell_liquid(int type);
+int is_cell_gas(int type);
 
 #endif  /* GRID_H_ */
