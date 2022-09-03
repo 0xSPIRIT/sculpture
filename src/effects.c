@@ -70,7 +70,7 @@ void effect_tick(struct Effect *effect) {
             particle->y += particle->vy;
 
             if (effect->type == EFFECT_RAIN) {
-                particle->vx += 0.005 * sin(SDL_GetTicks() / 1000.0);
+                particle->vx += 0.003 * sin(SDL_GetTicks() / 1000.0);
 
                 if (is_in_bounds((int)particle->x, (int)particle->y) && grid[(int)particle->x + ((int)particle->y)*gw].type) {
                     particle->x = rand()%gw;

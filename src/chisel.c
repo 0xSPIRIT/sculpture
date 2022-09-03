@@ -134,10 +134,12 @@ void chisel_tick() {
                 memset(chisel->highlights, 0, chisel->highlight_count);
                 chisel->highlight_count = 0;
 
-                for (int i = 0; i < gw*gh; i++) {
-                    Uint32 b = objects[object_current].blob_data[chisel->size].blobs[i];
-                    if (b == blob_highlight) {
-                        chisel->highlights[chisel->highlight_count++] = i;
+                if (blob_can_destroy(object_current, chisel->size, blob_highlight)) {
+                    for (int i = 0; i < gw*gh; i++) {
+                        Uint32 b = objects[object_current].blob_data[chisel->size].blobs[i];
+                        if (b == blob_highlight) {
+                            chisel->highlights[chisel->highlight_count++] = i;
+                        }
                     }
                 }
             }
@@ -305,7 +307,7 @@ void chisel_draw() {
     // Draw the highlights for blobs now.
     if (DRAW_CHISEL_HIGHLIGHTS) {
         for (int i = 0; i < chisel->highlight_count; i++) {
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 64);
+            SDL_SetRenderDrawColor(renderer, 234, 103, 93, 64);
             SDL_RenderDrawPoint(renderer, chisel->highlights[i]%gw, chisel->highlights[i]/gw);
         }
     }
@@ -481,7 +483,7 @@ void chisel_hammer_tick() {
         chisel_hammer.dist = chisel_hammer.normal_dist;
         if (mouse_pressed[SDL_BUTTON_LEFT]) {
             chisel_hammer.state = HAMMER_STATE_WINDUP;
-            save_state();
+            save_state_to_next();
         }
         break;
     }

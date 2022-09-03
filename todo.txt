@@ -1,26 +1,40 @@
       --------------------------TODO----------------------------
 
-x Placer: Make circle mode the only mode.
-          Perhaps add limit to continuous placement of solids.
-x Blobs: Better version of random swapping (don't let diagonals or
-         worse, complete singles). Remember, this is stone, not
-         butter. Maybe even normal 3x3 squares are too big blobs.
-- Undo System.
-- Chisel Blocker: Disable & turn on chisel highlights (not red
-                  highlight, more lowkey)
 - Converter: Design a completely different system with more
-             in-depth mechanics. At the moment it's just "cold"
-             and "hot" mode on a converter. Insp: minecraft
-             brewing potions, furnaces, and crafting.
+             in-depth mechanics. At the moment there's just a
+             "cold" and "hot" mode on a converter that turns
+             eg. sand to glass, or dirt to coal. Inspration:
+             minecraft brewing potions, furnaces, and crafting?
+   x Write the functions for doing the conversion for all the
+     converter types.
+   - Make the converters render in full coords and not pixel art
+     coords.
+   - Add the fuel requirements.
+   - Refactor the placers to be an array. Generalize.
+- Improve the grabber to actually grab objects properly. Upon
+  clicking, store the position of a cell in the object then track
+  that cell upon grabbing the object.
 
      ---------------------------Ideas----------------------------
+
+- In the first level, instead of having multiple materials, have only
+  one that you actually manipulate and then when you're done, it
+  transforms itself into the wood etc. Perhaps do this for some
+  levels in the beginning.
+- Make diamond completely brittle unless you use the small chisel.
+- Inner monologue, Inscryption-style text between each level. Judging
+  yourself or praising yourself. Gets you amped up for the final
+  level, setting up the "failure".
+- Instead of ending on Glass Body falling down, add some dialogue
+  afterward then end on the first level "Alaska". End on happy note?
+- Find a way to get the pretension point across better (more than the
+  zero-depth glass body). Push that to the dialogue!
+- You gain more tools as you go along.
 
 - Orb imagery! Use it in Diamond & Quartz!
   Figures reaching for something that is offscreen
   then we finally see it's the orb
 - On the dust layer, check collisions on main grid.
-
-- Reduce wasted space in popup- only furnace needed.
 - Put toolbar on left instead of top? Leave space for metadata?
 
 For Level 3 (Conversion), we still need to get a shape.

@@ -72,7 +72,7 @@ void levels_setup() {
     level_add("Remainder",
               "../res/lvl/desired/level 4.png",
               "../res/lvl/initial/level 4.png",
-              EFFECT_SNOW);
+              EFFECT_RAIN);
     level_add("Carbon Copy",
               "../res/lvl/desired/level 5.png",
               "../res/lvl/initial/level 5.png",
@@ -111,6 +111,8 @@ void goto_level_string_hook(const char *string) {
 void goto_level(int lvl) {
     level_current = lvl;
 
+    // Deinit everything here. @Leak
+
     if (grid)
         grid_deinit();
     grid_init(levels[lvl].w, levels[lvl].h);
@@ -141,6 +143,7 @@ void goto_level(int lvl) {
 }
 
 void levels_deinit() {
+    converters_deinit();
     chisel_deinit(&chisel_small);
     chisel_deinit(&chisel_medium);
     chisel_deinit(&chisel_large);
@@ -211,8 +214,14 @@ void level_tick() {
 
         simulation_tick();
     
-        for (int i = 0; i < object_count; i++) {
-            object_tick(i);
+        if (!paused || step_one) {
+            for (int i = 0; i < object_count; i++) {
+                object_tick(i);
+            }
+        }
+
+        if (step_one) {
+            step_one = 0;
         }
 
         if (my < 0) { // If the mouse is in the GUI window...
@@ -291,8 +300,8 @@ void level_draw() {
             blob_hammer_draw();
             break;
         case TOOL_PLACER:
-            if (!gui.popup) // We'll handle updating it in the converter.c
-                placer_draw(placers[current_placer]);
+            if (!gui.popup) // When gui.popup = true, we draw in converter.c
+                placer_draw(placers[current_placer], false, false);
             break;
         case TOOL_GRABBER:
             grabber_draw();
@@ -316,6 +325,8 @@ void level_draw() {
         SDL_SetRenderTarget(renderer, NULL);
         SDL_RenderCopy(renderer, render_tex, NULL, &dst);
 
+        gui_popup_draw();
+        
         break;
     }
 

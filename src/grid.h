@@ -5,7 +5,7 @@
 #define MAX_PRESSURE (chisel->size == 2 ? 48.0 : 120.0)
 
 #define MAX_OBJECTS 32
-#define NUM_GRID_LAYERS 3
+#define NUM_GRID_LAYERS 4
 
 #define DRAW_PRESSURE false
 
@@ -31,7 +31,7 @@ struct Cell {
 extern struct Cell *grid_layers[NUM_GRID_LAYERS]; 
 extern struct Cell *grid, *fg_grid, *pickup_grid; // Pointers into grid_layers.
 
-extern int gw, gh;
+extern int gw, gh; // Grid size; gets set when goto_level() is called.
 extern int grid_show_ghost;
 
 struct Blob_Data {
@@ -55,7 +55,7 @@ void grid_init(int w, int h);
 void grid_deinit();
 void set(int x, int y, int val, int object);
 void set_array(struct Cell *arr, int x, int y, int val, int object);
-void grid_array_tick(struct Cell *array, int y_direction, int x_direction);
+void grid_array_tick(struct Cell *array, int x_direction, int y_direction);
 void grid_array_draw(struct Cell *array);
 void simulation_tick();
 void grid_draw(void);

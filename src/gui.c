@@ -16,7 +16,7 @@ SDL_Texture *gui_texture;
 
 void gui_init() {
     SDL_Surface *surf = IMG_Load("../res/popup.png");
-    gui = (struct GUI){ .popup_y = gh, .popup_y_vel = 0, .popup_h = surf->h, .popup = 0 };
+    gui = (struct GUI){ .popup_y = gh*S, .popup_y_vel = 0, .popup_h = 800, .popup = 0 };
     gui.popup_texture = SDL_CreateTextureFromSurface(renderer, surf);
     gui.overlay.x = gui.overlay.y = -1;
     SDL_FreeSurface(surf);
@@ -43,7 +43,7 @@ void gui_init() {
 
     gui_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gw*S, GUI_H);
 
-    converter_init();
+    all_converters_init();
 }
 
 void gui_deinit() {
@@ -60,12 +60,13 @@ void gui_tick() {
         gui.popup_y_vel = 0;
         gui.overlay.x = -1;
         gui.overlay.y = -1;
-        converter.placer_top = converter.placer_bottom = NULL;
-        converter.state = STATE_OFF;
+        all_converters_reset();
         // Just in case the player had reset it.
         if (current_placer == -1)
             current_placer = 0;
     }
+
+    const float speed = 3.0f;
 
     if (gui.popup) {
         if (SDL_GetCursor() != grabber_cursor) {
@@ -73,18 +74,18 @@ void gui_tick() {
             /* SDL_ShowCursor(1); */
         }
 
-        if (gui.popup_y > gh-gui.popup_h) {
-            gui.popup_y_vel -= 1;
+        if (gui.popup_y > S*gh-gui.popup_h) {
+            gui.popup_y_vel -= speed;
         } else {
             gui.popup_y_vel = 0;
-            gui.popup_y = gh-gui.popup_h;
+            gui.popup_y = S*gh-gui.popup_h;
         }
 
-        converter_tick();
-    } else if (gui.popup_y < gh) {
-        gui.popup_y_vel += 1;
+        converter_tick(furnace);
+    } else if (gui.popup_y < S*gh) {
+        gui.popup_y_vel += speed;
     } else {
-        gui.popup_y = gh;
+        gui.popup_y = S*gh;
         gui.popup_y_vel = 0;
     }
 
@@ -100,45 +101,47 @@ void gui_tick() {
     }
 
     gui.popup_y += gui.popup_y_vel;
-    gui.popup_y = clamp(gui.popup_y, gh-gui.popup_h, gh);
+    gui.popup_y = clamp(gui.popup_y, window_height/2, window_height);
 }
 
 void gui_draw() {
     // Draw the toolbar buttons.
-    {
-        SDL_Texture *old = SDL_GetRenderTarget(renderer);
+    SDL_Texture *old = SDL_GetRenderTarget(renderer);
 
-        SDL_SetTextureBlendMode(gui_texture, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(renderer, gui_texture);
+    SDL_SetTextureBlendMode(gui_texture, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(renderer, gui_texture);
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-        SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderClear(renderer);
 
-        SDL_SetRenderDrawColor(renderer, 64, 64, 64, 255);
-        SDL_Rect r = { 0, 0, gw, GUI_H/S };
-        SDL_RenderFillRect(renderer, &r);
+    SDL_SetRenderDrawColor(renderer, 64, 64, 64, 255);
+    SDL_Rect r = { 0, 0, gw, GUI_H/S };
+    SDL_RenderFillRect(renderer, &r);
 
-        for (int i = 0; i < TOOL_COUNT; i++) {
-            button_draw(gui.tool_buttons[i]);
-        }
-
-        SDL_Rect dst = {
-            0, 0,
-            gw*S, GUI_H
-        };
-
-        SDL_SetRenderTarget(renderer, NULL);
-        SDL_RenderCopy(renderer, gui_texture, NULL, &dst);
-        SDL_SetRenderTarget(renderer, old);
+    for (int i = 0; i < TOOL_COUNT; i++) {
+        button_draw(gui.tool_buttons[i]);
     }
 
-    SDL_Rect popup = {
-        0, gui.popup_y,
-        gw, gui.popup_h
+    SDL_Rect dst = {
+        0, 0,
+        gw*S, GUI_H
     };
-    SDL_RenderCopy(renderer, gui.popup_texture, NULL, &popup);
 
-    converter_draw();
+    SDL_SetRenderTarget(renderer, NULL);
+    SDL_RenderCopy(renderer, gui_texture, NULL, &dst);
+    SDL_SetRenderTarget(renderer, old);
+}
+
+void gui_popup_draw() {
+    SDL_Rect popup = {
+        0, GUI_H + gui.popup_y,
+        gw*S, gui.popup_h
+    };
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderFillRect(renderer, &popup);
+
+    converter_draw(furnace);
 }
 
 static void overlay_draw_box(struct Overlay *overlay, int w, int h) {

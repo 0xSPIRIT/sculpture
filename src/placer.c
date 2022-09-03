@@ -232,8 +232,8 @@ void placer_suck(struct Placer *placer) {
     while (distance(x, y, placer->px, placer->py) < len) {
         // Include the grid as well as pickup grid.
         const int r = placer->radius;
-        for (int a = 0; a < 2; a++) {
-            struct Cell *arr = (a == 0) ? grid : pickup_grid;
+        for (int a = 0; a < 3; a++) {
+            struct Cell *arr = grid_layers[a]; // Tick: grid, fg_grid, gas_grid
 
             // Remove cells in a circle
             for (int dy = -r; dy <= r; dy++) {
@@ -337,20 +337,26 @@ void placer_tick(struct Placer *placer) {
 
     strcpy(gui.overlay.str[0], "Placer");
 
-    if (placer->state == PLACER_PLACE_CIRCLE_MODE || placer->state == PLACER_PLACE_RECT_MODE) {
-        strcpy(gui.overlay.str[1], "Mode: [PLACE]");
-    } if (placer->state == PLACER_SUCK_MODE) {
-        strcpy(gui.overlay.str[1], "Mode: [TAKE]");
-    } 
-
     // Get name from type.
     char string[256] = {0};
     overlay_get_string(placer->contains_type, placer->contains_amount, string);
-
-    strcpy(gui.overlay.str[2], string);
+        
+    if (!gui.popup) {
+        if (placer->state == PLACER_PLACE_CIRCLE_MODE || placer->state == PLACER_PLACE_RECT_MODE) {
+            strcpy(gui.overlay.str[1], "Mode: [PLACE]");
+        } if (placer->state == PLACER_SUCK_MODE) {
+            strcpy(gui.overlay.str[1], "Mode: [TAKE]");
+        } 
+        strcpy(gui.overlay.str[2], string);
+    } else {
+        strcpy(gui.overlay.str[1], string);
+    }
 }
 
-void placer_draw(struct Placer *placer) {
+void placer_draw(struct Placer *placer, bool full_size, SDL_RendererFlip flip) {
+    const int scale = full_size ? S : 1;
+    int y_off = full_size ? GUI_H : 0;
+    
     if (!gui.popup && (placer->state == PLACER_SUCK_MODE || placer->state == PLACER_PLACE_CIRCLE_MODE)) {
         int radius = placer->radius;
         int fx = placer->x;
@@ -364,7 +370,10 @@ void placer_draw(struct Placer *placer) {
                 } else {
                     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 64);
                 }
-                SDL_RenderDrawPoint(renderer, x+fx, y+fy);
+
+                int gx = x+fx;
+                int gy = y+fy;
+                SDL_RenderDrawPoint(renderer, scale*gx, scale*gy + y_off);
             }
         }
     }
@@ -373,6 +382,14 @@ void placer_draw(struct Placer *placer) {
         placer->x - placer->w/2, placer->y - placer->h,
         placer->w, placer->h
     };
+
+    dst.x *= scale;
+    dst.y *= scale;
+    dst.w *= scale;
+    dst.h *= scale;
+
+    dst.y += y_off;
+
     switch (placer->index) {
     case 0:
         SDL_SetTextureColorMod(placer->texture, 255, 0, 0);
@@ -384,14 +401,28 @@ void placer_draw(struct Placer *placer) {
         SDL_SetTextureColorMod(placer->texture, 0, 0, 255);
         break;
     }
-    SDL_RendererFlip flip = SDL_FLIP_NONE;
-    if (converter.placer_bottom == placer) {
-        flip = SDL_FLIP_VERTICAL;
-    }
+
     SDL_RenderCopyEx(renderer, placer->texture, NULL, &dst, 0, NULL, flip);
 
     if (placer->rect.x != -1) {
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         SDL_RenderDrawRect(renderer, &placer->rect);
     }
+}
+
+bool is_mouse_in_placer(struct Placer *placer) {
+    SDL_Point mouse = {mx, my};
+    SDL_Rect rectangle = {
+        placer->x - placer->w/2,
+        placer->y - placer->h,
+        placer->w, placer->h
+    };
+    return is_point_in_rect(mouse, rectangle);
+}
+
+SDL_RendererFlip get_placer_flip(struct Converter *converter, int placer_socket) {
+    if (converter == furnace && placer_socket == PLACER_OUTPUT) {
+        return SDL_FLIP_VERTICAL;
+    }
+    return SDL_FLIP_NONE;
 }

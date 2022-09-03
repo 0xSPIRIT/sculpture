@@ -17,7 +17,8 @@ struct Overlay {
 };
 
 struct GUI {
-    int popup, popup_y, popup_y_vel, popup_h;
+    int popup;
+    float popup_y, popup_y_vel, popup_h;
     SDL_Texture *popup_texture;
     struct Overlay overlay;
 
@@ -50,6 +51,7 @@ void overlay_get_string(int type, int amt, char *out_str);
 struct Button *button_allocate(char *image, const char *overlay_text, void (*on_pressed)(int));
 void button_tick(struct Button *b);
 void button_draw(struct Button *b);
+void gui_popup_draw();
 void button_deallocate(struct Button *b);
 
 void click_gui_tool_button(int type);

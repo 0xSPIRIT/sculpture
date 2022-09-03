@@ -137,7 +137,7 @@ float distance(float ax, float ay, float bx, float by) {
     return sqrtf((bx-ax)*(bx-ax) + (by-ay)*(by-ay));
 }
 
-int is_point_on_line(SDL_Point p, SDL_Point a, SDL_Point b) {
+bool is_point_on_line(SDL_Point p, SDL_Point a, SDL_Point b) {
     return (distance(a.x, a.y, p.x, p.y) + distance(b.x, b.y, p.x, p.y)) == distance(a.x, a.y, b.x, b.y);
 }
 
@@ -159,7 +159,7 @@ SDL_Point closest_point_on_line(SDL_Point a, SDL_Point b, SDL_Point p) {
     }
 }
 
-int is_point_in_rect(SDL_Point p, SDL_Rect r) {
+bool is_point_in_rect(SDL_Point p, SDL_Rect r) {
     if (p.x >= r.x && p.x <= r.x+r.w && p.y >= r.y && p.y <= r.y+r.h)
         return 1;
     return 0;
@@ -170,7 +170,7 @@ static float sign(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
     return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
 }
 
-int is_point_in_triangle(SDL_Point pt, SDL_Point v1, SDL_Point v2, SDL_Point v3) {
+bool is_point_in_triangle(SDL_Point pt, SDL_Point v1, SDL_Point v2, SDL_Point v3) {
     float d1, d2, d3;
     int has_neg, has_pos;
 

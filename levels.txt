@@ -8,8 +8,7 @@ Level 2 - "Masonry"
 Level 3 - "Conversion"
   You make a glass sculpture by taking sand and converting it to
   glass using a furnace. After that you pour the glass down to make
-  a glass mug / cup. Note: perhaps make something more thematically
-  relevent than a mug.
+  a simple glass sculpture.
 
 Level 4 - "Remainder"
   You convert the smoke coming out from a factory into usable
@@ -64,7 +63,7 @@ Level 9 - "Showpiece"
   orb and wood for the hands.
 
 Level 10 - "Glass Body"
-  You are shown a very nice sculpture of complete glass, of a woman
+  You are shown a very nice sculpture of complete glass, of a body
   with lots of curves-- lots of work. Multiple materials in layers,
   symbolising how "deep" the work would be. You start with a whole
   heap of sand. So, you get to work converting sand to glass using the
@@ -82,8 +81,10 @@ Level 10 - "Glass Body"
   Note2: The name "Glass Body" represents the innate nature of this
          project, that it *will* fail, and it is brittle, due to my
          unskillfulness and too much ambition.
-
-Note3: Possibly make Level 10 look really easy? May be more poignant.
+  Note3: Maybe "Brittle Body" would be a better name.
+  Note4: The furnace overheating is a dumb idea and instead the way
+         the level gets you to stop working is just by making sure
+         there isn't enough material in the level to finish it.
 
 The pieces you're meant to replicate represent your own ideas for what
 you want to make, not societal expectations.

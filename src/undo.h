@@ -5,6 +5,8 @@
 // in a linked list. Upon saving a state, all previously
 // created next pointers from the current state is destroyed.
 
+#include <stdbool.h>
+
 #include "grid.h"
 
 struct Save_State {
@@ -12,15 +14,17 @@ struct Save_State {
     struct Save_State *prev, *next;
 };
 
-extern struct Save_State *start_save_state, *current_save_state;
+extern struct Save_State *current_state, *start_state;
 
 void undo_system_init();
 void undo_system_deinit();
-void save_state();
+bool is_current_grid_same_as(struct Save_State *state);
+void save_state_to_next();
+struct Save_State *get_state_index(int index);
+void free_save_state(struct Save_State *state);
 void set_state(struct Save_State *state);
-void deinit_state(struct Save_State *state);
+void set_state_to_string_hook(const char *string);
 void undo();
-void redo();
 void view_save_state_linked_list();
 
 #endif // UNDO_H_

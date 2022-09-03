@@ -65,16 +65,7 @@ int main(void) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) running = false;
             if (event.type == SDL_MOUSEWHEEL) {
-                if (gui.popup) {
-                    if (is_point_in_rect((SDL_Point){mx, my}, (SDL_Rect){converter.x, converter.y, converter.w, converter.h})) {
-                        if (event.wheel.y > 0) {
-                            converter.heat_state = HEAT_HOT;
-                        } else if (event.wheel.y < 0) {
-                            converter.heat_state = HEAT_COLD;
-                        }
-                        converter.heat_state = clampf(converter.heat_state, -1, 1);
-                    }
-                } else if (current_tool == TOOL_PLACER) {
+                if (!gui.popup && current_tool == TOOL_PLACER) {
                     struct Placer *placer = placers[current_placer];
                     if (keys[SDL_SCANCODE_LCTRL]) {
                         placer->contains_type += event.wheel.y;
@@ -125,12 +116,11 @@ int main(void) {
                     break;
                 case SDLK_z:
                     if (keys[SDL_SCANCODE_LCTRL]) {
-                        undo();
-                    }
-                    break;
-                case SDLK_r:
-                    if (keys[SDL_SCANCODE_LCTRL]) {
-                        redo();
+                        if (keys[SDL_SCANCODE_LSHIFT]) {
+                            set_text_field("Go to State", "", set_state_to_string_hook);
+                        } else {
+                            undo();
+                        }
                     }
                     break;
                 case SDLK_q: {

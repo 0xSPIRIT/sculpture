@@ -133,7 +133,7 @@ void blob_hammer_tick() {
             }
             blob_hammer.blobs_touched_count = 0;
 
-            save_state();
+            save_state_to_next();
             break;
         }
 
