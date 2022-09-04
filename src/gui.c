@@ -16,7 +16,7 @@ SDL_Texture *gui_texture;
 
 void gui_init() {
     SDL_Surface *surf = IMG_Load("../res/popup.png");
-    gui = (struct GUI){ .popup_y = gh*S, .popup_y_vel = 0, .popup_h = 800, .popup = 0 };
+    gui = (struct GUI){ .popup_y = gh*S, .popup_y_vel = 0, .popup_h = GUI_POPUP_H, .popup = 0 };
     gui.popup_texture = SDL_CreateTextureFromSurface(renderer, surf);
     gui.overlay.x = gui.overlay.y = -1;
     SDL_FreeSurface(surf);
@@ -43,7 +43,7 @@ void gui_init() {
 
     gui_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gw*S, GUI_H);
 
-    all_converters_init();
+    /* all_converters_init(); */
 }
 
 void gui_deinit() {
@@ -60,13 +60,15 @@ void gui_tick() {
         gui.popup_y_vel = 0;
         gui.overlay.x = -1;
         gui.overlay.y = -1;
-        all_converters_reset();
+        /* all_converters_reset(); */
         // Just in case the player had reset it.
         if (current_placer == -1)
             current_placer = 0;
     }
 
     const float speed = 3.0f;
+
+    all_converters_tick();
 
     if (gui.popup) {
         if (SDL_GetCursor() != grabber_cursor) {
@@ -80,8 +82,6 @@ void gui_tick() {
             gui.popup_y_vel = 0;
             gui.popup_y = S*gh-gui.popup_h;
         }
-
-        converter_tick(furnace);
     } else if (gui.popup_y < S*gh) {
         gui.popup_y_vel += speed;
     } else {
@@ -101,7 +101,7 @@ void gui_tick() {
     }
 
     gui.popup_y += gui.popup_y_vel;
-    gui.popup_y = clamp(gui.popup_y, window_height/2, window_height);
+    gui.popup_y = clamp(gui.popup_y, S*gh - gui.popup_h, window_height);
 }
 
 void gui_draw() {
@@ -141,7 +141,7 @@ void gui_popup_draw() {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(renderer, &popup);
 
-    converter_draw(furnace);
+    all_converters_draw();
 }
 
 static void overlay_draw_box(struct Overlay *overlay, int w, int h) {

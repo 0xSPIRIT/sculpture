@@ -133,9 +133,9 @@ void goto_level(int lvl) {
     point_knife_init();
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_init(i);
-
     grabber_init();
     gui_init();
+    all_converters_init();
 
     effect_set(levels[lvl].effect_type);
 
@@ -143,7 +143,6 @@ void goto_level(int lvl) {
 }
 
 void levels_deinit() {
-    converters_deinit();
     chisel_deinit(&chisel_small);
     chisel_deinit(&chisel_medium);
     chisel_deinit(&chisel_large);
@@ -152,6 +151,7 @@ void levels_deinit() {
     knife_deinit();
     point_knife_deinit();
     gui_deinit();
+    all_converters_deinit();
 
     effect_set(EFFECT_NONE);
 
@@ -301,7 +301,7 @@ void level_draw() {
             break;
         case TOOL_PLACER:
             if (!gui.popup) // When gui.popup = true, we draw in converter.c
-                placer_draw(placers[current_placer], false, false);
+                placer_draw(placers[current_placer], false);
             break;
         case TOOL_GRABBER:
             grabber_draw();

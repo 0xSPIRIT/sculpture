@@ -10,6 +10,28 @@ void move_mouse_to_grid_position(float x, float y) {
     SDL_WarpMouseInWindow(window, (int)(x*S + S/2), GUI_H + (int)(y*S + S/2));
 }
 
+void get_filename_from_type(int type, char *out) {
+    switch (type) {
+    case CELL_NONE:        strcpy(out, "nothing"); break;
+    case CELL_MARBLE:      strcpy(out, "../res/items/marble.png"); break;
+    case CELL_COBBLESTONE: strcpy(out, "../res/items/cobblestone.png"); break;
+    case CELL_QUARTZ:      strcpy(out, "../res/items/quartz.png"); break;
+    case CELL_WOOD_LOG:    strcpy(out, "../res/items/wood_log.png"); break;
+    case CELL_WOOD_PLANK:  strcpy(out, "../res/items/wood_plank.png"); break;
+    case CELL_DIRT:        strcpy(out, "../res/items/dirt.png"); break;
+    case CELL_SAND:        strcpy(out, "../res/items/sand.png"); break;
+    case CELL_GLASS:       strcpy(out, "../res/items/glass.png"); break;
+    case CELL_WATER:       strcpy(out, "../res/items/water.png"); break;
+    case CELL_COAL:        strcpy(out, "../res/items/coal.png"); break;
+    case CELL_STEAM:       strcpy(out, "../res/items/steam.png"); break;
+    case CELL_DIAMOND:     strcpy(out, "../res/items/diamond.png"); break;
+    case CELL_ICE:         strcpy(out, "../res/items/ice.png"); break;
+    case CELL_LEAF:        strcpy(out, "../res/items/leaf.png"); break;
+    case CELL_SMOKE:       strcpy(out, "../res/items/smoke.png"); break;
+    case CELL_DUST:        strcpy(out, "../res/items/dust.png"); break;
+    }
+}
+
 void get_name_from_type(int type, char *out) {
     switch (type) {
     case CELL_NONE:        strcpy(out, "nothing"); break;

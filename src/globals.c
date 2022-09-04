@@ -4,6 +4,7 @@ SDL_Window *window;
 SDL_Renderer *renderer;
 
 SDL_Texture *render_tex;
+SDL_Texture *item_textures[CELL_COUNT];
 
 SDL_Cursor *grabber_cursor, *normal_cursor;
 
@@ -16,4 +17,4 @@ int current_tool = TOOL_GRABBER;
 
 int debug_mode;
 
-TTF_Font *font, *font_consolas, *title_font;
+TTF_Font *font, *font_consolas, *small_font, *title_font;

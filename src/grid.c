@@ -835,40 +835,40 @@ static int blob_find_count_from_position(int object, int chisel_size, int x, int
     return count;
 }
 
-static void blob_generate_smart(int obj, int chisel_size, Uint32 *blob_count) {
-    for (int y = 0; y < gh; y++) {
-        for (int x = 0; x < gw; x++) {
-            if (!grid[x+y*gw].type) continue;
+/* static void blob_generate_smart(int obj, int chisel_size, Uint32 *blob_count) { */
+/*     for (int y = 0; y < gh; y++) { */
+/*         for (int x = 0; x < gw; x++) { */
+/*             if (!grid[x+y*gw].type) continue; */
 
-            int neighbour_count = get_neighbour_count(x, y, 1);
-            if (neighbour_count == 8) continue;
+/*             int neighbour_count = get_neighbour_count(x, y, 1); */
+/*             if (neighbour_count == 8) continue; */
 
-            struct Object *o = &objects[obj];
-            Uint32 *blobs = o->blob_data[chisel_size].blobs;
-            bool did_fill = false;
+/*             struct Object *o = &objects[obj]; */
+/*             Uint32 *blobs = o->blob_data[chisel_size].blobs; */
+/*             bool did_fill = false; */
 
-            if (blobs[x+y*gw]) continue;
+/*             if (blobs[x+y*gw]) continue; */
 
-            int size = 4;
-            for (int yy = -size; yy < size; yy++) {
-                for (int xx = -size; xx < size; xx++) {
-                    if (xx*xx + yy*yy > size*size) continue;
-                    if (!is_in_bounds(x+xx, y+yy)) continue;
-                    if (grid[x+xx+(y+yy)*gw].object != obj) continue;
-                    if (blobs[x+xx+(y+yy)*gw]) continue;
+/*             int size = 4; */
+/*             for (int yy = -size; yy < size; yy++) { */
+/*                 for (int xx = -size; xx < size; xx++) { */
+/*                     if (xx*xx + yy*yy > size*size) continue; */
+/*                     if (!is_in_bounds(x+xx, y+yy)) continue; */
+/*                     if (grid[x+xx+(y+yy)*gw].object != obj) continue; */
+/*                     if (blobs[x+xx+(y+yy)*gw]) continue; */
 
-                    if (is_cell_hard(grid[x+xx + (y+yy)*gw].type)) {
-                        blobs[x+xx + (y+yy)*gw] = *blob_count;
-                        did_fill = true;
-                    }
-                }
-            }
+/*                     if (is_cell_hard(grid[x+xx + (y+yy)*gw].type)) { */
+/*                         blobs[x+xx + (y+yy)*gw] = *blob_count; */
+/*                         did_fill = true; */
+/*                     } */
+/*                 } */
+/*             } */
 
-            if (did_fill)
-                (*blob_count)++;
-        }
-    }
-}
+/*             if (did_fill) */
+/*                 (*blob_count)++; */
+/*         } */
+/*     } */
+/* } */
 
 void blob_generate_old_smart(int obj, int chisel_size, int percentage, Uint32 *blob_count) {
     for (int y = 0; y < gh; y++) {

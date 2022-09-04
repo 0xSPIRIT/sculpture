@@ -32,8 +32,9 @@ int main(void) {
     
     font = TTF_OpenFont("../res/cour.ttf", 19);
     font_consolas = TTF_OpenFont("../res/consola.ttf", 24);
+    small_font = TTF_OpenFont("../res/cour.ttf", 13);
     title_font = TTF_OpenFont("../res/cour.ttf", 45);
-    
+
     srand(time(0));
     
     normal_cursor = SDL_GetCursor();
@@ -48,6 +49,8 @@ int main(void) {
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
     render_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, window_width/S, window_height/S);
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    
+    item_init();
     
     levels_setup();
 
@@ -232,7 +235,10 @@ int main(void) {
     
     TTF_CloseFont(font);
     TTF_CloseFont(font_consolas);
+    TTF_CloseFont(small_font);
     TTF_CloseFont(title_font);
+
+    item_deinit();
     
     grid_deinit();
     SDL_DestroyTexture(render_tex);

@@ -1,77 +1,81 @@
 #ifndef CONVERTER_H
 #define CONVERTER_H
 
-#define MAX_CONVERTERS 5
-
 #include <SDL2/SDL.h>
+#include <stdbool.h>
 
-#include "grid.h"
+#define CONVERTER_NAME_LEN 256
 
-enum {
-    STATE_OFF,
-    STATE_ON,
-    STATE_OUT
+struct Item {
+    int type;
+    int amount;
 };
 
-enum {
-    CONVERTER_FURNACE,
-    CONVERTER_BLAST_FURNACE,
-    CONVERTER_WOOD_PROCESSOR,
-    CONVERTER_STONECUTTER,
-    CONVERTER_COOLER,
-    CONVERTER_COUNT
+// If adding more slots, ensure that the slots
+// every converter has is at the top.
+enum Slot_Type {
+    SLOT_INPUT1,
+    SLOT_INPUT2,
+    SLOT_OUTPUT,
+    SLOT_FUEL
 };
 
-enum {
-    PLACER_INPUT,
-    PLACER_OUTPUT,
-    PLACER_FUEL
+struct Slot {
+    struct Converter *converter; // The converter this slot belongs to.
+    struct Item item;
+
+    char name[32];
+    int dx, dy;                  // Orientation of the name string.
+
+    float x, y, w, h;            // Relative to the converter it's in.
+};
+
+enum Converter_Type {
+    CONVERTER_MATERIAL,
+    CONVERTER_FUEL
+};
+
+struct Arrow {
+    SDL_Texture *texture;
+    int x, y, w, h;
 };
 
 struct Converter {
     int type;
+    char *name;
 
-    int x, y;
-    int w, h;
-
-    SDL_Texture *texture;
-
-    SDL_Texture *off_texture, *on_texture, *working_texture;
-    int off_w, off_h, on_w, on_h, output_w, output_h;
-
-    int state;
-
-    struct Placer **placers;
-    SDL_Point *rel_placer_attachment;
-    int placer_count;
-    
+    float x, y, w, h;
     int speed;
+    
+    struct Slot *slots;
+    int slot_count;
 
-    int contains_type;
-    float contains_amount;
-    int (*convert_hook)(int, int);
+    struct Arrow arrow;
 };
 
-extern struct Converter *converters[MAX_CONVERTERS];
-extern struct Converter *furnace,
-                        *blast_furnace,
-                        *stonecutter,
-                        *wood_processor,
-                        *cooler;
+extern struct Converter *material_converter,
+                        *fuel_converter;
+extern struct Item *item_holding;
 
-struct Placer *get_current_placer();
+void item_init();
+void item_deinit();
+
 void all_converters_init();
-void all_converters_reset();
-void converters_deinit();
-struct Converter *converter_init();
+void all_converters_deinit();
+void all_converters_tick();
+void all_converters_draw();
+
+bool is_mouse_in_converter(struct Converter *converter);
+bool is_mouse_in_slot(struct Slot *slot);
+
+struct Converter *converter_init(int type);
 void converter_deinit(struct Converter *converter);
 void converter_tick(struct Converter *converter);
 void converter_draw(struct Converter *converter);
 
-int furnace_convert(int unused_state, int input);
-int blast_furnace_convert(int unused_state, int input);
-int cooler_convert(int unused_state, int input);
+void slot_tick(struct Slot *slot);
+void slot_draw(struct Slot *slot);
 
-int set_current_converter();
+void item_draw(struct Item *item, int x, int y, int w, int h);
 
 #endif  /* CONVERTER_H */

@@ -8,6 +8,7 @@
 
 #define MAX_OVERLAY_LEN 128
 #define MAX_OVERLAY_LINE_LEN 128
+#define GUI_POPUP_H 336 // window_height/2
 
 struct Overlay {
     float x, y;
