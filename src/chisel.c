@@ -353,7 +353,7 @@ Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len) {
             chisel->y -= uy;
 
             if (blob_can_destroy(object_current, chisel->size, b)) {
-                object_remove_blob(object_current, b, chisel->size, 1);
+                object_remove_blob(object_current, b, chisel->size, true);
 
                 /* SDL_WarpMouseInWindow(window, (int)(chisel->x * S), GUI_H + (int)(chisel->y * S)); */
                 move_mouse_to_grid_position(chisel->x, chisel->y);
@@ -388,7 +388,7 @@ Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len) {
                 Uint32 blob = objects[object_current].blob_data[chisel->size].blobs[xx+yy*gw];
 
                 if (blob > 0) {
-                    object_remove_blob(object_current, blob, chisel->size, 1);
+                    object_remove_blob(object_current, blob, chisel->size, true);
                     chisel->did_remove = true;
                     goto chisel_did_remove;
                 }

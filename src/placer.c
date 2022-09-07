@@ -269,40 +269,6 @@ void placer_suck(struct Placer *placer) {
     objects_reevaluate();
 }
 
-static void placer_gui_tick(struct Placer *placer) {
-    if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        struct Converter *converter = NULL;
-
-        if (is_mouse_in_converter(material_converter)) {
-            converter = material_converter;
-        } else if (is_mouse_in_converter(fuel_converter)) {
-            converter = fuel_converter;
-        }
-
-        // Check for collision with slots.
-        if (converter) {
-            for (int i = 0; i < converter->slot_count; i++) {
-                struct Slot *slot = &converter->slots[i];
-                if (!is_mouse_in_slot(slot)) continue;
-
-                if (!slot->item.type || !slot->item.amount) {
-                    slot->item.type = placer->contains_type;
-                    slot->item.amount = 1;
-                } else if (slot->item.type == placer->contains_type) {
-                    int amt = converter->speed;
-                    
-                    if (placer->contains_amount - converter->speed < 0) {
-                        amt = placer->contains_amount;
-                    }
-
-                    slot->item.amount += amt;
-                    placer->contains_amount -= amt;
-                }
-            }
-        }
-    }
-}
-
 void placer_tick(struct Placer *placer) {
     placer->px = placer->x;
     placer->py = placer->y;
@@ -385,9 +351,6 @@ void placer_tick(struct Placer *placer) {
     } else {
         strcpy(gui.overlay.str[1], string);
     }
-
-    if (gui.popup)
-        placer_gui_tick(placer);
 }
 
 void placer_draw(struct Placer *placer, bool full_size) {

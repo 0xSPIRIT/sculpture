@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "globals.h"
 
@@ -129,11 +130,6 @@ float randf(float size) {
     return size * ((float)(rand()%RAND_MAX))/(float)RAND_MAX;
 }
 
-int max(int a, int b) {
-    if (a > b) return a;
-    return b;
-}
-
 int minimum(int a, int b) {
     if (a < b) return a;
     return b;
@@ -182,9 +178,7 @@ SDL_Point closest_point_on_line(SDL_Point a, SDL_Point b, SDL_Point p) {
 }
 
 bool is_point_in_rect(SDL_Point p, SDL_Rect r) {
-    if (p.x >= r.x && p.x <= r.x+r.w && p.y >= r.y && p.y <= r.y+r.h)
-        return 1;
-    return 0;
+    return p.x >= r.x && p.x <= r.x+r.w && p.y >= r.y && p.y <= r.y+r.h;
 }
 
 // Stolen from https://stackoverflow.com/a/2049593

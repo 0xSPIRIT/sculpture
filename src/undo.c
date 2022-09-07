@@ -1,5 +1,6 @@
 #include "undo.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
 struct Save_State *current_state, *start_state;

@@ -5,6 +5,8 @@
 
 #include <time.h>
 #include <signal.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "globals.h"
 #include "util.h"
@@ -296,6 +298,36 @@ void move_by_velocity(struct Cell *arr, int x, int y) {
     swap_array(arr, x, y, (int)xx, (int)yy);
 }
 
+void move_by_velocity2(struct Cell *arr, int x, int y) {
+    struct Cell *c = &arr[x+y*gw];
+    float length = sqrt(c->vx*c->vx + c->vy*c->vy);
+    float ux = c->vx / length;
+    float uy = c->vy / length;
+
+    float xx = 0, yy = 0;
+
+    float fx = c->vx_acc + xx;
+    float fy = c->vy_acc + yy;
+    
+    while (xx*xx + yy*yy < length*length) {
+        fx = c->vx_acc + xx;
+        fy = c->vy_acc + yy;
+
+        if (!is_in_bounds((int)fx, (int)fy)) {
+            xx -= ux;
+            yy -= uy;
+            fx -= ux;
+            fy -= uy;
+            break;
+        }
+
+        xx += ux;
+        yy += uy;
+    }
+
+    swap_array(arr, x, y, (int)fx, (int)fy);
+}
+
 int is_in_bounds(int x, int y) {
     return x >= 0 && y >= 0 && x < gw && y < gh;
 }
@@ -309,7 +341,7 @@ void swap_array(struct Cell *arr, int x1, int y1, int x2, int y2) {
     if (x2 < 0 || x2 >= gw || y2 < 0 || y2 >= gh) return;
 
     // The blob data isn't swapped here so after calling this,
-    // you should update the blob dkta.
+    // you should update the blob data.
 
     arr[x1+y1*gw].px = x1;
     arr[x1+y1*gw].py = y1;
@@ -427,13 +459,16 @@ void grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
             // Make sure we're only dealing with non-objects.
             if (!c->type || c->object != -1 || c->updated) continue;
 
-            c->updated = 1;
+            c->updated = true;
             c->time++;
 
-            float sp = 0.5;
+            if (array == pickup_grid)
+                goto tick_dust;
 
             switch (c->type) {
             case CELL_WATER: {
+                float sp = 0.5;
+
                 if (is_in_bounds(x, y+1) && !array[x+(y+1)*gw].type) {
                     c->vy += GRAV;
                     if (c->vy > MAX_GRAV) c->vy = MAX_GRAV;
@@ -474,21 +509,21 @@ void grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
                 }
                 break;
             }
-            case CELL_DUST: {
-                if (c->time >= 60 + rand()%80) {
-                    set_array(array, x, y, 0, -1);
-                    continue;
+            case CELL_DUST: { // This occurs for any cell type in pickup_grid.
+                tick_dust:
+
+                if (x != (int)c->vx_acc || y != (int)c->vy_acc) {
+                    c->vx_acc = x;
+                    c->vy_acc = y;
                 }
 
-                c->vy += GRAV;
-                c->vx *= 0.75;
+                c->vx_acc += c->vx;
+                c->vy_acc += c->vy;
 
-                const float small = 0.5f;
-                if (c->vx < small) {
-                    c->vx = 0;
-                    c->vx_acc = 0;
-                }
-                break;
+                // We're doing our own move_by_velocity.
+                move_by_velocity2(array, x, y);
+
+                return;
             };
             case CELL_STEAM: case CELL_SMOKE: {
                 SDL_assert(array == gas_grid);
@@ -585,8 +620,7 @@ void simulation_tick() {
     grid_array_tick(grid, 1, -1);
     grid_array_tick(fg_grid, 1, 1);
     grid_array_tick(gas_grid, 1, 1);
-    if (frames % 2 == 0)
-        grid_array_tick(pickup_grid, 1, -1);
+    grid_array_tick(pickup_grid, 1, -1);
 }
 
 static int outlines_total[256*256] = {0}; // 256x256 seems to be more than the max level size.
@@ -731,7 +765,7 @@ void object_tick(int obj) {
     if (current_tool == TOOL_GRABBER && grabber.object_holding == obj) return;
 
     // Copy of grid to fall back to if we abort.
-    struct Cell grid_temp[gw*gh];
+    struct Cell *grid_temp = calloc(gw*gh, sizeof(struct Cell));
     memcpy(grid_temp, grid, sizeof(struct Cell)*gw*gh);
 
     int dy = 1;
@@ -760,10 +794,12 @@ void object_tick(int obj) {
     object_generate_blobs(obj, 0);
     object_generate_blobs(obj, 1);
     object_generate_blobs(obj, 2);
+
+    free(grid_temp);
 }
 
 void object_blobs_set_pressure(int obj, int chisel_size) {
-    int temp_blobs[gw*gh];
+    int *temp_blobs = calloc(gw*gh, sizeof(struct Cell));
     struct Object *object = &objects[obj];
     
     for (int i = 0; i < gw*gh; i++) {
@@ -795,6 +831,8 @@ void object_blobs_set_pressure(int obj, int chisel_size) {
             }
         }
     }
+
+    free(temp_blobs);
 }
 
 static void random_set_blob(struct Object *obj, int x, int y, Uint32 blob, int chisel_size, int perc) {
@@ -1010,12 +1048,14 @@ void object_generate_blobs(int object_index, int chisel_size) {
 }
 
 static void dust_set_random_velocity(int x, int y) {
-    struct Cell *c = &fg_grid[x+y*gw];
+    struct Cell *c = &pickup_grid[x+y*gw];
     c->vx = 3.0  * (float)(rand()%100) / 100.0;
     c->vy = -2.0 * (float)(rand()%100) / 100.0;
+    c->vx_acc = 0;
+    c->vy_acc = 0;
 }
 
-bool object_remove_blob(int object, Uint32 blob, int chisel_size, int replace_dust) {
+bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_dust) {
     struct Object *obj = &objects[object];
     for (int y = 0; y < gh; y++) {
         for (int x = 0; x < gw; x++) {
@@ -1027,7 +1067,7 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, int replace_du
 
             set(x, y, CELL_NONE, -1);
             if (replace_dust) { // If we're replacing with dust
-                set_array(fg_grid, x, y, CELL_DUST, -1);
+                set_array(pickup_grid, x, y, CELL_DUST, -1);
                 dust_set_random_velocity(x, y);
             }
         }
@@ -1173,7 +1213,8 @@ int object_attempt_move(int object, int dx, int dy) {
     float vx = ux; // = 0;
     float vy = uy; // = 0;
 
-    struct Cell result_grid[gw*gh];
+    struct Cell *result_grid = calloc(gw*gh, sizeof(struct Cell));
+
     memcpy(result_grid, grid, sizeof(struct Cell) * gw * gh);
 
     /* while (sqrt(vx*vx + vy*vy) < len) { */
@@ -1199,6 +1240,8 @@ int object_attempt_move(int object, int dx, int dy) {
     object_generate_blobs(object, 0);
     object_generate_blobs(object, 1);
     object_generate_blobs(object, 2);
+
+    free(result_grid);
 
     return (int) (ux+uy*gw);
 }

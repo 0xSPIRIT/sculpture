@@ -14,7 +14,6 @@ Level 4 - "Remainder"
   You convert the smoke coming out from a factory into usable
   material, place it using the placer, then carve out a pattern.
   Steam -> Water -> Ice
-  Sculpture: https://pixnio.com/free-images/2019/09/07/2019-09-07-12-08-15.jpg
 
 Level 5 - "Carbon Copy"
   There's a very well-made sculpture (made out of marble) on the
@@ -60,7 +59,7 @@ Level 9 - "Showpiece"
   turn them, respectively, into diamond, quartz, and wood. The dirt
   is destroyed. You make this into a shape of an orb, with hands
   holding it. All the materials are used- diamond & quartz for the
-  orb and wood for the hands.
+  orb and wood for the hands. [Maybe lose the hands? Complex enough.]
 
 Level 10 - "Glass Body"
   You are shown a very nice sculpture of complete glass, of a body

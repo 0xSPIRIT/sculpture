@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <stdbool.h>
 
 #include "input.h"
 
@@ -61,5 +62,6 @@ extern int window_width, window_height;
 
 extern float delta_time;
 
+extern bool running;
 
 #endif  /* GLOBALS_H_ */

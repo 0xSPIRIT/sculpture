@@ -40,8 +40,13 @@ struct Arrow {
     int x, y, w, h;
 };
 
+enum Converter_State {
+    CONVERTER_OFF,
+    CONVERTER_ON,
+};
+
 struct Converter {
-    int type;
+    int type, state;
     char *name;
 
     float x, y, w, h;
@@ -50,15 +55,19 @@ struct Converter {
     struct Slot *slots;
     int slot_count;
 
+    struct Button *go_button;
+
     struct Arrow arrow;
 };
 
 extern struct Converter *material_converter,
                         *fuel_converter;
-extern struct Item *item_holding;
+extern struct Item item_holding;
 
 void item_init();
 void item_deinit();
+void item_draw(struct Item *item, int x, int y, int w, int h);
+void item_tick(struct Item *item, int x, int y, int w, int h);
 
 void all_converters_init();
 void all_converters_deinit();
@@ -72,10 +81,9 @@ struct Converter *converter_init(int type);
 void converter_deinit(struct Converter *converter);
 void converter_tick(struct Converter *converter);
 void converter_draw(struct Converter *converter);
+void converter_begin_converting(void *converter);
 
 void slot_tick(struct Slot *slot);
 void slot_draw(struct Slot *slot);
-
-void item_draw(struct Item *item, int x, int y, int w, int h);
 
 #endif  /* CONVERTER_H */

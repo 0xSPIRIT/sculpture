@@ -1,5 +1,7 @@
 #include "cursor.h"
 
+#include <stdio.h>
+
 // Taken from the SDL wiki.
 
 static const char *arrow[] = {

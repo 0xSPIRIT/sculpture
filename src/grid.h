@@ -80,7 +80,7 @@ int object_does_exist(int obj);
 void object_get_cell_count(int obj);
 void object_blobs_set_pressure(int obj, int chisel_size);
 void object_generate_blobs(int object_index, int chisel_size);
-bool object_remove_blob(int object, Uint32 blob, int chisel_size, int replace_dust);
+bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_dust);
 void object_darken_blob(struct Object *obj, Uint32 blob, int amt, int chisel_size);
 void objects_reevaluate();
 int object_attempt_move(int object, int dx, int dy);

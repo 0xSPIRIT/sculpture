@@ -19,6 +19,7 @@ void gui_init() {
     gui = (struct GUI){ .popup_y = gh*S, .popup_y_vel = 0, .popup_h = GUI_POPUP_H, .popup = 0 };
     gui.popup_texture = SDL_CreateTextureFromSurface(renderer, surf);
     gui.overlay.x = gui.overlay.y = -1;
+    gui.is_placer_active = true;
     SDL_FreeSurface(surf);
 
     int cum = 0;
@@ -81,6 +82,13 @@ void gui_tick() {
         } else {
             gui.popup_y_vel = 0;
             gui.popup_y = S*gh-gui.popup_h;
+        }
+
+        int p = gui.is_placer_active;
+        gui.is_placer_active = keys[SDL_SCANCODE_LSHIFT];
+        if (p && !gui.is_placer_active) {
+            gui.overlay.x = -1;
+            gui.overlay.y = -1;
         }
     } else if (gui.popup_y < S*gh) {
         gui.popup_y_vel += speed;
@@ -243,7 +251,7 @@ void overlay_get_string(int type, int amt, char *out_str) {
     }
 }
 
-struct Button *button_allocate(char *image, const char *overlay_text, void (*on_pressed)(int)) {
+struct Button *button_allocate(char *image, const char *overlay_text, void (*on_pressed)(void*)) {
     struct Button *b = calloc(1, sizeof(struct Button));
     SDL_Surface *surf = IMG_Load(image);
     b->w = surf->w;
@@ -257,8 +265,8 @@ struct Button *button_allocate(char *image, const char *overlay_text, void (*on_
 }
 
 void button_tick(struct Button *b) {
-    int gui_mx = real_mx;// / S;
-    int gui_my = real_my;// / S;
+    int gui_mx = real_mx;
+    int gui_my = real_my;
 
     if (gui_mx >= b->x && gui_mx < b->x+b->w &&
         gui_my >= b->y && gui_my < b->y+b->h) {
@@ -266,14 +274,22 @@ void button_tick(struct Button *b) {
             (float)real_mx/S, (float)real_my/S - GUI_H/S
         };
         gui.overlay.is_gui = 1;
+        b->just_had_overlay = true;
 
         if (strlen(b->overlay_text))
             strcpy(gui.overlay.str[0], b->overlay_text);
 
         if (mouse_pressed[SDL_BUTTON_LEFT]) {
-            b->on_pressed(b->index);
-            b->activated = 1;
+            b->on_pressed(&b->index);
+            b->activated = true;
         }
+    } else if (b->just_had_overlay) {
+        b->just_had_overlay = false;
+        gui.overlay.x = gui.overlay.y = -1;
+    }
+
+    if (!(mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
+        b->activated = false;
     }
 }
 
@@ -299,7 +315,9 @@ void button_deallocate(struct Button *b) {
     SDL_DestroyTexture(b->texture);
 }
 
-void click_gui_tool_button(int type) {
+void click_gui_tool_button(void *type_ptr) {
+    int type = *((int*)type_ptr);
+
     current_tool = type;
     chisel_blocker_mode = 0;
     switch (current_tool) {

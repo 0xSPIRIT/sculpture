@@ -10,6 +10,8 @@
 #define MAX_OVERLAY_LINE_LEN 128
 #define GUI_POPUP_H 336 // window_height/2
 
+#define ITEM_SIZE 48
+
 struct Overlay {
     float x, y;
     char str[MAX_OVERLAY_LEN][MAX_OVERLAY_LINE_LEN];
@@ -19,6 +21,7 @@ struct Overlay {
 
 struct GUI {
     int popup;
+    bool is_placer_active;
     float popup_y, popup_y_vel, popup_h;
     SDL_Texture *popup_texture;
     struct Overlay overlay;
@@ -31,8 +34,9 @@ struct Button {
     int index;
     SDL_Texture *texture;
     char overlay_text[128];
-    int activated;
-    void (*on_pressed)(int);
+    bool activated;
+    bool just_had_overlay; // Used to disable the GUI overlay when the mouse goes off me.
+    void (*on_pressed)(void*);
 };
 
 extern struct GUI gui;
@@ -49,12 +53,12 @@ void overlay_draw(struct Overlay *overlay);
 
 void overlay_get_string(int type, int amt, char *out_str);
 
-struct Button *button_allocate(char *image, const char *overlay_text, void (*on_pressed)(int));
+struct Button *button_allocate(char *image, const char *overlay_text, void (*on_pressed)(void*));
 void button_tick(struct Button *b);
 void button_draw(struct Button *b);
 void gui_popup_draw();
 void button_deallocate(struct Button *b);
 
-void click_gui_tool_button(int type);
+void click_gui_tool_button(void *type_ptr);
 
 #endif  /* GUI_H_ */
