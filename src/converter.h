@@ -24,6 +24,8 @@ struct Slot {
     struct Converter *converter; // The converter this slot belongs to.
     struct Item item;
 
+    int type;                    // Slot_Type
+
     char name[32];
     int dx, dy;                  // Orientation of the name string.
 
@@ -67,7 +69,7 @@ extern struct Item item_holding;
 void item_init();
 void item_deinit();
 void item_draw(struct Item *item, int x, int y, int w, int h);
-void item_tick(struct Item *item, int x, int y, int w, int h);
+void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h);
 
 void all_converters_init();
 void all_converters_deinit();

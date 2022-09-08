@@ -19,6 +19,23 @@ struct Placer *converter_get_current_placer() {
     return placers[current_placer];
 }
 
+static bool can_place_item_in_slot(int type, int slot) {
+    bool can_put_fuel = false;
+
+    if (slot == SLOT_FUEL) {
+        switch (type) {
+        case CELL_COAL: case CELL_WOOD_LOG:
+            can_put_fuel = true;
+            break;
+        }
+    }
+    
+    return
+        slot == SLOT_INPUT1 ||
+        slot == SLOT_INPUT2 ||
+        can_put_fuel;
+}
+
 void item_init() {
     for (int i = 0; i < CELL_COUNT; i++) {
         if (i == CELL_NONE) continue;
@@ -60,27 +77,57 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
     SDL_RenderCopy(renderer, texture, NULL, &dst);
 }
 
-void item_tick(struct Item *item, int x, int y, int w, int h) {
+// Slot may be NULL if the item doesn't belong to any slot.
+void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h) {
     if (item == &item_holding) return;
     if (!is_point_in_rect((SDL_Point){real_mx, real_my-GUI_H}, (SDL_Rect){x, y, w, h})) return;
 
-    if (!gui.is_placer_active && mouse_pressed[SDL_BUTTON_LEFT]) {
-        // If we're holding an item
-        if (item_holding.type) {
-            item->type = item_holding.type;
-            item->amount = item_holding.amount;
-            item_holding.type = 0;
-            item_holding.amount = 0;
-        } else {
-            // If we're clicking on a slot to pick up the item.
-            item_holding.type = item->type;
-            item_holding.amount = item->amount;
-            item->type = 0;
-            item->amount = 0;
+    bool can_place_item = false;
+
+    if (!gui.is_placer_active) {
+        can_place_item = can_place_item_in_slot(item_holding.type, slot->type);
+        if (!item_holding.type) can_place_item = true;
+
+        if (mouse_pressed[SDL_BUTTON_LEFT]) {
+
+            // If they're the same type, just add their amounts.
+            if (item->type && item_holding.type == item->type) {
+                // Add the amount from holding to the item.
+                item->amount += item_holding.amount;
+
+                item_holding.type = 0;
+                item_holding.amount = 0;
+            }
+
+            // Otherwise if we're either holding an item or have an item in slot,
+            // swap them since they're different types.
+            else if ((item_holding.type || item->type) && can_place_item) {
+                struct Item a = *item;
+
+                item->type = item_holding.type;
+                item->amount = item_holding.amount;
+
+                item_holding.type = a.type;
+                item_holding.amount = a.amount;
+            } 
+
+        } else if (mouse_pressed[SDL_BUTTON_RIGHT] && item->type && item_holding.type == 0) { // If holdingd nothing
+            // Split the item into two like minecraft.
+            SDL_assert(item_holding.amount == 0);
+
+            const int half = item->amount/2;
+
+            if (half) {
+                item->amount -= half;
+                item_holding.type = item->type;
+                item_holding.amount += half;
+            }
         }
     } else if (gui.is_placer_active) {
         struct Placer *p = converter_get_current_placer();
         struct Converter *converter = NULL;
+
+        can_place_item = can_place_item_in_slot(p->contains_type, slot->type);
 
         if (is_mouse_in_converter(material_converter)) {
             converter = material_converter;
@@ -96,7 +143,7 @@ void item_tick(struct Item *item, int x, int y, int w, int h) {
                 item->type = 0;
                 item->amount = 0;
             }
-        } else if (mouse_pressed[SDL_BUTTON_LEFT]) {
+        } else if (can_place_item && mouse_pressed[SDL_BUTTON_LEFT]) {
             int amt = 0;
 
             if (p->contains_amount && (!item->type || !item->amount)) {
@@ -143,7 +190,7 @@ void all_converters_tick() {
     converter_tick(material_converter);
     converter_tick(fuel_converter);
 
-    item_tick(&item_holding, real_mx, real_my, ITEM_SIZE, ITEM_SIZE);
+    item_tick(&item_holding, NULL, real_mx, real_my, ITEM_SIZE, ITEM_SIZE);
 }
 
 void all_converters_draw() {
@@ -222,7 +269,10 @@ struct Converter *converter_init(int type) {
         break;
     }
 
+    // Indices line up with Slot_Type enum
+    // even though slot_count is variable.
     for (int i = 0; i < converter->slot_count; i++) {
+        converter->slots[i].type = i;
         converter->slots[i].w = ITEM_SIZE;
         converter->slots[i].h = ITEM_SIZE;
         converter->slots[i].converter = converter;
@@ -321,6 +371,7 @@ void converter_draw(struct Converter *converter) {
 
 void slot_tick(struct Slot *slot) {
     item_tick(&slot->item,
+              slot,
               slot->converter->x + slot->x - slot->w/2,
               slot->converter->y + slot->y - slot->h/2,
               slot->w,
