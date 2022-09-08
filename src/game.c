@@ -41,25 +41,23 @@ void game_init(void) {
     fonts_init();
     
     normal_cursor = SDL_GetCursor();
-    grabber_cursor = init_system_cursor();
+    grabber_cursor = init_system_cursor(arrow_cursor_data);
+    placer_cursor = init_system_cursor(placer_cursor_data);
 
     item_init();
     levels_setup();
-    goto_level(0);
 
-    printf("%llu\n", gw*gh*sizeof(struct Cell)); fflush(stdout);
+    goto_level(0);
 }
 
 void game_deinit() {
     levels_deinit();
-
     fonts_deinit();
-    
     item_deinit();
-    
     grid_deinit();
+
     SDL_DestroyTexture(render_tex);
-    
+
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();

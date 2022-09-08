@@ -356,8 +356,16 @@ void placer_tick(struct Placer *placer) {
 void placer_draw(struct Placer *placer, bool full_size) {
     const int scale = full_size ? S : 1;
     int y_off = full_size ? GUI_H : 0;
+
+    if (gui.popup) {
+        if (SDL_GetCursor() != placer_cursor) {
+            SDL_SetCursor(placer_cursor);
+        }
+    } else if (SDL_GetCursor() == placer_cursor) {
+        SDL_SetCursor(normal_cursor);
+    }
     
-    if (!gui.popup && (placer->state == PLACER_SUCK_MODE || placer->state == PLACER_PLACE_CIRCLE_MODE)) {
+    if (placer->state == PLACER_SUCK_MODE || placer->state == PLACER_PLACE_CIRCLE_MODE) {
         int radius = placer->radius;
         int fx = placer->x;
         int fy = placer->y;

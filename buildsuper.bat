@@ -1,2 +1,4 @@
 @echo off
-gcc src/*.c -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -o bin\sculpture.exe
+pushd .\bin\
+cl.exe /nologo /GR- /EHa- /MT /O2 /FC /Fo:"obj\\" ..\src\*.c user32.lib SDL2.lib SDL2main.lib SDL2_ttf.lib SDL2_image.lib /link /out:sculpture.exe /machine:x64
+popd

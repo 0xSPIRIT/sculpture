@@ -318,6 +318,9 @@ void move_by_velocity2(struct Cell *arr, int x, int y) {
             yy -= uy;
             fx -= ux;
             fy -= uy;
+            c->vx = c->vy = 0;
+            c->vx_acc = fx;
+            c->vy_acc = fy;
             break;
         }
 
@@ -325,6 +328,8 @@ void move_by_velocity2(struct Cell *arr, int x, int y) {
         yy += uy;
     }
 
+    c->vx_acc = fx;
+    c->vy_acc = fy;
     swap_array(arr, x, y, (int)fx, (int)fy);
 }
 
@@ -1051,8 +1056,8 @@ static void dust_set_random_velocity(int x, int y) {
     struct Cell *c = &pickup_grid[x+y*gw];
     c->vx = 3.0  * (float)(rand()%100) / 100.0;
     c->vy = -2.0 * (float)(rand()%100) / 100.0;
-    c->vx_acc = 0;
-    c->vy_acc = 0;
+    c->vx_acc = x;
+    c->vy_acc = y;
 }
 
 bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_dust) {

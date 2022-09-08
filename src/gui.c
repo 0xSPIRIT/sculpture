@@ -19,7 +19,7 @@ void gui_init() {
     gui = (struct GUI){ .popup_y = gh*S, .popup_y_vel = 0, .popup_h = GUI_POPUP_H, .popup = 0 };
     gui.popup_texture = SDL_CreateTextureFromSurface(renderer, surf);
     gui.overlay.x = gui.overlay.y = -1;
-    gui.is_placer_active = true;
+    gui.is_placer_active = false;
     SDL_FreeSurface(surf);
 
     int cum = 0;
@@ -84,11 +84,17 @@ void gui_tick() {
             gui.popup_y = S*gh-gui.popup_h;
         }
 
-        int p = gui.is_placer_active;
+        int was_placer_active = gui.is_placer_active;
+
         gui.is_placer_active = keys[SDL_SCANCODE_LSHIFT];
-        if (p && !gui.is_placer_active) {
+
+        if (was_placer_active && !gui.is_placer_active) {
             gui.overlay.x = -1;
             gui.overlay.y = -1;
+        } else if (!was_placer_active && gui.is_placer_active) {
+            struct Placer *p = converter_get_current_placer();
+            p->x = mx;
+            p->y = my;
         }
     } else if (gui.popup_y < S*gh) {
         gui.popup_y_vel += speed;

@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL_image.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "globals.h"
 #include "grid.h"
@@ -13,7 +14,7 @@ struct Converter *material_converter = NULL,
                  *fuel_converter = NULL;
 struct Item item_holding = {0, 0};
 
-static struct Placer *get_current_placer() {
+struct Placer *converter_get_current_placer() {
     if (current_placer == -1 || current_tool != TOOL_PLACER) return NULL;
     return placers[current_placer];
 }
@@ -61,57 +62,56 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
 
 void item_tick(struct Item *item, int x, int y, int w, int h) {
     if (item == &item_holding) return;
+    if (!is_point_in_rect((SDL_Point){real_mx, real_my-GUI_H}, (SDL_Rect){x, y, w, h})) return;
 
-    if (is_point_in_rect((SDL_Point){real_mx, real_my-GUI_H}, (SDL_Rect){x, y, w, h})) {
-        if (!gui.is_placer_active && mouse_pressed[SDL_BUTTON_LEFT]) {
-            // If we're holding an item
-            if (item_holding.type) {
-                item->type = item_holding.type;
-                item->amount = item_holding.amount;
-                item_holding.type = 0;
-                item_holding.amount = 0;
-            } else {
-                // If we're clicking on a slot to pick up the item.
-                item_holding.type = item->type;
-                item_holding.amount = item->amount;
+    if (!gui.is_placer_active && mouse_pressed[SDL_BUTTON_LEFT]) {
+        // If we're holding an item
+        if (item_holding.type) {
+            item->type = item_holding.type;
+            item->amount = item_holding.amount;
+            item_holding.type = 0;
+            item_holding.amount = 0;
+        } else {
+            // If we're clicking on a slot to pick up the item.
+            item_holding.type = item->type;
+            item_holding.amount = item->amount;
+            item->type = 0;
+            item->amount = 0;
+        }
+    } else if (gui.is_placer_active) {
+        struct Placer *p = converter_get_current_placer();
+        struct Converter *converter = NULL;
+
+        if (is_mouse_in_converter(material_converter)) {
+            converter = material_converter;
+        } else if (is_mouse_in_converter(fuel_converter)) {
+            converter = fuel_converter;
+        }
+
+        if (mouse_pressed[SDL_BUTTON_RIGHT]) {
+            if (p->contains_type == 0 || p->contains_type == item->type) {
+                p->contains_type = item->type;
+                p->contains_amount += item->amount;
+
                 item->type = 0;
                 item->amount = 0;
             }
-        } else if (gui.is_placer_active) {
-            struct Placer *p = get_current_placer();
-            struct Converter *converter = NULL;
+        } else if (mouse_pressed[SDL_BUTTON_LEFT]) {
+            int amt = 0;
 
-            if (is_mouse_in_converter(material_converter)) {
-                converter = material_converter;
-            } else if (is_mouse_in_converter(fuel_converter)) {
-                converter = fuel_converter;
+            if (p->contains_amount && (!item->type || !item->amount)) {
+                item->type = p->contains_type;
+                amt = converter->speed;
+            } else if (item->type == p->contains_type) {
+                amt = converter->speed;
             }
 
-            if (mouse_pressed[SDL_BUTTON_RIGHT]) {
-                if (p->contains_type == 0 || p->contains_type == item->type) {
-                    p->contains_type = item->type;
-                    p->contains_amount += item->amount;
-
-                    item->type = 0;
-                    item->amount = 0;
-                }
-            } else if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-                int amt = 0;
-
-                if (p->contains_amount && (!item->type || !item->amount)) {
-                    item->type = p->contains_type;
-                    amt = converter->speed;
-                } else if (item->type == p->contains_type) {
-                    amt = converter->speed;
-                }
-
-                if (p->contains_amount - converter->speed < 0) {
-                    amt = p->contains_amount;
-                }
-
-                item->amount += amt;
-                p->contains_amount -= amt;
+            if (p->contains_amount - converter->speed < 0) {
+                amt = p->contains_amount;
             }
+
+            item->amount += amt;
+            p->contains_amount -= amt;
         }
     }
 }
@@ -137,7 +137,7 @@ void all_converters_tick() {
         current_tool = TOOL_PLACER;
 
     if (gui.popup && gui.is_placer_active) {
-        placer_tick(get_current_placer());
+        placer_tick(converter_get_current_placer());
     }
 
     converter_tick(material_converter);
@@ -151,7 +151,7 @@ void all_converters_draw() {
     converter_draw(fuel_converter);
 
     if (gui.popup && gui.is_placer_active) {
-        placer_draw(get_current_placer(), true);
+        placer_draw(converter_get_current_placer(), true);
     }
 
     item_draw(&item_holding, real_mx - ITEM_SIZE/2, real_my - ITEM_SIZE/2, ITEM_SIZE, ITEM_SIZE);
@@ -231,7 +231,7 @@ struct Converter *converter_init(int type) {
     SDL_Surface *surf = IMG_Load("../res/arrow.png");
     converter->arrow.texture = SDL_CreateTextureFromSurface(renderer, surf);
     converter->arrow.x = converter->w/2;
-    converter->arrow.y = converter->h/2 + 16;
+    converter->arrow.y = converter->h/2 + 24;
     converter->arrow.w = surf->w;
     converter->arrow.h = surf->h;
     converter->speed = 6;

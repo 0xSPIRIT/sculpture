@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.31.31103\include\</FILEPATH>
+      <FILENAME>intrin.h</FILENAME>
+      <LINE>931</LINE>
+      <COLUMN>0</COLUMN>
+    </SFA>
+    <DEFECTCODE>28251</DEFECTCODE>
+    <DESCRIPTION>Inconsistent annotation for '_setjmp': this instance has no annotations. See &lt;no file&gt;(0). </DESCRIPTION>
+    <FUNCTION>_setjmp</FUNCTION>
+    <DECORATED>_setjmp</DECORATED>
+    <FUNCLINE>931</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>d:\dev\sculpture\src\</FILEPATH>
+      <FILENAME>grid.c</FILENAME>
+      <LINE>199</LINE>
+      <COLUMN>11</COLUMN>
+    </SFA>
+    <DEFECTCODE>6001</DEFECTCODE>
+    <DESCRIPTION>Using uninitialized memory 'color'.</DESCRIPTION>
+    <FUNCTION>pixel_from_index</FUNCTION>
+    <DECORATED>pixel_from_index</DECORATED>
+    <FUNCLINE>131</FUNCLINE>
+    <PROBABILITY>1</PROBABILITY>
+    <RANK>3</RANK>
+    <CATEGORY>
+      <RULECATEGORY>mspft</RULECATEGORY>
+    </CATEGORY>
+    <PATH>
+      <SFA>
+        <FILEPATH>d:\dev\sculpture\src\</FILEPATH>
+        <FILENAME>grid.c</FILENAME>
+        <LINE>132</LINE>
+        <COLUMN>14</COLUMN>
+        <KEYEVENT>
+          <ID>1</ID>
+          <KIND>declaration</KIND>
+          <IMPORTANCE>Essential</IMPORTANCE>
+          <MESSAGE>'color' is not initialized</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\dev\sculpture\src\</FILEPATH>
+        <FILENAME>grid.c</FILENAME>
+        <LINE>133</LINE>
+        <COLUMN>8</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\dev\sculpture\src\</FILEPATH>
+        <FILENAME>grid.c</FILENAME>
+        <LINE>133</LINE>
+        <COLUMN>11</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\dev\sculpture\src\</FILEPATH>
+        <FILENAME>grid.c</FILENAME>
+        <LINE>135</LINE>
+        <COLUMN>20</COLUMN>
+        <KEYEVENT>
+          <ID>2</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Assume switch ( 'cells[i].type' ) resolves to the default case</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\dev\sculpture\src\</FILEPATH>
+        <FILENAME>grid.c</FILENAME>
+        <LINE>197</LINE>
+        <COLUMN>36</COLUMN>
+        <KEYEVENT>
+          <ID>3</ID>
+          <KIND>branch</KIND>
+          <IMPORTANCE>Full</IMPORTANCE>
+          <MESSAGE>Skip this branch, (assume '&lt;branch condition&gt;' is false)</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\dev\sculpture\src\</FILEPATH>
+        <FILENAME>grid.c</FILENAME>
+        <LINE>199</LINE>
+        <COLUMN>4</COLUMN>
+      </SFA>
+      <SFA>
+        <FILEPATH>d:\dev\sculpture\src\</FILEPATH>
+        <FILENAME>grid.c</FILENAME>
+        <LINE>199</LINE>
+        <COLUMN>11</COLUMN>
+        <KEYEVENT>
+          <ID>4</ID>
+          <KIND>usage</KIND>
+          <IMPORTANCE>Essential</IMPORTANCE>
+          <MESSAGE>'color' is used, but may not have been initialized</MESSAGE>
+        </KEYEVENT>
+      </SFA>
+    </PATH>
+  </DEFECT>
+</DEFECTS>

@@ -54,7 +54,7 @@ extern int debug_mode;
 
 extern TTF_Font *font, *font_consolas, *small_font, *title_font;
 
-extern SDL_Cursor *grabber_cursor, *normal_cursor;
+extern SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
 
 extern int S;
 

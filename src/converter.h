@@ -86,4 +86,6 @@ void converter_begin_converting(void *converter);
 void slot_tick(struct Slot *slot);
 void slot_draw(struct Slot *slot);
 
+struct Placer *converter_get_current_placer();
+
 #endif  /* CONVERTER_H */

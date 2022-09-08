@@ -6,7 +6,7 @@ SDL_Renderer *renderer;
 SDL_Texture *render_tex;
 SDL_Texture *item_textures[CELL_COUNT];
 
-SDL_Cursor *grabber_cursor, *normal_cursor;
+SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
 
 int S = 6;
 int window_width = 128*6, window_height = 128*6+GUI_H;

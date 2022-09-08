@@ -4,7 +4,7 @@
 
 // Taken from the SDL wiki.
 
-static const char *arrow[] = {
+const char *arrow_cursor_data[] = {
     /* width height num_colors chars_per_pixel */
     "    32    32        3            1",
     /* colors */
@@ -47,9 +47,50 @@ static const char *arrow[] = {
     "0,0"
 };
 
-SDL_Cursor *init_system_cursor() {
-    const char **image = arrow;
-        
+const char *placer_cursor_data[] = {
+    /* width height num_colors chars_per_pixel */
+    "    32    32        3            4",
+    /* colors */
+    "X c #0f0000",
+    ". c #ff0000",
+    "  c None",
+    /* pixels */
+    "X                               ",
+    "X.X                             ",
+    "X..X                            ",
+    "X...X                           ",
+    "X....X                          ",
+    "X......X                        ",
+    "X.......XXXXXXXXX               ",
+    "X..............X                ",
+    "X.............X                 ",
+    "X............X                  ",
+    "X...........X                   ",
+    "X..........X                    ",
+    "X.........X                     ",
+    "X........X                      ",
+    "X.......X                       ",
+    "X......X                        ",
+    "X.....X                         ",
+    "X....X                          ",
+    "X...X                           ",
+    "X..X                            ",
+    "X.X                             ",
+    "XX                              ",
+    "X                               ",
+    "                                ",
+    "                                ",
+    "                                ",
+    "                                ",
+    "                                ",
+    "                                ",
+    "                                ",
+    "                                ",
+    "                                ",
+    "0,0"
+};
+
+SDL_Cursor *init_system_cursor(const char **image) {
     int i, row, col;
     Uint8 data[4*32];
     Uint8 mask[4*32];
