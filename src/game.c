@@ -21,13 +21,15 @@ static void game_init_sdl(const char *window_title, int w, int h) {
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
-
+    
     window = SDL_CreateWindow(window_title,
                               SDL_WINDOWPOS_UNDEFINED,
                               SDL_WINDOWPOS_UNDEFINED,
                               w,
                               h,
                               0);
+
+    // This function takes ~0.25 seconds.
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 
     render_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, window_width/S, window_height/S);
@@ -38,6 +40,7 @@ void game_init(void) {
     srand(time(0));
 
     game_init_sdl("Alaska", window_width, window_height);
+    
     fonts_init();
     
     normal_cursor = SDL_GetCursor();
@@ -75,7 +78,7 @@ void game_run(void) {
         }
 
         if (prev_tool != current_tool) {
-            gui.overlay.x = gui.overlay.y = -1;
+            overlay_reset(&gui.overlay);
         }
 
         level_tick();

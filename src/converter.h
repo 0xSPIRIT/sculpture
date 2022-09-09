@@ -24,7 +24,7 @@ struct Slot {
     struct Converter *converter; // The converter this slot belongs to.
     struct Item item;
 
-    int type;                    // Slot_Type
+    enum Slot_Type type;         // Slot_Type
 
     char name[32];
     int dx, dy;                  // Orientation of the name string.
@@ -48,7 +48,9 @@ enum Converter_State {
 };
 
 struct Converter {
-    int type, state;
+    enum Converter_Type type;
+    enum Converter_State state;
+
     char *name;
 
     float x, y, w, h;
@@ -78,12 +80,18 @@ void all_converters_draw();
 
 bool is_mouse_in_converter(struct Converter *converter);
 bool is_mouse_in_slot(struct Slot *slot);
+bool was_mouse_in_slot(struct Slot *slot);
 
 struct Converter *converter_init(int type);
 void converter_deinit(struct Converter *converter);
 void converter_tick(struct Converter *converter);
 void converter_draw(struct Converter *converter);
+bool converter_is_layout_valid(struct Converter *converter);
 void converter_begin_converting(void *converter);
+void converter_set_state(struct Converter *converter, enum Converter_State state);
+
+bool fuel_converter_convert();
+bool material_converter_convert();
 
 void slot_tick(struct Slot *slot);
 void slot_draw(struct Slot *slot);

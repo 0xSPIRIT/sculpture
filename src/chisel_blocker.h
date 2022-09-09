@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-enum {
+enum Chisel_Blocker_State {
     CHISEL_BLOCKER_OFF,
     CHISEL_BLOCKER_LINE_MODE,
     CHISEL_BLOCKER_CURVE_MODE,

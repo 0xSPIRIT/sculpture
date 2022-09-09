@@ -18,7 +18,7 @@ void gui_init() {
     SDL_Surface *surf = IMG_Load("../res/popup.png");
     gui = (struct GUI){ .popup_y = gh*S, .popup_y_vel = 0, .popup_h = GUI_POPUP_H, .popup = 0 };
     gui.popup_texture = SDL_CreateTextureFromSurface(renderer, surf);
-    gui.overlay.x = gui.overlay.y = -1;
+    overlay_reset(&gui.overlay);
     gui.is_placer_active = false;
     SDL_FreeSurface(surf);
 
@@ -59,8 +59,7 @@ void gui_tick() {
     if (keys_pressed[SDL_SCANCODE_TAB]) {
         gui.popup = !gui.popup;
         gui.popup_y_vel = 0;
-        gui.overlay.x = -1;
-        gui.overlay.y = -1;
+        overlay_reset(&gui.overlay);
         /* all_converters_reset(); */
         // Just in case the player had reset it.
         if (current_placer == -1)
@@ -89,8 +88,7 @@ void gui_tick() {
         gui.is_placer_active = keys[SDL_SCANCODE_LSHIFT];
 
         if (was_placer_active && !gui.is_placer_active) {
-            gui.overlay.x = -1;
-            gui.overlay.y = -1;
+            overlay_reset(&gui.overlay);
         } else if (!was_placer_active && gui.is_placer_active) {
             struct Placer *p = converter_get_current_placer();
             p->x = mx;
@@ -106,11 +104,10 @@ void gui_tick() {
     if (!gui.popup) {
         /* set_cursor(normal_cursor); */
         for (int i = 0; i < TOOL_COUNT; i++) {
-            button_tick(gui.tool_buttons[i]);
+            button_tick(gui.tool_buttons[i], &i);
         }
-        if (real_my >= GUI_H && gui.overlay.is_gui) {
-            gui.overlay.x = gui.overlay.y = -1;
-            gui.overlay.is_gui = 0;
+        if (real_my >= GUI_H) {
+            overlay_reset(&gui.overlay);
         }
     }
 
@@ -171,11 +168,19 @@ static void overlay_draw_box(struct Overlay *overlay, int w, int h) {
 
 void overlay_reset(struct Overlay *overlay) {
     memset(overlay, 0, sizeof(struct Overlay));
+    overlay->x = overlay->y = -1;
 }
 
-void overlay_set_position(struct Overlay *overlay) {
+void overlay_set_position_to_cursor(struct Overlay *overlay, int type) {
     overlay->x = (float)real_mx/S;
     overlay->y = (float)real_my/S - GUI_H/S;
+    overlay->type = type;
+}
+
+void overlay_set_position(struct Overlay *overlay, int x, int y, int type) {
+    overlay->x = x;
+    overlay->y = y;
+    overlay->type = type;
 }
 
 // This happens outside of the pixel-art texture, so we must
@@ -270,28 +275,26 @@ struct Button *button_allocate(char *image, const char *overlay_text, void (*on_
     return b;
 }
 
-void button_tick(struct Button *b) {
+void button_tick(struct Button *b, void *data) {
     int gui_mx = real_mx;
     int gui_my = real_my;
 
     if (gui_mx >= b->x && gui_mx < b->x+b->w &&
         gui_my >= b->y && gui_my < b->y+b->h) {
-        gui.overlay = (struct Overlay){
-            (float)real_mx/S, (float)real_my/S - GUI_H/S
-        };
-        gui.overlay.is_gui = 1;
+
+        overlay_set_position_to_cursor(&gui.overlay, OVERLAY_TYPE_BUTTON);
         b->just_had_overlay = true;
 
         if (strlen(b->overlay_text))
             strcpy(gui.overlay.str[0], b->overlay_text);
 
         if (mouse_pressed[SDL_BUTTON_LEFT]) {
-            b->on_pressed(&b->index);
+            b->on_pressed(data);
             b->activated = true;
         }
     } else if (b->just_had_overlay) {
         b->just_had_overlay = false;
-        gui.overlay.x = gui.overlay.y = -1;
+        overlay_reset(&gui.overlay);
     }
 
     if (!(mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
@@ -351,5 +354,5 @@ void click_gui_tool_button(void *type_ptr) {
     for (int i = 0; i < TOOL_COUNT; i++) {
         gui.tool_buttons[i]->activated = 0;
     }
-    gui.overlay.x = gui.overlay.y = -1;
+    overlay_reset(&gui.overlay);
 }

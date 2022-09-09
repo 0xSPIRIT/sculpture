@@ -8,6 +8,7 @@
 extern int mx, my; // Fake in game coordinates (pixel art scaled)
 extern int real_mx, real_my; // In real window coordinates
 extern int pmx, pmy;
+extern int real_pmx, real_pmy;
 extern Uint32 mouse;
 extern Uint8 *keys;
 

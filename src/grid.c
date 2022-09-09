@@ -298,41 +298,6 @@ void move_by_velocity(struct Cell *arr, int x, int y) {
     swap_array(arr, x, y, (int)xx, (int)yy);
 }
 
-void move_by_velocity2(struct Cell *arr, int x, int y) {
-    struct Cell *c = &arr[x+y*gw];
-    float length = sqrt(c->vx*c->vx + c->vy*c->vy);
-    float ux = c->vx / length;
-    float uy = c->vy / length;
-
-    float xx = 0, yy = 0;
-
-    float fx = c->vx_acc + xx;
-    float fy = c->vy_acc + yy;
-    
-    while (xx*xx + yy*yy < length*length) {
-        fx = c->vx_acc + xx;
-        fy = c->vy_acc + yy;
-
-        if (!is_in_bounds((int)fx, (int)fy)) {
-            xx -= ux;
-            yy -= uy;
-            fx -= ux;
-            fy -= uy;
-            c->vx = c->vy = 0;
-            c->vx_acc = fx;
-            c->vy_acc = fy;
-            break;
-        }
-
-        xx += ux;
-        yy += uy;
-    }
-
-    c->vx_acc = fx;
-    c->vy_acc = fy;
-    swap_array(arr, x, y, (int)fx, (int)fy);
-}
-
 int is_in_bounds(int x, int y) {
     return x >= 0 && y >= 0 && x < gw && y < gh;
 }
@@ -382,13 +347,18 @@ void switch_blob_to_array(struct Cell *from, struct Cell *to, int obj, int blob,
 
 // Sets an index in a grid array. object can be left to -1 to automatically
 // find an object to assign to the cell, or it can be any value.
+//
+// Alternately, if you don't want any object data and want the object
+// field set to -1, confusingly, use -2 as the object parameter.
 void set_array(struct Cell *arr, int x, int y, int val, int object) {
     if (x < 0 || x >= gw || y < 0 || y >= gh) return;
 
     arr[x+y*gw].type = val;
     arr[x+y*gw].time = 0;
 
-    if (object != -1) {
+    if (object == -2) {
+        arr[x+y*gw].object = -1;
+    } else if (object != -1) {
         arr[x+y*gw].object = object;
     } else if (is_cell_hard(val)) { // Automatically set if the cell should be an obj
         // by finding any neighbouring object, and setting it to that
@@ -445,12 +415,15 @@ bool can_gas_cell_swap(int x, int y) {
 }
 
 // For x_direction and y_direction, a value of -1 or 1 should be used.
-void grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
+// Returns amount of cells updated.
+int grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
     int start_y = (y_direction == 1) ? 0 : gh-1;
     int start_x = (x_direction == 1) ? 0 : gw-1;
 
 #define y_condition(y) ((start_y == 0) ? (y < gh) : (y >= 0))
 #define x_condition(x) ((start_x == 0) ? (x < gw) : (x >= 0))
+
+    int cells_updated = 0;
 
     for (int y = start_y; y_condition(y); y += y_direction) {
         for (int q = start_x; x_condition(q); q += x_direction) {
@@ -467,8 +440,7 @@ void grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
             c->updated = true;
             c->time++;
 
-            if (array == pickup_grid)
-                goto tick_dust;
+            cells_updated++;
 
             switch (c->type) {
             case CELL_WATER: {
@@ -514,21 +486,16 @@ void grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
                 }
                 break;
             }
-            case CELL_DUST: { // This occurs for any cell type in pickup_grid.
-                tick_dust:
-
-                if (x != (int)c->vx_acc || y != (int)c->vy_acc) {
-                    c->vx_acc = x;
-                    c->vy_acc = y;
+            case CELL_DUST: {
+                tick_dust: // This occurs for any cell type in pickup_grid due to this goto.
+                if (is_in_bounds(x, y+1) && !array[x+(y+1)*gw].type) {
+                    swap_array(array, x, y, x, y+1);
+                } else if (is_in_bounds(x+1, y+1) && !array[x+1+(y+1)*gw].type) {
+                    swap_array(array, x, y, x+1, y+1);
+                } else if (is_in_bounds(x-1, y+1) && !array[x-1+(y+1)*gw].type) {
+                    swap_array(array, x, y, x-1, y+1);
                 }
-
-                c->vx_acc += c->vx;
-                c->vy_acc += c->vy;
-
-                // We're doing our own move_by_velocity.
-                move_by_velocity2(array, x, y);
-
-                return;
+                return cells_updated;
             };
             case CELL_STEAM: case CELL_SMOKE: {
                 SDL_assert(array == gas_grid);
@@ -596,6 +563,8 @@ void grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
             }
         }
     }
+
+    return cells_updated;
 }
 
 void simulation_tick() {
@@ -640,6 +609,13 @@ void grid_array_draw(struct Cell *array) {
             if (!array[x+y*gw].type) continue;
 
             SDL_Color col = pixel_from_index(array, x+y*gw);
+            if (array == pickup_grid) {
+                const float fac = 0.5;
+                col.r *= fac;
+                col.g *= fac;
+                col.b *= fac;
+            }
+            
             if (DRAW_PRESSURE && objects[object_count-1].blob_data[chisel->size].blobs[x+y*gw]) {
                 Uint8 c = (Uint8)(255 * ((float)objects[object_count-1].blob_data[chisel->size].blob_pressures[objects[object_count-1].blob_data[chisel->size].blobs[x+y*gw]] / MAX_PRESSURE));
                 SDL_SetRenderDrawColor(renderer, c, c, c, 255);
@@ -1070,11 +1046,10 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_d
                 return true;
             }
 
-            set(x, y, CELL_NONE, -1);
-            if (replace_dust) { // If we're replacing with dust
-                set_array(pickup_grid, x, y, CELL_DUST, -1);
-                dust_set_random_velocity(x, y);
+            if (replace_dust) {
+                set_array(pickup_grid, x, y, grid[x+y*gw].type, -2);
             }
+            set(x, y, CELL_NONE, -1);
         }
     }
 

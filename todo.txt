@@ -13,10 +13,9 @@
   The fuel can be used in the main material converter to convert for
   eg. sand to glass and ice to water. With other types of fuel though,
   the output changes.
-     - Write out and sketch out different fuel types and the whole
-       branch of fuel types and outputs.
+     x Implement fuel conversion.
      - Implement material conversions
-     - Implement fuel conversion.
+     - Add and refine the actual conversions.
 
 - Improve the grabber to actually grab objects properly. Upon
   clicking, store the position of a cell in the object then track

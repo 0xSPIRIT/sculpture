@@ -3,8 +3,21 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "globals.h"
+
+clock_t global_start, global_end;
+
+void start_timer() {
+    global_start = clock();
+}
+
+void _end_timer(const char *func) {
+    global_end = clock();
+    float cpu_time_used = ((double) (global_end-global_start))/CLOCKS_PER_SEC;
+    printf("(%s) Time: %f\n", func, cpu_time_used); fflush(stdout);
+}
 
 // Moves the mouse to the middle of the grid cell, not the top-left.
 void move_mouse_to_grid_position(float x, float y) {

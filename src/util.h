@@ -5,6 +5,14 @@
 #include <SDL2/SDL_ttf.h>
 
 #include <stdbool.h>
+#include <time.h>
+
+#define end_timer() (_end_timer(__func__))
+
+extern clock_t global_start, global_end;
+
+void start_timer();
+void _end_timer(const char *func);
 
 float randf(float size);
 void move_mouse_to_grid_position(float x, float y);

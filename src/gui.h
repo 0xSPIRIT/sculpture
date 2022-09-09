@@ -12,11 +12,19 @@
 
 #define ITEM_SIZE 48
 
+enum Overlay_Type {
+    OVERLAY_TYPE_OFF,    // Off state
+    OVERLAY_TYPE_BUTTON, // From GUI Buttons
+    OVERLAY_TYPE_ITEM,   // From hovering over items
+    OVERLAY_TYPE_PLACER  // From the placer
+};
+
 struct Overlay {
+    enum Overlay_Type type;
+
     float x, y;
     char str[MAX_OVERLAY_LEN][MAX_OVERLAY_LINE_LEN];
     int w, h;
-    int is_gui; // Is the overlay from a gui button?
 };
 
 struct GUI {
@@ -48,13 +56,14 @@ void gui_tick();
 void gui_draw();
 
 void overlay_reset(struct Overlay *overlay);
-void overlay_set_position(struct Overlay *overlay);
+void overlay_set_position_to_cursor(struct Overlay *overlay, int type);
+void overlay_set_position(struct Overlay *overlay, int x, int y, int type);
 void overlay_draw(struct Overlay *overlay);
 
 void overlay_get_string(int type, int amt, char *out_str);
 
 struct Button *button_allocate(char *image, const char *overlay_text, void (*on_pressed)(void*));
-void button_tick(struct Button *b);
+void button_tick(struct Button *b, void *data);
 void button_draw(struct Button *b);
 void gui_popup_draw();
 void button_deallocate(struct Button *b);

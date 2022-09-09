@@ -78,9 +78,13 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
 }
 
 // Slot may be NULL if the item doesn't belong to any slot.
+// This function mostly just handles interactions with items and the mouse.
 void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h) {
     if (item == &item_holding) return;
     if (!is_point_in_rect((SDL_Point){real_mx, real_my-GUI_H}, (SDL_Rect){x, y, w, h})) return;
+
+    // From this point onwards, we know the mouse is in this item,
+    // and this item is not currently being held.
 
     bool can_place_item = false;
 
@@ -109,6 +113,8 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
 
                 item_holding.type = a.type;
                 item_holding.amount = a.amount;
+
+                overlay_reset(&gui.overlay);
             } 
 
         } else if (mouse_pressed[SDL_BUTTON_RIGHT] && item->type && item_holding.type == 0) { // If holdingd nothing
@@ -121,6 +127,8 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
                 item->amount -= half;
                 item_holding.type = item->type;
                 item_holding.amount += half;
+
+                overlay_reset(&gui.overlay);
             }
         }
     } else if (gui.is_placer_active) {
@@ -190,6 +198,33 @@ void all_converters_tick() {
     converter_tick(material_converter);
     converter_tick(fuel_converter);
 
+    if (!gui.is_placer_active) {
+        for (int i = 0; i < 3; i++) {
+            struct Converter *c = i == 0 ? material_converter : fuel_converter;
+
+            for (int j = 0; j < c->slot_count; j++) {
+                if (!c->slots[j].item.type) continue;
+
+                if (is_mouse_in_slot(&c->slots[j])) {
+                    overlay_set_position_to_cursor(&gui.overlay, OVERLAY_TYPE_ITEM);
+
+                    char type[64] = {0};
+                    char type_name[64] = {0};
+                    char amount[64] = {0};
+
+                    get_name_from_type(c->slots[j].item.type, type_name);
+                    sprintf(type, "Type: %s", type_name);
+                    sprintf(amount, "Amount: %d", c->slots[j].item.amount);
+
+                    strcpy(gui.overlay.str[0], type);
+                    strcpy(gui.overlay.str[1], amount);
+                } else if (gui.overlay.type == OVERLAY_TYPE_ITEM) {
+                    overlay_reset(&gui.overlay);
+                }
+            }
+        }
+    }
+
     item_tick(&item_holding, NULL, real_mx, real_my, ITEM_SIZE, ITEM_SIZE);
 }
 
@@ -210,6 +245,16 @@ bool is_mouse_in_converter(struct Converter *converter) {
 
 bool is_mouse_in_slot(struct Slot *slot) {
     return is_point_in_rect((SDL_Point){real_mx, real_my-GUI_H},
+                            (SDL_Rect){
+                                slot->converter->x + slot->x - slot->w/2,
+                                slot->converter->y + slot->y - slot->h/2,
+                                slot->w,
+                                slot->h
+                            });
+}
+
+bool was_mouse_in_slot(struct Slot *slot) {
+    return is_point_in_rect((SDL_Point){real_pmx, real_pmy-GUI_H},
                             (SDL_Rect){
                                 slot->converter->x + slot->x - slot->w/2,
                                 slot->converter->y + slot->y - slot->h/2,
@@ -242,7 +287,7 @@ struct Converter *converter_init(int type) {
         strcpy(converter->slots[SLOT_FUEL].name, "Fuel");
 
         converter->slots[SLOT_OUTPUT].x = converter->w/2.0;
-        converter->slots[SLOT_OUTPUT].y = 3.0*converter->h/4.0;
+        converter->slots[SLOT_OUTPUT].y = 4.0*converter->h/5.0;
         strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
 
         converter->name = malloc(CONVERTER_NAME_LEN);
@@ -261,7 +306,7 @@ struct Converter *converter_init(int type) {
         strcpy(converter->slots[SLOT_INPUT2].name, "Inp. 2");
 
         converter->slots[SLOT_OUTPUT].x = converter->w/2.0;
-        converter->slots[SLOT_OUTPUT].y = 3.0*converter->h/4.0;
+        converter->slots[SLOT_OUTPUT].y = 4.0*converter->h/5.0;
         strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
 
         converter->name = malloc(CONVERTER_NAME_LEN);
@@ -325,7 +370,26 @@ void converter_tick(struct Converter *converter) {
         slot_tick(s);
     }
 
-    button_tick(converter->go_button);
+    button_tick(converter->go_button, converter);
+    
+    if (converter->state == CONVERTER_ON) {
+        switch (converter->type) {
+        case CONVERTER_MATERIAL: {
+            bool did_convert = material_converter_convert();
+            if (!did_convert) {
+                converter_set_state(material_converter, CONVERTER_OFF);
+            }
+            break;
+        }
+        case CONVERTER_FUEL: {
+            bool did_convert = fuel_converter_convert();
+            if (!did_convert) {
+                converter_set_state(fuel_converter, CONVERTER_OFF);
+            }
+            break;
+        }
+        }
+    }
 
     if (!gui.popup) return;
 }
@@ -349,6 +413,13 @@ void converter_draw(struct Converter *converter) {
         converter->arrow.w,
         converter->arrow.h
     };
+
+    if (converter->state == CONVERTER_ON) {
+        const int period = 500; // Milliseconds.
+        Uint8 a = (SDL_GetTicks()/period) % 2 == 0;
+        a = a ? 255 : 190;
+        SDL_SetTextureColorMod(converter->arrow.texture, a, a, a);
+    }
     SDL_RenderCopy(renderer, converter->arrow.texture, NULL, &arrow_dst);
 
     SDL_Surface *surf = TTF_RenderText_Blended(font_consolas, converter->name, (SDL_Color){0, 0, 0, 255});
@@ -422,11 +493,110 @@ void slot_draw(struct Slot *slot) {
     item_draw(&slot->item, bounds.x, bounds.y, bounds.w, bounds.h);
 }
 
-// TODO: Write the actual conversion code after doing some
-//       basic mockups on paper.
+bool converter_is_layout_valid(struct Converter *converter) {
+    bool is_empty = true;
+    for (int i = 0; i < converter->slot_count; i++) {
+        if (converter->slots[i].item.type) {
+            is_empty = false;
+            break;
+        }
+    }
 
-void converter_begin_converting(void *converter) {
-    struct Converter *c = (struct Converter *) converter;
-    // TODO: Check if it's able to convert first.
-    c->state = CONVERTER_ON;
+    if (is_empty) return false;
+
+    return true;
+}
+
+void converter_begin_converting(void *converter_ptr) {
+    struct Converter *converter = (struct Converter *) converter_ptr;
+
+    if (!converter_is_layout_valid(converter))
+        return;
+
+    converter_set_state(converter, converter->state == CONVERTER_ON ? CONVERTER_OFF : CONVERTER_ON);
+}
+
+void converter_set_state(struct Converter *converter, enum Converter_State state) {
+    converter->state = state;
+    if (state == CONVERTER_OFF) {
+        converter->state = CONVERTER_OFF;
+        SDL_SetTextureColorMod(converter->arrow.texture, 255, 255, 255);
+    }
+}
+
+// Returned if the conversion went succesfully.
+bool fuel_converter_convert() {
+    bool did_convert = false;
+
+    struct Item *input1 = &fuel_converter->slots[SLOT_INPUT1].item;
+    struct Item *input2 = &fuel_converter->slots[SLOT_INPUT2].item;
+    struct Item *output = &fuel_converter->slots[SLOT_OUTPUT].item;
+
+    int number_inputs = (input1->type != 0) + (input2->type != 0);
+
+    if (!number_inputs) return false;
+
+    int output_type = 0;
+    int output_ratio = 0;
+
+    struct Item *input = NULL;
+
+    if (number_inputs == 1) {
+        input = input1->type ? input1 : input2;
+    } else if (number_inputs == 2) {
+        input = input1;
+    }
+
+    switch (input->type) {
+    case CELL_COBBLESTONE: case CELL_MARBLE: case CELL_DIRT: case CELL_SAND: case CELL_WOOD_PLANK:
+        output_type = CELL_WOOD_LOG;
+        break;
+    case CELL_GLASS: case CELL_WOOD_LOG: case CELL_QUARTZ:
+        output_type = CELL_COAL;
+        break;
+    }
+
+    int number_unique_inputs = 0;
+
+    if (number_inputs == 1) {
+        number_unique_inputs = 1;
+    } else if (number_inputs == 2) {
+        if (input1->type != input2->type) {
+            number_unique_inputs = 2;
+        } else {
+            number_unique_inputs = 1;
+        }
+    }
+
+    output_ratio = number_unique_inputs * number_unique_inputs;
+
+    if (!output_type) return false;
+
+    bool final_conversion = false;
+    if (output_type == output->type || output->type == 0) {
+        output->type = output_type;
+
+        int amt = fuel_converter->speed * output_ratio;
+
+        if (input1->type && input1->amount-amt < 0) {
+            amt = input1->amount;
+            final_conversion = true;
+        }
+        if (input2->type && input2->amount-amt < 0) {
+            amt = input2->amount;
+            final_conversion = true;
+        }
+
+        output->amount += amt;
+        if (input1->type) input1->amount -= amt;
+        if (input2->type) input2->amount -= amt;
+
+        did_convert = true;
+    }
+
+    return !final_conversion || !did_convert;
+}
+
+bool material_converter_convert() {
+    return false;
 }

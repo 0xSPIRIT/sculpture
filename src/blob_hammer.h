@@ -9,7 +9,7 @@
 #define MAX_BLOBS_TOUCHED 32
 
 // Used in chisel.c as well for the chisel's hammer state.
-enum {
+enum Hammer_State {
     HAMMER_STATE_IDLE,
     HAMMER_STATE_WINDUP,
     HAMMER_STATE_SWING,

@@ -26,6 +26,8 @@ enum Cell_Type {
     CELL_MARBLE,
     CELL_COBBLESTONE,
     CELL_QUARTZ,
+    CELL_GRANITE,
+    CELL_BASALT,
     CELL_WOOD_LOG,
     CELL_WOOD_PLANK,
     CELL_DIRT,
@@ -39,6 +41,7 @@ enum Cell_Type {
     CELL_LEAF,
     CELL_SMOKE,
     CELL_DUST,
+    CELL_LAVA,
     CELL_COUNT
 };
 

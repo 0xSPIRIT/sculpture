@@ -13,7 +13,7 @@ struct Effect_Particle {
 };
 
 struct Effect {
-    int type;
+    enum Effect_Type type;
     struct Effect_Particle *particles;
     int particle_count;
 };

@@ -16,7 +16,7 @@
 #include <SDL2/SDL.h>
 
 struct Cell {
-    int type;             // All types are found in globals.h
+    enum Cell_Type type;  // All types are found in globals.h
     int object;           // Object index the cell belongs. -1 for none
     int temp;             // Temporary variable for algorithms
     bool updated;         // Updated for the frame yet?
@@ -55,7 +55,7 @@ void grid_init(int w, int h);
 void grid_deinit();
 void set(int x, int y, int val, int object);
 void set_array(struct Cell *arr, int x, int y, int val, int object);
-void grid_array_tick(struct Cell *array, int x_direction, int y_direction);
+int grid_array_tick(struct Cell *array, int x_direction, int y_direction);
 void grid_array_draw(struct Cell *array);
 void simulation_tick();
 void grid_draw(void);

@@ -230,12 +230,15 @@ void placer_suck(struct Placer *placer) {
     }
 
     while (distance(x, y, placer->px, placer->py) < len) {
+
         // Include the grid as well as pickup grid.
-        const int r = placer->radius;
-        for (int a = 0; a < 3; a++) {
-            struct Cell *arr = grid_layers[a]; // Tick: grid, fg_grid, gas_grid
+        for (int a = 0; a < 2; a++) {
+
+            struct Cell *arr = a == 0 ? grid : pickup_grid;
 
             // Remove cells in a circle
+            const int r = placer->radius;
+
             for (int dy = -r; dy <= r; dy++) {
                 for (int dx = -r; dx <= r; dx++) {
                     if (dx*dx + dy*dy > r*r)  continue;
@@ -330,10 +333,8 @@ void placer_tick(struct Placer *placer) {
         break;
     }
 
-    // set up the overlay.
-    gui.overlay = (struct Overlay){
-        placer->x + placer->w/2 + 3, placer->y - placer->h
-    };
+    // Set up the overlay.
+    overlay_set_position(&gui.overlay, placer->x + placer->w/2 + 3, placer->y - placer->h, OVERLAY_TYPE_PLACER);
 
     strcpy(gui.overlay.str[0], "Placer");
 
