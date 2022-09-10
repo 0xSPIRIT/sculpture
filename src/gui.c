@@ -85,7 +85,7 @@ void gui_tick() {
 
         int was_placer_active = gui.is_placer_active;
 
-        gui.is_placer_active = keys[SDL_SCANCODE_LSHIFT];
+        gui.is_placer_active = keys[SDL_SCANCODE_LCTRL];
 
         if (was_placer_active && !gui.is_placer_active) {
             overlay_reset(&gui.overlay);

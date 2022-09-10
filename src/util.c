@@ -30,6 +30,8 @@ void get_filename_from_type(int type, char *out) {
     case CELL_MARBLE:      strcpy(out, "../res/items/marble.png"); break;
     case CELL_COBBLESTONE: strcpy(out, "../res/items/cobblestone.png"); break;
     case CELL_QUARTZ:      strcpy(out, "../res/items/quartz.png"); break;
+    case CELL_GRANITE:     strcpy(out, "../res/items/quartz.png"); break;
+    case CELL_BASALT:      strcpy(out, "../res/items/quartz.png"); break;
     case CELL_WOOD_LOG:    strcpy(out, "../res/items/wood_log.png"); break;
     case CELL_WOOD_PLANK:  strcpy(out, "../res/items/wood_plank.png"); break;
     case CELL_DIRT:        strcpy(out, "../res/items/dirt.png"); break;
@@ -43,6 +45,7 @@ void get_filename_from_type(int type, char *out) {
     case CELL_LEAF:        strcpy(out, "../res/items/leaf.png"); break;
     case CELL_SMOKE:       strcpy(out, "../res/items/smoke.png"); break;
     case CELL_DUST:        strcpy(out, "../res/items/dust.png"); break;
+    case CELL_LAVA:        strcpy(out, "../res/items/quartz.png"); break;
     }
 }
 
@@ -52,6 +55,8 @@ void get_name_from_type(int type, char *out) {
     case CELL_MARBLE:      strcpy(out, "Marble"); break;
     case CELL_COBBLESTONE: strcpy(out, "Cobblestone"); break;
     case CELL_QUARTZ:      strcpy(out, "Quartz"); break;
+    case CELL_GRANITE:     strcpy(out, "Granite"); break;
+    case CELL_BASALT:      strcpy(out, "Basalt"); break;
     case CELL_WOOD_LOG:    strcpy(out, "Wood Log"); break;
     case CELL_WOOD_PLANK:  strcpy(out, "Wood Plank"); break;
     case CELL_DIRT:        strcpy(out, "Dirt"); break;
@@ -65,6 +70,7 @@ void get_name_from_type(int type, char *out) {
     case CELL_LEAF:        strcpy(out, "Leaf"); break;
     case CELL_SMOKE:       strcpy(out, "Smoke"); break;
     case CELL_DUST:        strcpy(out, "Dust"); break;
+    case CELL_LAVA:        strcpy(out, "Lava"); break;
     }
 }
 

@@ -27,7 +27,7 @@ void placer_init(int num) {
     placer->texture = SDL_CreateTextureFromSurface(renderer, surf);
     placer->object_index = -1;
     placer->did_click = 0;
-    placer->contains_type = CELL_ICE;
+    placer->contains_type = CELL_DIRT;
     placer->contains_amount = 5000;
     placer->radius = 2;
 

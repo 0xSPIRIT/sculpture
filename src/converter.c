@@ -64,8 +64,10 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
 
     char number[32] = {0};
     sprintf(number, "%d", item->amount);
+
+    SDL_Color color = (SDL_Color){255, 255, 255, 255};
     
-    SDL_Surface *surf = TTF_RenderText_Blended(small_font, number, (SDL_Color){0, 0, 0, 255});
+    SDL_Surface *surf = TTF_RenderText_Solid(bold_small_font, number, color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
 
     SDL_Rect dst = {
@@ -74,6 +76,10 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
         surf->w,
         surf->h
     };
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &dst);
+    
     SDL_RenderCopy(renderer, texture, NULL, &dst);
 }
 
@@ -153,12 +159,13 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
             }
         } else if (can_place_item && mouse_pressed[SDL_BUTTON_LEFT]) {
             int amt = 0;
+            const int place_speed = 6;
 
             if (p->contains_amount && (!item->type || !item->amount)) {
                 item->type = p->contains_type;
-                amt = converter->speed;
+                amt = place_speed;
             } else if (item->type == p->contains_type) {
-                amt = converter->speed;
+                amt = place_speed;
             }
 
             if (p->contains_amount - converter->speed < 0) {
@@ -199,7 +206,9 @@ void all_converters_tick() {
     converter_tick(fuel_converter);
 
     if (!gui.is_placer_active) {
-        for (int i = 0; i < 3; i++) {
+        bool set_overlay_this_frame = false;
+
+        for (int i = 0; i < 2; i++) {
             struct Converter *c = i == 0 ? material_converter : fuel_converter;
 
             for (int j = 0; j < c->slot_count; j++) {
@@ -218,7 +227,9 @@ void all_converters_tick() {
 
                     strcpy(gui.overlay.str[0], type);
                     strcpy(gui.overlay.str[1], amount);
-                } else if (gui.overlay.type == OVERLAY_TYPE_ITEM) {
+
+                    set_overlay_this_frame = true;
+                } else if (!set_overlay_this_frame && gui.overlay.type == OVERLAY_TYPE_ITEM) {
                     overlay_reset(&gui.overlay);
                 }
             }
@@ -268,6 +279,9 @@ struct Converter *converter_init(int type) {
     converter->type = type;
     converter->w = window_width/2;
     converter->h = GUI_POPUP_H;
+
+    converter->timer_max = 1;
+    converter->timer_current = 0;
 
     switch (type) {
     case CONVERTER_MATERIAL:
@@ -329,7 +343,7 @@ struct Converter *converter_init(int type) {
     converter->arrow.y = converter->h/2 + 24;
     converter->arrow.w = surf->w;
     converter->arrow.h = surf->h;
-    converter->speed = 6;
+    converter->speed = 1;
 
     // Both X and Y-coordinates are updated in converter_tick.
     struct Button *b;
@@ -373,21 +387,26 @@ void converter_tick(struct Converter *converter) {
     button_tick(converter->go_button, converter);
     
     if (converter->state == CONVERTER_ON) {
-        switch (converter->type) {
-        case CONVERTER_MATERIAL: {
-            bool did_convert = material_converter_convert();
-            if (!did_convert) {
-                converter_set_state(material_converter, CONVERTER_OFF);
+        if (converter->timer_current < converter->timer_max) {
+            converter->timer_current += 1;
+        } else {
+            converter->timer_current = 0;
+            switch (converter->type) {
+            case CONVERTER_MATERIAL: {
+                bool did_convert = converter_convert(material_converter);
+                if (!did_convert) {
+                    converter_set_state(material_converter, CONVERTER_OFF);
+                }
+                break;
             }
-            break;
-        }
-        case CONVERTER_FUEL: {
-            bool did_convert = fuel_converter_convert();
-            if (!did_convert) {
-                converter_set_state(fuel_converter, CONVERTER_OFF);
+            case CONVERTER_FUEL: {
+                bool did_convert = converter_convert(fuel_converter);
+                if (!did_convert) {
+                    converter_set_state(fuel_converter, CONVERTER_OFF);
+                }
+                break;
             }
-            break;
-        }
+            }
         }
     }
 
@@ -414,15 +433,17 @@ void converter_draw(struct Converter *converter) {
         converter->arrow.h
     };
 
+    // Flashing the arrow itself.
     if (converter->state == CONVERTER_ON) {
         const int period = 500; // Milliseconds.
         Uint8 a = (SDL_GetTicks()/period) % 2 == 0;
         a = a ? 255 : 190;
         SDL_SetTextureColorMod(converter->arrow.texture, a, a, a);
     }
+
     SDL_RenderCopy(renderer, converter->arrow.texture, NULL, &arrow_dst);
 
-    SDL_Surface *surf = TTF_RenderText_Blended(font_consolas, converter->name, (SDL_Color){0, 0, 0, 255});
+    SDL_Surface *surf = TTF_RenderText_Blended(font_courier, converter->name, (SDL_Color){0, 0, 0, 255});
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
 
     int margin = 8;
@@ -481,8 +502,10 @@ void slot_draw(struct Slot *slot) {
         SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
 
         SDL_Rect dst = {
-            bounds.x, bounds.y - surf->h - 2,
-            surf->w, surf->h
+            bounds.x + slot->w/2 - surf->w/2,
+            bounds.y - surf->h - 2,
+            surf->w,
+            surf->h
         };
         SDL_RenderCopy(renderer, texture, NULL, &dst);
 
@@ -524,17 +547,23 @@ void converter_set_state(struct Converter *converter, enum Converter_State state
     }
 }
 
-// Returned if the conversion went succesfully.
-bool fuel_converter_convert() {
+// Returns if the conversion went succesfully.
+bool converter_convert(struct Converter *converter) {
     bool did_convert = false;
 
-    struct Item *input1 = &fuel_converter->slots[SLOT_INPUT1].item;
-    struct Item *input2 = &fuel_converter->slots[SLOT_INPUT2].item;
-    struct Item *output = &fuel_converter->slots[SLOT_OUTPUT].item;
+    struct Item *input1 = &converter->slots[SLOT_INPUT1].item;
+    struct Item *input2 = &converter->slots[SLOT_INPUT2].item;
+    struct Item *output = &converter->slots[SLOT_OUTPUT].item;
+    struct Item *fuel = NULL;
+
+    if (converter->type == CONVERTER_MATERIAL) {
+        fuel = &converter->slots[SLOT_FUEL].item;
+    }
 
     int number_inputs = (input1->type != 0) + (input2->type != 0);
 
     if (!number_inputs) return false;
+    if (fuel && !fuel->type && fuel->amount == 0) return false;
 
     int output_type = 0;
     int output_ratio = 0;
@@ -547,13 +576,21 @@ bool fuel_converter_convert() {
         input = input1;
     }
 
-    switch (input->type) {
-    case CELL_COBBLESTONE: case CELL_MARBLE: case CELL_DIRT: case CELL_SAND: case CELL_WOOD_PLANK:
-        output_type = CELL_WOOD_LOG;
-        break;
-    case CELL_GLASS: case CELL_WOOD_LOG: case CELL_QUARTZ:
-        output_type = CELL_COAL;
-        break;
+    if (converter->type == CONVERTER_FUEL) {
+        switch (input->type) {
+        case CELL_COBBLESTONE: case CELL_MARBLE: case CELL_DIRT: case CELL_SAND: case CELL_WOOD_PLANK:
+            output_type = CELL_WOOD_LOG;
+            break;
+        case CELL_GLASS: case CELL_WOOD_LOG: case CELL_QUARTZ:
+            output_type = CELL_COAL;
+            break;
+        }
+    } else if (converter->type == CONVERTER_MATERIAL) {
+        switch (input->type) {
+        case CELL_SAND:
+            output_type = CELL_GLASS;
+            break;
+        }
     }
 
     int number_unique_inputs = 0;
@@ -576,8 +613,11 @@ bool fuel_converter_convert() {
     if (output_type == output->type || output->type == 0) {
         output->type = output_type;
 
-        int amt = fuel_converter->speed * output_ratio;
+        int amt = converter->speed * output_ratio;
 
+        // Check if any input, when reduced by the amount,
+        // gives negative amount. If so, lock the amount
+        // we're reducing to by the correct amount.
         if (input1->type && input1->amount-amt < 0) {
             amt = input1->amount;
             final_conversion = true;
@@ -587,16 +627,31 @@ bool fuel_converter_convert() {
             final_conversion = true;
         }
 
-        output->amount += amt;
-        if (input1->type) input1->amount -= amt;
-        if (input2->type) input2->amount -= amt;
+        // The same for fuel, but make sure to multiple by the
+        // number of inputs to compensate otherwise you'd be able
+        // to use half the amount of fuel for the same output if
+        // you just split the input in two.
+        if (fuel && fuel->type && fuel->amount-amt < 0) {
+            amt = fuel->amount * number_inputs; // *ing to compensate.
+            final_conversion = true;
+        }
+
+        int amt_add = 0;
+        if (input1->type) {
+            input1->amount -= amt;
+            amt_add += amt;
+        }
+        if (input2->type) {
+            input2->amount -= amt;
+            amt_add += amt;
+        }
+
+        if (fuel && fuel->type)
+            fuel->amount -= amt_add;
+        output->amount += amt_add;
 
         did_convert = true;
     }
 
     return !final_conversion || !did_convert;
-}
-
-bool material_converter_convert() {
-    return false;
 }

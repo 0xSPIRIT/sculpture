@@ -55,7 +55,12 @@ extern SDL_Texture *item_textures[CELL_COUNT];
 extern int current_tool;
 extern int debug_mode;
 
-extern TTF_Font *font, *font_consolas, *small_font, *title_font;
+extern TTF_Font *font,
+    *font_consolas,
+    *font_courier,
+    *small_font,
+    *bold_small_font,
+    *title_font;
 
 extern SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
 

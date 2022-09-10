@@ -250,13 +250,17 @@ void game_tick_event(SDL_Event *event) {
 void fonts_init(void) {
     font = TTF_OpenFont("../res/cour.ttf", 19);
     font_consolas = TTF_OpenFont("../res/consola.ttf", 24);
-    small_font = TTF_OpenFont("../res/cour.ttf", 13);
+    font_courier = TTF_OpenFont("../res/cour.ttf", 20);
+    small_font = TTF_OpenFont("../res/cour.ttf", 16);
+    bold_small_font = TTF_OpenFont("../res/courbd.ttf", 16);
     title_font = TTF_OpenFont("../res/cour.ttf", 45);
 }
 
 void fonts_deinit(void) {
     TTF_CloseFont(font);
     TTF_CloseFont(font_consolas);
+    TTF_CloseFont(font_courier);
+    TTF_CloseFont(bold_small_font);
     TTF_CloseFont(small_font);
     TTF_CloseFont(title_font);
 }

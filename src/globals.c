@@ -17,6 +17,11 @@ int current_tool = TOOL_GRABBER;
 
 int debug_mode;
 
-TTF_Font *font, *font_consolas, *small_font, *title_font;
+TTF_Font *font = NULL,
+    *font_consolas = NULL,
+    *font_courier = NULL,
+    *small_font = NULL,
+    *bold_small_font = NULL,
+    *title_font = NULL;
 
 bool running = true;

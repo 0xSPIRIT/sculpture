@@ -24,7 +24,7 @@ struct Slot {
     struct Converter *converter; // The converter this slot belongs to.
     struct Item item;
 
-    enum Slot_Type type;         // Slot_Type
+    enum Slot_Type type;
 
     char name[32];
     int dx, dy;                  // Orientation of the name string.
@@ -54,7 +54,9 @@ struct Converter {
     char *name;
 
     float x, y, w, h;
-    int speed;
+    int speed; // Amount of cells converted per tick.
+
+    int timer_max, timer_current;
     
     struct Slot *slots;
     int slot_count;
@@ -89,9 +91,7 @@ void converter_draw(struct Converter *converter);
 bool converter_is_layout_valid(struct Converter *converter);
 void converter_begin_converting(void *converter);
 void converter_set_state(struct Converter *converter, enum Converter_State state);
-
-bool fuel_converter_convert();
-bool material_converter_convert();
+bool converter_convert(struct Converter *converter);
 
 void slot_tick(struct Slot *slot);
 void slot_draw(struct Slot *slot);
