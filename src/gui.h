@@ -49,8 +49,8 @@ struct Button {
     void (*on_pressed)(void*);
 };
 
-void gui_init();
-void gui_deinit();
+void gui_init(gs);
+void gui_deinit(gs);
 void gui_tick();
 void gui_draw();
 

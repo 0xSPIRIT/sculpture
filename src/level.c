@@ -110,7 +110,7 @@ void goto_level(int lvl) {
     gs->level_current = lvl;
 
     if (gs->grid)
-        grid_deinit();
+        grid_deinit(gs);
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
 
     SDL_DestroyTexture(gs->render_texture);
@@ -124,16 +124,16 @@ void goto_level(int lvl) {
     chisel_init(&gs->chisel_large);
     gs->chisel = &gs->chisel_small;
     
-    chisel_blocker_init();
-    blob_hammer_init();
-    chisel_hammer_init();
-    knife_init();
-    point_knife_init();
+    chisel_blocker_init(gs);
+    blob_hammer_init(gs);
+    chisel_hammer_init(gs);
+    knife_init(gs);
+    point_knife_init(gs);
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_init(i);
-    grabber_init();
-    gui_init();
-    all_converters_init();
+    grabber_init(gs);
+    gui_init(gs);
+    all_converters_init(gs);
 
     effect_set(gs->levels[lvl].effect_type);
 
@@ -144,25 +144,25 @@ void levels_deinit() {
     chisel_deinit(&gs->chisel_small);
     chisel_deinit(&gs->chisel_medium);
     chisel_deinit(&gs->chisel_large);
-    blob_hammer_deinit();
-    chisel_hammer_deinit();
-    knife_deinit();
-    point_knife_deinit();
-    gui_deinit();
-    all_converters_deinit();
+    blob_hammer_deinit(gs);
+    chisel_hammer_deinit(gs);
+    knife_deinit(gs);
+    point_knife_deinit(gs);
+    gui_deinit(gs);
+    all_converters_deinit(gs);
 
     effect_set(EFFECT_NONE);
 
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_deinit(i);
 
-    grabber_deinit();
+    grabber_deinit(gs);
     for (int i = 0; i < gs->level_count; i++) {
         free(gs->levels[i].desired_grid);
         free(gs->levels[i].initial_grid);
     }
 
-    undo_system_deinit();
+    undo_system_deinit(gs);
 }
 
 void level_tick() {
@@ -188,7 +188,7 @@ void level_tick() {
             }
             objects_reevaluate();
 
-            undo_system_init();
+            undo_system_init(gs);
         }
         break;
     case LEVEL_STATE_OUTRO:

@@ -16,9 +16,9 @@
 #include "cursor.h"
 #include "globals.h"
 
-struct Game_State *gs = NULL;
+struct Game_State *gs;
 
-internal void fonts_init(void) {
+internal void fonts_init() {
     gs->font = TTF_OpenFont("../res/cour.ttf", 19);
     gs->font_consolas = TTF_OpenFont("../res/consola.ttf", 24);
     gs->font_courier = TTF_OpenFont("../res/cour.ttf", 20);
@@ -27,7 +27,7 @@ internal void fonts_init(void) {
     gs->title_font = TTF_OpenFont("../res/cour.ttf", 45);
 }
 
-internal void fonts_deinit(void) {
+internal void fonts_deinit() {
     TTF_CloseFont(gs->font);
     TTF_CloseFont(gs->font_consolas);
     TTF_CloseFont(gs->font_courier);
@@ -61,11 +61,9 @@ internal void game_init_sdl(const char *window_title, int w, int h) {
     SDL_SetRenderDrawBlendMode(gs->renderer, SDL_BLENDMODE_BLEND);
 }
 
-// Make sure to allocate the GameState in the platform layer
-// before calling this function!
-void game_init(struct Game_State *_gs) {
-    gs = _gs;
-
+void game_init(struct Game_State *state) {
+    gs = state;
+    
     srand(time(0));
 
     gs->S = 6;
@@ -87,7 +85,9 @@ void game_init(struct Game_State *_gs) {
     goto_level(0);
 }
 
-void game_deinit(void) {
+void game_deinit(struct Game_State *state) {
+    gs = state;
+    
     levels_deinit();
     fonts_deinit();
     item_deinit();
@@ -257,7 +257,7 @@ internal bool game_tick_event(SDL_Event *event) {
     }
 
     text_field_tick(event);
-
+    
     if (selected_tool) {
         gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
         gs->gui.tool_buttons[gs->current_tool]->activated = 1;
@@ -267,11 +267,9 @@ internal bool game_tick_event(SDL_Event *event) {
 }
 
 // Returns false if we want to exit.
-bool game_run(struct Game_State *_gs) {
-    gs = _gs;
-
-    printf("B.\n");
-
+bool game_run(struct Game_State *state) {
+    gs = state;
+    
     SDL_Event event;
     bool is_running = true;
     int prev_tool = gs->current_tool;

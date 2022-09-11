@@ -5,9 +5,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-typedef void (*game_init_proc)(struct Game_State *);
-typedef bool (*game_run_proc)(struct Game_State *);
-typedef void (*game_deinit_proc)(void);
+typedef void (*game_init_proc)();
+typedef bool (*game_run_proc)();
+typedef void (*game_deinit_proc)();
 
 struct Loader {
     HMODULE game_code_dll;

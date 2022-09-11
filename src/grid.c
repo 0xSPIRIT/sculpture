@@ -136,8 +136,8 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
     case CELL_COBBLESTONE:
         r = my_rand(i*i) % 100 < 10;
         amt = 25;
-        /* color = (SDL_Color){140 + r*amt + ((i*i*i*i)%20 - 10), 140 + r*amt + ((i*i*i*i)%20 - 10), 135 + r*amt + ((i*i*i*i)%20 - 10), 255}; */
-        color = (SDL_Color){255, 255, 0, 255};
+        color = (SDL_Color){140 + r*amt + ((i*i*i*i)%20 - 10), 140 + r*amt + ((i*i*i*i)%20 - 10), 135 + r*amt + ((i*i*i*i)%20 - 10), 255};
+        /* color = (SDL_Color){255, 255, 0, 255}; */
         break;
     case CELL_QUARTZ:
         r = my_rand(i*i) % 100 < 10;

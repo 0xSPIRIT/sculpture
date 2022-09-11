@@ -21,8 +21,11 @@
 #include "grabber.h"
 #include "effects.h"
 #include "chisel_blocker.h"
+#include "shared.h"
 
 struct Game_State {
+    struct Game_Memory memory;
+    
     struct SDL_Window *window;
     struct SDL_Renderer *renderer;
 
@@ -42,7 +45,7 @@ struct Game_State {
         *small_font,
         *bold_small_font,
         *title_font;
-
+    
     SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
 
     struct Cell *grid_layers[NUM_GRID_LAYERS]; 
@@ -96,8 +99,8 @@ struct Game_State {
 
 extern struct Game_State *gs;
 
-__declspec(dllexport) void game_init(struct Game_State *_gs);
-__declspec(dllexport) void game_deinit(void);
-__declspec(dllexport) bool game_run(struct Game_State *_gs);
+__declspec(dllexport) void game_init(struct Game_State *state);
+__declspec(dllexport) void game_deinit(struct Game_State *state);
+__declspec(dllexport) bool game_run(struct Game_State *state);
 
 #endif // GAME_H_
