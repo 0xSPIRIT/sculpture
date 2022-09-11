@@ -3,29 +3,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Save_State *current_state, *start_state;
+#include "game.h"
 
 void undo_system_init() {
-    start_state = calloc(1, sizeof(struct Save_State));
-    current_state = start_state;
+    gs->start_state = calloc(1, sizeof(struct Save_State));
+    gs->current_state = gs->start_state;
 
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        current_state->grid_layers[i] = calloc(gw*gh, sizeof(struct Cell));
-        memcpy(current_state->grid_layers[i], grid_layers[i], sizeof(struct Cell)*gw*gh);
+        gs->current_state->grid_layers[i] = calloc(gs->gw*gs->gh, sizeof(struct Cell));
+        memcpy(gs->current_state->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
     }
 }
 
 void undo_system_deinit() {
     struct Save_State *next = NULL;
-    for (struct Save_State *state = start_state; state; state = next) {
+    for (struct Save_State *state = gs->start_state; state; state = next) {
         next = state->next;
         free_save_state(state);
     }
 }
 
 bool is_current_grid_same_as(struct Save_State *state) {
-    // grid == grid_layers[0]
-    return memcmp(grid_layers[0], state->grid_layers[0], gw*gh*sizeof(struct Cell)) == 0;
+    return memcmp(gs->grid_layers[0], state->grid_layers[0], gs->gw*gs->gh*sizeof(struct Cell)) == 0;
 }
     
 void save_state_to_next() {
@@ -34,21 +33,21 @@ void save_state_to_next() {
 
     if (!state->grid_layers[0]) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-            state->grid_layers[i] = calloc(gw*gh, sizeof(struct Cell));
+            state->grid_layers[i] = calloc(gs->gw*gs->gh, sizeof(struct Cell));
         }
     }
 
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        memcpy(state->grid_layers[i], grid_layers[i], sizeof(struct Cell)*gw*gh);
+        memcpy(state->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
     }
 
-    current_state->next = state;
-    state->prev = current_state;
-    current_state = state;
+    gs->current_state->next = state;
+    state->prev = gs->current_state;
+    gs->current_state = state;
 }
 
 struct Save_State *get_state_index(int index) {
-    struct Save_State *s = start_state;
+    struct Save_State *s = gs->start_state;
     for (int i = 0; i < index; i++) {
         if (s->next) {
             s = s->next;
@@ -68,7 +67,7 @@ void free_save_state(struct Save_State *state) {
 
 void set_state(struct Save_State *state) {
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        memcpy(grid_layers[i], state->grid_layers[i], sizeof(struct Cell)*gw*gh);
+        memcpy(gs->grid_layers[i], state->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
     }
 }
 
@@ -78,24 +77,24 @@ void set_state_to_string_hook(const char *string) {
 }
 
 void undo() {
-    if (is_current_grid_same_as(current_state)) {
-        if (!current_state->prev) {
+    if (is_current_grid_same_as(gs->current_state)) {
+        if (!gs->current_state->prev) {
             return;
         }
-        set_state(current_state->prev);
-        current_state = current_state->prev;
-        free_save_state(current_state->next);
-        current_state->next = NULL;
+        set_state(gs->current_state->prev);
+        gs->current_state = gs->current_state->prev;
+        free_save_state(gs->current_state->next);
+        gs->current_state->next = NULL;
     } else { // Just reset to the current state
-        set_state(current_state);
+        set_state(gs->current_state);
     }
 }
 
 void view_save_state_linked_list() {
     printf("\n\nSTART.\n"); fflush(stdout);
-    for (struct Save_State *state = start_state; state; state = state->next) {
+    for (struct Save_State *state = gs->start_state; state; state = state->next) {
         printf("Me:   %p", (void*) state);
-        if (state == current_state) {
+        if (state == gs->current_state) {
             printf(" [current]");
         }
         printf("\n");

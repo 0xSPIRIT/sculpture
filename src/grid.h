@@ -2,7 +2,7 @@
 #define GRID_H_
 
 // Maximum amounts of pressure for each chisel size.
-#define MAX_PRESSURE (chisel->size == 2 ? 48.0 : 120.0)
+#define MAX_PRESSURE (gs->chisel->size == 2 ? 48.0 : 120.0)
 
 #define MAX_OBJECTS 32
 #define NUM_GRID_LAYERS 4
@@ -15,8 +15,43 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 
+enum Tool_Type {
+    TOOL_CHISEL_SMALL,
+    TOOL_CHISEL_MEDIUM,
+    TOOL_CHISEL_LARGE,
+    TOOL_KNIFE,
+    TOOL_POINT_KNIFE,
+    TOOL_HAMMER,
+    TOOL_PLACER,
+    TOOL_GRABBER,
+    TOOL_COUNT
+};
+
+enum Cell_Type {
+    CELL_NONE,
+    CELL_MARBLE,
+    CELL_COBBLESTONE,
+    CELL_QUARTZ,
+    CELL_GRANITE,
+    CELL_BASALT,
+    CELL_WOOD_LOG,
+    CELL_WOOD_PLANK,
+    CELL_DIRT,
+    CELL_SAND,
+    CELL_GLASS,
+    CELL_WATER,
+    CELL_COAL,
+    CELL_STEAM,
+    CELL_DIAMOND,
+    CELL_ICE,
+    CELL_LEAF,
+    CELL_SMOKE,
+    CELL_DUST,
+    CELL_LAVA,
+    CELL_COUNT
+};
 struct Cell {
-    enum Cell_Type type;  // All types are found in globals.h
+    enum Cell_Type type;  // The type of this cell.
     int object;           // Object index the cell belongs. -1 for none
     int temp;             // Temporary variable for algorithms
     bool updated;         // Updated for the frame yet?
@@ -28,14 +63,8 @@ struct Cell {
     int rand;             // Random value per cell
 };
 
-extern struct Cell *grid_layers[NUM_GRID_LAYERS]; 
-extern struct Cell *grid, *fg_grid, *pickup_grid; // Pointers into grid_layers.
-
-extern int gw, gh; // Grid size; gets set when goto_level() is called.
-extern int grid_show_ghost;
-
 struct Blob_Data {
-    Uint32 *blobs; // Grid (gw, gh) with blob IDs as ints
+    Uint32 *blobs; // Grid (gs->gw, gs->gh) with blob IDs as ints
     int *blob_pressures; // Index into this using the blob index.
     int blob_count;
 };
@@ -44,12 +73,6 @@ struct Object {
     struct Blob_Data blob_data[3]; // 3 Blob sizes for 3 chisels. 
     int cell_count;
 };
-extern struct Object objects[MAX_OBJECTS];
-extern int object_count, object_current;
-
-extern int do_draw_blobs, do_draw_objects;
-extern bool paused;
-extern int frames, step_one;
 
 void grid_init(int w, int h);
 void grid_deinit();

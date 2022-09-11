@@ -36,8 +36,6 @@ struct Blob_Hammer {
     int blobs_touched_count;
 };
 
-extern struct Blob_Hammer blob_hammer;
-
 void blob_hammer_init();
 void blob_hammer_deinit();
 void blob_hammer_tick();

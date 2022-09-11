@@ -3,35 +3,35 @@
 #include <SDL2/SDL_image.h>
 
 #include "grid.h"
-#include "globals.h"
+#include "game.h"
 #include "undo.h"
-
-struct Grabber grabber;
 
 void grabber_init() {
     SDL_Surface *surf = IMG_Load("../res/pointer.png");
-    grabber.texture = SDL_CreateTextureFromSurface(renderer, surf);
-    grabber.w = surf->w;
-    grabber.h = surf->h;
-    grabber.object_holding = -1;
+    gs->grabber.texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
+    gs->grabber.w = surf->w;
+    gs->grabber.h = surf->h;
+    gs->grabber.object_holding = -1;
     SDL_FreeSurface(surf);
 }
 
 void grabber_deinit() {
-    SDL_DestroyTexture(grabber.texture);
+    SDL_DestroyTexture(gs->grabber.texture);
 }
 
 void grabber_tick() {
-    float px = grabber.x, py = grabber.y;
+    struct Grabber *grabber = &gs->grabber;
 
-    grabber.x = mx;
-    grabber.y = my;
+    float px = grabber->x, py = grabber->y;
 
-    if (!is_in_bounds(grabber.x, grabber.y)) return;
+    grabber->x = gs->input.mx;
+    grabber->y = gs->input.my;
 
-    if (grabber.object_holding != -1) {
-        int dx = (int)grabber.x-px;
-        int dy = (int)grabber.y-py;
+    if (!is_in_bounds(grabber->x, grabber->y)) return;
+
+    if (grabber->object_holding != -1) {
+        int dx = (int)grabber->x-px;
+        int dy = (int)grabber->y-py;
         /* float len = sqrt(dx*dx + dy*dy); */
         /* float ux = dx/len; */
         /* float uy = dy/len; */
@@ -40,18 +40,18 @@ void grabber_tick() {
 
         /* int i = 0; */
         /* while (sqrt(vx*vx + vy*vy) < len) { */
-        object_attempt_move(grabber.object_holding, dx, dy);
+        object_attempt_move(grabber->object_holding, dx, dy);
         /*     vx += ux; */
         /*     vy += uy; */
         /* } */
     }
 
-    if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+    if (gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
         // Find object at point, and attempt move to cursor pixel by pixel.
-        int object = grid[(int)grabber.x+(int)grabber.y*gw].object;
-        if (object != -1) grabber.object_holding = object;
+        int object = gs->grid[(int)grabber->x+(int)grabber->y*gs->gw].object;
+        if (object != -1) grabber->object_holding = object;
     } else {
-        grabber.object_holding = -1;
+        grabber->object_holding = -1;
         /* if (mouse_released[SDL_BUTTON_LEFT]) */
         /*     save_state(); */
     }
@@ -59,8 +59,8 @@ void grabber_tick() {
 
 void grabber_draw() {
     /* const SDL_Rect dst = { */
-    /*     (int)grabber.x, (int)grabber.y, */
-    /*     grabber.w, grabber.h */
+    /*     (int)grabber->x, (int)grabber->y, */
+    /*     grabber->w, grabber->h */
     /* }; */
-    /* SDL_RenderCopy(renderer, grabber.texture, NULL, &dst); */
+    /* SDL_RenderCopy(gs->renderer, grabber->texture, NULL, &dst); */
 }

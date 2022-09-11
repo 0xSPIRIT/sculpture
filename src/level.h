@@ -28,10 +28,6 @@ struct Level {
     int popup_time_current, popup_time_max;
 };
 
-extern struct Level levels[MAX_LEVELS];
-extern int level_current, level_count;
-extern int new_level;
-
 void levels_setup();
 void goto_level_string_hook(const char *string);
 void goto_level(int lvl);

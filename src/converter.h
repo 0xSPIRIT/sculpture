@@ -66,10 +66,6 @@ struct Converter {
     struct Arrow arrow;
 };
 
-extern struct Converter *material_converter,
-                        *fuel_converter;
-extern struct Item item_holding;
-
 void item_init();
 void item_deinit();
 void item_draw(struct Item *item, int x, int y, int w, int h);

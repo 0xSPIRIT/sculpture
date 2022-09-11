@@ -4,11 +4,13 @@
 #include <SDL2/SDL.h>
 
 #include "converter.h"
-#include "globals.h"
+#include "grid.h"
 
 #define MAX_OVERLAY_LEN 128
 #define MAX_OVERLAY_LINE_LEN 128
+
 #define GUI_POPUP_H 336 // window_height/2
+#define GUI_H 96
 
 #define ITEM_SIZE 48
 
@@ -46,9 +48,6 @@ struct Button {
     bool just_had_overlay; // Used to disable the GUI overlay when the mouse goes off me.
     void (*on_pressed)(void*);
 };
-
-extern struct GUI gui;
-extern SDL_Texture *gui_texture;
 
 void gui_init();
 void gui_deinit();

@@ -13,8 +13,6 @@ struct Knife {
     Uint32 *pixels;
 };
 
-extern struct Knife knife;
-
 void knife_init();
 void knife_deinit();
 void knife_tick();

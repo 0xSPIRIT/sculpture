@@ -9,8 +9,6 @@
 
 #define end_timer() (_end_timer(__func__))
 
-extern clock_t global_start, global_end;
-
 void start_timer();
 void _end_timer(const char *func);
 

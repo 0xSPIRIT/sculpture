@@ -14,8 +14,6 @@ struct Save_State {
     struct Save_State *prev, *next;
 };
 
-extern struct Save_State *current_state, *start_state;
-
 void undo_system_init();
 void undo_system_deinit();
 bool is_current_grid_same_as(struct Save_State *state);

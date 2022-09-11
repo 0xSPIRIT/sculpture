@@ -24,13 +24,10 @@ struct Chisel_Blocker {
     int active; // Not to be confused with chisel_blocker_mode.
 
     Uint32 *pixels;
-    SDL_Texture *render_tex;
+    SDL_Texture *render_texture;
 
     int side;
 };
-
-extern struct Chisel_Blocker chisel_blocker;
-extern int chisel_blocker_mode; // Edit mode for the points.
 
 void chisel_blocker_init();
 void chisel_blocker_tick();

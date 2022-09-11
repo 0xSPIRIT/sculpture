@@ -6,22 +6,23 @@
 #include <stdio.h>
 
 #include "globals.h"
-
-clock_t global_start, global_end;
+#include "gui.h"
+#include "grid.h"
+#include "game.h"
 
 void start_timer() {
-    global_start = clock();
+    gs->global_start = clock();
 }
 
 void _end_timer(const char *func) {
-    global_end = clock();
-    float cpu_time_used = ((double) (global_end-global_start))/CLOCKS_PER_SEC;
+    gs->global_end = clock();
+    float cpu_time_used = ((double) (gs->global_end-gs->global_start))/CLOCKS_PER_SEC;
     printf("(%s) Time: %f\n", func, cpu_time_used); fflush(stdout);
 }
 
 // Moves the mouse to the middle of the grid cell, not the top-left.
 void move_mouse_to_grid_position(float x, float y) {
-    SDL_WarpMouseInWindow(window, (int)(x*S + S/2), GUI_H + (int)(y*S + S/2));
+    SDL_WarpMouseInWindow(gs->window, (int)(x*gs->S + gs->S/2), GUI_H + (int)(y*gs->S + gs->S/2));
 }
 
 void get_filename_from_type(int type, char *out) {
@@ -133,9 +134,9 @@ Uint32 get_pixel_int(SDL_Surface *surf, int x, int y) {
     return pixels[x+y*surf->w];
 }
 
-static int a = 1103515245;
-static int c = 12345;
-static int m = 2000000;
+internal int a = 1103515245;
+internal int c = 12345;
+internal int m = 2000000;
 
 int my_rand(int seed) {
     return (a * seed + c) % m;
@@ -201,7 +202,7 @@ bool is_point_in_rect(SDL_Point p, SDL_Rect r) {
 }
 
 // Stolen from https://stackoverflow.com/a/2049593
-static float sign(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
+internal float sign(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
     return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
 }
 
@@ -221,7 +222,7 @@ bool is_point_in_triangle(SDL_Point pt, SDL_Point v1, SDL_Point v2, SDL_Point v3
 
 void draw_text(TTF_Font *font, const char *str, SDL_Color col, int align_left, int align_bottom, int x, int y, int *out_w, int *out_h) {
     SDL_Surface *surf = TTF_RenderText_Blended(font, str, col);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
             
     SDL_Rect dst = { x, y, surf->w, surf->h };
 
@@ -233,8 +234,8 @@ void draw_text(TTF_Font *font, const char *str, SDL_Color col, int align_left, i
     if (out_h)
         *out_h = surf->h;
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderCopy(renderer, texture, NULL, &dst);
+    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+    SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
 
     SDL_FreeSurface(surf);
     SDL_DestroyTexture(texture);

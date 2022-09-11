@@ -16,8 +16,6 @@ struct Point_Knife {
     int highlight_count;
 };
 
-extern struct Point_Knife point_knife;
-
 void point_knife_init();
 void point_knife_deinit();
 void point_knife_tick();

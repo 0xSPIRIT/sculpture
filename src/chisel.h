@@ -38,10 +38,6 @@ struct Chisel {
     int highlight_count;
 };
 
-extern struct Chisel *chisel;
-extern struct Chisel chisel_small, chisel_medium, chisel_large;
-extern struct Chisel_Hammer chisel_hammer;
-
 void chisel_hammer_init();
 void chisel_hammer_deinit();
 void chisel_hammer_tick();

@@ -11,8 +11,6 @@ struct Grabber {
     int object_holding;
 };
 
-extern struct Grabber grabber;
-
 void grabber_init();
 void grabber_deinit();
 void grabber_tick();

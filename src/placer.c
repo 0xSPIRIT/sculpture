@@ -1,30 +1,29 @@
 #include "placer.h"
 
+#include <stdlib.h>
+
 #include <SDL2/SDL_image.h>
 
-#include "globals.h"
 #include "grid.h"
 #include "converter.h"
 #include "gui.h"
 #include "util.h"
 #include "grid.h"
-
-struct Placer *placers[PLACER_COUNT];
-int current_placer = 0;
+#include "globals.h"
+#include "game.h"
 
 void placer_init(int num) {
     SDL_Surface *surf = IMG_Load("../res/placer.png");
 
-    placers[num] = calloc(1, sizeof(struct Placer));
-    struct Placer *placer = placers[num];
+    struct Placer *placer = &gs->placers[num];
 
     placer->state = PLACER_PLACE_CIRCLE_MODE;
     placer->index = num;
-    placer->x = gw/2;
-    placer->y = gh/2;
+    placer->x = gs->gw/2;
+    placer->y = gs->gh/2;
     placer->w = surf->w;
     placer->h = surf->h;
-    placer->texture = SDL_CreateTextureFromSurface(renderer, surf);
+    placer->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     placer->object_index = -1;
     placer->did_click = 0;
     placer->contains_type = CELL_DIRT;
@@ -44,10 +43,9 @@ void placer_init(int num) {
 }
 
 void placer_deinit(int i) {
-    struct Placer *placer = placers[i];
+    struct Placer *placer = &gs->placers[i];
     SDL_DestroyTexture(placer->texture);
-    free(placer);
-    placers[i] = NULL;
+    memset(placer, 0, sizeof(struct Placer));
 }
 
 // Places a circle down.
@@ -86,13 +84,13 @@ static void placer_place_circle(struct Placer *placer) {
                 }
 
                 if (is_cell_hard(placer->contains_type) &&
-                    (grid[(int)(x+fx)+(int)(fy+y)*gw].type == 0 ||
-                     grid[(int)(x+fx)+(int)(fy+y)*gw].object == placer->object_index))
+                    (gs->grid[(int)(x+fx)+(int)(fy+y)*gs->gw].type == 0 ||
+                     gs->grid[(int)(x+fx)+(int)(fy+y)*gs->gw].object == placer->object_index))
                     {
                         placer->did_set_new = 1;
                     }
 
-                if (grid[(int)(x+fx)+(int)(fy+y)*gw].type) continue;
+                if (gs->grid[(int)(x+fx)+(int)(fy+y)*gs->gw].type) continue;
                 int object_index = placer->object_index;
 
                 if (!is_cell_hard(placer->contains_type)) {
@@ -129,13 +127,15 @@ static void placer_place_circle(struct Placer *placer) {
 }
 
 static void placer_set_and_resize_rect(struct Placer *placer) {
+    struct Input *input = &gs->input;
+
     if (placer->rect.x == -1) {
-        placer->rect.x = mx;
-        placer->rect.y = my;
+        placer->rect.x = input->mx;
+        placer->rect.y = input->my;
     }
 
-    placer->rect.w = mx - placer->rect.x;
-    placer->rect.h = my - placer->rect.y;
+    placer->rect.w = input->mx - placer->rect.x;
+    placer->rect.h = input->my - placer->rect.y;
 
     int area = abs((placer->rect.w) * (placer->rect.h));
     if (area > placer->contains_amount) {
@@ -168,7 +168,7 @@ static void placer_place_rect(struct Placer *placer) {
     placer->rect.w = abs(placer->rect.w);
     placer->rect.h = abs(placer->rect.h);
             
-    placer->object_index = object_count++;
+    placer->object_index = gs->object_count++;
 
     for (int y = placer->rect.y; y <= placer->rect.y+placer->rect.h; y++) {
         for (int x = placer->rect.x; x <= placer->rect.x+placer->rect.w; x++) {
@@ -177,7 +177,7 @@ static void placer_place_rect(struct Placer *placer) {
                 placer->contains_amount = 0;
                 goto end2;
             }
-            if (grid[x+y*gw].type == placer->contains_type) continue; // Don't overwrite anything.
+            if (gs->grid[x+y*gs->gw].type == placer->contains_type) continue; // Don't overwrite anything.
 
             int object_index = placer->object_index;
             if (!is_cell_hard(placer->contains_type)) {
@@ -204,10 +204,12 @@ static void placer_place_rect(struct Placer *placer) {
 
 // Suck up the stuff if LMB is down.
 void placer_suck(struct Placer *placer) {
-    if (gui.popup) return;
+    if (gs->gui.popup) return;
+
+    struct Input *input = &gs->input;
 
     int can_continue = 0;
-    if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+    if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
         can_continue = 1;
     }
 
@@ -216,8 +218,8 @@ void placer_suck(struct Placer *placer) {
     float x = placer->px;
     float y = placer->py;
 
-    float dx = mx - x;
-    float dy = my - y;
+    float dx = input->mx - x;
+    float dy = input->my - y;
     float len = sqrt((dx*dx)+(dy*dy));
     float ux, uy;
     if (len == 0) {
@@ -234,7 +236,7 @@ void placer_suck(struct Placer *placer) {
         // Include the grid as well as pickup grid.
         for (int a = 0; a < 2; a++) {
 
-            struct Cell *arr = a == 0 ? grid : pickup_grid;
+            struct Cell *arr = a == 0 ? gs->grid : gs->pickup_grid;
 
             // Remove cells in a circle
             const int r = placer->radius;
@@ -247,10 +249,10 @@ void placer_suck(struct Placer *placer) {
                     int yy = y+dy;
                     if (!is_in_bounds(xx, yy)) continue;
 
-                    int type = arr[xx+yy*gw].type;
+                    int type = arr[xx+yy*gs->gw].type;
                     if (type == 0) continue;
 
-                    if (arr != pickup_grid && is_cell_hard(type)) {
+                    if (arr != gs->pickup_grid && is_cell_hard(type)) {
                         continue;
                     }
                     
@@ -273,14 +275,16 @@ void placer_suck(struct Placer *placer) {
 }
 
 void placer_tick(struct Placer *placer) {
+    struct Input *input = &gs->input;
+
     placer->px = placer->x;
     placer->py = placer->y;
 
-    placer->x = mx;
-    placer->y = my;
+    placer->x = gs->input.mx;
+    placer->y = gs->input.my;
 
     // Switch from placing to sucking.
-    if (keys_pressed[SDL_SCANCODE_P]) {
+    if (input->keys_pressed[SDL_SCANCODE_P]) {
         if (placer->state == PLACER_SUCK_MODE) {
             placer->state = PLACER_PLACE_CIRCLE_MODE;
         } else {
@@ -299,15 +303,15 @@ void placer_tick(struct Placer *placer) {
 
     switch (placer->state) {
     case PLACER_PLACE_CIRCLE_MODE:
-        if (mouse_pressed[SDL_BUTTON_LEFT] &&
+        if (input->mouse_pressed[SDL_BUTTON_LEFT] &&
             is_cell_hard(placer->contains_type) &&
             placer->contains_amount > 0 &&
-            !gui.popup && mouse & SDL_BUTTON(SDL_BUTTON_LEFT))
+            !gs->gui.popup && gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT))
             {
-                placer->object_index = object_count++;
+                placer->object_index = gs->object_count++;
             }
     
-        if (placer->contains_amount > 0 && !gui.popup && (mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
+        if (placer->contains_amount > 0 && !gs->gui.popup && (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
             placer_place_circle(placer);
         } else if (placer->did_click) {
             if (placer->object_index != -1) {
@@ -320,9 +324,9 @@ void placer_tick(struct Placer *placer) {
         }
         break;
     case PLACER_PLACE_RECT_MODE:
-        if (gui.popup) break;
+        if (gs->gui.popup) break;
 
-        if (mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+        if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
             placer_set_and_resize_rect(placer);
         } else {
             placer_place_rect(placer);
@@ -334,36 +338,36 @@ void placer_tick(struct Placer *placer) {
     }
 
     // Set up the overlay.
-    overlay_set_position(&gui.overlay, placer->x + placer->w/2 + 3, placer->y - placer->h, OVERLAY_TYPE_PLACER);
+    overlay_set_position(&gs->gui.overlay, placer->x + placer->w/2 + 3, placer->y - placer->h, OVERLAY_TYPE_PLACER);
 
-    strcpy(gui.overlay.str[0], "Placer");
+    strcpy(gs->gui.overlay.str[0], "Placer");
 
     // Get name from type.
     char string[256] = {0};
     overlay_get_string(placer->contains_type, placer->contains_amount, string);
-        
-    if (!gui.popup) {
+
+    if (!gs->gui.popup) {
         if (placer->state == PLACER_PLACE_CIRCLE_MODE || placer->state == PLACER_PLACE_RECT_MODE) {
-            strcpy(gui.overlay.str[1], "Mode: [PLACE]");
+            strcpy(gs->gui.overlay.str[1], "Mode: [PLACE]");
         } if (placer->state == PLACER_SUCK_MODE) {
-            strcpy(gui.overlay.str[1], "Mode: [TAKE]");
+            strcpy(gs->gui.overlay.str[1], "Mode: [TAKE]");
         } 
-        strcpy(gui.overlay.str[2], string);
+        strcpy(gs->gui.overlay.str[2], string);
     } else {
-        strcpy(gui.overlay.str[1], string);
+        strcpy(gs->gui.overlay.str[1], string);
     }
 }
 
 void placer_draw(struct Placer *placer, bool full_size) {
-    const int scale = full_size ? S : 1;
+    const int scale = full_size ? gs->S : 1;
     int y_off = full_size ? GUI_H : 0;
 
-    if (gui.popup) {
-        if (SDL_GetCursor() != placer_cursor) {
-            SDL_SetCursor(placer_cursor);
+    if (gs->gui.popup) {
+        if (SDL_GetCursor() != gs->placer_cursor) {
+            SDL_SetCursor(gs->placer_cursor);
         }
-    } else if (SDL_GetCursor() == placer_cursor) {
-        SDL_SetCursor(normal_cursor);
+    } else if (SDL_GetCursor() == gs->placer_cursor) {
+        SDL_SetCursor(gs->normal_cursor);
     }
     
     if (placer->state == PLACER_SUCK_MODE || placer->state == PLACER_PLACE_CIRCLE_MODE) {
@@ -373,16 +377,16 @@ void placer_draw(struct Placer *placer, bool full_size) {
         for (int y = -radius; y <= radius; y++) {
             for (int x = -radius; x <= radius; x++) {
                 if (x*x + y*y > radius*radius) continue;
-                if (x+fx < 0 || x+fx >= gw || y+fy < 0 || y+fy >= gh) continue;
+                if (x+fx < 0 || x+fx >= gs->gw || y+fy < 0 || y+fy >= gs->gh) continue;
                 if (placer->state == PLACER_SUCK_MODE) {
-                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 64);
+                    SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 64);
                 } else {
-                    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 64);
+                    SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 64);
                 }
 
                 int gx = x+fx;
                 int gy = y+fy;
-                SDL_RenderDrawPoint(renderer, scale*gx, scale*gy + y_off);
+                SDL_RenderDrawPoint(gs->renderer, scale*gx, scale*gy + y_off);
             }
         }
     }
@@ -411,16 +415,18 @@ void placer_draw(struct Placer *placer, bool full_size) {
         break;
     }
 
-    SDL_RenderCopy(renderer, placer->texture, NULL, &dst);
+    SDL_RenderCopy(gs->renderer, placer->texture, NULL, &dst);
 
     if (placer->rect.x != -1) {
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderDrawRect(renderer, &placer->rect);
+        SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
+        SDL_RenderDrawRect(gs->renderer, &placer->rect);
     }
 }
 
 bool is_mouse_in_placer(struct Placer *placer) {
-    SDL_Point mouse = {mx, my};
+    struct Input *input = &gs->input;
+
+    SDL_Point mouse = {input->mx, input->my};
     SDL_Rect rectangle = {
         placer->x - placer->w/2,
         placer->y - placer->h,

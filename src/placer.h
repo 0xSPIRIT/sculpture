@@ -38,9 +38,6 @@ struct Placer {
     int placing_solid_time;
 };
 
-extern struct Placer *placers[PLACER_COUNT];
-extern int current_placer;
-
 void placer_init(int num);
 void placer_deinit(int i);
 void placer_tick(struct Placer *placer);

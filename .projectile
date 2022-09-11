@@ -1,6 +1,7 @@
 -*.exe
 -*.pdb
 -*.dll
+-*.map
 -*.db*
 -/.vs/
 -/bin/**

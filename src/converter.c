@@ -5,21 +5,20 @@
 #include <stdio.h>
 
 #include "globals.h"
+
 #include "grid.h"
 #include "gui.h"
 #include "placer.h"
 #include "util.h"
-
-struct Converter *material_converter = NULL,
-                 *fuel_converter = NULL;
-struct Item item_holding = {0, 0};
+#include "game.h"
 
 struct Placer *converter_get_current_placer() {
-    if (current_placer == -1 || current_tool != TOOL_PLACER) return NULL;
-    return placers[current_placer];
+    struct Placer *placers = gs->placers;
+    if (gs->current_placer == -1 || gs->current_tool != TOOL_PLACER) return NULL;
+    return &placers[gs->current_placer];
 }
 
-static bool can_place_item_in_slot(int type, int slot) {
+internal bool can_place_item_in_slot(int type, int slot) {
     bool can_put_fuel = false;
 
     if (slot == SLOT_FUEL) {
@@ -44,7 +43,7 @@ void item_init() {
         get_filename_from_type(i, file);
         SDL_Surface *surf = IMG_Load(file);
         SDL_assert(surf);
-        item_textures[i] = SDL_CreateTextureFromSurface(renderer, surf);
+        gs->item_textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surf);
         SDL_FreeSurface(surf);
     }
 }
@@ -60,15 +59,15 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
         x, y,
         w, h
     };
-    SDL_RenderCopy(renderer, item_textures[item->type], NULL, &r);
+    SDL_RenderCopy(gs->renderer, gs->item_textures[item->type], NULL, &r);
 
     char number[32] = {0};
     sprintf(number, "%d", item->amount);
 
     SDL_Color color = (SDL_Color){255, 255, 255, 255};
     
-    SDL_Surface *surf = TTF_RenderText_Solid(bold_small_font, number, color);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
+    SDL_Surface *surf = TTF_RenderText_Solid(gs->bold_small_font, number, color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
 
     SDL_Rect dst = {
         x + w - surf->w - 1,
@@ -77,79 +76,81 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
         surf->h
     };
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderFillRect(renderer, &dst);
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(gs->renderer, &dst);
     
-    SDL_RenderCopy(renderer, texture, NULL, &dst);
+    SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
 }
 
 // Slot may be NULL if the item doesn't belong to any slot.
 // This function mostly just handles interactions with items and the mouse.
 void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h) {
-    if (item == &item_holding) return;
-    if (!is_point_in_rect((SDL_Point){real_mx, real_my-GUI_H}, (SDL_Rect){x, y, w, h})) return;
+    struct Input *input = &gs->input;
+
+    if (item == &gs->item_holding) return;
+    if (!is_point_in_rect((SDL_Point){input->real_mx, input->real_my-GUI_H}, (SDL_Rect){x, y, w, h})) return;
 
     // From this point onwards, we know the mouse is in this item,
     // and this item is not currently being held.
 
     bool can_place_item = false;
 
-    if (!gui.is_placer_active) {
-        can_place_item = can_place_item_in_slot(item_holding.type, slot->type);
-        if (!item_holding.type) can_place_item = true;
+    if (!gs->gui.is_placer_active) {
+        can_place_item = can_place_item_in_slot(gs->item_holding.type, slot->type);
+        if (!gs->item_holding.type) can_place_item = true;
 
-        if (mouse_pressed[SDL_BUTTON_LEFT]) {
+        if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
 
             // If they're the same type, just add their amounts.
-            if (item->type && item_holding.type == item->type) {
+            if (item->type && gs->item_holding.type == item->type) {
                 // Add the amount from holding to the item.
-                item->amount += item_holding.amount;
+                item->amount += gs->item_holding.amount;
 
-                item_holding.type = 0;
-                item_holding.amount = 0;
+                gs->item_holding.type = 0;
+                gs->item_holding.amount = 0;
             }
 
             // Otherwise if we're either holding an item or have an item in slot,
             // swap them since they're different types.
-            else if ((item_holding.type || item->type) && can_place_item) {
+            else if ((gs->item_holding.type || item->type) && can_place_item) {
                 struct Item a = *item;
 
-                item->type = item_holding.type;
-                item->amount = item_holding.amount;
+                item->type = gs->item_holding.type;
+                item->amount = gs->item_holding.amount;
 
-                item_holding.type = a.type;
-                item_holding.amount = a.amount;
+                gs->item_holding.type = a.type;
+                gs->item_holding.amount = a.amount;
 
-                overlay_reset(&gui.overlay);
+                overlay_reset(&gs->gui.overlay);
             } 
 
-        } else if (mouse_pressed[SDL_BUTTON_RIGHT] && item->type && item_holding.type == 0) { // If holdingd nothing
+        } else if (input->mouse_pressed[SDL_BUTTON_RIGHT] && item->type && gs->item_holding.type == 0) { // If holdingd nothing
             // Split the item into two like minecraft.
-            SDL_assert(item_holding.amount == 0);
+            SDL_assert(gs->item_holding.amount == 0);
 
             const int half = item->amount/2;
 
             if (half) {
                 item->amount -= half;
-                item_holding.type = item->type;
-                item_holding.amount += half;
+                gs->item_holding.type = item->type;
+                gs->item_holding.amount += half;
 
-                overlay_reset(&gui.overlay);
+                overlay_reset(&gs->gui.overlay);
             }
         }
-    } else if (gui.is_placer_active) {
+    } else if (gs->gui.is_placer_active) {
         struct Placer *p = converter_get_current_placer();
         struct Converter *converter = NULL;
 
         can_place_item = can_place_item_in_slot(p->contains_type, slot->type);
 
-        if (is_mouse_in_converter(material_converter)) {
-            converter = material_converter;
-        } else if (is_mouse_in_converter(fuel_converter)) {
-            converter = fuel_converter;
+        if (is_mouse_in_converter(gs->material_converter)) {
+            converter = gs->material_converter;
+        } else if (is_mouse_in_converter(gs->fuel_converter)) {
+            converter = gs->fuel_converter;
         }
 
-        if (mouse_pressed[SDL_BUTTON_RIGHT]) {
+        if (input->mouse_pressed[SDL_BUTTON_RIGHT]) {
             if (p->contains_type == 0 || p->contains_type == item->type) {
                 p->contains_type = item->type;
                 p->contains_amount += item->amount;
@@ -157,7 +158,7 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
                 item->type = 0;
                 item->amount = 0;
             }
-        } else if (can_place_item && mouse_pressed[SDL_BUTTON_LEFT]) {
+        } else if (can_place_item && input->mouse_pressed[SDL_BUTTON_LEFT]) {
             int amt = 0;
             const int place_speed = 6;
 
@@ -180,42 +181,42 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
 
 void item_deinit() {
     for (int i = 0; i < CELL_COUNT; i++) {
-        SDL_DestroyTexture(item_textures[i]);
+        SDL_DestroyTexture(gs->item_textures[i]);
     }
 }
 
 void all_converters_init() {
-    material_converter = converter_init(CONVERTER_MATERIAL);
-    fuel_converter = converter_init(CONVERTER_FUEL);
+    gs->material_converter = converter_init(CONVERTER_MATERIAL);
+    gs->fuel_converter = converter_init(CONVERTER_FUEL);
 }
 
 void all_converters_deinit() {
-    converter_deinit(material_converter);
-    converter_deinit(fuel_converter);
+    converter_deinit(gs->material_converter);
+    converter_deinit(gs->fuel_converter);
 }
 
 void all_converters_tick() {
-    if (gui.popup)
-        current_tool = TOOL_PLACER;
+    if (gs->gui.popup)
+        gs->current_tool = TOOL_PLACER;
 
-    if (gui.popup && gui.is_placer_active) {
+    if (gs->gui.popup && gs->gui.is_placer_active) {
         placer_tick(converter_get_current_placer());
     }
 
-    converter_tick(material_converter);
-    converter_tick(fuel_converter);
+    converter_tick(gs->material_converter);
+    converter_tick(gs->fuel_converter);
 
-    if (!gui.is_placer_active) {
+    if (!gs->gui.is_placer_active) {
         bool set_overlay_this_frame = false;
 
         for (int i = 0; i < 2; i++) {
-            struct Converter *c = i == 0 ? material_converter : fuel_converter;
+            struct Converter *c = i == 0 ? gs->material_converter : gs->fuel_converter;
 
             for (int j = 0; j < c->slot_count; j++) {
                 if (!c->slots[j].item.type) continue;
 
                 if (is_mouse_in_slot(&c->slots[j])) {
-                    overlay_set_position_to_cursor(&gui.overlay, OVERLAY_TYPE_ITEM);
+                    overlay_set_position_to_cursor(&gs->gui.overlay, OVERLAY_TYPE_ITEM);
 
                     char type[64] = {0};
                     char type_name[64] = {0};
@@ -225,37 +226,43 @@ void all_converters_tick() {
                     sprintf(type, "Type: %s", type_name);
                     sprintf(amount, "Amount: %d", c->slots[j].item.amount);
 
-                    strcpy(gui.overlay.str[0], type);
-                    strcpy(gui.overlay.str[1], amount);
+                    strcpy(gs->gui.overlay.str[0], type);
+                    strcpy(gs->gui.overlay.str[1], amount);
 
                     set_overlay_this_frame = true;
-                } else if (!set_overlay_this_frame && gui.overlay.type == OVERLAY_TYPE_ITEM) {
-                    overlay_reset(&gui.overlay);
+                } else if (!set_overlay_this_frame && gs->gui.overlay.type == OVERLAY_TYPE_ITEM) {
+                    overlay_reset(&gs->gui.overlay);
                 }
             }
         }
     }
 
-    item_tick(&item_holding, NULL, real_mx, real_my, ITEM_SIZE, ITEM_SIZE);
+    struct Input *input = &gs->input;
+    item_tick(&gs->item_holding, NULL, input->real_mx, input->real_my, ITEM_SIZE, ITEM_SIZE);
 }
 
 void all_converters_draw() {
-    converter_draw(material_converter);
-    converter_draw(fuel_converter);
+    converter_draw(gs->material_converter);
+    converter_draw(gs->fuel_converter);
 
-    if (gui.popup && gui.is_placer_active) {
+    if (gs->gui.popup && gs->gui.is_placer_active) {
         placer_draw(converter_get_current_placer(), true);
     }
 
-    item_draw(&item_holding, real_mx - ITEM_SIZE/2, real_my - ITEM_SIZE/2, ITEM_SIZE, ITEM_SIZE);
+    struct Input *input = &gs->input;
+    item_draw(&gs->item_holding, input->real_mx - ITEM_SIZE/2, input->real_my - ITEM_SIZE/2, ITEM_SIZE, ITEM_SIZE);
 }
 
 bool is_mouse_in_converter(struct Converter *converter) {
-    return is_point_in_rect((SDL_Point){real_mx, real_my-GUI_H}, (SDL_Rect){converter->x, converter->y, converter->w, converter->h});
+    struct Input *input = &gs->input;
+
+    return is_point_in_rect((SDL_Point){input->real_mx, input->real_my-GUI_H}, (SDL_Rect){converter->x, converter->y, converter->w, converter->h});
 }
 
 bool is_mouse_in_slot(struct Slot *slot) {
-    return is_point_in_rect((SDL_Point){real_mx, real_my-GUI_H},
+    struct Input *input = &gs->input;
+
+    return is_point_in_rect((SDL_Point){input->real_mx, input->real_my-GUI_H},
                             (SDL_Rect){
                                 slot->converter->x + slot->x - slot->w/2,
                                 slot->converter->y + slot->y - slot->h/2,
@@ -265,7 +272,9 @@ bool is_mouse_in_slot(struct Slot *slot) {
 }
 
 bool was_mouse_in_slot(struct Slot *slot) {
-    return is_point_in_rect((SDL_Point){real_pmx, real_pmy-GUI_H},
+    struct Input *input = &gs->input;
+
+    return is_point_in_rect((SDL_Point){input->real_pmx,input->real_pmy-GUI_H},
                             (SDL_Rect){
                                 slot->converter->x + slot->x - slot->w/2,
                                 slot->converter->y + slot->y - slot->h/2,
@@ -277,7 +286,7 @@ bool was_mouse_in_slot(struct Slot *slot) {
 struct Converter *converter_init(int type) {
     struct Converter *converter = calloc(1, sizeof(struct Converter));
     converter->type = type;
-    converter->w = window_width/2;
+    converter->w = gs->window_width/2;
     converter->h = GUI_POPUP_H;
 
     converter->timer_max = 1;
@@ -338,7 +347,7 @@ struct Converter *converter_init(int type) {
     }
 
     SDL_Surface *surf = IMG_Load("../res/arrow.png");
-    converter->arrow.texture = SDL_CreateTextureFromSurface(renderer, surf);
+    converter->arrow.texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     converter->arrow.x = converter->w/2;
     converter->arrow.y = converter->h/2 + 24;
     converter->arrow.w = surf->w;
@@ -368,16 +377,16 @@ void converter_tick(struct Converter *converter) {
     switch (converter->type) {
     case CONVERTER_MATERIAL:
         converter->x = 0;
-        converter->y = gui.popup_y;
+        converter->y = gs->gui.popup_y;
         break;
     case CONVERTER_FUEL:
-        converter->x = S*gw/2;
-        converter->y = gui.popup_y;
+        converter->x = gs->S*gs->gw/2;
+        converter->y = gs->gui.popup_y;
         break;
     }
 
     converter->go_button->x = converter->x + converter->arrow.x - 128;
-    converter->go_button->y = gui.popup_y + converter->arrow.y + converter->arrow.h/2 + converter->go_button->h/2;
+    converter->go_button->y = gs->gui.popup_y + converter->arrow.y + converter->arrow.h/2 + converter->go_button->h/2;
 
     for (int i = 0; i < converter->slot_count; i++) {
         struct Slot *s = &converter->slots[i];
@@ -393,16 +402,16 @@ void converter_tick(struct Converter *converter) {
             converter->timer_current = 0;
             switch (converter->type) {
             case CONVERTER_MATERIAL: {
-                bool did_convert = converter_convert(material_converter);
+                bool did_convert = converter_convert(gs->material_converter);
                 if (!did_convert) {
-                    converter_set_state(material_converter, CONVERTER_OFF);
+                    converter_set_state(gs->material_converter, CONVERTER_OFF);
                 }
                 break;
             }
             case CONVERTER_FUEL: {
-                bool did_convert = converter_convert(fuel_converter);
+                bool did_convert = converter_convert(gs->fuel_converter);
                 if (!did_convert) {
-                    converter_set_state(fuel_converter, CONVERTER_OFF);
+                    converter_set_state(gs->fuel_converter, CONVERTER_OFF);
                 }
                 break;
             }
@@ -410,7 +419,7 @@ void converter_tick(struct Converter *converter) {
         }
     }
 
-    if (!gui.popup) return;
+    if (!gs->gui.popup) return;
 }
 
 void converter_draw(struct Converter *converter) {
@@ -419,8 +428,8 @@ void converter_draw(struct Converter *converter) {
         converter->w, converter->h
     };
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderDrawRect(renderer, &converter_bounds);
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+    SDL_RenderDrawRect(gs->renderer, &converter_bounds);
 
     for (int i = 0; i < converter->slot_count; i++) {
         slot_draw(&converter->slots[i]);
@@ -441,10 +450,10 @@ void converter_draw(struct Converter *converter) {
         SDL_SetTextureColorMod(converter->arrow.texture, a, a, a);
     }
 
-    SDL_RenderCopy(renderer, converter->arrow.texture, NULL, &arrow_dst);
+    SDL_RenderCopy(gs->renderer, converter->arrow.texture, NULL, &arrow_dst);
 
-    SDL_Surface *surf = TTF_RenderText_Blended(font_courier, converter->name, (SDL_Color){0, 0, 0, 255});
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
+    SDL_Surface *surf = TTF_RenderText_Blended(gs->font_courier, converter->name, (SDL_Color){0, 0, 0, 255});
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
 
     int margin = 8;
     SDL_Rect r = {
@@ -453,7 +462,7 @@ void converter_draw(struct Converter *converter) {
         surf->w,
         surf->h
     };
-    SDL_RenderCopy(renderer, texture, NULL, &r);
+    SDL_RenderCopy(gs->renderer, texture, NULL, &r);
 
     SDL_FreeSurface(surf);
     SDL_DestroyTexture(texture);
@@ -479,18 +488,18 @@ void slot_draw(struct Slot *slot) {
     };
 
     int col = 200;
-    SDL_SetRenderDrawColor(renderer, col, col, col, 255);
-    SDL_RenderFillRect(renderer, &bounds);
+    SDL_SetRenderDrawColor(gs->renderer, col, col, col, 255);
+    SDL_RenderFillRect(gs->renderer, &bounds);
 
     col = 0;
-    SDL_SetRenderDrawColor(renderer, col, col, col, 255);
+    SDL_SetRenderDrawColor(gs->renderer, col, col, col, 255);
 
     bounds.x--;
     bounds.y--;
     bounds.w += 2;
     bounds.h += 2;
 
-    SDL_RenderDrawRect(renderer, &bounds);
+    SDL_RenderDrawRect(gs->renderer, &bounds);
 
     bounds.x++;
     bounds.y++;
@@ -498,8 +507,8 @@ void slot_draw(struct Slot *slot) {
     bounds.h -= 2;
 
     if (*slot->name) {
-        SDL_Surface *surf = TTF_RenderText_Blended(small_font, slot->name, (SDL_Color){0, 0, 0, 255});
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
+        SDL_Surface *surf = TTF_RenderText_Blended(gs->small_font, slot->name, (SDL_Color){0, 0, 0, 255});
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
 
         SDL_Rect dst = {
             bounds.x + slot->w/2 - surf->w/2,
@@ -507,7 +516,7 @@ void slot_draw(struct Slot *slot) {
             surf->w,
             surf->h
         };
-        SDL_RenderCopy(renderer, texture, NULL, &dst);
+        SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
 
         SDL_DestroyTexture(texture);
         SDL_FreeSurface(surf);
