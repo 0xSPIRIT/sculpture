@@ -9,27 +9,22 @@
 #include "game.h"
 
 void knife_init() {
-    SDL_Surface *surf = IMG_Load("../res/knife.png");
-
     struct Knife *knife = &gs->knife;
 
     knife->x = gs->gw/2;
     knife->y = gs->gh/2;
-    knife->w = surf->w;
-    knife->h = surf->h;
-    knife->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-    knife->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
     knife->angle = 0;
-    knife->pixels = calloc(gs->gw*gs->gh, sizeof(Uint32));
-
-    SDL_FreeSurface(surf);
+    knife->pixels = persist_allocate(gs->gw*gs->gh, sizeof(Uint32));
+    knife->texture = gs->textures.knife;
+    SDL_QueryTexture(knife->texture, NULL, NULL, &knife->w, &knife->h);
+    knife->render_texture = gs->textures.knife_render_target;
 }
 
 void knife_deinit() {
     struct Knife *knife = &gs->knife;
 
-    SDL_DestroyTexture(knife->texture);
-    SDL_DestroyTexture(knife->render_texture);
+    /* SDL_DestroyTexture(knife->texture); */
+    /* SDL_DestroyTexture(knife->render_texture); */
 }
 
 void knife_tick() {

@@ -20,38 +20,23 @@ void chisel_init(struct Chisel *type) {
     struct Chisel *chisel_medium = &gs->chisel_medium;
     struct Chisel *chisel_large = &gs->chisel_large;
 
-    SDL_Surface *surf;
-
     chisel = type;
 
     for (int face = 1; face != -1; face--) {
-        char file[512] = {0};
         if (chisel == chisel_small) {
             chisel->size = 0;
-            strcpy(file, "../res/chisel_small");
         } else if (chisel == chisel_medium) {
             chisel->size = 1;
-            strcpy(file, "../res/chisel_medium");
         } else if (chisel == chisel_large) {
             chisel->size = 2;
-            strcpy(file, "../res/chisel_large");
         }
-        if (face)
-            strcat(file, "_face");
-
-        strcat(file, ".png");
-
-        surf = IMG_Load(file);
-        SDL_assert(surf);
 
         if (face) {
-            chisel->face_texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-            chisel->face_w = surf->w;
-            chisel->face_h = surf->h;
+            chisel->face_texture = gs->textures.chisel_face[chisel->size];
+            SDL_QueryTexture(chisel->face_texture, NULL, NULL, &chisel->face_w, &chisel->face_h);
         } else {
-            chisel->outside_texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-            chisel->outside_w = surf->w;
-            chisel->outside_h = surf->h;
+            chisel->outside_texture = gs->textures.chisel_outside[chisel->size];
+            SDL_QueryTexture(chisel->outside_texture, NULL, NULL, &chisel->outside_w, &chisel->outside_h);
         }
     }
 
@@ -59,19 +44,17 @@ void chisel_init(struct Chisel *type) {
     chisel->line = NULL;
     chisel->face_mode = false;
 
-    chisel->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
-    chisel->pixels = calloc(gs->gw*gs->gh, sizeof(Uint32));
+    chisel->render_texture = gs->textures.chisel_render_target;
+    chisel->pixels = persist_allocate(gs->gw*gs->gh, sizeof(Uint32));
 
     chisel->texture = chisel->outside_texture;
     chisel->w = chisel->outside_w;
     chisel->h = chisel->outside_h;
 
-    chisel->highlights = calloc(gs->gw*gs->gh, sizeof(int));
+    chisel->highlights = persist_allocate(gs->gw*gs->gh, sizeof(int));
     chisel->highlight_count = 0;
 
     chisel->spd = 3.;
-
-    SDL_FreeSurface(surf);
 }
 
 void chisel_deinit(struct Chisel *type) {
@@ -447,11 +430,8 @@ void chisel_hammer_init() {
     hammer->time = 0;
     hammer->angle = 0;
 
-    SDL_Surface *surf = IMG_Load("../res/hammer.png");
-    hammer->w = surf->w;
-    hammer->h = surf->h;
-    hammer->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-    SDL_FreeSurface(surf);
+    hammer->texture = gs->textures.chisel_hammer;
+    SDL_QueryTexture(hammer->texture, NULL, NULL, &hammer->w, &hammer->h);
 }
 
 void chisel_hammer_deinit() {

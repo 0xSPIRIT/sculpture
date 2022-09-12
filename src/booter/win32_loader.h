@@ -5,9 +5,9 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-typedef void (*game_init_proc)();
-typedef bool (*game_run_proc)();
-typedef void (*game_deinit_proc)();
+typedef void (*game_init_proc)(struct Game_State *state);
+typedef bool (*game_run_proc)(struct Game_State *state);
+typedef void (*game_deinit_proc)(struct Game_State *state);
 
 struct Loader {
     HMODULE game_code_dll;
@@ -20,7 +20,7 @@ struct Loader {
 struct Loader *win32_load_game_code() {
     struct Loader *loader;
 
-    loader = malloc(sizeof(struct Loader));
+    loader = calloc(1, sizeof(struct Loader));
 
     CopyFileA("../bin/sculpture.dll", "../bin/sculpture_temp.dll", false);
 

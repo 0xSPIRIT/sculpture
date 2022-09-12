@@ -18,63 +18,14 @@
 
 struct Game_State *gs;
 
-internal void fonts_init() {
-    gs->font = TTF_OpenFont("../res/cour.ttf", 19);
-    gs->font_consolas = TTF_OpenFont("../res/consola.ttf", 24);
-    gs->font_courier = TTF_OpenFont("../res/cour.ttf", 20);
-    gs->small_font = TTF_OpenFont("../res/cour.ttf", 16);
-    gs->bold_small_font = TTF_OpenFont("../res/courbd.ttf", 16);
-    gs->title_font = TTF_OpenFont("../res/cour.ttf", 45);
-}
-
-internal void fonts_deinit() {
-    TTF_CloseFont(gs->font);
-    TTF_CloseFont(gs->font_consolas);
-    TTF_CloseFont(gs->font_courier);
-    TTF_CloseFont(gs->bold_small_font);
-    TTF_CloseFont(gs->small_font);
-    TTF_CloseFont(gs->title_font);
-}
-
-internal void game_init_sdl(const char *window_title, int w, int h) {
-    SDL_Init(SDL_INIT_VIDEO);
-    IMG_Init(IMG_INIT_PNG);
-    TTF_Init();
-
-    gs->window = SDL_CreateWindow(window_title,
-                              SDL_WINDOWPOS_UNDEFINED,
-                              SDL_WINDOWPOS_UNDEFINED,
-                              w,
-                              h,
-                              0);
-
-    // This function takes ~0.25 seconds.
-    gs->renderer = SDL_CreateRenderer(gs->window,
-                                      -1,
-                                      SDL_RENDERER_PRESENTVSYNC);
-
-    gs->render_texture = SDL_CreateTexture(gs->renderer,
-                                           SDL_PIXELFORMAT_RGBA8888,
-                                           SDL_TEXTUREACCESS_TARGET,
-                                           gs->window_width/gs->S,
-                                           gs->window_height/gs->S);
-    SDL_SetRenderDrawBlendMode(gs->renderer, SDL_BLENDMODE_BLEND);
-}
-
 void game_init(struct Game_State *state) {
     gs = state;
     
+    gs->render_texture = gs->textures.render_texture;
+    SDL_SetRenderDrawBlendMode(gs->renderer, SDL_BLENDMODE_BLEND);
+
     srand(time(0));
-
-    gs->S = 6;
-
-    gs->window_width = 128*gs->S;
-    gs->window_height = 128*gs->S + GUI_H;
      
-    game_init_sdl("Alaska", gs->window_width, gs->window_height);
-    
-    fonts_init();
-    
     gs->normal_cursor = SDL_GetCursor();
     gs->grabber_cursor = init_system_cursor(arrow_cursor_data);
     gs->placer_cursor = init_system_cursor(placer_cursor_data);
@@ -89,7 +40,6 @@ void game_deinit(struct Game_State *state) {
     gs = state;
     
     levels_deinit();
-    fonts_deinit();
     item_deinit();
     grid_deinit();
 

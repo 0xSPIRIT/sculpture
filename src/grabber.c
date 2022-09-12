@@ -7,16 +7,7 @@
 #include "undo.h"
 
 void grabber_init() {
-    SDL_Surface *surf = IMG_Load("../res/pointer.png");
-    gs->grabber.texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-    gs->grabber.w = surf->w;
-    gs->grabber.h = surf->h;
     gs->grabber.object_holding = -1;
-    SDL_FreeSurface(surf);
-}
-
-void grabber_deinit() {
-    SDL_DestroyTexture(gs->grabber.texture);
 }
 
 void grabber_tick() {
@@ -55,12 +46,4 @@ void grabber_tick() {
         /* if (mouse_released[SDL_BUTTON_LEFT]) */
         /*     save_state(); */
     }
-}
-
-void grabber_draw() {
-    /* const SDL_Rect dst = { */
-    /*     (int)grabber->x, (int)grabber->y, */
-    /*     grabber->w, grabber->h */
-    /* }; */
-    /* SDL_RenderCopy(gs->renderer, grabber->texture, NULL, &dst); */
 }

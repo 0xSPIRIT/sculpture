@@ -65,7 +65,7 @@ void grid_init(int w, int h) {
     gs->gh = h;
 
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        gs->grid_layers[i] = calloc(w*h, sizeof(struct Cell));
+        gs->grid_layers[i] = persist_allocate(w*h, sizeof(struct Cell));
     }
 
     gs->grid = gs->grid_layers[0];
@@ -76,8 +76,8 @@ void grid_init(int w, int h) {
     memset(gs->objects, 0, sizeof(struct Object)*MAX_OBJECTS);
     for (int i = 0; i < MAX_OBJECTS; i++) {
         for (int j = 0; j < 3; j++) {
-            gs->objects[i].blob_data[j].blobs = calloc(w*h, sizeof(Uint32));
-            gs->objects[i].blob_data[j].blob_pressures = calloc(w*h, sizeof(int));
+            gs->objects[i].blob_data[j].blobs = persist_allocate(w*h, sizeof(Uint32));
+            gs->objects[i].blob_data[j].blob_pressures = persist_allocate(w*h, sizeof(int));
         }
     }
 
@@ -101,9 +101,9 @@ void grid_init(int w, int h) {
 }
 
 void grid_deinit() {
-    for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        free(gs->grid_layers[i]);
-    }
+    /* for (int i = 0; i < NUM_GRID_LAYERS; i++) { */
+    /*     free(gs->grid_layers[i]); */
+    /* } */
     SDL_FreeSurface(glass_surface);
     SDL_FreeSurface(bark_surface);
     SDL_FreeSurface(wood_plank_surface);
@@ -743,7 +743,7 @@ void object_tick(int obj) {
     if (gs->current_tool == TOOL_GRABBER && gs->grabber.object_holding == obj) return;
 
     // Copy of grid to fall back to if we abort.
-    struct Cell *grid_temp = calloc(gs->gw*gs->gh, sizeof(struct Cell));
+    struct Cell *grid_temp = temp_allocate(gs->gw*gs->gh, sizeof(struct Cell));
     memcpy(grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
 
     int dy = 1;
@@ -755,12 +755,14 @@ void object_tick(int obj) {
             if (y+1 >= gs->gh || gs->grid[x+(y+1)*gs->gw].type) {
                 // Abort!
                 memcpy(gs->grid, grid_temp, sizeof(struct Cell)*gs->gw*gs->gh);
+                temp_deallocate(grid_temp);
                 return;
             } else {
                 swap(x, y, x, y+dy);
             }
         }
     }
+    temp_deallocate(grid_temp);
     
     if (!object_does_exist(obj)) {
         for (int i = obj; i < gs->object_count-1; i++) {
@@ -772,12 +774,10 @@ void object_tick(int obj) {
     object_generate_blobs(obj, 0);
     object_generate_blobs(obj, 1);
     object_generate_blobs(obj, 2);
-
-    free(grid_temp);
 }
 
 void object_blobs_set_pressure(int obj, int chisel_size) {
-    int *temp_blobs = calloc(gs->gw*gs->gh, sizeof(struct Cell));
+    int *temp_blobs = temp_allocate(gs->gw*gs->gh, sizeof(struct Cell));
     struct Object *object = &gs->objects[obj];
     
     for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -810,7 +810,7 @@ void object_blobs_set_pressure(int obj, int chisel_size) {
         }
     }
 
-    free(temp_blobs);
+    temp_deallocate(temp_blobs);
 }
 
 internal void random_set_blob(struct Object *obj, int x, int y, Uint32 blob, int chisel_size, int perc) {
@@ -1190,7 +1190,7 @@ int object_attempt_move(int object, int dx, int dy) {
     float vx = ux; // = 0;
     float vy = uy; // = 0;
 
-    struct Cell *result_grid = calloc(gs->gw*gs->gh, sizeof(struct Cell));
+    struct Cell *result_grid = temp_allocate(gs->gw*gs->gh, sizeof(struct Cell));
 
     memcpy(result_grid, gs->grid, sizeof(struct Cell) * gs->gw * gs->gh);
 
@@ -1218,7 +1218,7 @@ int object_attempt_move(int object, int dx, int dy) {
     object_generate_blobs(object, 1);
     object_generate_blobs(object, 2);
 
-    free(result_grid);
+    temp_deallocate(result_grid);
 
     return (int) (ux+uy*gs->gw);
 }

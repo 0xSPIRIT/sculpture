@@ -113,9 +113,6 @@ void goto_level(int lvl) {
         grid_deinit(gs);
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
 
-    SDL_DestroyTexture(gs->render_texture);
-    gs->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
-
     gs->S = gs->window_width/gs->gw;
     SDL_assert(gs->gw==gs->gh);
 
@@ -156,11 +153,10 @@ void levels_deinit() {
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_deinit(i);
 
-    grabber_deinit(gs);
-    for (int i = 0; i < gs->level_count; i++) {
-        free(gs->levels[i].desired_grid);
-        free(gs->levels[i].initial_grid);
-    }
+    /* for (int i = 0; i < gs->level_count; i++) { */
+    /*     free(gs->levels[i].desired_grid); */
+    /*     free(gs->levels[i].initial_grid); */
+    /* } */
 
     undo_system_deinit(gs);
 }
@@ -303,7 +299,7 @@ void level_draw() {
                 placer_draw(&gs->placers[gs->current_placer], false);
             break;
         case TOOL_GRABBER:
-            grabber_draw();
+            /* grabber_draw(); */
             break;
         }
 
@@ -468,7 +464,7 @@ void level_get_cells_from_image(char *path, struct Cell **out, struct Source_Cel
     *out_w = w;
     *out_h = h;
 
-    *out = calloc(w*h, sizeof(struct Cell));
+    *out = persist_allocate(w*h, sizeof(struct Cell));
 
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {

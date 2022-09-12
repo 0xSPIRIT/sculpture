@@ -22,14 +22,14 @@ void chisel_blocker_init() {
 
     chisel_blocker->side = 1;
 
-    chisel_blocker->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
+    chisel_blocker->render_texture = gs->textures.chisel_blocker_render_target;
     SDL_SetTextureBlendMode(chisel_blocker->render_texture, SDL_BLENDMODE_BLEND);
-    chisel_blocker->pixels = calloc(gs->gw*gs->gh, sizeof(Uint32));
+    chisel_blocker->pixels = persist_allocate(gs->gw*gs->gh, sizeof(Uint32));
 }
 
 void chisel_blocker_deinit() {
     struct Chisel_Blocker *chisel_blocker = &gs->chisel_blocker;
-    free(chisel_blocker->pixels);
+    /* free(chisel_blocker->pixels); */
 }
 
 internal void flood_fill(Uint32 *pixels, int x, int y, Uint32 value) {

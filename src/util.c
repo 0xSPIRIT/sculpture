@@ -25,31 +25,6 @@ void move_mouse_to_grid_position(float x, float y) {
     SDL_WarpMouseInWindow(gs->window, (int)(x*gs->S + gs->S/2), GUI_H + (int)(y*gs->S + gs->S/2));
 }
 
-void get_filename_from_type(int type, char *out) {
-    switch (type) {
-    case CELL_NONE:        strcpy(out, "nothing"); break;
-    case CELL_MARBLE:      strcpy(out, "../res/items/marble.png"); break;
-    case CELL_COBBLESTONE: strcpy(out, "../res/items/cobblestone.png"); break;
-    case CELL_QUARTZ:      strcpy(out, "../res/items/quartz.png"); break;
-    case CELL_GRANITE:     strcpy(out, "../res/items/quartz.png"); break;
-    case CELL_BASALT:      strcpy(out, "../res/items/quartz.png"); break;
-    case CELL_WOOD_LOG:    strcpy(out, "../res/items/wood_log.png"); break;
-    case CELL_WOOD_PLANK:  strcpy(out, "../res/items/wood_plank.png"); break;
-    case CELL_DIRT:        strcpy(out, "../res/items/dirt.png"); break;
-    case CELL_SAND:        strcpy(out, "../res/items/sand.png"); break;
-    case CELL_GLASS:       strcpy(out, "../res/items/glass.png"); break;
-    case CELL_WATER:       strcpy(out, "../res/items/water.png"); break;
-    case CELL_COAL:        strcpy(out, "../res/items/coal.png"); break;
-    case CELL_STEAM:       strcpy(out, "../res/items/steam.png"); break;
-    case CELL_DIAMOND:     strcpy(out, "../res/items/diamond.png"); break;
-    case CELL_ICE:         strcpy(out, "../res/items/ice.png"); break;
-    case CELL_LEAF:        strcpy(out, "../res/items/leaf.png"); break;
-    case CELL_SMOKE:       strcpy(out, "../res/items/smoke.png"); break;
-    case CELL_DUST:        strcpy(out, "../res/items/dust.png"); break;
-    case CELL_LAVA:        strcpy(out, "../res/items/quartz.png"); break;
-    }
-}
-
 void get_name_from_type(int type, char *out) {
     switch (type) {
     case CELL_NONE:        strcpy(out, "nothing"); break;
@@ -72,32 +47,6 @@ void get_name_from_type(int type, char *out) {
     case CELL_SMOKE:       strcpy(out, "Smoke"); break;
     case CELL_DUST:        strcpy(out, "Dust"); break;
     case CELL_LAVA:        strcpy(out, "Lava"); break;
-    }
-}
-
-void get_name_from_tool(int type, char *out) {
-    switch (type) {
-    case TOOL_CHISEL_SMALL:  strcpy(out, "Small Chisel"); break;
-    case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel"); break;
-    case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel"); break;
-    case TOOL_KNIFE:         strcpy(out, "Knife"); break;
-    case TOOL_POINT_KNIFE:   strcpy(out, "Point Knife"); break;
-    case TOOL_HAMMER:        strcpy(out, "Hammer"); break;
-    case TOOL_PLACER:        strcpy(out, "Placer"); break;
-    case TOOL_GRABBER:       strcpy(out, "Grabber"); break;
-    }
-}
-
-void get_file_from_tool(int type, char *out) {
-    switch (type) {
-    case TOOL_CHISEL_SMALL:  strcpy(out, "chisel_small.png"); break;
-    case TOOL_CHISEL_MEDIUM: strcpy(out, "chisel_medium.png"); break;
-    case TOOL_CHISEL_LARGE:  strcpy(out, "chisel_large.png"); break;
-    case TOOL_KNIFE:         strcpy(out, "knife.png"); break;
-    case TOOL_POINT_KNIFE:   strcpy(out, "point_knife.png"); break;
-    case TOOL_HAMMER:        strcpy(out, "hammer.png"); break;
-    case TOOL_PLACER:        strcpy(out, "placer.png"); break;
-    case TOOL_GRABBER:       strcpy(out, "pointer.png"); break;
     }
 }
 

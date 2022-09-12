@@ -12,23 +12,18 @@
 void blob_hammer_init() {
     struct Blob_Hammer *blob_hammer = &gs->blob_hammer;
     
-    SDL_Surface *surf = IMG_Load("../res/hammer.png");
-
     blob_hammer->state = HAMMER_STATE_IDLE;
     blob_hammer->timer = 0;
     blob_hammer->swing_direction = 1;
 
     blob_hammer->x = gs->gw/2;
     blob_hammer->y = gs->gh/2;
-    blob_hammer->w = surf->w;
-    blob_hammer->h = surf->h;
-    blob_hammer->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
+    blob_hammer->texture = gs->textures.blob_hammer;
+    SDL_QueryTexture(blob_hammer->texture, NULL, NULL, &blob_hammer->w, &blob_hammer->h);
     blob_hammer->angle = 0;
 
-    blob_hammer->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
-    blob_hammer->pixels = calloc(gs->gw*gs->gh, sizeof(Uint32));
-
-    SDL_FreeSurface(surf);
+    blob_hammer->render_texture = gs->textures.blob_hammer_render_target;
+    blob_hammer->pixels = persist_allocate(gs->gw*gs->gh, sizeof(Uint32));
 }
 
 void blob_hammer_deinit() {
