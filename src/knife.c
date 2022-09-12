@@ -20,7 +20,7 @@ void knife_init() {
     knife->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     knife->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
     knife->angle = 0;
-    knife->pixels = calloc(gs->gw*gs->gh, sizeof(Uint32));
+    knife->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));
 
     SDL_FreeSurface(surf);
 }

@@ -7,6 +7,9 @@
 
 #include <time.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "blob_hammer.h"
 #include "grid.h"
@@ -21,23 +24,47 @@
 #include "grabber.h"
 #include "effects.h"
 #include "chisel_blocker.h"
-#include "shared.h"
 #include "assets.h"
 
-struct Game_State {
-    struct Game_Memory memory;
+#define Kilobytes(x) (x*1024)
+#define Megabytes(x) (x*1024*1024)
+#define Gigabytes(x) (x*1024*1024*1024)
 
-    struct Textures textures;
-    
+//
+// My own allocation functions for bridging the gap
+// between the platform / SDL layer and the  game layer.
+//
+//
+// To allocate permanent memory that will persist until
+// the end of the session, use persist_alloc.
+//
+// Otherwise, when allocating memory that you will
+// just need for a specific function and will free it,
+// use temp_alloc.
+//
+
+struct Memory {
+    uint8_t *data;
+    uint8_t *cursor;
+    size_t size;
+};
+
+struct Game_State {
+    struct Memory memory;
+
+    struct Allocation_Info *allocation_start, *allocation_current;
+    int allocation_count;
+
     struct SDL_Window *window;
     struct SDL_Renderer *renderer;
+
+    struct Textures textures; // Contains pointers to SDL textures.
 
     int S; // scale
     int window_width, window_height;
     float delta_time;
 
     SDL_Texture *render_texture;
-    SDL_Texture *item_textures[CELL_COUNT];
 
     int current_tool;
     int debug_mode;
@@ -102,8 +129,59 @@ struct Game_State {
 
 extern struct Game_State *gs;
 
-__declspec(dllexport) void game_init(struct Game_State *state);
-__declspec(dllexport) void game_deinit(struct Game_State *state);
-__declspec(dllexport) bool game_run(struct Game_State *state);
+inline struct Memory make_memory(size_t size) {
+    struct Memory memory = {0};
+
+    memory.data = calloc(1, size);
+    memory.cursor = memory.data;
+    memory.size = size;
+    return memory;
+}
+
+#define persist_alloc(num, size) (_allocate(num, size, __FILE__, __LINE__))
+#define temp_alloc(num, size) (_temp_alloc(num, size, __FILE__, __LINE__))
+#define temp_dealloc(ptr) (_temp_dealloc(ptr, __FILE__, __LINE__))
+
+inline void *_allocate(size_t num, size_t size_individual, const char *file, int line) {
+    size_t size;
+    void *output;
+
+    size = num * size_individual;
+
+    if (gs->memory.cursor+size > gs->memory.data+gs->memory.size) {
+        char message[256] = {0};
+        sprintf(message, "Out of Memory!\nAllowed memory: %zd bytes, Attempted allocation to %zd bytes.\n%s:%d", gs->memory.size, size+(gs->memory.cursor-gs->memory.data), file, line);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory Error :(", message, gs->window);
+        exit(1);
+        return NULL;
+    }
+
+    output = gs->memory.cursor;
+    gs->memory.cursor += size;
+
+    return output;
+}
+
+// Used for allocations you want to deallocate soon.
+inline void *_temp_alloc(size_t num, size_t size_individual, const char *file, int line) {
+    if (!num || !size_individual) return NULL;
+    void *allocation = calloc(num, size_individual);
+    if (!allocation) {
+        char message[256] = {0};
+        sprintf(message, "Failed temporary allocation at %s:%d", file, line);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory Error :(", message, gs->window);
+    }
+    gs->allocation_count++;
+    return allocation;
+}
+
+inline void _temp_dealloc(void *ptr, const char *file, int line) {
+    gs->allocation_count--;
+    free(ptr);
+}
+
+void game_init(struct Game_State *state);
+void game_deinit(struct Game_State *state);
+bool game_run(struct Game_State *state);
 
 #endif // GAME_H_

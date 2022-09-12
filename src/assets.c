@@ -70,6 +70,7 @@ static void get_name_from_tool(int type, char *out) {
     }
 }
 
+// TODO: Deinit
 void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Textures *textures) {
     SDL_Surface *surf = NULL;
 

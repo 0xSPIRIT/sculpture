@@ -25,24 +25,24 @@ void chisel_init(struct Chisel *type) {
     chisel = type;
 
     for (int face = 1; face != -1; face--) {
-        /* char file[512] = {0}; */
-        /* if (chisel == chisel_small) { */
-        /*     chisel->size = 0; */
-        /*     strcpy(file, "../res/chisel_small"); */
-        /* } else if (chisel == chisel_medium) { */
-        /*     chisel->size = 1; */
-        /*     strcpy(file, "../res/chisel_medium"); */
-        /* } else if (chisel == chisel_large) { */
-        /*     chisel->size = 2; */
-        /*     strcpy(file, "../res/chisel_large"); */
-        /* } */
-        /* if (face) */
-        /*     strcat(file, "_face"); */
+        char file[512] = {0};
+        if (chisel == chisel_small) {
+            chisel->size = 0;
+            strcpy(file, "../res/chisel_small");
+        } else if (chisel == chisel_medium) {
+            chisel->size = 1;
+            strcpy(file, "../res/chisel_medium");
+        } else if (chisel == chisel_large) {
+            chisel->size = 2;
+            strcpy(file, "../res/chisel_large");
+        }
+        if (face)
+            strcat(file, "_face");
 
-        /* strcat(file, ".png"); */
+        strcat(file, ".png");
 
-        /* surf = IMG_Load(file); */
-        /* SDL_assert(surf); */
+        surf = IMG_Load(file);
+        SDL_assert(surf);
 
         if (face) {
             chisel->face_texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
@@ -60,13 +60,13 @@ void chisel_init(struct Chisel *type) {
     chisel->face_mode = false;
 
     chisel->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
-    chisel->pixels = calloc(gs->gw*gs->gh, sizeof(Uint32));
+    chisel->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));
 
     chisel->texture = chisel->outside_texture;
     chisel->w = chisel->outside_w;
     chisel->h = chisel->outside_h;
 
-    chisel->highlights = calloc(gs->gw*gs->gh, sizeof(int));
+    chisel->highlights = persist_alloc(gs->gw*gs->gh, sizeof(int));
     chisel->highlight_count = 0;
 
     chisel->spd = 3.;

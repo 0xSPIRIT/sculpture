@@ -26,7 +26,7 @@ void blob_hammer_init() {
     blob_hammer->angle = 0;
 
     blob_hammer->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
-    blob_hammer->pixels = calloc(gs->gw*gs->gh, sizeof(Uint32));
+    blob_hammer->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));
 
     SDL_FreeSurface(surf);
 }

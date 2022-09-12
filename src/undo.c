@@ -6,11 +6,11 @@
 #include "game.h"
 
 void undo_system_init() {
-    gs->start_state = calloc(1, sizeof(struct Save_State));
+    gs->start_state = persist_alloc(1, sizeof(struct Save_State));
     gs->current_state = gs->start_state;
 
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        gs->current_state->grid_layers[i] = calloc(gs->gw*gs->gh, sizeof(struct Cell));
+        gs->current_state->grid_layers[i] = persist_alloc(gs->gw*gs->gh, sizeof(struct Cell));
         memcpy(gs->current_state->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
     }
 }
@@ -29,11 +29,11 @@ bool is_current_grid_same_as(struct Save_State *state) {
     
 void save_state_to_next() {
     struct Save_State *state;
-    state = calloc(1, sizeof(struct Save_State));
+    state = temp_alloc(1, sizeof(struct Save_State));
 
     if (!state->grid_layers[0]) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-            state->grid_layers[i] = calloc(gs->gw*gs->gh, sizeof(struct Cell));
+            state->grid_layers[i] = temp_alloc(gs->gw*gs->gh, sizeof(struct Cell));
         }
     }
 

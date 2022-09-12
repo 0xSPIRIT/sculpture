@@ -468,7 +468,7 @@ void level_get_cells_from_image(char *path, struct Cell **out, struct Source_Cel
     *out_w = w;
     *out_h = h;
 
-    *out = calloc(w*h, sizeof(struct Cell));
+    *out = temp_alloc(w*h, sizeof(struct Cell));
 
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {

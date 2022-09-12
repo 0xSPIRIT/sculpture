@@ -36,16 +36,7 @@ internal bool can_place_item_in_slot(int type, int slot) {
 }
 
 void item_init() {
-    for (int i = 0; i < CELL_COUNT; i++) {
-        if (i == CELL_NONE) continue;
-        
-        char file[64] = {0};
-        get_filename_from_type(i, file);
-        SDL_Surface *surf = IMG_Load(file);
-        SDL_assert(surf);
-        gs->item_textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surf);
-        SDL_FreeSurface(surf);
-    }
+    // Moved to assets.c
 }
 
 void item_draw(struct Item *item, int x, int y, int w, int h) {
@@ -59,7 +50,7 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
         x, y,
         w, h
     };
-    SDL_RenderCopy(gs->renderer, gs->item_textures[item->type], NULL, &r);
+    SDL_RenderCopy(gs->renderer, gs->textures.items[item->type], NULL, &r);
 
     char number[32] = {0};
     sprintf(number, "%d", item->amount);
@@ -180,9 +171,9 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
 }
 
 void item_deinit() {
-    for (int i = 0; i < CELL_COUNT; i++) {
-        SDL_DestroyTexture(gs->item_textures[i]);
-    }
+    /* for (int i = 0; i < CELL_COUNT; i++) { */
+    /*     SDL_DestroyTexture(gs->item_textures[i]); */
+    /* } */
 }
 
 void all_converters_init() {
@@ -284,7 +275,7 @@ bool was_mouse_in_slot(struct Slot *slot) {
 }
 
 struct Converter *converter_init(int type) {
-    struct Converter *converter = calloc(1, sizeof(struct Converter));
+    struct Converter *converter = persist_alloc(1, sizeof(struct Converter));
     converter->type = type;
     converter->w = gs->window_width/2;
     converter->h = GUI_POPUP_H;
@@ -295,7 +286,7 @@ struct Converter *converter_init(int type) {
     switch (type) {
     case CONVERTER_MATERIAL:
         converter->slot_count = 4;
-        converter->slots = calloc(converter->slot_count, sizeof(struct Slot));
+        converter->slots = persist_alloc(converter->slot_count, sizeof(struct Slot));
 
         converter->slots[SLOT_INPUT1].x = converter->w/3.0;
         converter->slots[SLOT_INPUT1].y = converter->h/4.0;
@@ -313,12 +304,12 @@ struct Converter *converter_init(int type) {
         converter->slots[SLOT_OUTPUT].y = 4.0*converter->h/5.0;
         strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
 
-        converter->name = malloc(CONVERTER_NAME_LEN);
+        converter->name = persist_alloc(CONVERTER_NAME_LEN, 1);
         strcpy(converter->name, "Material Converter");
         break;
     case CONVERTER_FUEL:
         converter->slot_count = 3;
-        converter->slots = calloc(converter->slot_count, sizeof(struct Slot));
+        converter->slots = persist_alloc(converter->slot_count, sizeof(struct Slot));
 
         converter->slots[SLOT_INPUT1].x = converter->w/3.0;
         converter->slots[SLOT_INPUT1].y = converter->h/4.0;
@@ -332,7 +323,7 @@ struct Converter *converter_init(int type) {
         converter->slots[SLOT_OUTPUT].y = 4.0*converter->h/5.0;
         strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
 
-        converter->name = malloc(CONVERTER_NAME_LEN);
+        converter->name = persist_alloc(CONVERTER_NAME_LEN, 1);
         strcpy(converter->name, "Fuel Converter");
         break;
     }

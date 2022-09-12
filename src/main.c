@@ -5,6 +5,7 @@
 
 int main(int argc, char **argv) {
     struct Game_State *game_state = calloc(1, sizeof(struct Game_State));
+    game_state->memory = make_memory(Megabytes(256));
     
     game_init(game_state);
 
@@ -14,6 +15,7 @@ int main(int argc, char **argv) {
 
     game_deinit(game_state);
 
+    free(game_state->memory.data);
     free(game_state);
     
     return 0;

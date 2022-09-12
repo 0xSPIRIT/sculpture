@@ -274,7 +274,7 @@ void overlay_get_string(int type, int amt, char *out_str) {
 }
 
 struct Button *button_allocate(char *image, const char *overlay_text, void (*on_pressed)(void*)) {
-    struct Button *b = calloc(1, sizeof(struct Button));
+    struct Button *b = persist_alloc(1, sizeof(struct Button));
     SDL_Surface *surf = IMG_Load(image);
     b->w = surf->w;
     b->h = surf->h;

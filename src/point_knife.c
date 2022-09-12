@@ -19,7 +19,7 @@ void point_knife_init() {
     point_knife->h = surf->h;
     point_knife->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     point_knife->face_mode = false;
-    point_knife->highlights = calloc(gs->gw*gs->gh, sizeof(int));
+    point_knife->highlights = persist_alloc(gs->gw*gs->gh, sizeof(int));
 
     point_knife->highlight_count = 0;
     memset(point_knife->highlights, 0, 50 * sizeof(int));
@@ -110,10 +110,10 @@ void point_knife_draw() {
 }
 
 internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int *o_arr, int *o_count) {
-    int *array = calloc(gs->gw*gs->gh, sizeof(int));
+    int *array = temp_alloc(gs->gw*gs->gh, sizeof(int));
     int count = 0;
     
-    struct Cell *grid_copy = calloc(gs->gw*gs->gh, sizeof(struct Cell));
+    struct Cell *grid_copy = temp_alloc(gs->gw*gs->gh, sizeof(struct Cell));
     memcpy(grid_copy, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
 
     int x = 0;
@@ -132,8 +132,8 @@ internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int
     *o_count = count;
     memcpy(o_arr, array, sizeof(int) * count);
 
-    free(array);
-    free(grid_copy);
+    temp_dealloc(array);
+    temp_dealloc(grid_copy);
 
     return count;
 }
