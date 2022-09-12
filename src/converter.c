@@ -36,6 +36,16 @@ internal bool can_place_item_in_slot(int type, int slot) {
 }
 
 void item_init() {
+    for (int i = 0; i < CELL_COUNT; i++) {
+        if (i == CELL_NONE) continue;
+        
+        char file[64] = {0};
+        get_filename_from_type(i, file);
+        SDL_Surface *surf = IMG_Load(file);
+        SDL_assert(surf);
+        gs->item_textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surf);
+        SDL_FreeSurface(surf);
+    }
 }
 
 void item_draw(struct Item *item, int x, int y, int w, int h) {
@@ -49,7 +59,7 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
         x, y,
         w, h
     };
-    SDL_RenderCopy(gs->renderer, gs->textures.items[item->type], NULL, &r);
+    SDL_RenderCopy(gs->renderer, gs->item_textures[item->type], NULL, &r);
 
     char number[32] = {0};
     sprintf(number, "%d", item->amount);
@@ -171,7 +181,7 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
 
 void item_deinit() {
     for (int i = 0; i < CELL_COUNT; i++) {
-        SDL_DestroyTexture(gs->textures.items[i]);
+        SDL_DestroyTexture(gs->item_textures[i]);
     }
 }
 
@@ -274,7 +284,7 @@ bool was_mouse_in_slot(struct Slot *slot) {
 }
 
 struct Converter *converter_init(int type) {
-    struct Converter *converter = persist_allocate(1, sizeof(struct Converter));
+    struct Converter *converter = calloc(1, sizeof(struct Converter));
     converter->type = type;
     converter->w = gs->window_width/2;
     converter->h = GUI_POPUP_H;
@@ -285,7 +295,7 @@ struct Converter *converter_init(int type) {
     switch (type) {
     case CONVERTER_MATERIAL:
         converter->slot_count = 4;
-        converter->slots = persist_allocate(converter->slot_count, sizeof(struct Slot));
+        converter->slots = calloc(converter->slot_count, sizeof(struct Slot));
 
         converter->slots[SLOT_INPUT1].x = converter->w/3.0;
         converter->slots[SLOT_INPUT1].y = converter->h/4.0;
@@ -303,12 +313,12 @@ struct Converter *converter_init(int type) {
         converter->slots[SLOT_OUTPUT].y = 4.0*converter->h/5.0;
         strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
 
-        converter->name = persist_allocate(CONVERTER_NAME_LEN, 1);
+        converter->name = malloc(CONVERTER_NAME_LEN);
         strcpy(converter->name, "Material Converter");
         break;
     case CONVERTER_FUEL:
         converter->slot_count = 3;
-        converter->slots = persist_allocate(converter->slot_count, sizeof(struct Slot));
+        converter->slots = calloc(converter->slot_count, sizeof(struct Slot));
 
         converter->slots[SLOT_INPUT1].x = converter->w/3.0;
         converter->slots[SLOT_INPUT1].y = converter->h/4.0;
@@ -322,7 +332,7 @@ struct Converter *converter_init(int type) {
         converter->slots[SLOT_OUTPUT].y = 4.0*converter->h/5.0;
         strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
 
-        converter->name = persist_allocate(CONVERTER_NAME_LEN, 1);
+        converter->name = malloc(CONVERTER_NAME_LEN);
         strcpy(converter->name, "Fuel Converter");
         break;
     }
@@ -337,7 +347,7 @@ struct Converter *converter_init(int type) {
     }
 
     SDL_Surface *surf = IMG_Load("../res/arrow.png");
-    converter->arrow.texture = gs->textures.converter_arrow;
+    converter->arrow.texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     converter->arrow.x = converter->w/2;
     converter->arrow.y = converter->h/2 + 24;
     converter->arrow.w = surf->w;
@@ -346,7 +356,7 @@ struct Converter *converter_init(int type) {
 
     // Both X and Y-coordinates are updated in converter_tick.
     struct Button *b;
-    b = button_allocate(gs->textures.convert_button, "Convert", converter_begin_converting);
+    b = button_allocate("../res/buttons/convert.png", "Convert", converter_begin_converting);
     b->w = 48;
     b->h = 48;
 
@@ -358,9 +368,9 @@ struct Converter *converter_init(int type) {
 void converter_deinit(struct Converter *converter) {
     SDL_DestroyTexture(converter->arrow.texture);
     button_deallocate(converter->go_button);
-    /* free(converter->name); */
-    /* free(converter->slots); */
-    /* free(converter); */
+    free(converter->name);
+    free(converter->slots);
+    free(converter);
 }
 
 void converter_tick(struct Converter *converter) {
@@ -505,7 +515,7 @@ void slot_draw(struct Slot *slot) {
             bounds.y - surf->h - 2,
             surf->w,
             surf->h
-        }; 
+        };
         SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
 
         SDL_DestroyTexture(texture);

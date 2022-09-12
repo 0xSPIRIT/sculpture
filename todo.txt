@@ -1,10 +1,5 @@
       --------------------------TODO----------------------------
 
-- Improve temp_allocate() and temp_deallocate(). Add better
-  error-proofing with printing debug information.
-- Make all asset and SDL pointer creation be in a separate context to
-  the game layer. "assets.h"
-
  - There are two converters- the fuel converter and the material
    converter. Upon chiseling, dust is generated and put onto a second
    layer, which is able to be picked up by the placer. Materials

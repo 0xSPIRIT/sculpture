@@ -13,14 +13,17 @@
 #include "game.h"
 
 void placer_init(int num) {
+    SDL_Surface *surf = IMG_Load("../res/placer.png");
+
     struct Placer *placer = &gs->placers[num];
 
     placer->state = PLACER_PLACE_CIRCLE_MODE;
     placer->index = num;
-    placer->texture = gs->textures.placer;
-    SDL_QueryTexture(placer->texture, NULL, NULL, &placer->w, &placer->h);
     placer->x = gs->gw/2;
     placer->y = gs->gh/2;
+    placer->w = surf->w;
+    placer->h = surf->h;
+    placer->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     placer->object_index = -1;
     placer->did_click = 0;
     placer->contains_type = CELL_DIRT;
@@ -35,6 +38,8 @@ void placer_init(int num) {
         placer->contains_type = 0;
         placer->contains_amount = 0;
     }
+
+    SDL_FreeSurface(surf);
 }
 
 void placer_deinit(int i) {

@@ -6,11 +6,14 @@
 struct Grabber {
     float x, y;
     int w, h;
+    SDL_Texture *texture;
 
     int object_holding;
 };
 
 void grabber_init();
+void grabber_deinit();
 void grabber_tick();
+void grabber_draw();
 
 #endif  /* GRABBER_H_ */

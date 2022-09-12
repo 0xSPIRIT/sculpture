@@ -18,18 +18,54 @@
 
 struct Game_State *gs;
 
+internal void game_init_sdl(const char *window_title, int w, int h) {
+    SDL_Init(SDL_INIT_VIDEO);
+    IMG_Init(IMG_INIT_PNG);
+    TTF_Init();
+
+    gs->window = SDL_CreateWindow(window_title,
+                              SDL_WINDOWPOS_UNDEFINED,
+                              SDL_WINDOWPOS_UNDEFINED,
+                              w,
+                              h,
+                              0);
+
+    // This function takes ~0.25 seconds.
+    gs->renderer = SDL_CreateRenderer(gs->window,
+                                      -1,
+                                      SDL_RENDERER_PRESENTVSYNC);
+
+    gs->render_texture = SDL_CreateTexture(gs->renderer,
+                                           SDL_PIXELFORMAT_RGBA8888,
+                                           SDL_TEXTUREACCESS_TARGET,
+                                           gs->window_width/gs->S,
+                                           gs->window_height/gs->S);
+    SDL_SetRenderDrawBlendMode(gs->renderer, SDL_BLENDMODE_BLEND);
+}
+
 void game_init(struct Game_State *state) {
     gs = state;
     
-    gs->render_texture = gs->textures.render_texture;
-    SDL_SetRenderDrawBlendMode(gs->renderer, SDL_BLENDMODE_BLEND);
-
     srand(time(0));
+
+    gs->S = 6;
+
+    gs->window_width = 128*gs->S;
+    gs->window_height = 128*gs->S + GUI_H;
      
+    game_init_sdl("Alaska", gs->window_width, gs->window_height);
+    
     gs->normal_cursor = SDL_GetCursor();
     gs->grabber_cursor = init_system_cursor(arrow_cursor_data);
     gs->placer_cursor = init_system_cursor(placer_cursor_data);
 
+    textures_init(gs->renderer,
+                  gs->window_width/gs->S,
+                  gs->window_height/gs->S,
+                  gs->S,
+                  &gs->textures);
+
+    fonts_init(gs);
     item_init();
     levels_setup();
 
@@ -37,8 +73,7 @@ void game_init(struct Game_State *state) {
 }
 
 void game_deinit(struct Game_State *state) {
-    gs = state;
-    
+    fonts_deinit(gs);
     levels_deinit();
     item_deinit();
     grid_deinit();
@@ -55,7 +90,7 @@ internal bool game_tick_event(SDL_Event *event) {
     struct Input *input = &gs->input;
 
     if (event->type == SDL_QUIT) {
-        is_running = false;
+        return false;
     }
 
     if (event->type == SDL_MOUSEWHEEL) {
@@ -218,8 +253,6 @@ internal bool game_tick_event(SDL_Event *event) {
 
 // Returns false if we want to exit.
 bool game_run(struct Game_State *state) {
-    gs = state;
-    
     SDL_Event event;
     bool is_running = true;
     int prev_tool = gs->current_tool;

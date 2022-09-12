@@ -11,20 +11,25 @@ internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int
 
 void point_knife_init() {
     struct Point_Knife *point_knife = &gs->point_knife;
+    SDL_Surface *surf = IMG_Load("../res/point_knife.png");
 
     point_knife->x = gs->gw/2;
     point_knife->y = gs->gh/2;
-    point_knife->texture = gs->textures.point_knife;
-    SDL_QueryTexture(point_knife->texture, NULL, NULL, &point_knife->w, &point_knife->h);
+    point_knife->w = surf->w;
+    point_knife->h = surf->h;
+    point_knife->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     point_knife->face_mode = false;
-    point_knife->highlights = persist_allocate(gs->gw*gs->gh, sizeof(int));
+    point_knife->highlights = calloc(gs->gw*gs->gh, sizeof(int));
 
     point_knife->highlight_count = 0;
     memset(point_knife->highlights, 0, 50 * sizeof(int));
+
+    SDL_FreeSurface(surf);
 }
 
 void point_knife_deinit() {
     struct Point_Knife *point_knife = &gs->point_knife;
+    SDL_DestroyTexture(point_knife->texture);
 }
 
 void point_knife_tick() {
@@ -105,10 +110,10 @@ void point_knife_draw() {
 }
 
 internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int *o_arr, int *o_count) {
-    int *array = temp_allocate(gs->gw*gs->gh, sizeof(int));
+    int *array = calloc(gs->gw*gs->gh, sizeof(int));
     int count = 0;
     
-    struct Cell *grid_copy = temp_allocate(gs->gw*gs->gh, sizeof(struct Cell));
+    struct Cell *grid_copy = calloc(gs->gw*gs->gh, sizeof(struct Cell));
     memcpy(grid_copy, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
 
     int x = 0;
@@ -127,8 +132,8 @@ internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int
     *o_count = count;
     memcpy(o_arr, array, sizeof(int) * count);
 
-    temp_deallocate(array);
-    temp_deallocate(grid_copy);
+    free(array);
+    free(grid_copy);
 
     return count;
 }

@@ -9,9 +9,9 @@
 
 void effect_set(int type) {
     gs->current_effect.type = type;
-    /* if (gs->current_effect.particles) { */
-    /*     free(gs->current_effect.particles); */
-    /* } */
+    if (gs->current_effect.particles) {
+        free(gs->current_effect.particles);
+    }
 
     switch (type) {
     case EFFECT_NONE:
@@ -25,7 +25,7 @@ void effect_set(int type) {
         break;
     }
 
-    gs->current_effect.particles = persist_allocate(gs->current_effect.particle_count, sizeof(struct Effect_Particle));
+    gs->current_effect.particles = calloc(gs->current_effect.particle_count, sizeof(struct Effect_Particle));
 
     switch (type) {
     case EFFECT_SNOW:

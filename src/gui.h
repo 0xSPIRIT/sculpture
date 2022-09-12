@@ -49,8 +49,8 @@ struct Button {
     void (*on_pressed)(void*);
 };
 
-void gui_init();
-void gui_deinit();
+void gui_init(gs);
+void gui_deinit(gs);
 void gui_tick();
 void gui_draw();
 
@@ -61,7 +61,7 @@ void overlay_draw(struct Overlay *overlay);
 
 void overlay_get_string(int type, int amt, char *out_str);
 
-struct Button *button_allocate(SDL_Texture *texture, const char *overlay_text, void (*on_pressed)(void*));
+struct Button *button_allocate(char *image, const char *overlay_text, void (*on_pressed)(void*));
 void button_tick(struct Button *b, void *data);
 void button_draw(struct Button *b);
 void gui_popup_draw();
