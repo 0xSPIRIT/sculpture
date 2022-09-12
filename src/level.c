@@ -140,28 +140,11 @@ void goto_level(int lvl) {
     memcpy(gs->grid, gs->levels[lvl].desired_grid, sizeof(struct Cell)*gs->gw*gs->gh);
 }
 
+// Most deinitialization functions are just freeing textures, but
+// since we have assets.c, we don't need to do that. General freeing
+// pointers are usually unused because we allocate using game_state->memory
 void levels_deinit() {
-    chisel_deinit(&gs->chisel_small);
-    chisel_deinit(&gs->chisel_medium);
-    chisel_deinit(&gs->chisel_large);
-    blob_hammer_deinit(gs);
-    chisel_hammer_deinit(gs);
-    knife_deinit(gs);
-    point_knife_deinit(gs);
-    gui_deinit(gs);
-    all_converters_deinit(gs);
-
     effect_set(EFFECT_NONE);
-
-    for (int i = 0; i < PLACER_COUNT; i++)
-        placer_deinit(i);
-
-    grabber_deinit(gs);
-    for (int i = 0; i < gs->level_count; i++) {
-        free(gs->levels[i].desired_grid);
-        free(gs->levels[i].initial_grid);
-    }
-
     undo_system_deinit(gs);
 }
 
@@ -468,7 +451,7 @@ void level_get_cells_from_image(char *path, struct Cell **out, struct Source_Cel
     *out_w = w;
     *out_h = h;
 
-    *out = temp_alloc(w*h, sizeof(struct Cell));
+    *out = persist_alloc(w*h, sizeof(struct Cell));
 
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {

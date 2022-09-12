@@ -27,11 +27,6 @@ void point_knife_init() {
     SDL_FreeSurface(surf);
 }
 
-void point_knife_deinit() {
-    struct Point_Knife *point_knife = &gs->point_knife;
-    SDL_DestroyTexture(point_knife->texture);
-}
-
 void point_knife_tick() {
     struct Point_Knife *point_knife = &gs->point_knife;
     struct Input *input = &gs->input;

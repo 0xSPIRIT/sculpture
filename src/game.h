@@ -31,10 +31,6 @@
 #define Gigabytes(x) (x*1024*1024*1024)
 
 //
-// My own allocation functions for bridging the gap
-// between the platform / SDL layer and the  game layer.
-//
-//
 // To allocate permanent memory that will persist until
 // the end of the session, use persist_alloc.
 //
@@ -172,11 +168,13 @@ inline void *_temp_alloc(size_t num, size_t size_individual, const char *file, i
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory Error :(", message, gs->window);
     }
     gs->allocation_count++;
+    printf("%d\n", gs->allocation_count); fflush(stdout);
     return allocation;
 }
 
 inline void _temp_dealloc(void *ptr, const char *file, int line) {
     gs->allocation_count--;
+    printf("%d\n", gs->allocation_count); fflush(stdout);
     free(ptr);
 }
 

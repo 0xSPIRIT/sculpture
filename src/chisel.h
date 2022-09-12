@@ -39,12 +39,10 @@ struct Chisel {
 };
 
 void chisel_hammer_init();
-void chisel_hammer_deinit();
 void chisel_hammer_tick();
 void chisel_hammer_draw();
 
 void chisel_init(struct Chisel *type);
-void chisel_deinit();
 void chisel_tick();
 void chisel_draw();
 Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len);

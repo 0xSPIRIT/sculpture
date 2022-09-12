@@ -31,12 +31,6 @@ void blob_hammer_init() {
     SDL_FreeSurface(surf);
 }
 
-void blob_hammer_deinit() {
-    struct Blob_Hammer *blob_hammer = &gs->blob_hammer;
-    
-    SDL_DestroyTexture(blob_hammer->texture);
-}
-
 void blob_hammer_tick() {
     struct Blob_Hammer *blob_hammer = &gs->blob_hammer;
     struct Input *input = &gs->input;

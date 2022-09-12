@@ -42,12 +42,6 @@ void placer_init(int num) {
     SDL_FreeSurface(surf);
 }
 
-void placer_deinit(int i) {
-    struct Placer *placer = &gs->placers[i];
-    SDL_DestroyTexture(placer->texture);
-    memset(placer, 0, sizeof(struct Placer));
-}
-
 // Places a circle down.
 static void placer_place_circle(struct Placer *placer) {
     float dx = placer->x - placer->px;

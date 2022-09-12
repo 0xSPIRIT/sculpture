@@ -73,12 +73,14 @@ void game_init(struct Game_State *state) {
 }
 
 void game_deinit(struct Game_State *state) {
+    textures_deinit(&gs->textures);
     fonts_deinit(gs);
     levels_deinit();
-    item_deinit();
+    undo_system_deinit();
     grid_deinit();
 
-    SDL_DestroyTexture(gs->render_texture);
+    SDL_DestroyWindow(state->window);
+    SDL_DestroyRenderer(state->renderer);
 
     TTF_Quit();
     IMG_Quit();
@@ -269,6 +271,12 @@ bool game_run(struct Game_State *state) {
 
     level_tick();
     level_draw();
+
+    printf("Used memory: %lld / %lld :: %f% \n",
+           gs->memory.cursor-gs->memory.data,
+           gs->memory.size,
+           100 * (float)(gs->memory.cursor-gs->memory.data)/gs->memory.size);
+    fflush(stdout);
 
     return is_running;
 }

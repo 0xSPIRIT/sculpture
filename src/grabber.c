@@ -15,10 +15,6 @@ void grabber_init() {
     SDL_FreeSurface(surf);
 }
 
-void grabber_deinit() {
-    SDL_DestroyTexture(gs->grabber.texture);
-}
-
 void grabber_tick() {
     struct Grabber *grabber = &gs->grabber;
 

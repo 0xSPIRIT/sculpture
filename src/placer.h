@@ -39,7 +39,6 @@ struct Placer {
 };
 
 void placer_init(int num);
-void placer_deinit(int i);
 void placer_tick(struct Placer *placer);
 void placer_draw(struct Placer *placer, bool full_size);
 

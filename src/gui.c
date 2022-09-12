@@ -48,15 +48,15 @@ void gui_init() {
     /* all_converters_init(); */
 }
 
-void gui_deinit() {
-    struct GUI *gui = &gs->gui;
+/* void gui_deinit() { */
+/*     struct GUI *gui = &gs->gui; */
 
-    for (int i = 0; i < 5; i++) {
-        button_deallocate(gui->tool_buttons[i]);
-    }
-    SDL_DestroyTexture(gui->popup_texture);
-    SDL_DestroyTexture(gs->gui_texture);
-}
+/*     for (int i = 0; i < 5; i++) { */
+/*         button_deallocate(gui->tool_buttons[i]); */
+/*     } */
+/*     SDL_DestroyTexture(gui->popup_texture); */
+/*     SDL_DestroyTexture(gs->gui_texture); */
+/* } */
 
 void gui_tick() {
     struct GUI *gui = &gs->gui;
@@ -334,10 +334,6 @@ void button_draw(struct Button *b) {
         SDL_SetTextureColorMod(b->texture, 255, 255, 255);
     }
     SDL_RenderCopy(gs->renderer, b->texture, NULL, &dst);
-}
-
-void button_deallocate(struct Button *b) {
-    SDL_DestroyTexture(b->texture);
 }
 
 void click_gui_tool_button(void *type_ptr) {

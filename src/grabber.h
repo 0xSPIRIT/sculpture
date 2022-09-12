@@ -12,7 +12,6 @@ struct Grabber {
 };
 
 void grabber_init();
-void grabber_deinit();
 void grabber_tick();
 void grabber_draw();
 

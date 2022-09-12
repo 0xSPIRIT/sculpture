@@ -37,7 +37,6 @@ struct Blob_Hammer {
 };
 
 void blob_hammer_init();
-void blob_hammer_deinit();
 void blob_hammer_tick();
 void blob_hammer_update_texture();
 void blob_hammer_draw();

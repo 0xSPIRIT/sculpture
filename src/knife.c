@@ -25,13 +25,6 @@ void knife_init() {
     SDL_FreeSurface(surf);
 }
 
-void knife_deinit() {
-    struct Knife *knife = &gs->knife;
-
-    SDL_DestroyTexture(knife->texture);
-    SDL_DestroyTexture(knife->render_texture);
-}
-
 void knife_tick() {
     struct Knife *knife = &gs->knife;
     struct Input *input = &gs->input;

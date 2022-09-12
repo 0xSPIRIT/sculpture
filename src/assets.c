@@ -146,6 +146,15 @@ void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Texture
     }
 }
 
+void textures_deinit(struct Textures *textures) {
+    SDL_Texture **texs = (SDL_Texture**) textures;
+    size_t tex_count = sizeof(struct Textures)/sizeof(SDL_Texture*);
+
+    for (size_t i = 0; i < tex_count; i++) {
+        SDL_DestroyTexture(texs[i]);
+    }
+}
+
 void fonts_init(struct Game_State *gs) {
     gs->font = TTF_OpenFont("../res/cour.ttf", 19);
     gs->font_consolas = TTF_OpenFont("../res/consola.ttf", 24);

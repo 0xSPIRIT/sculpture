@@ -74,12 +74,6 @@ void chisel_init(struct Chisel *type) {
     SDL_FreeSurface(surf);
 }
 
-void chisel_deinit(struct Chisel *type) {
-    SDL_DestroyTexture(type->texture);
-    SDL_DestroyTexture(type->face_texture);
-    SDL_DestroyTexture(type->render_texture);
-}
-
 internal void chisel_set_depth() {
     struct Chisel *chisel = gs->chisel;
     struct Cell *grid = gs->grid;
@@ -452,12 +446,6 @@ void chisel_hammer_init() {
     hammer->h = surf->h;
     hammer->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     SDL_FreeSurface(surf);
-}
-
-void chisel_hammer_deinit() {
-    struct Chisel_Hammer *hammer = &gs->chisel_hammer;
-
-    SDL_DestroyTexture(hammer->texture);
 }
 
 void chisel_hammer_tick() {

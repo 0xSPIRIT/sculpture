@@ -14,7 +14,6 @@ struct Knife {
 };
 
 void knife_init(gs);
-void knife_deinit(gs);
 void knife_tick();
 void knife_update_texture();
 void knife_draw();

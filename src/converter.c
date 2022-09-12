@@ -170,20 +170,9 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
     }
 }
 
-void item_deinit() {
-    /* for (int i = 0; i < CELL_COUNT; i++) { */
-    /*     SDL_DestroyTexture(gs->item_textures[i]); */
-    /* } */
-}
-
 void all_converters_init() {
     gs->material_converter = converter_init(CONVERTER_MATERIAL);
     gs->fuel_converter = converter_init(CONVERTER_FUEL);
-}
-
-void all_converters_deinit() {
-    converter_deinit(gs->material_converter);
-    converter_deinit(gs->fuel_converter);
 }
 
 void all_converters_tick() {
@@ -354,14 +343,6 @@ struct Converter *converter_init(int type) {
     converter->go_button = b;
     
     return converter;
-}
-
-void converter_deinit(struct Converter *converter) {
-    SDL_DestroyTexture(converter->arrow.texture);
-    button_deallocate(converter->go_button);
-    free(converter->name);
-    free(converter->slots);
-    free(converter);
 }
 
 void converter_tick(struct Converter *converter) {

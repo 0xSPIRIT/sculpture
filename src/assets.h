@@ -36,6 +36,7 @@ struct Textures {
 };
 
 void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Textures *textures);
+void textures_deinit(struct Textures *textures);
 
 void fonts_init(struct Game_State *gs);
 void fonts_deinit(struct Game_State *gs);

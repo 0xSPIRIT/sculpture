@@ -29,11 +29,11 @@ bool is_current_grid_same_as(struct Save_State *state) {
     
 void save_state_to_next() {
     struct Save_State *state;
-    state = temp_alloc(1, sizeof(struct Save_State));
+    state = persist_alloc(1, sizeof(struct Save_State));
 
     if (!state->grid_layers[0]) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-            state->grid_layers[i] = temp_alloc(gs->gw*gs->gh, sizeof(struct Cell));
+            state->grid_layers[i] = persist_alloc(gs->gw*gs->gh, sizeof(struct Cell));
         }
     }
 
@@ -58,11 +58,12 @@ struct Save_State *get_state_index(int index) {
     return s;
 }
 
+// We're using persistent memory so we won't free anything.
 void free_save_state(struct Save_State *state) {
-    for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        free(state->grid_layers[i]);
-    }
-    free(state);
+    /* for (int i = 0; i < NUM_GRID_LAYERS; i++) { */
+    /*     temp_dealloc(state->grid_layers[i]); */
+    /* } */
+    /* temp_dealloc(state); */
 }
 
 void set_state(struct Save_State *state) {

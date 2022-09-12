@@ -16,8 +16,7 @@ struct Point_Knife {
     int highlight_count;
 };
 
-void point_knife_init(gs);
-void point_knife_deinit(gs);
+void point_knife_init();
 void point_knife_tick();
 void point_knife_draw();
 

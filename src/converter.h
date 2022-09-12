@@ -67,12 +67,10 @@ struct Converter {
 };
 
 void item_init();
-void item_deinit();
 void item_draw(struct Item *item, int x, int y, int w, int h);
 void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h);
 
 void all_converters_init();
-void all_converters_deinit();
 void all_converters_tick();
 void all_converters_draw();
 
@@ -81,7 +79,6 @@ bool is_mouse_in_slot(struct Slot *slot);
 bool was_mouse_in_slot(struct Slot *slot);
 
 struct Converter *converter_init(int type);
-void converter_deinit(struct Converter *converter);
 void converter_tick(struct Converter *converter);
 void converter_draw(struct Converter *converter);
 bool converter_is_layout_valid(struct Converter *converter);
