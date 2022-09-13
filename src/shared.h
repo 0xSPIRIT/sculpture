@@ -24,7 +24,7 @@
 #include "grabber.h"
 #include "effects.h"
 #include "chisel_blocker.h"
-#include "assets.h"
+#include "boot/assets.h"
 
 #define Kilobytes(x) (x*1024)
 #define Megabytes(x) (x*1024*1024)
@@ -45,10 +45,19 @@ struct Memory {
     size_t size;
 };
 
+// Put all the SDL initialization eg texture creation or
+// window / renderer creation & fonts init into the platform layer.
+// The platform layer will need to know the sizes of these types
+// so we should include the header files as it is right now,
+// but we should not compile any .c files from the actual game
+// code. asset.c is not part of the game layer, it's part of the
+// platform layer.
+//
+// The ***_init() functions in the game layer doesn't actually allocate
+// anything.
 struct Game_State {
     struct Memory memory;
 
-    struct Allocation_Info *allocation_start, *allocation_current;
     int allocation_count;
 
     struct SDL_Window *window;

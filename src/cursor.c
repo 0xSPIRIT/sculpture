@@ -4,7 +4,7 @@
 
 // Taken from the SDL wiki.
 
-const char *arrow_cursor_data[] = {
+static const char *arrow_cursor_data[] = {
     /* width height num_colors chars_per_pixel */
     "    32    32        3            1",
     /* colors */
@@ -47,7 +47,7 @@ const char *arrow_cursor_data[] = {
     "0,0"
 };
 
-const char *placer_cursor_data[] = {
+static const char *placer_cursor_data[] = {
     /* width height num_colors chars_per_pixel */
     "    32    32        3            4",
     /* colors */
@@ -89,7 +89,6 @@ const char *placer_cursor_data[] = {
     "                                ",
     "0,0"
 };
-
 SDL_Cursor *init_system_cursor(const char **image) {
     int i, row, col;
     Uint8 data[4*32];
