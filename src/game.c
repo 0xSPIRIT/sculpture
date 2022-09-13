@@ -46,6 +46,9 @@ internal void game_init_sdl(const char *window_title, int w, int h) {
 void game_init(struct Game_State *state) {
     gs = state;
     
+    // debug();
+    gs = state;
+    
     srand(time(0));
 
     gs->S = 6;
@@ -53,26 +56,36 @@ void game_init(struct Game_State *state) {
     gs->window_width = 128*gs->S;
     gs->window_height = 128*gs->S + GUI_H;
      
+    // debug();
     game_init_sdl("Alaska", gs->window_width, gs->window_height);
+    // debug();
     
     gs->normal_cursor = SDL_GetCursor();
     gs->grabber_cursor = init_system_cursor(arrow_cursor_data);
     gs->placer_cursor = init_system_cursor(placer_cursor_data);
 
+    // debug();
     textures_init(gs->renderer,
                   gs->window_width/gs->S,
                   gs->window_height/gs->S,
                   gs->S,
                   &gs->textures);
 
+    // debug();
     fonts_init(gs);
+    // debug();
     item_init();
+    // debug();
     levels_setup();
+    // debug();
 
     goto_level(0);
+    // debug();
 }
 
 void game_deinit(struct Game_State *state) {
+    gs = state;
+    
     textures_deinit(&gs->textures);
     fonts_deinit(gs);
     levels_deinit();
@@ -255,6 +268,8 @@ internal bool game_tick_event(SDL_Event *event) {
 
 // Returns false if we want to exit.
 bool game_run(struct Game_State *state) {
+    gs = state;
+    
     SDL_Event event;
     bool is_running = true;
     int prev_tool = gs->current_tool;

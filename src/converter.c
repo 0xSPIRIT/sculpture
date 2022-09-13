@@ -480,7 +480,9 @@ void slot_draw(struct Slot *slot) {
 
     if (*slot->name) {
         SDL_Surface *surf = TTF_RenderText_Blended(gs->small_font, slot->name, (SDL_Color){0, 0, 0, 255});
+        SDL_assert(surf);
         SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
+        SDL_assert(texture);
 
         SDL_Rect dst = {
             bounds.x + slot->w/2 - surf->w/2,
