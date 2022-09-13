@@ -14,6 +14,8 @@
 
 // Put all this shit into the platform/sdl layer.
 
+__declspec(dllexport) void game_init(struct Game_State *state);
 __declspec(dllexport) bool game_run(struct Game_State *state);
+__declspec(dllexport) void game_deinit(struct Game_State *state);
 
 #endif // GAME_H_

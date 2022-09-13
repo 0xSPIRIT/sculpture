@@ -66,7 +66,6 @@ struct Converter {
     struct Arrow arrow;
 };
 
-void item_init();
 void item_draw(struct Item *item, int x, int y, int w, int h);
 void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h);
 

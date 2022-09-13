@@ -19,15 +19,6 @@
 
 internal int draw_lines = 1;
 
-internal
-SDL_Surface *bark_surface,
-    *glass_surface,
-    *wood_plank_surface,
-    *diamond_surface,
-    *ice_surface,
-    *grass_surface,
-    *triangle_blob_surface;
-
 internal float damp(int i) {
     srand(i);
     return 0.5 + ((float)rand())/RAND_MAX * 0.4;
@@ -89,25 +80,6 @@ void grid_init(int w, int h) {
             gs->grid_layers[j][i].rand = rand();
         }
     }
-
-    bark_surface = IMG_Load("../res/bark.png");
-    glass_surface = IMG_Load("../res/glass.png");
-    wood_plank_surface = IMG_Load("../res/plank.png");
-    diamond_surface = IMG_Load("../res/diamond.png");
-    ice_surface = IMG_Load("../res/ice.png");
-    grass_surface = IMG_Load("../res/grass.png");
-    triangle_blob_surface = IMG_Load("../res/triangle_blob.png");
-    SDL_assert(triangle_blob_surface);
-}
-
-void grid_deinit() {
-    SDL_FreeSurface(glass_surface);
-    SDL_FreeSurface(bark_surface);
-    SDL_FreeSurface(wood_plank_surface);
-    SDL_FreeSurface(diamond_surface);
-    SDL_FreeSurface(ice_surface);
-    SDL_FreeSurface(grass_surface);
-    SDL_FreeSurface(triangle_blob_surface);
 }
 
 SDL_Color pixel_from_index(struct Cell *cells, int i) {
@@ -134,7 +106,7 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
         r = my_rand(i*i) % 100 < 10;
         amt = 25;
         color = (SDL_Color){140 + r*amt + ((i*i*i*i)%20 - 10), 140 + r*amt + ((i*i*i*i)%20 - 10), 135 + r*amt + ((i*i*i*i)%20 - 10), 255};
-        /* color = (SDL_Color){255, 255, 0, 255}; */
+        /* color = (SDL_Color){127, 255, 0, 255}; */
         break;
     case CELL_QUARTZ:
         r = my_rand(i*i) % 100 < 10;
@@ -142,10 +114,10 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
         color = (SDL_Color){213-10 + r*amt + ((i*i*i*i)%20 - 10), 215-10 + r*amt + ((i*i*i*i)%20 - 10), 226-10 + r*amt + ((i*i*i*i)%20 - 10), 255};
         break;
     case CELL_WOOD_LOG:
-        color = get_pixel(bark_surface, i%gs->gw, i/gs->gh);
+        color = get_pixel(gs->surfaces.bark_surface, i%gs->gw, i/gs->gh);
         break;
     case CELL_WOOD_PLANK:
-        color = get_pixel(wood_plank_surface, i%gs->gw, i/gs->gw);
+        color = get_pixel(gs->surfaces.wood_plank_surface, i%gs->gw, i/gs->gw);
         break;
     case CELL_DIRT:;
         const int variance = 10;
@@ -156,7 +128,7 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
         break;
     case CELL_GLASS:; 
         /* r = my_rand(i*i) % 100 < 5; */
-        color = get_pixel(glass_surface, i%gs->gw, i/gs->gw);
+        color = get_pixel(gs->surfaces.glass_surface, i%gs->gw, i/gs->gw);
         color.a = 255;
         /* if (r || get_neighbour_count_of_object(i%gs->gw, i/gs->gw, 1, cells[i].object) < 8) { */
         /*     color.a = 240; */
@@ -174,13 +146,13 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
         color = (SDL_Color){50, 50, 50, 255};
         break;
     case CELL_DIAMOND:
-        color = get_pixel(diamond_surface, i%gs->gw, i/gs->gw);
+        color = get_pixel(gs->surfaces.diamond_surface, i%gs->gw, i/gs->gw);
         break;
     case CELL_ICE:
-        color = get_pixel(ice_surface, i%gs->gw, i/gs->gw);
+        color = get_pixel(gs->surfaces.ice_surface, i%gs->gw, i/gs->gw);
         break;
     case CELL_LEAF:
-        color = get_pixel(grass_surface, i%gs->gw, i/gs->gw);
+        color = get_pixel(gs->surfaces.grass_surface, i%gs->gw, i/gs->gw);
         break;
     case CELL_SMOKE:
         color = (SDL_Color){120, 120, 120, 255};

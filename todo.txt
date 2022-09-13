@@ -1,10 +1,6 @@
       --------------------------TODO----------------------------
 
-- Only use persist_alloc for things loaded at startup or upon level
-  load. Don't use it for undo system or anything else. For that stuff
-  just use temp_alloc. This is because persistant memory has only a
-  fixed size, and we don't want a situation where the user goes over
-  max memory by having the game open too long.
+- Add a limit to undoing to prevent memory error.
 
  - There are two converters- the fuel converter and the material
    converter. Upon chiseling, dust is generated and put onto a second

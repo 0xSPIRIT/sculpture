@@ -5,7 +5,7 @@
 #include "grid.h"
 
 #include "util.h"
-#include "cursor.h"
+#include "boot/cursor.h"
 #include "globals.h"
 #include "game.h"
 
@@ -65,7 +65,7 @@ void chisel_blocker_tick() {
 
     /* SDL_ShowCursor(1); */
     if (SDL_GetCursor() != gs->grabber_cursor)
-        set_cursor(gs->grabber_cursor);
+        SDL_SetCursor(gs->grabber_cursor);
 
     if (input->mouse_pressed[SDL_BUTTON_RIGHT]) {
         chisel_blocker->side = (chisel_blocker->side == 1) ? 2 : 1;

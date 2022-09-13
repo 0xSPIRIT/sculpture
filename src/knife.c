@@ -15,14 +15,13 @@ void knife_init() {
 
     knife->x = gs->gw/2;
     knife->y = gs->gh/2;
-    knife->w = surf->w;
-    knife->h = surf->h;
-    knife->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-    knife->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
+
+    knife->texture = gs->textures.knife;
+    knife->render_texture = gs->textures.knife_render_target;
+    SDL_QueryTexture(knife->texture, NULL, NULL, &knife->w, &knife->h);
+    
     knife->angle = 0;
     knife->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));
-
-    SDL_FreeSurface(surf);
 }
 
 void knife_tick() {

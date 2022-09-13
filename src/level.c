@@ -18,7 +18,7 @@
 #include "util.h"
 #include "chisel_blocker.h"
 #include "effects.h"
-#include "cursor.h"
+#include "boot/cursor.h"
 #include "undo.h"
 #include "game.h"
 #include "globals.h"
@@ -109,8 +109,6 @@ void goto_level_string_hook(const char *string) {
 void goto_level(int lvl) {
     gs->level_current = lvl;
 
-    if (gs->grid)
-        grid_deinit(gs);
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
 
     SDL_DestroyTexture(gs->render_texture);
@@ -145,7 +143,6 @@ void goto_level(int lvl) {
 // pointers are usually unused because we allocate using game_state->memory
 void levels_deinit() {
     effect_set(EFFECT_NONE);
-    undo_system_deinit(gs);
 }
 
 void level_tick() {
@@ -209,16 +206,16 @@ void level_tick() {
         if (input->my < 0) { // If the mouse is in the GUI gs->window...
             /* SDL_ShowCursor(1); */
             if (SDL_GetCursor() != gs->normal_cursor) {
-                set_cursor(gs->normal_cursor);
+                SDL_SetCursor(gs->normal_cursor);
             }
             break;
         } else if (gs->current_tool == TOOL_GRABBER) {
             if (SDL_GetCursor() != gs->grabber_cursor) {
                 /* SDL_ShowCursor(1); */
-                set_cursor(gs->grabber_cursor);
+                SDL_SetCursor(gs->grabber_cursor);
             }
         } else if (SDL_GetCursor() != gs->normal_cursor) {
-            set_cursor(gs->normal_cursor);
+            SDL_SetCursor(gs->normal_cursor);
         }
     
         chisel_blocker_tick();

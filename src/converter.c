@@ -35,10 +35,6 @@ internal bool can_place_item_in_slot(int type, int slot) {
         can_put_fuel;
 }
 
-void item_init() {
-    // Moved to assets.c
-}
-
 void item_draw(struct Item *item, int x, int y, int w, int h) {
     if (!item->type) return;
     if (!item->amount) {
@@ -336,7 +332,7 @@ struct Converter *converter_init(int type) {
 
     // Both X and Y-coordinates are updated in converter_tick.
     struct Button *b;
-    b = button_allocate("../res/buttons/convert.png", "Convert", converter_begin_converting);
+    b = button_allocate(gs->textures.convert_button, "Convert", converter_begin_converting);
     b->w = 48;
     b->h = 48;
 
@@ -346,6 +342,8 @@ struct Converter *converter_init(int type) {
 }
 
 void converter_tick(struct Converter *converter) {
+    converter->arrow.y = converter->h/2 + 18;
+
     switch (converter->type) {
     case CONVERTER_MATERIAL:
         converter->x = 0;
@@ -358,7 +356,7 @@ void converter_tick(struct Converter *converter) {
     }
 
     converter->go_button->x = converter->x + converter->arrow.x - 128;
-    converter->go_button->y = gs->gui.popup_y + converter->arrow.y + converter->arrow.h/2 + converter->go_button->h/2;
+    converter->go_button->y = gs->gui.popup_y + 240;
 
     for (int i = 0; i < converter->slot_count; i++) {
         struct Slot *s = &converter->slots[i];
@@ -427,6 +425,9 @@ void converter_draw(struct Converter *converter) {
     SDL_Surface *surf = TTF_RenderText_Blended(gs->font_courier, converter->name, (SDL_Color){0, 0, 0, 255});
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
 
+    int w, h;
+    TTF_SizeText(gs->font_courier, "test", &w, &h);
+
     int margin = 8;
     SDL_Rect r = {
         converter->x + margin,
@@ -434,6 +435,7 @@ void converter_draw(struct Converter *converter) {
         surf->w,
         surf->h
     };
+
     SDL_RenderCopy(gs->renderer, texture, NULL, &r);
 
     SDL_FreeSurface(surf);

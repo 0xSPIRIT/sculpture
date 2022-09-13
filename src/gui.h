@@ -60,7 +60,7 @@ void overlay_draw(struct Overlay *overlay);
 
 void overlay_get_string(int type, int amt, char *out_str);
 
-struct Button *button_allocate(char *image, const char *overlay_text, void (*on_pressed)(void*));
+struct Button *button_allocate(SDL_Texture *texture, const char *overlay_text, void (*on_pressed)(void*));
 void button_tick(struct Button *b, void *data);
 void button_draw(struct Button *b);
 void gui_popup_draw();

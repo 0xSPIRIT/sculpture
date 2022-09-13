@@ -9,17 +9,17 @@
 
 #include "grid.h"
 
+#define MAX_UNDO 256
+
 struct Save_State {
     struct Cell *grid_layers[NUM_GRID_LAYERS];
     struct Save_State *prev, *next;
 };
 
-void undo_system_init(gs);
-void undo_system_deinit(gs);
+void undo_system_init();
 bool is_current_grid_same_as(struct Save_State *state);
 void save_state_to_next();
 struct Save_State *get_state_index(int index);
-void free_save_state(struct Save_State *state);
 void set_state(struct Save_State *state);
 void set_state_to_string_hook(const char *string);
 void undo();

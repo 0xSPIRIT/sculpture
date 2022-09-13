@@ -6,7 +6,7 @@
 #include "placer.h"
 #include "chisel.h"
 #include "chisel_blocker.h"
-#include "cursor.h"
+#include "boot/cursor.h"
 #include "game.h"
 #include "globals.h"
 
@@ -16,25 +16,19 @@
 void gui_init() {
     struct GUI *gui = &gs->gui;
 
-    SDL_Surface *surf = IMG_Load("../res/popup.png");
     *gui = (struct GUI){ .popup_y = gs->gh*gs->S, .popup_y_vel = 0, .popup_h = GUI_POPUP_H, .popup = 0 };
-    gui->popup_texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
+    gui->popup_texture = gs->textures.popup;
+
     overlay_reset(&gui->overlay);
     gui->is_placer_active = false;
-    SDL_FreeSurface(surf);
 
     int cum = 0;
 
     for (int i = 0; i < TOOL_COUNT; i++) {
         char name[128] = {0};
-        char filename[128] = {0};
-        char path[128] = {0};
-
         get_name_from_tool(i, name);
-        get_file_from_tool(i, filename);
 
-        sprintf(path, "../res/buttons/%s", filename);
-        gui->tool_buttons[i] = button_allocate(path, name, click_gui_tool_button);
+        gui->tool_buttons[i] = button_allocate(gs->textures.tool_buttons[i], name, click_gui_tool_button);
         gui->tool_buttons[i]->x = cum;
         gui->tool_buttons[i]->y = 0;
         gui->tool_buttons[i]->index = i;
@@ -78,7 +72,7 @@ void gui_tick() {
 
     if (gui->popup) {
         if (SDL_GetCursor() != gs->grabber_cursor) {
-            set_cursor(gs->grabber_cursor);
+            SDL_SetCursor(gs->grabber_cursor);
             /* SDL_ShowCursor(1); */
         }
 
@@ -108,7 +102,7 @@ void gui_tick() {
     }
 
     if (!gui->popup) {
-        /* set_cursor(normal_cursor); */
+        /* SDL_SetCursor(normal_cursor); */
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_tick(gui->tool_buttons[i], &i);
         }
@@ -273,13 +267,10 @@ void overlay_get_string(int type, int amt, char *out_str) {
     }
 }
 
-struct Button *button_allocate(char *image, const char *overlay_text, void (*on_pressed)(void*)) {
+struct Button *button_allocate(SDL_Texture *texture, const char *overlay_text, void (*on_pressed)(void*)) {
     struct Button *b = persist_alloc(1, sizeof(struct Button));
-    SDL_Surface *surf = IMG_Load(image);
-    b->w = surf->w;
-    b->h = surf->h;
-    b->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-    SDL_FreeSurface(surf);
+    b->texture = texture;
+    SDL_QueryTexture(texture, NULL, NULL, &b->w, &b->h);
 
     strcpy(b->overlay_text, overlay_text);
     b->on_pressed = on_pressed;

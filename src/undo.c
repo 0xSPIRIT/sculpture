@@ -5,6 +5,7 @@
 
 #include "game.h"
 
+// No need to deinit because we're using persist_alloc
 void undo_system_init() {
     gs->start_state = persist_alloc(1, sizeof(struct Save_State));
     gs->current_state = gs->start_state;
@@ -15,19 +16,15 @@ void undo_system_init() {
     }
 }
 
-void undo_system_deinit() {
-    struct Save_State *next = NULL;
-    for (struct Save_State *state = gs->start_state; state; state = next) {
-        next = state->next;
-        free_save_state(state);
-    }
-}
-
 bool is_current_grid_same_as(struct Save_State *state) {
     return memcmp(gs->grid_layers[0], state->grid_layers[0], gs->gw*gs->gh*sizeof(struct Cell)) == 0;
 }
     
 void save_state_to_next() {
+    if (gs->state_count >= MAX_UNDO) {
+        return;
+    }
+
     struct Save_State *state;
     state = persist_alloc(1, sizeof(struct Save_State));
 
@@ -44,6 +41,8 @@ void save_state_to_next() {
     gs->current_state->next = state;
     state->prev = gs->current_state;
     gs->current_state = state;
+
+    gs->state_count++;
 }
 
 struct Save_State *get_state_index(int index) {
@@ -56,14 +55,6 @@ struct Save_State *get_state_index(int index) {
         }
     }
     return s;
-}
-
-// We're using persistent memory so we won't free anything.
-void free_save_state(struct Save_State *state) {
-    /* for (int i = 0; i < NUM_GRID_LAYERS; i++) { */
-    /*     temp_dealloc(state->grid_layers[i]); */
-    /* } */
-    /* temp_dealloc(state); */
 }
 
 void set_state(struct Save_State *state) {
@@ -84,8 +75,8 @@ void undo() {
         }
         set_state(gs->current_state->prev);
         gs->current_state = gs->current_state->prev;
-        free_save_state(gs->current_state->next);
         gs->current_state->next = NULL;
+        gs->state_count--;
     } else { // Just reset to the current state
         set_state(gs->current_state);
     }

@@ -75,7 +75,6 @@ struct Object {
 };
 
 void grid_init(int w, int h);
-void grid_deinit();
 void set(int x, int y, int val, int object);
 void set_array(struct Cell *arr, int x, int y, int val, int object);
 int grid_array_tick(struct Cell *array, int x_direction, int y_direction);

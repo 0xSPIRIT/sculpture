@@ -15,9 +15,9 @@ void point_knife_init() {
 
     point_knife->x = gs->gw/2;
     point_knife->y = gs->gh/2;
-    point_knife->w = surf->w;
-    point_knife->h = surf->h;
-    point_knife->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
+    point_knife->texture = gs->textures.point_knife;
+    SDL_QueryTexture(point_knife->texture, NULL, NULL, &point_knife->w, &point_knife->h);
+
     point_knife->face_mode = false;
     point_knife->highlights = persist_alloc(gs->gw*gs->gh, sizeof(int));
 

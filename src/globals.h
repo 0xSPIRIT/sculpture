@@ -5,7 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
 
-#include "input.h"
+#include "boot/input.h"
 
 #define internal static
 #define persist static

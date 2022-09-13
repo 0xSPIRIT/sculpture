@@ -70,7 +70,6 @@ static void get_name_from_tool(int type, char *out) {
     }
 }
 
-// TODO: Deinit
 void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Textures *textures) {
     SDL_Surface *surf = NULL;
 
@@ -81,16 +80,19 @@ void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Texture
                                                  gh);
     SDL_assert(textures->render_texture);
 
-
     // Converter Item Textures || previously item_init()
     for (int i = 0; i < CELL_COUNT; i++) {
         if (i == CELL_NONE) continue;
         
         char file[64] = {0};
         get_filename_from_type(i, file);
+
         surf = IMG_Load(file);
         SDL_assert(surf);
+
         textures->items[i] = SDL_CreateTextureFromSurface(renderer, surf);
+        SDL_assert(textures->items[i]);
+
         SDL_FreeSurface(surf);
         surf = NULL;
     }
@@ -103,12 +105,11 @@ void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Texture
     textures->gui_target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gw*S, GUI_H);
 
     for (int i = 0; i < TOOL_COUNT; i++) {
-        char name[128] = {0};
         char filename[128] = {0};
         char path[128] = {0};
 
-        get_name_from_tool(i, name);
         get_file_from_tool(i, filename);
+        sprintf(path, "../res/buttons/%s", filename);
 
         textures->tool_buttons[i] = load_texture(renderer, path);
     }
@@ -116,7 +117,7 @@ void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Texture
     textures->blob_hammer = load_texture(renderer, "../res/hammer.png");
     textures->blob_hammer_render_target = new_render_target();
     textures->converter_arrow = load_texture(renderer, "../res/arrow.png");
-    textures->convert_button = load_texture(renderer, "../res/converter_button.png");
+    textures->convert_button = load_texture(renderer, "../res/buttons/convert.png");
     textures->chisel_blocker_render_target = new_render_target();
 
     textures->chisel_render_target = new_render_target();
@@ -127,7 +128,10 @@ void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Texture
         "../res/chisel_large",
     };
     textures->chisel_hammer = load_texture(renderer, "../res/hammer.png");
+
+    // Loop through all chisels
     for (int i = 0; i < 3; i++) {
+        // Alternate through face mode
         for (int face = 1; face != -1; face--) {
             char file[512] = {0};
             strcpy(file, chisel_files[i]);
@@ -153,6 +157,26 @@ void textures_deinit(struct Textures *textures) {
     for (size_t i = 0; i < tex_count; i++) {
         SDL_DestroyTexture(texs[i]);
     }
+}
+
+void surfaces_init(struct Surfaces *surfaces) {
+    surfaces->bark_surface = IMG_Load("../res/bark.png");
+    surfaces->glass_surface = IMG_Load("../res/glass.png");
+    surfaces->wood_plank_surface = IMG_Load("../res/plank.png");
+    surfaces->diamond_surface = IMG_Load("../res/diamond.png");
+    surfaces->ice_surface = IMG_Load("../res/ice.png");
+    surfaces->grass_surface = IMG_Load("../res/grass.png");
+    surfaces->triangle_blob_surface = IMG_Load("../res/triangle_blob.png");
+}
+
+void surfaces_deinit(struct Surfaces *surfaces) {
+    SDL_FreeSurface(surfaces->glass_surface);
+    SDL_FreeSurface(surfaces->bark_surface);
+    SDL_FreeSurface(surfaces->wood_plank_surface);
+    SDL_FreeSurface(surfaces->diamond_surface);
+    SDL_FreeSurface(surfaces->ice_surface);
+    SDL_FreeSurface(surfaces->grass_surface);
+    SDL_FreeSurface(surfaces->triangle_blob_surface);
 }
 
 void fonts_init(struct Game_State *gs) {

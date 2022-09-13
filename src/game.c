@@ -13,11 +13,21 @@
 #include "placer.h"
 #include "gui.h"
 #include "grabber.h"
-#include "cursor.h"
+#include "boot/cursor.h"
 #include "globals.h"
 
 struct Game_State *gs;
 
+void game_init(struct Game_State *state) {
+    gs = state;
+    levels_setup();
+    goto_level(0);
+}
+
+void game_deinit(struct Game_State *state) {
+    gs = state;
+    levels_deinit();
+}
 
 internal bool game_tick_event(SDL_Event *event) {
     bool is_running = true;
@@ -190,13 +200,12 @@ bool game_run(struct Game_State *state) {
     gs = state;
     
     SDL_Event event;
-    bool is_running = true;
     int prev_tool = gs->current_tool;
         
-    input_tick();
-
     while (SDL_PollEvent(&event)) {
-        is_running = game_tick_event(&event);
+        bool is_running = game_tick_event(&event);
+        if (!is_running)
+            return false;
     }
 
     if (prev_tool != gs->current_tool) {
@@ -206,11 +215,5 @@ bool game_run(struct Game_State *state) {
     level_tick();
     level_draw();
 
-    printf("Used memory: %lld / %lld :: %f% \n",
-           gs->memory.cursor-gs->memory.data,
-           gs->memory.size,
-           100 * (float)(gs->memory.cursor-gs->memory.data)/gs->memory.size);
-    fflush(stdout);
-
-    return is_running;
+    return true;
 }

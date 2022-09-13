@@ -20,15 +20,16 @@
 #include "placer.h"
 #include "level.h"
 #include "gui.h"
-#include "input.h"
+#include "boot/input.h"
 #include "grabber.h"
 #include "effects.h"
 #include "chisel_blocker.h"
 #include "boot/assets.h"
 
-#define Kilobytes(x) (x*1024)
-#define Megabytes(x) (x*1024*1024)
-#define Gigabytes(x) (x*1024*1024*1024)
+#define Kilobytes(x) ((Uint64)x*1024)
+#define Megabytes(x) ((Uint64)x*1024*1024)
+#define Gigabytes(x) ((Uint64)x*1024*1024*1024)
+#define Terabytes(x) ((Uint64)x*1024*1024*1024*1024)
 
 //
 // To allocate permanent memory that will persist until
@@ -64,6 +65,7 @@ struct Game_State {
     struct SDL_Renderer *renderer;
 
     struct Textures textures; // Contains pointers to SDL textures.
+    struct Surfaces surfaces;
 
     int S; // scale
     int window_width, window_height;
@@ -102,6 +104,7 @@ struct Game_State {
     clock_t global_start, global_end;
 
     struct Save_State *current_state, *start_state;
+    int state_count; // Number of states saved.
 
     struct Text_Field text_field;
 
@@ -133,15 +136,6 @@ struct Game_State {
 };
 
 extern struct Game_State *gs;
-
-inline struct Memory make_memory(size_t size) {
-    struct Memory memory = {0};
-
-    memory.data = calloc(1, size);
-    memory.cursor = memory.data;
-    memory.size = size;
-    return memory;
-}
 
 #define persist_alloc(num, size) (_allocate(num, size, __FILE__, __LINE__))
 #define temp_alloc(num, size) (_temp_alloc(num, size, __FILE__, __LINE__))
@@ -177,13 +171,11 @@ inline void *_temp_alloc(size_t num, size_t size_individual, const char *file, i
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory Error :(", message, gs->window);
     }
     gs->allocation_count++;
-    printf("%d\n", gs->allocation_count); fflush(stdout);
     return allocation;
 }
 
 inline void _temp_dealloc(void *ptr, const char *file, int line) {
     gs->allocation_count--;
-    printf("%d\n", gs->allocation_count); fflush(stdout);
     free(ptr);
 }
 

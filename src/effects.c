@@ -9,9 +9,6 @@
 
 void effect_set(int type) {
     gs->current_effect.type = type;
-    if (gs->current_effect.particles) {
-        temp_dealloc(gs->current_effect.particles);
-    }
 
     switch (type) {
     case EFFECT_NONE:
@@ -25,7 +22,7 @@ void effect_set(int type) {
         break;
     }
 
-    gs->current_effect.particles = temp_alloc(gs->current_effect.particle_count, sizeof(struct Effect_Particle));
+    gs->current_effect.particles = persist_alloc(gs->current_effect.particle_count, sizeof(struct Effect_Particle));
 
     switch (type) {
     case EFFECT_SNOW:
