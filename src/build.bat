@@ -8,8 +8,7 @@ rem gcc booter/win32__main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image 
 
 pushd ..\bin
 
-rem Producing actual game DLL.
-cl.exe %Common_Compiler_Flags% ..\src\*.c %Common_Linker_Flags% /link /out:sculpture.exe /machine:x64
+cl.exe %Common_Compiler_Flags% ..\src\*.c %Common_Linker_Flags% /link /out:sculpture.exe
 
 exit errorlevel
 

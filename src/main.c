@@ -15,8 +15,6 @@ int main(int argc, char **argv) {
 
     game_deinit(game_state);
 
-    printf("sdfsdf %d\n", game_state->allocation_count); fflush(stdout);
-
     free(game_state->memory.data);
     free(game_state);
 
