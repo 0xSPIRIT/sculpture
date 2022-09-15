@@ -109,7 +109,7 @@ void chisel_blocker_tick() {
                 /* angle /= 45.; */
                 /* angle = round(angle) * 45; */
 
-                /* printf("Angle: %f\n", angle); fflush(stdout); */
+                /* SDL_Log("Angle: %f\n", angle); fflush(stdout); */
 
                 /* angle = 2*M_PI * angle/360.0; */
                 
@@ -306,6 +306,11 @@ void chisel_blocker_draw() {
         SDL_RenderDrawLine(gs->renderer, l.x1, l.y1, l.x2, l.y2);
     }
 
+    int w, h;
+
+    SDL_QueryTexture(chisel_blocker->render_texture, NULL, NULL, &w, &h);
+    Assert(gs->window, w == gs->gw && h == gs->gh);
+    
     SDL_RenderReadPixels(gs->renderer, NULL, 0, chisel_blocker->pixels, 4*gs->gw);
     SDL_SetRenderTarget(gs->renderer, prev_target);
 

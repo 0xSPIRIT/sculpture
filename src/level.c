@@ -20,8 +20,8 @@
 #include "effects.h"
 #include "boot/cursor.h"
 #include "undo.h"
-#include "game.h"
 #include "globals.h"
+#include "game.h"
 
 internal int level_add(const char *name, char *desired_image, char *initial_image, int effect_type) {
     struct Level *level = &gs->levels[gs->level_count++];
@@ -113,7 +113,7 @@ void goto_level(int lvl) {
 
     // TODO: Change this to be in the platform layer instead.
     SDL_DestroyTexture(gs->render_texture);
-    printf("Level Size: %d, %d\n", gs->gw, gs->gh);
+    SDL_Log("Level Size: %d, %d\n", gs->gw, gs->gh);
     
     gs->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
 

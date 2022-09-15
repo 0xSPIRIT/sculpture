@@ -4,10 +4,14 @@
 #include <windows.h>
 #include <stdbool.h>
 
-#include "../game.h"
-#include "assets.h"
+// Include all files to compile in one translation unit for
+// compilation speed's sake.
+#include "assets.c"
+#include "cursor.c"
+#include "input.c"
 
-#include "cursor.h"
+#define _DO_NOT_EXPORT
+#include "../game.h"
 #include "win32_SetProcessDpiAware.h"
 
 #define GAME_DLL_NAME "sculpture.dll"

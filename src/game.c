@@ -5,14 +5,24 @@
 #include <time.h>
 #include <stdio.h>
 
-#include "level.h"
-#include "chisel.h"
-#include "grid.h"
-#include "undo.h"
-#include "util.h"
-#include "placer.h"
-#include "gui.h"
-#include "grabber.h"
+// Include all files to compile in one translation unit for
+// compilation speed's sake.
+#include "blob_hammer.c"
+#include "chisel_blocker.c"
+#include "chisel.c"
+#include "converter.c"
+#include "effects.c"
+#include "grabber.c"
+#include "grid.c"
+#include "gui.c"
+#include "knife.c"
+#include "level.c"
+#include "placer.c"
+#include "point_knife.c"
+#include "popup.c"
+#include "undo.c"
+#include "util.c"
+
 #include "boot/cursor.h"
 #include "globals.h"
 
@@ -39,7 +49,7 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     gs->prev_tool = gs->current_tool;
 
     if (event->type == SDL_QUIT) {
-        printf("Happened!\n");
+        SDL_Log("Happened!\n");
         is_running = false;
     }
 
@@ -117,7 +127,7 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
 
             Assert(gs->window, obj != -1);
 
-            printf("Cell %d, %d: Pos: (%f, %f), Type: %s, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
+            SDL_Log("Cell %d, %d: Pos: (%f, %f), Type: %s, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
                    input->mx,
                    input->my,
                    c->vx_acc,

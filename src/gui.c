@@ -7,8 +7,8 @@
 #include "chisel.h"
 #include "chisel_blocker.h"
 #include "boot/cursor.h"
-#include "game.h"
 #include "globals.h"
+#include "game.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>

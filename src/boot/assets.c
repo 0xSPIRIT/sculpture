@@ -1,5 +1,6 @@
 #include "assets.h"
 
+#define _DO_NOT_EXPORT
 #include "../game.h"
 
 //

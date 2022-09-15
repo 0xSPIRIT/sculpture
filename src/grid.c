@@ -43,11 +43,11 @@ float get_pressure_threshold(int chisel_size) {
 void print_blob_data(struct Object *object, int chisel_size) {
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
-            printf("%u ", object->blob_data[chisel_size].blobs[x+y*gs->gw]);
+            SDL_Log("%u ", object->blob_data[chisel_size].blobs[x+y*gs->gw]);
         }
-        printf("\n");
+        SDL_Log("\n");
     }
-    printf("\n\n");
+    SDL_Log("\n\n");
     fflush(stdout);
 }
 
@@ -105,8 +105,13 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
     case CELL_COBBLESTONE:
         r = my_rand(i*i) % 100 < 10;
         amt = 25;
-        color = (SDL_Color){140 + r*amt + ((i*i*i*i)%20 - 10), 140 + r*amt + ((i*i*i*i)%20 - 10), 135 + r*amt + ((i*i*i*i)%20 - 10), 255};
-        /* color = (SDL_Color){127, 255, 0, 255}; */
+        int i2 = i*i*i*i*i;
+        color = (SDL_Color){
+            140 + r*amt + (i2%20 - 10),
+            140 + r*amt + (i2%20 - 10),
+            135 + r*amt + (i2%20 - 10),
+            255
+        };
         break;
     case CELL_QUARTZ:
         r = my_rand(i*i) % 100 < 10;
@@ -366,7 +371,7 @@ bool blob_can_destroy(int obj, int chisel_size, int blob) {
     float normalized_pressure = (float)blob_pressure / MAX_PRESSURE;
 
     if (normalized_pressure >= get_pressure_threshold(chisel_size)) {
-        /* printf("Blocked due to too much pressure (%f > %f).\n", normalized_pressure, get_pressure_threshold(chisel_size)); */
+        /* SDL_Log("Blocked due to too much pressure (%f > %f).\n", normalized_pressure, get_pressure_threshold(chisel_size)); */
         fflush(stdout);
     }
 
@@ -767,7 +772,7 @@ void object_blobs_set_pressure(int obj, int chisel_size) {
             Uint32 blob = object->blob_data[chisel_size].blobs[x+y*gs->gw];
 
             if (blob >= 2147483648-1) {
-                printf("Blob in question: %u\n", blob); fflush(stdout);
+                SDL_Log("Blob in question: %u\n", blob); fflush(stdout);
                 print_blob_data(object, chisel_size);
             }
 
@@ -1301,7 +1306,7 @@ int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_o
             gs->object_current = get_any_neighbour_object(closest_index%gs->gw, closest_index/gs->gw);
         }
         if (gs->object_current < -1) {
-            printf("Object Current was < -1. You are permitted to panic! D:\n"); fflush(stdout);
+            SDL_Log("Object Current was < -1. You are permitted to panic! D:\n"); fflush(stdout);
             gs->object_current = -1;
         }
     }

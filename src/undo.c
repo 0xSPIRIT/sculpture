@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include "game.h"
 
 // No need to deinit because we're using persist_alloc
@@ -83,20 +82,20 @@ void undo() {
 }
 
 void view_save_state_linked_list() {
-    printf("\n\nSTART.\n"); fflush(stdout);
+    SDL_Log("\n\nSTART.\n"); fflush(stdout);
     for (struct Save_State *state = gs->start_state; state; state = state->next) {
-        printf("Me:   %p", (void*) state);
+        SDL_Log("Me:   %p", (void*) state);
         if (state == gs->current_state) {
-            printf(" [current]");
+            SDL_Log(" [current]");
         }
-        printf("\n");
-        printf("Next: %p\n", (void*) state->next);
+        SDL_Log("\n");
+        SDL_Log("Next: %p\n", (void*) state->next);
         if (state->next) {
-            printf("    |\n");
-            printf("    |\n");
-            printf("    v\n");
+            SDL_Log("    |\n");
+            SDL_Log("    |\n");
+            SDL_Log("    v\n");
         } else {
-            printf("\nEND.\n");
+            SDL_Log("\nEND.\n");
         }
     }
     fflush(stdout);

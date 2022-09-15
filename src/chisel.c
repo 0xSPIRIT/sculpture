@@ -219,10 +219,6 @@ void chisel_tick() {
     chisel_hammer_tick();
 }
 
-// TODO: Compare chisel_update_texture and knife_update_texture.
-//       Something about SDL_RenderReadPixels writes into
-//       out of bounds memory into converter data.
-
 void chisel_update_texture() {
     struct Chisel *chisel = gs->chisel;
 
@@ -290,7 +286,6 @@ void chisel_update_texture() {
         SDL_RenderDrawPoint(gs->renderer, (int)chisel->x, (int)chisel->y);
     }
 
-    // PROBLEM AREA!
     int w, h;
 
     SDL_QueryTexture(chisel->render_texture, NULL, NULL, &w, &h);
