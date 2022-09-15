@@ -1,7 +1,5 @@
       --------------------------TODO----------------------------
 
-- Add a limit to undoing to prevent memory error.
-
  - There are two converters- the fuel converter and the material
    converter. Upon chiseling, dust is generated and put onto a second
    layer, which is able to be picked up by the placer. Materials
@@ -18,6 +16,25 @@
      x Implement fuel conversion.
      x Implement material conversions
      - Add and refine the actual conversions.
+
+- Make the small chisel unable to chisel diagonally, like so:
+
+    Before:
+             /
+          xx/
+          xxx
+          xxxx
+
+    After:
+             
+          xx/
+          x/x
+          xxxx
+    
+          xx 
+          x x
+          xxxx
+    
 
 - Improve the grabber to actually grab objects properly. Upon
   clicking, store the position of a cell in the object then track

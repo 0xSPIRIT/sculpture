@@ -16,13 +16,13 @@ void blob_hammer_init() {
     blob_hammer->timer = 0;
     blob_hammer->swing_direction = 1;
 
-    blob_hammer->x = gs->gw/2;
-    blob_hammer->y = gs->gh/2;
+    blob_hammer->x = (float)gs->gw/2;
+    blob_hammer->y = (float)gs->gh/2;
     blob_hammer->texture = gs->textures.blob_hammer;
     SDL_QueryTexture(blob_hammer->texture, NULL, NULL, &blob_hammer->w, &blob_hammer->h);
     blob_hammer->angle = 0;
 
-    blob_hammer->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
+    blob_hammer->render_texture = gs->textures.blob_hammer_render_target;
     blob_hammer->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));
 }
 
@@ -47,20 +47,20 @@ void blob_hammer_tick() {
         float dx = input->mx - blob_hammer->x;
         float dy = input->my - blob_hammer->y;
         
-        float angle = atan2(dy, dx);
-        angle /= 2 * M_PI;
+        float angle = (float)atan2(dy, dx);
+        angle /= 2 * (float)M_PI;
         angle *= 360;
         angle += 270;
-        angle = angle / 22.5;
-        angle = 22.5 * (int)angle;
+        angle = angle / 22.5f;
+        angle = 22.5f * (int)angle;
 
         int int_angle = (int)angle;
         int_angle %= 360;
 
-        blob_hammer->angle = int_angle;
+        blob_hammer->angle = (float)int_angle;
     } else {
-        blob_hammer->x = input->mx;
-        blob_hammer->y = input->my;
+        blob_hammer->x = (float)input->mx;
+        blob_hammer->y = (float)input->my;
     }
 
     switch (blob_hammer->state) {
@@ -82,7 +82,7 @@ void blob_hammer_tick() {
             blob_hammer->timer--;
         } else {
             blob_hammer->state = HAMMER_STATE_AFTERSWING;
-            blob_hammer->timer = minimum(4, blob_hammer->angle - blob_hammer->prev_angle);
+            blob_hammer->timer = (int) minimum(4, (int)(blob_hammer->angle - blob_hammer->prev_angle));
             break;
         }
 
@@ -154,7 +154,8 @@ void blob_hammer_update_texture() {
 
     // Actually render
     SDL_Rect dst = {
-        blob_hammer->x - blob_hammer->w/2, blob_hammer->y - blob_hammer->h,
+        (int)blob_hammer->x - blob_hammer->w/2,
+        (int)blob_hammer->y - blob_hammer->h,
         blob_hammer->w, blob_hammer->h
     };
 
@@ -165,7 +166,7 @@ void blob_hammer_update_texture() {
         flip = SDL_FLIP_HORIZONTAL;
     }
 
-    int angle = blob_hammer->angle;
+    int angle = (int)blob_hammer->angle;
     while (angle < 0)
         angle += 360;
 

@@ -64,7 +64,7 @@ void effect_tick(struct Effect *effect) {
             particle->y += particle->vy;
 
             if (effect->type == EFFECT_RAIN) {
-                particle->vx += 0.003 * sin(SDL_GetTicks() / 1000.0);
+                particle->vx += 0.003 * sinf(SDL_GetTicks() / 1000.0);
 
                 if (is_in_bounds((int)particle->x, (int)particle->y) && gs->grid[(int)particle->x + ((int)particle->y)*gs->gw].type) {
                     particle->x = rand()%gs->gw;
@@ -98,7 +98,7 @@ void effect_draw(struct Effect *effect) {
             int px = (int)particle->x;
             int py = (int)particle->y;
 
-            if (gs->grid[px+py*gs->gw].type && (length/max) < 0.25) continue;
+            /* if (gs->grid[px+py*gs->gw].type) continue; */
 
             SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, (Uint8) (255 * (length/max)));
             SDL_RenderDrawPoint(gs->renderer, px, py);

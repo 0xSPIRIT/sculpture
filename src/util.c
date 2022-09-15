@@ -113,7 +113,7 @@ SDL_Color get_pixel(SDL_Surface *surf, int x, int y) {
     if (x >= surf->w) x %= surf->w;
     if (y >= surf->h) y %= surf->h;
     int bpp = surf->format->BytesPerPixel;
-    SDL_assert(bpp == 4);
+    Assert(gs->window, bpp == 4);
 
     Uint32 *pixels = (Uint32*)surf->pixels;
     SDL_Color color;
@@ -129,7 +129,7 @@ Uint32 get_pixel_int(SDL_Surface *surf, int x, int y) {
     if (x >= surf->w) x %= surf->w;
     if (y >= surf->h) y %= surf->h;
     int bpp = surf->format->BytesPerPixel;
-    SDL_assert(bpp == 4);
+    Assert(gs->window, bpp == 4);
     Uint32 *pixels = (Uint32*)surf->pixels;
     return pixels[x+y*surf->w];
 }

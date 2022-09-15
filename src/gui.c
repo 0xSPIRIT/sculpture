@@ -37,7 +37,7 @@ void gui_init() {
         cum += gui->tool_buttons[i]->w;
     }
 
-    gs->gui_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw*gs->S, GUI_H);
+    gs->gui_texture = gs->textures.gui_target;
 
     /* all_converters_init(); */
 }
@@ -215,9 +215,9 @@ void overlay_draw(struct Overlay *overlay) {
             color = (SDL_Color){255,255,255,255};
 
         surfaces[i] = TTF_RenderText_Solid(gs->font, overlay->str[i], color);
-        SDL_assert(surfaces[i]);
+        Assert(gs->window, surfaces[i]);
         textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surfaces[i]);
-        SDL_assert(textures[i]);
+        Assert(gs->window, textures[i]);
         dsts[i] = (SDL_Rect){ gs->S * overlay->x + margin, height + gs->S * overlay->y + margin, surfaces[i]->w, surfaces[i]->h };
         dsts[i].y += GUI_H;
 

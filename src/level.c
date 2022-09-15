@@ -111,27 +111,30 @@ void goto_level(int lvl) {
 
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
 
+    // TODO: Change this to be in the platform layer instead.
     SDL_DestroyTexture(gs->render_texture);
+    printf("Level Size: %d, %d\n", gs->gw, gs->gh);
+    
     gs->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
 
     gs->S = gs->window_width/gs->gw;
-    SDL_assert(gs->gw==gs->gh);
+    Assert(gs->window, gs->gw==gs->gh);
 
     chisel_init(&gs->chisel_small);
     chisel_init(&gs->chisel_medium);
     chisel_init(&gs->chisel_large);
     gs->chisel = &gs->chisel_small;
     
-    chisel_blocker_init(gs);
-    blob_hammer_init(gs);
-    chisel_hammer_init(gs);
-    knife_init(gs);
-    point_knife_init(gs);
+    chisel_blocker_init();
+    blob_hammer_init();
+    chisel_hammer_init();
+    knife_init();
+    point_knife_init();
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_init(i);
-    grabber_init(gs);
-    gui_init(gs);
-    all_converters_init(gs);
+    grabber_init();
+    gui_init();
+    all_converters_init();
 
     effect_set(gs->levels[lvl].effect_type);
 
@@ -168,7 +171,7 @@ void level_tick() {
             }
             objects_reevaluate();
 
-            undo_system_init(gs);
+            undo_system_init();
         }
         break;
     case LEVEL_STATE_OUTRO:
@@ -438,9 +441,9 @@ void level_draw_intro() {
 // out_w & out_h - width and height of the image.
 void level_get_cells_from_image(char *path, struct Cell **out, struct Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h) {
     SDL_Surface *surface = IMG_Load(path);
-    SDL_assert(surface);
+    Assert(gs->window, surface);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surface);
-    SDL_assert(texture);
+    Assert(gs->window, texture);
 
     int w = surface->w;
     int h = surface->h;
@@ -533,7 +536,7 @@ Uint8 type_to_rgb_table[CELL_COUNT*4] = {
 };
 
 SDL_Color type_to_rgb(int type) {
-    SDL_assert(type < CELL_COUNT);
+    Assert(gs->window, type < CELL_COUNT);
     return (SDL_Color){type_to_rgb_table[4*type+1], type_to_rgb_table[4*type+2], type_to_rgb_table[4*type+3], 255};
 }
 
@@ -560,5 +563,5 @@ void level_output_to_png(const char *output_file) {
         }
     }
 
-    SDL_assert(IMG_SavePNG(surf, output_file) == 0);
+    Assert(gs->window, IMG_SavePNG(surf, output_file) == 0);
 }

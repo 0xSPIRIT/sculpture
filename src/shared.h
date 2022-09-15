@@ -31,13 +31,18 @@
 #define Gigabytes(x) ((Uint64)x*1024*1024*1024)
 #define Terabytes(x) ((Uint64)x*1024*1024*1024*1024)
 
+// Assert using an SDL MessageBox popup.
+#define Assert(window, condition) (_assert(condition, window, __func__, __FILE__, __LINE__))
+// Assert without the popup; use console instead.
+#define AssertNW(condition) (_assert(condition, NULL, __func__, __FILE__, __LINE__))
+
 //
 // To allocate permanent memory that will persist until
 // the end of the session, use persist_alloc.
 //
 // Otherwise, when allocating memory that you will
 // just need for a specific function and will free it,
-// use temp_alloc.
+// use temp_alloc and temp_dealloc respsectively.
 //
 
 struct Memory {
@@ -46,20 +51,10 @@ struct Memory {
     size_t size;
 };
 
-// Put all the SDL initialization eg texture creation or
-// window / renderer creation & fonts init into the platform layer.
-// The platform layer will need to know the sizes of these types
-// so we should include the header files as it is right now,
-// but we should not compile any .c files from the actual game
-// code. asset.c is not part of the game layer, it's part of the
-// platform layer.
-//
-// The ***_init() functions in the game layer doesn't actually allocate
-// anything.
 struct Game_State {
     struct Memory memory;
 
-    int allocation_count;
+    int temp_allocation_count; // A counter for every temp_alloc.
 
     struct SDL_Window *window;
     struct SDL_Renderer *renderer;
@@ -73,7 +68,7 @@ struct Game_State {
 
     SDL_Texture *render_texture;
 
-    int current_tool;
+    int current_tool, prev_tool;
     int debug_mode;
     
     TTF_Font *font,
@@ -135,6 +130,7 @@ struct Game_State {
     struct Chisel_Hammer chisel_hammer;
 };
 
+// Defined in game.c
 extern struct Game_State *gs;
 
 #define persist_alloc(num, size) (_allocate(num, size, __FILE__, __LINE__))
@@ -149,7 +145,10 @@ inline void *_allocate(size_t num, size_t size_individual, const char *file, int
 
     if (gs->memory.cursor+size > gs->memory.data+gs->memory.size) {
         char message[256] = {0};
-        sprintf(message, "Out of Memory!\nAllowed memory: %zd bytes, Attempted allocation to %zd bytes.\n%s:%d", gs->memory.size, size+(gs->memory.cursor-gs->memory.data), file, line);
+        sprintf(message, "Out of Memory!\nAllowed memory: %zd bytes, Attempted allocation to %zd bytes.\n%s:%d",
+                gs->memory.size,
+                size+(gs->memory.cursor-gs->memory.data),
+                file, line);
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory Error :(", message, gs->window);
         exit(1);
         return NULL;
@@ -168,15 +167,49 @@ inline void *_temp_alloc(size_t num, size_t size_individual, const char *file, i
     if (!allocation) {
         char message[256] = {0};
         sprintf(message, "Failed temporary allocation at %s:%d", file, line);
+        fprintf(stderr, message); fflush(stderr);
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory Error :(", message, gs->window);
+        exit(1);
     }
-    gs->allocation_count++;
+    gs->temp_allocation_count++;
     return allocation;
 }
 
 inline void _temp_dealloc(void *ptr, const char *file, int line) {
-    gs->allocation_count--;
     free(ptr);
+    gs->temp_allocation_count--;
+}
+
+inline void _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line) {
+    if (condition) return;
+
+    char message[64] = {0};
+    char line_of_code[2048] = {0};
+
+    FILE *f = fopen(file, "r");
+    if (f) {
+        int iterator = 0;
+        char temp_buffer[2048] = {0};
+        while (fgets(temp_buffer, 2048, f)) {
+            iterator++;
+            if (iterator == line) {
+                strncpy(line_of_code, temp_buffer, 2048);
+                break;
+            }
+        }
+
+        sprintf(message, "%s :: at %s:%d\nLine:%s", func, file, line, line_of_code);
+        if (window) {
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, window);
+        }
+    } else {
+        DebugBreak();
+    }
+
+    fprintf(stderr, "\n:::: ASSERTION FAILED ::::\n%s", message);
+    fflush(stdout);
+
+    DebugBreak();
 }
 
 #endif // SHARED_H_

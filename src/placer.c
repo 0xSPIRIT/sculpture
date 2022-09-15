@@ -13,8 +13,6 @@
 #include "game.h"
 
 void placer_init(int num) {
-    SDL_Surface *surf = IMG_Load("../res/placer.png");
-
     struct Placer *placer = &gs->placers[num];
 
     placer->state = PLACER_PLACE_CIRCLE_MODE;

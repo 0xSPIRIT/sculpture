@@ -8,7 +8,7 @@
 
 #define new_render_target() (SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gw, gh))
 
-SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp);
+SDL_Texture *load_texture(SDL_Renderer *renderer, SDL_Window *window, const char *fp);
 
 // Only contains textures!
 struct Textures {
@@ -46,7 +46,7 @@ struct Surfaces {
         *triangle_blob_surface;
 };
 
-void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Textures *textures);
+void textures_init(SDL_Renderer *renderer, SDL_Window *window, int window_width, int gw, int gh, struct Textures *textures);
 void textures_deinit(struct Textures *textures);
 
 void surfaces_init(struct Surfaces *surfaces);

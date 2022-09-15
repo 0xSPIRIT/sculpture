@@ -14,44 +14,30 @@
 #include "game.h"
 
 void chisel_init(struct Chisel *type) {
-    struct Chisel *chisel = gs->chisel;
-
+    struct Chisel *chisel = NULL;
+    
     struct Chisel *chisel_small = &gs->chisel_small;
     struct Chisel *chisel_medium = &gs->chisel_medium;
     struct Chisel *chisel_large = &gs->chisel_large;
 
-    SDL_Surface *surf;
+    gs->chisel = type;
+    chisel = gs->chisel;
 
-    chisel = type;
+    if (chisel == chisel_small) {
+        chisel->size = 0;
+    } else if (chisel == chisel_medium) {
+        chisel->size = 1;
+    } else if (chisel == chisel_large) {
+        chisel->size = 2;
+    }
 
     for (int face = 1; face != -1; face--) {
-        char file[512] = {0};
-        if (chisel == chisel_small) {
-            chisel->size = 0;
-            strcpy(file, "../res/chisel_small");
-        } else if (chisel == chisel_medium) {
-            chisel->size = 1;
-            strcpy(file, "../res/chisel_medium");
-        } else if (chisel == chisel_large) {
-            chisel->size = 2;
-            strcpy(file, "../res/chisel_large");
-        }
-        if (face)
-            strcat(file, "_face");
-
-        strcat(file, ".png");
-
-        surf = IMG_Load(file);
-        SDL_assert(surf);
-
         if (face) {
-            chisel->face_texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-            chisel->face_w = surf->w;
-            chisel->face_h = surf->h;
+            chisel->face_texture = gs->textures.chisel_face[chisel->size];
+            SDL_QueryTexture(chisel->face_texture, NULL, NULL, &chisel->face_w, &chisel->face_h);
         } else {
-            chisel->outside_texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-            chisel->outside_w = surf->w;
-            chisel->outside_h = surf->h;
+            chisel->outside_texture = gs->textures.chisel_outside[chisel->size];
+            SDL_QueryTexture(chisel->outside_texture, NULL, NULL, &chisel->outside_w, &chisel->outside_h);
         }
     }
 
@@ -59,7 +45,7 @@ void chisel_init(struct Chisel *type) {
     chisel->line = NULL;
     chisel->face_mode = false;
 
-    chisel->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
+    chisel->render_texture = gs->textures.chisel_render_target;
     chisel->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));
 
     chisel->texture = chisel->outside_texture;
@@ -70,8 +56,6 @@ void chisel_init(struct Chisel *type) {
     chisel->highlight_count = 0;
 
     chisel->spd = 3.;
-
-    SDL_FreeSurface(surf);
 }
 
 internal void chisel_set_depth() {
@@ -116,16 +100,16 @@ void chisel_tick() {
     if (hammer->state == HAMMER_STATE_IDLE && !chisel->is_changing_angle && !chisel->click_cooldown) {
         int index = clamp_to_grid(input->mx, input->my, !chisel->face_mode, false, true, true);
         if (index != -1) {
-            chisel->x = index%gs->gw;
-            chisel->y = index/gs->gw;
+            chisel->x = (float) (index%gs->gw);
+            chisel->y = (float) (index/gs->gw);
 
             // Highlight the current blob.
             // This is a fake chiseling- we're resetting position afterwards.
-            float chisel_dx = cos(2*M_PI * ((chisel->angle+180) / 360.0));
-            float chisel_dy = sin(2*M_PI * ((chisel->angle+180) / 360.0));
+            float chisel_dx = cosf(2.f*(float)M_PI * ((chisel->angle+180) / 360.0));
+            float chisel_dy = sinf(2.f*(float)M_PI * ((chisel->angle+180) / 360.0));
             float dx = chisel->spd * chisel_dx;
             float dy = chisel->spd * chisel_dy;
-            float len = sqrt(dx*dx + dy*dy);
+            float len = sqrtf(dx*dx + dy*dy);
             float ux = dx/len;
             float uy = dy/len;
 
@@ -154,7 +138,7 @@ void chisel_tick() {
     if (chisel->is_changing_angle) {
         float rmx = (float)input->real_mx / (float)gs->S;
         float rmy = (float)(input->real_my-GUI_H) / (float)gs->S;
-        chisel->angle = 180 + 360 * (atan2(rmy - chisel->y, rmx - chisel->x)) / (2*M_PI);
+        chisel->angle = 180 + 360 * (float)(atan2(rmy - chisel->y, rmx - chisel->x)) / (float)(2*M_PI);
 
         float step = 45.0;
         if (chisel->face_mode) {
@@ -186,8 +170,8 @@ void chisel_tick() {
             // Cut out the stone.
             float px = chisel->x;
             float py = chisel->y;
-            float ux = cos(2*M_PI * ((chisel->angle+180) / 360.0));
-            float uy = sin(2*M_PI * ((chisel->angle+180) / 360.0));
+            float ux = cosf(2*M_PI * ((chisel->angle+180) / 360.0));
+            float uy = sinf(2*M_PI * ((chisel->angle+180) / 360.0));
             float len = chisel->spd;
 
             switch ((int)chisel->angle) {
@@ -221,19 +205,23 @@ void chisel_tick() {
             }
             /* SDL_WarpMouseInWindow(gs->window, (int)(chisel->x * gs->S), GUI_H + (int)(chisel->y * gs->S)); */
             move_mouse_to_grid_position(chisel->x, chisel->y);
-            input->mx = chisel->x;
-            input->my = chisel->y;
+            input->mx = (int)chisel->x;
+            input->my = (int)chisel->y;
         }
         chisel->click_cooldown--;
         if (chisel->click_cooldown == 0) {
             chisel->line = NULL;
             int index = clamp_to_grid(input->mx, input->my, !chisel->face_mode, false, true, true);
-            chisel->x = index%gs->gw;
-            chisel->y = index/gs->gw;
+            chisel->x = (float) (index%gs->gw);
+            chisel->y = (float) (index/gs->gw);
         }
     }
     chisel_hammer_tick();
 }
+
+// TODO: Compare chisel_update_texture and knife_update_texture.
+//       Something about SDL_RenderReadPixels writes into
+//       out of bounds memory into converter data.
 
 void chisel_update_texture() {
     struct Chisel *chisel = gs->chisel;
@@ -246,14 +234,14 @@ void chisel_update_texture() {
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
     SDL_RenderClear(gs->renderer);
     
-    int x = chisel->x;
-    int y = chisel->y;
+    int x = (int)chisel->x;
+    int y = (int)chisel->y;
 
     // Disgusting hardcoding to adjust the weird rotation SDL does.
     if (!chisel->face_mode) {
         if (chisel->size == 0 || chisel->size == 1) {
             if (chisel->angle == 225) {
-                x += 1;
+                x++;
                 y += 2;
             } else if (chisel->angle == 180) {
                 x++;
@@ -299,9 +287,15 @@ void chisel_update_texture() {
 
     if (!chisel->face_mode) {
         SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
-        SDL_RenderDrawPoint(gs->renderer, chisel->x, chisel->y);
+        SDL_RenderDrawPoint(gs->renderer, (int)chisel->x, (int)chisel->y);
     }
 
+    // PROBLEM AREA!
+    int w, h;
+
+    SDL_QueryTexture(chisel->render_texture, NULL, NULL, &w, &h);
+    Assert(gs->window, w == gs->gw && h == gs->gh);
+    
     SDL_RenderReadPixels(gs->renderer, NULL, 0, chisel->pixels, 4*gs->gw);
 
     SDL_SetRenderTarget(gs->renderer, prev_target);
@@ -391,12 +385,12 @@ Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len) {
     // Do a last-ditch effort if a blob is around a certain radius in order for the player
     // not to feel frustrated if it's a small blob or it's one pixel away.
     if (did_hit_blocker || (CHISEL_FORGIVING_AIM && !chisel->did_remove)) {
-        const float r = 1;
+        const int r = 1;
         for (int y = -r; y <= r; y++) {
             for (int x = -r; x <= r; x++) {
                 if (x*x + y*y > r*r) continue;
-                int xx = chisel->x + x;
-                int yy = chisel->y + y;
+                int xx = (int)chisel->x + x;
+                int yy = (int)chisel->y + y;
                 Uint32 blob = objects[gs->object_current].blob_data[chisel->size].blobs[xx+yy*gs->gw];
 
                 if (blob > 0) {
@@ -436,16 +430,13 @@ void chisel_hammer_init() {
 
     hammer->x = chisel->x;
     hammer->y = chisel->y;
-    hammer->normal_dist = chisel->w+4;
+    hammer->normal_dist = (float) (chisel->w+4);
     hammer->dist = hammer->normal_dist;
     hammer->time = 0;
     hammer->angle = 0;
 
-    SDL_Surface *surf = IMG_Load("../res/hammer.png");
-    hammer->w = surf->w;
-    hammer->h = surf->h;
-    hammer->texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-    SDL_FreeSurface(surf);
+    hammer->texture = gs->textures.chisel_hammer;
+    SDL_QueryTexture(hammer->texture, NULL, NULL, &hammer->w, &hammer->h);
 }
 
 void chisel_hammer_tick() {
@@ -456,7 +447,7 @@ void chisel_hammer_tick() {
     hammer->angle = chisel->angle;
 
     float rad = (hammer->angle) / 360.0;
-    rad *= 2 * M_PI;
+    rad *= 2 * (float)M_PI;
 
     const float off = 6;
 
@@ -466,8 +457,8 @@ void chisel_hammer_tick() {
         dir = -1;
     }
     
-    hammer->x = chisel->x + hammer->dist * cos(rad) - dir * off * sin(rad);
-    hammer->y = chisel->y + hammer->dist * sin(rad) + dir * off * cos(rad);
+    hammer->x = chisel->x + hammer->dist * cosf(rad) - dir * off * sinf(rad);
+    hammer->y = chisel->y + hammer->dist * sinf(rad) + dir * off * cosf(rad);
 
     const int stop = 24;
     

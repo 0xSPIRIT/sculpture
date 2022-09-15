@@ -4,7 +4,7 @@
 #define MAX_LEVELS 16
 #define POPUP_TIME 45
 
-enum {
+enum Level_State {
     LEVEL_STATE_INTRO,
     LEVEL_STATE_PLAY,
     LEVEL_STATE_OUTRO
@@ -16,7 +16,7 @@ struct Source_Cell {
 };
 
 struct Level {
-    int state;
+    enum Level_State state;
     int index;
     char name[256];
     int effect_type;

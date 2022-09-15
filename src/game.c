@@ -16,7 +16,7 @@
 #include "boot/cursor.h"
 #include "globals.h"
 
-struct Game_State *gs;
+struct Game_State *gs = NULL;
 
 void game_init(struct Game_State *state) {
     gs = state;
@@ -29,12 +29,18 @@ void game_deinit(struct Game_State *state) {
     levels_deinit();
 }
 
-internal bool game_tick_event(SDL_Event *event) {
+bool game_tick_event(struct Game_State *state, SDL_Event *event) {
+    gs = state;
+    
     bool is_running = true;
     struct Input *input = &gs->input;
 
+    // This is checked at game_run.
+    gs->prev_tool = gs->current_tool;
+
     if (event->type == SDL_QUIT) {
-        return false;
+        printf("Happened!\n");
+        is_running = false;
     }
 
     if (event->type == SDL_MOUSEWHEEL) {
@@ -109,7 +115,7 @@ internal bool game_tick_event(SDL_Event *event) {
             int obj = c->object;
             if (obj == -1) obj = 0;
 
-            SDL_assert(obj != -1);
+            Assert(gs->window, obj != -1);
 
             printf("Cell %d, %d: Pos: (%f, %f), Type: %s, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
                    input->mx,
@@ -196,24 +202,13 @@ internal bool game_tick_event(SDL_Event *event) {
 }
 
 // Returns false if we want to exit.
-bool game_run(struct Game_State *state) {
+void game_run(struct Game_State *state) {
     gs = state;
-    
-    SDL_Event event;
-    int prev_tool = gs->current_tool;
-        
-    while (SDL_PollEvent(&event)) {
-        bool is_running = game_tick_event(&event);
-        if (!is_running)
-            return false;
-    }
 
-    if (prev_tool != gs->current_tool) {
+    if (state->prev_tool != gs->current_tool) {
         overlay_reset(&gs->gui.overlay);
     }
 
     level_tick();
     level_draw();
-
-    return true;
 }

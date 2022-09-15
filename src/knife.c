@@ -3,22 +3,22 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+#include <stdio.h>
+
 #include "grid.h"
 #include "util.h"
 #include "globals.h"
 #include "game.h"
 
 void knife_init() {
-    SDL_Surface *surf = IMG_Load("../res/knife.png");
-
     struct Knife *knife = &gs->knife;
 
     knife->x = gs->gw/2;
     knife->y = gs->gh/2;
 
     knife->texture = gs->textures.knife;
-    knife->render_texture = gs->textures.knife_render_target;
     SDL_QueryTexture(knife->texture, NULL, NULL, &knife->w, &knife->h);
+    knife->render_texture = gs->textures.knife_render_target;
     
     knife->angle = 0;
     knife->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));

@@ -2,6 +2,7 @@
 
 #include "../game.h"
 
+//
 // In this file, we load / unload every single asset from file,
 // as well as every single global texture or surface created
 // which persists across frames.
@@ -10,12 +11,13 @@
 // which are freed in the same function.
 //
 // This is included only in the platform/SDL layer.
+//
 
-SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
+SDL_Texture *load_texture(SDL_Renderer *renderer, SDL_Window *window, const char *fp) {
     SDL_Surface *surf = IMG_Load(fp);
-    SDL_assert(surf);
+    Assert(window, surf);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
-    SDL_assert(texture);
+    Assert(window, texture);
     return texture;
 }
 
@@ -70,15 +72,16 @@ static void get_name_from_tool(int type, char *out) {
     }
 }
 
-void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Textures *textures) {
-    SDL_Surface *surf = NULL;
+void render_targets_init(SDL_Renderer *renderer, SDL_Window *window, int gw, int gh, struct Textures *textures) {
+    textures->chisel_render_target = new_render_target();
+    textures->chisel_blocker_render_target = new_render_target();
+    textures->blob_hammer_render_target = new_render_target();
+    textures->knife_render_target = new_render_target();
+    textures->render_texture = new_render_target();
+}
 
-    textures->render_texture = SDL_CreateTexture(renderer,
-                                                 SDL_PIXELFORMAT_RGBA8888,
-                                                 SDL_TEXTUREACCESS_TARGET,
-                                                 gw,
-                                                 gh);
-    SDL_assert(textures->render_texture);
+void textures_init(SDL_Renderer *renderer, SDL_Window *window, int window_width, int gw, int gh, struct Textures *textures) {
+    SDL_Surface *surf = NULL;
 
     // Converter Item Textures || previously item_init()
     for (int i = 0; i < CELL_COUNT; i++) {
@@ -88,21 +91,20 @@ void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Texture
         get_filename_from_type(i, file);
 
         surf = IMG_Load(file);
-        SDL_assert(surf);
+        Assert(window, surf);
 
         textures->items[i] = SDL_CreateTextureFromSurface(renderer, surf);
-        SDL_assert(textures->items[i]);
+        Assert(window, textures->items[i]);
 
         SDL_FreeSurface(surf);
         surf = NULL;
     }
 
-    textures->point_knife = load_texture(renderer, "../res/point_knife.png");
-    textures->placer = load_texture(renderer, "../res/placer.png");
-    textures->knife = load_texture(renderer, "../res/knife.png");
-    textures->knife_render_target = new_render_target();
-    textures->popup = load_texture(renderer, "../res/popup.png");
-    textures->gui_target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gw*S, GUI_H);
+    textures->point_knife = load_texture(renderer, window,  "../res/point_knife.png");
+    textures->placer = load_texture(renderer, window,  "../res/placer.png");
+    textures->knife = load_texture(renderer, window,  "../res/knife.png");
+    textures->popup = load_texture(renderer, window,  "../res/popup.png");
+    textures->gui_target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, window_width, GUI_H);
 
     for (int i = 0; i < TOOL_COUNT; i++) {
         char filename[128] = {0};
@@ -111,23 +113,20 @@ void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Texture
         get_file_from_tool(i, filename);
         sprintf(path, "../res/buttons/%s", filename);
 
-        textures->tool_buttons[i] = load_texture(renderer, path);
+        textures->tool_buttons[i] = load_texture(renderer, window, path);
+        Assert(window, textures->tool_buttons[i]);
     }
 
-    textures->blob_hammer = load_texture(renderer, "../res/hammer.png");
-    textures->blob_hammer_render_target = new_render_target();
-    textures->converter_arrow = load_texture(renderer, "../res/arrow.png");
-    textures->convert_button = load_texture(renderer, "../res/buttons/convert.png");
-    textures->chisel_blocker_render_target = new_render_target();
-
-    textures->chisel_render_target = new_render_target();
+    textures->blob_hammer = load_texture(renderer, window,  "../res/hammer.png");
+    textures->converter_arrow = load_texture(renderer, window,  "../res/arrow.png");
+    textures->convert_button = load_texture(renderer, window,  "../res/buttons/convert.png");
 
     const char *chisel_files[] = {
         "../res/chisel_small",
         "../res/chisel_medium",
         "../res/chisel_large",
     };
-    textures->chisel_hammer = load_texture(renderer, "../res/hammer.png");
+    textures->chisel_hammer = load_texture(renderer, window,  "../res/hammer.png");
 
     // Loop through all chisels
     for (int i = 0; i < 3; i++) {
@@ -142,12 +141,16 @@ void textures_init(SDL_Renderer *renderer, int gw, int gh, int S, struct Texture
             strcat(file, ".png");
 
             if (face) {
-                textures->chisel_face[i] = load_texture(renderer, file);
+                textures->chisel_face[i] = load_texture(renderer, window,  file);
+                Assert(window, textures->chisel_face[i]);
             } else {
-                textures->chisel_outside[i] = load_texture(renderer, file);
+                textures->chisel_outside[i] = load_texture(renderer, window,  file);
+                Assert(window, textures->chisel_outside[i]);
             }
         }
     }
+
+    render_targets_init(renderer, window, gw, gh, textures);
 }
 
 void textures_deinit(struct Textures *textures) {
@@ -170,13 +173,12 @@ void surfaces_init(struct Surfaces *surfaces) {
 }
 
 void surfaces_deinit(struct Surfaces *surfaces) {
-    SDL_FreeSurface(surfaces->glass_surface);
-    SDL_FreeSurface(surfaces->bark_surface);
-    SDL_FreeSurface(surfaces->wood_plank_surface);
-    SDL_FreeSurface(surfaces->diamond_surface);
-    SDL_FreeSurface(surfaces->ice_surface);
-    SDL_FreeSurface(surfaces->grass_surface);
-    SDL_FreeSurface(surfaces->triangle_blob_surface);
+    SDL_Surface **surfs = (SDL_Surface**) surfaces;
+    size_t surf_count = sizeof(struct Surfaces)/sizeof(SDL_Surface*);
+
+    for (size_t i = 0; i < surf_count; i++) {
+        SDL_FreeSurface(surfs[i]);
+    }
 }
 
 void fonts_init(struct Game_State *gs) {

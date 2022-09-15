@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 
-#define CONVERTER_NAME_LEN 256
+#define CONVERTER_NAME_LEN 32
 
 struct Item {
     int type;
@@ -51,7 +51,7 @@ struct Converter {
     enum Converter_Type type;
     enum Converter_State state;
 
-    char *name;
+    char name[CONVERTER_NAME_LEN];
 
     float x, y, w, h;
     int speed; // Amount of cells converted per tick.

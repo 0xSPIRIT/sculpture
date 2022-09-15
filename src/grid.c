@@ -312,11 +312,17 @@ void switch_blob_to_array(struct Cell *from, struct Cell *to, int obj, int blob,
     }
 }
 
-// Sets an index in a grid array. object can be left to -1 to automatically
-// find an object to assign to the cell, or it can be any value.
 //
-// Alternately, if you don't want any object data and want the object
-// field set to -1, confusingly, use -2 as the object parameter.
+// Sets an index in a grid array.
+//
+// object can be left to -1 to automatically find an
+// object to assign to the cell, or it can be any positive
+// integer.
+//
+// Alternately, if you don't want any object data and want
+// the object field set to -1, confusingly, use -2 as the
+// object parameter.
+//
 void set_array(struct Cell *arr, int x, int y, int val, int object) {
     if (x < 0 || x >= gs->gw || y < 0 || y >= gs->gh) return;
 
@@ -464,7 +470,7 @@ int grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
                 return cells_updated;
             };
             case CELL_STEAM: case CELL_SMOKE: {
-                SDL_assert(array == gs->gas_grid);
+                Assert(gs->window, array == gs->gas_grid);
                 
                 float fac = 0.4*randf(1.0);
                 float amplitude = 1.0;
@@ -472,7 +478,7 @@ int grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
                 // If we hit something last frame...
                 if (is_in_bounds(x, y-1) && can_gas_cell_swap(x, y-1)) {
                     c->vy = -1;
-                    c->vx = amplitude * sin(c->rand + c->time * fac);
+                    c->vx = amplitude * sinf(c->rand + c->time * fac);
                 } else if (is_in_bounds(x+1, y-1) && can_gas_cell_swap(x+1, y-1)) {
                     c->vx = 1;
                     c->vy = -1;
@@ -625,7 +631,7 @@ void grid_draw(void) {
                 float b = col.r + col.g + col.b;
                 b /= 3.;
                 b = (int)clamp((int)b, 0, 255);
-                SDL_SetRenderDrawColor(gs->renderer, b/2, b/4, b, 200 + sin((2*x+2*y+SDL_GetTicks())/700.0)*10);
+                SDL_SetRenderDrawColor(gs->renderer, b/2, b/4, b, 200 + sinf((2*x+2*y+SDL_GetTicks())/700.0)*10);
                 SDL_RenderDrawPoint(gs->renderer, x, y);
             }
         }
@@ -724,6 +730,7 @@ void object_tick(int obj) {
             if (y+1 >= gs->gh || gs->grid[x+(y+1)*gs->gw].type) {
                 // Abort!
                 memcpy(gs->grid, grid_temp, sizeof(struct Cell)*gs->gw*gs->gh);
+                temp_dealloc(grid_temp);
                 return;
             } else {
                 swap(x, y, x, y+dy);
@@ -921,8 +928,8 @@ void blob_generate_old_smart(int obj, int chisel_size, int percentage, Uint32 *b
 }
 
 internal void blob_generate_dumb(int obj, int chisel_size, Uint32 *blob_count) {
-    SDL_assert(obj >= 0);
-    SDL_assert(blob_count);
+    Assert(gs->window, obj >= 0);
+    Assert(gs->window, blob_count);
     
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
@@ -1159,7 +1166,7 @@ int object_attempt_move(int object, int dx, int dy) {
     float vx = ux; // = 0;
     float vy = uy; // = 0;
 
-    struct Cell *result_grid = temp_alloc(gs->gw*gs->gh, sizeof(struct Cell));
+    struct Cell *result_grid = persist_alloc(gs->gw*gs->gh, sizeof(struct Cell));
 
     memcpy(result_grid, gs->grid, sizeof(struct Cell) * gs->gw * gs->gh);
 
@@ -1174,7 +1181,7 @@ int object_attempt_move(int object, int dx, int dy) {
                 if (rx < 0 || ry < 0 || rx >= gs->gw || ry >= gs->gh || gs->grid[rx+ry*gs->gw].type) {
                     // Abort
                     memcpy(gs->grid, result_grid, sizeof(struct Cell) * gs->gw * gs->gh);
-                    temp_dealloc(result_grid);
+                    /* temp_dealloc(result_grid); */
                     return 0;
                 }
                 // Otherwise, go through with the set.
@@ -1188,7 +1195,7 @@ int object_attempt_move(int object, int dx, int dy) {
     object_generate_blobs(object, 1);
     object_generate_blobs(object, 2);
 
-    temp_dealloc(result_grid);
+    /* temp_dealloc(result_grid); */
 
     return (int) (ux+uy*gs->gw);
 }
@@ -1305,8 +1312,8 @@ int clamp_to_grid_angle(int x, int y, float rad_angle, bool set_current_object) 
     int l = gs->gw;
     float x1 = x;
     float y1 = y;
-    float x2 = x1 + l * cos(rad_angle);
-    float y2 = y1 + l * sin(rad_angle);
+    float y2 = y1 + l * sinf(rad_angle);
+    float x2 = x1 + l * cosf(rad_angle);
 
     float dx = x2-x1;
     float dy = y2-y1;

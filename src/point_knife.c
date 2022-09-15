@@ -11,7 +11,6 @@ internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int
 
 void point_knife_init() {
     struct Point_Knife *point_knife = &gs->point_knife;
-    SDL_Surface *surf = IMG_Load("../res/point_knife.png");
 
     point_knife->x = gs->gw/2;
     point_knife->y = gs->gh/2;
@@ -23,8 +22,6 @@ void point_knife_init() {
 
     point_knife->highlight_count = 0;
     memset(point_knife->highlights, 0, 50 * sizeof(int));
-
-    SDL_FreeSurface(surf);
 }
 
 void point_knife_tick() {

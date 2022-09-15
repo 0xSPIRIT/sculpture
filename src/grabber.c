@@ -7,12 +7,8 @@
 #include "undo.h"
 
 void grabber_init() {
-    SDL_Surface *surf = IMG_Load("../res/pointer.png");
-    gs->grabber.texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-    gs->grabber.w = surf->w;
-    gs->grabber.h = surf->h;
+    gs->grabber.texture = 0;
     gs->grabber.object_holding = -1;
-    SDL_FreeSurface(surf);
 }
 
 void grabber_tick() {
