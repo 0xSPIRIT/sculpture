@@ -148,7 +148,7 @@ static void unload_game_code(struct Game_Code *code) {
 }
 
 int main(int argc, char **argv) {
-    // Make sure we're in the right folder.
+    // Make sure we're running in the right folder.
     {
         char cwd[1024] = {0};
         size_t length = 0;
@@ -179,6 +179,10 @@ int main(int argc, char **argv) {
     while (running) {
         game_state.temp_allocation_count = 0;
         
+        // We push the DLL reload to a delay because if we lock the file too fast
+        // the compiler doesn't have enough time to write to it... or something.
+        // It's only a 5-frame delay so it doesn't matter compared to compilation
+        // times anyways.
         FILETIME new_dll_write_time = get_last_write_time(GAME_DLL_NAME);
         if (CompareFileTime(&new_dll_write_time, &game_code.last_write_time) != 0) {
             reload_delay--;
