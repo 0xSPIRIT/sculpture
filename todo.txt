@@ -1,21 +1,23 @@
       --------------------------TODO----------------------------
 
- - There are two converters- the fuel converter and the material
-   converter. Upon chiseling, dust is generated and put onto a second
-   layer, which is able to be picked up by the placer. Materials
-   however such as dirt or sand can be picked up straight without
-   chiseling.
-   The dust can be placed into the fuel converter to make fuel out of
-   it. For eg. two cobblestone dusts can make 1 coal. However if you
-   put more than one type of dust into the fuel converter you can have
-   better output ratios to the coal. Further, you can add different
-   higher tier materials' dusts to create a higher tier of coal.
-   The fuel can be used in the main material converter to convert for
-   eg. sand to glass and ice to water. With other types of fuel though,
-   the output changes.
-     x Implement fuel conversion.
-     x Implement material conversions
-     - Add and refine the actual conversions.
+- Make render targets resize itself for each level reload.
+
+- There are two converters- the fuel converter and the material
+  converter. Upon chiseling, dust is generated and put onto a second
+  layer, which is able to be picked up by the placer. Materials
+  however such as dirt or sand can be picked up straight without
+  chiseling.
+  The dust can be placed into the fuel converter to make fuel out of
+  it. For eg. two cobblestone dusts can make 1 coal. However if you
+  put more than one type of dust into the fuel converter you can have
+  better output ratios to the coal. Further, you can add different
+  higher tier materials' dusts to create a higher tier of coal.
+  The fuel can be used in the main material converter to convert for
+  eg. sand to glass and ice to water. With other types of fuel though,
+  the output changes.
+    x Implement fuel conversion.
+    x Implement material conversions
+    - Add and refine the actual conversions.
 
 - Make the small chisel unable to chisel diagonally, like so:
 

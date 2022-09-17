@@ -23,6 +23,8 @@
 #include "globals.h"
 #include "game.h"
 
+internal void render_targets_set_pointers(struct Game_State *gs, int level);
+
 internal int level_add(const char *name, char *desired_image, char *initial_image, int effect_type) {
     struct Level *level = &gs->levels[gs->level_count++];
     level->index = gs->level_count-1;
@@ -55,6 +57,8 @@ internal int level_add(const char *name, char *desired_image, char *initial_imag
 }
 
 void levels_setup() {
+    gs->levels_initialized = true;
+    
     level_add("Alaska",
               "../res/lvl/desired/level 1.png",
               "../res/lvl/initial/level 1.png",
@@ -106,16 +110,11 @@ void goto_level_string_hook(const char *string) {
     goto_level(lvl);
 }
 
-void goto_level(int lvl) {
-    gs->level_current = lvl;
+static void initialize_level(struct Level *level) {
+    grid_init(level->w, level->h);
 
-    grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
-
-    // TODO: Change this to be in the platform layer instead.
-    SDL_DestroyTexture(gs->render_texture);
-    SDL_Log("Level Size: %d, %d\n", gs->gw, gs->gh);
-    
-    gs->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
+    // Set the pointers
+    render_targets_set_pointers(gs, level->index);
 
     gs->S = gs->window_width/gs->gw;
     Assert(gs->window, gs->gw==gs->gh);
@@ -136,9 +135,14 @@ void goto_level(int lvl) {
     gui_init();
     all_converters_init();
 
-    effect_set(gs->levels[lvl].effect_type);
+    effect_set(gs->levels[level->index].effect_type);
 
-    memcpy(gs->grid, gs->levels[lvl].desired_grid, sizeof(struct Cell)*gs->gw*gs->gh);
+    memcpy(gs->grid, gs->levels[level->index].desired_grid, sizeof(struct Cell)*gs->gw*gs->gh);
+}
+
+void goto_level(int lvl) {
+    gs->level_current = lvl;
+    initialize_level(&gs->levels[lvl]);
 }
 
 // Most deinitialization functions are just freeing textures, but
@@ -206,21 +210,6 @@ void level_tick() {
             gs->step_one = 0;
         }
 
-        if (input->my < 0) { // If the mouse is in the GUI gs->window...
-            /* SDL_ShowCursor(1); */
-            if (SDL_GetCursor() != gs->normal_cursor) {
-                SDL_SetCursor(gs->normal_cursor);
-            }
-            break;
-        } else if (gs->current_tool == TOOL_GRABBER) {
-            if (SDL_GetCursor() != gs->grabber_cursor) {
-                /* SDL_ShowCursor(1); */
-                SDL_SetCursor(gs->grabber_cursor);
-            }
-        } else if (SDL_GetCursor() != gs->normal_cursor) {
-            SDL_SetCursor(gs->normal_cursor);
-        }
-    
         chisel_blocker_tick();
         if (gs->chisel_blocker_mode) break;
         
@@ -326,7 +315,7 @@ void level_draw() {
             int x = rect.x + margin;
             int y = rect.y + margin;
 
-            draw_text(gs->font, string, (SDL_Color){0,0,0,255}, 0, 0, x, y, NULL, NULL);
+            draw_text(gs->fonts.font, string, (SDL_Color){0,0,0,255}, 0, 0, x, y, NULL, NULL);
         }
 
         // Desired and Your grid.
@@ -344,7 +333,7 @@ void level_draw() {
                 dx += rect.w - margin - 2*level->w - margin;
             }
 
-            draw_text(gs->font, string, (SDL_Color){0, 0, 0, 255}, 0, 0, dx, dy, NULL, NULL);
+            draw_text(gs->fonts.font, string, (SDL_Color){0, 0, 0, 255}, 0, 0, dx, dy, NULL, NULL);
 
             for (int y = 0; y < gs->gh; y++) {
                 for (int x = 0; x < gs->gw; x++) {
@@ -373,7 +362,7 @@ void level_draw() {
             }
         }
 
-        draw_text(gs->font,
+        draw_text(gs->fonts.font,
                   "Next Level [n]",
                   (SDL_Color){0, 91, 0, 255},
                   1, 1,
@@ -381,7 +370,7 @@ void level_draw() {
                   rect.y + rect.h - margin,
                   NULL,
                   NULL);
-        draw_text(gs->font,
+        draw_text(gs->fonts.font,
                   "Close [f]",
                   (SDL_Color){0, 91, 0, 255},
                   0, 1,
@@ -421,7 +410,7 @@ void level_draw_intro() {
     char name[256] = {0};
     sprintf(name, "Level %d: %s", level->index+1, level->name);
 
-    SDL_Surface *surf = TTF_RenderText_Solid(gs->title_font, name, (SDL_Color){255,255,255,255});
+    SDL_Surface *surf = TTF_RenderText_Solid(gs->fonts.font_title, name, (SDL_Color){255,255,255,255});
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     SDL_Rect dst = {
         gs->S*gs->gw/2 - surf->w/2, gs->S*gs->gh/2 - surf->h/2,
@@ -564,4 +553,34 @@ void level_output_to_png(const char *output_file) {
     }
 
     Assert(gs->window, IMG_SavePNG(surf, output_file) == 0);
+}
+
+// TODO: The converter fucks up because SDL_RenderReadPixels is called on
+//       a render target that is probably NULL, causing the converter's
+//       memory to set to zero, resulting in a debug break when trying
+//       to render the converter.
+//       The issue is with the render targets, and their allocations.
+
+// Also, visual studio doesn't seem to enjoy showing me
+// the members of Game_State when i'm in the game dll.
+// Not sure why. That is very important. Perhaps since
+// we're calling VirtualAlloc on the same base address
+// I could just store each member's address?
+// Run in GCC to figure it out
+
+internal void render_targets_set_pointers(struct Game_State *gs, int level) {
+    int i = 0;
+
+    gs->render_texture                = gs->textures.render_targets[RENDER_TARGET_COUNT*level + (i++)];
+    gs->gui_texture                   = gs->textures.render_targets[RENDER_TARGET_COUNT*level + (i++)];
+    gs->knife.render_texture          = gs->textures.render_targets[RENDER_TARGET_COUNT*level + (i++)];
+    gs->blob_hammer.render_texture    = gs->textures.render_targets[RENDER_TARGET_COUNT*level + (i++)];
+    gs->chisel_blocker.render_texture = gs->textures.render_targets[RENDER_TARGET_COUNT*level + (i++)];
+
+    // All of these share the same render target.
+    gs->chisel_small.render_texture   = gs->textures.render_targets[RENDER_TARGET_COUNT*level + i];
+    gs->chisel_medium.render_texture  = gs->textures.render_targets[RENDER_TARGET_COUNT*level + i];
+    gs->chisel_large.render_texture   = gs->textures.render_targets[RENDER_TARGET_COUNT*level + i];
+
+    printf("Got here!\n");
 }

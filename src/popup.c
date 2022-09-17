@@ -60,9 +60,9 @@ void text_field_draw() {
     SDL_Rect field_rect, text_field_rect, description_rect;
 
     if (*text_field->description)
-        description_surf = TTF_RenderText_Blended(gs->font_consolas, text_field->description, (SDL_Color){180,180,180,255});
+        description_surf = TTF_RenderText_Blended(gs->fonts.font_consolas, text_field->description, (SDL_Color){180,180,180,255});
     if (*text_field->text)
-        text_surf = TTF_RenderText_Blended(gs->font_consolas, text_field->text, (SDL_Color){255,255,255,255});
+        text_surf = TTF_RenderText_Blended(gs->fonts.font_consolas, text_field->text, (SDL_Color){255,255,255,255});
 
     if (text_surf) {
         field_rect = (SDL_Rect){

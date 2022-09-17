@@ -22,7 +22,6 @@ void blob_hammer_init() {
     SDL_QueryTexture(blob_hammer->texture, NULL, NULL, &blob_hammer->w, &blob_hammer->h);
     blob_hammer->angle = 0;
 
-    blob_hammer->render_texture = gs->textures.blob_hammer_render_target;
     blob_hammer->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));
 }
 

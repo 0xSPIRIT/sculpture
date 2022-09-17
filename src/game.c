@@ -5,6 +5,8 @@
 #include <time.h>
 #include <stdio.h>
 
+#include "shared.h"
+
 // Include all files to compile in one translation unit for
 // compilation speed's sake.
 #include "blob_hammer.c"
@@ -30,7 +32,9 @@ struct Game_State *gs = NULL;
 
 void game_init(struct Game_State *state) {
     gs = state;
-    levels_setup();
+    if (!state->levels_initialized) {
+        levels_setup();
+    }
     goto_level(0);
 }
 
@@ -49,7 +53,6 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     gs->prev_tool = gs->current_tool;
 
     if (event->type == SDL_QUIT) {
-        SDL_Log("Happened!\n");
         is_running = false;
     }
 

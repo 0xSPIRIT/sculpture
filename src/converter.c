@@ -54,7 +54,7 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
     
     SDL_Color color = (SDL_Color){255, 255, 255, 255};
     
-    SDL_Surface *surf = TTF_RenderText_Solid(gs->bold_small_font, number, color);
+    SDL_Surface *surf = TTF_RenderText_Solid(gs->fonts.font_bold_small, number, color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     
     SDL_Rect dst = {
@@ -408,6 +408,8 @@ void converter_draw(struct Converter *converter) {
         converter->arrow.w,
         converter->arrow.h
     };
+
+    printf("Fuel: %d || Material: %d\n", gs->fuel_converter->state, gs->material_converter->state);
     
     // Flashing the arrow itself.
     if (converter->state == CONVERTER_ON) {
@@ -418,8 +420,15 @@ void converter_draw(struct Converter *converter) {
     }
     
     SDL_RenderCopy(gs->renderer, converter->arrow.texture, NULL, &arrow_dst);
+
+    // converter->arrow.texture is the same for both converters
+    // so we must reset it so it doesn't change the look of both
+    // converters' arrows.
+    if (converter->state == CONVERTER_ON) {
+        SDL_SetTextureColorMod(converter->arrow.texture, 255, 255, 255);
+    }
     
-    SDL_Surface *surf = TTF_RenderText_Blended(gs->font_courier, converter->name, (SDL_Color){0, 0, 0, 255});
+    SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_courier, converter->name, (SDL_Color){0, 0, 0, 255});
     if (!surf) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error allocating render surface.", SDL_GetError(), gs->window);
         DebugBreak();
@@ -481,7 +490,7 @@ void slot_draw(struct Slot *slot) {
     bounds.h -= 2;
     
     if (*slot->name) {
-        SDL_Surface *surf = TTF_RenderText_Blended(gs->small_font, slot->name, (SDL_Color){0, 0, 0, 255});
+        SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_small, slot->name, (SDL_Color){0, 0, 0, 255});
         Assert(gs->window, surf);
         SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
         Assert(gs->window, texture);
@@ -517,6 +526,8 @@ bool converter_is_layout_valid(struct Converter *converter) {
 
 void converter_begin_converting(void *converter_ptr) {
     struct Converter *converter = (struct Converter *) converter_ptr;
+
+    printf("%d!\n", converter->type); fflush(stdout);
     
     if (!converter_is_layout_valid(converter))
         return;

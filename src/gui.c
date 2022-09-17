@@ -37,8 +37,6 @@ void gui_init() {
         cum += gui->tool_buttons[i]->w;
     }
 
-    gs->gui_texture = gs->textures.gui_target;
-
     /* all_converters_init(); */
 }
 
@@ -71,11 +69,6 @@ void gui_tick() {
     all_converters_tick();
 
     if (gui->popup) {
-        if (SDL_GetCursor() != gs->grabber_cursor) {
-            SDL_SetCursor(gs->grabber_cursor);
-            /* SDL_ShowCursor(1); */
-        }
-
         if (gui->popup_y > gs->S*gs->gh-gui->popup_h) {
             gui->popup_y_vel -= speed;
         } else {
@@ -102,7 +95,6 @@ void gui_tick() {
     }
 
     if (!gui->popup) {
-        /* SDL_SetCursor(normal_cursor); */
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_tick(gui->tool_buttons[i], &i);
         }
@@ -214,7 +206,7 @@ void overlay_draw(struct Overlay *overlay) {
         else
             color = (SDL_Color){255,255,255,255};
 
-        surfaces[i] = TTF_RenderText_Solid(gs->font, overlay->str[i], color);
+        surfaces[i] = TTF_RenderText_Solid(gs->fonts.font, overlay->str[i], color);
         Assert(gs->window, surfaces[i]);
         textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surfaces[i]);
         Assert(gs->window, textures[i]);

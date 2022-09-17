@@ -31,6 +31,14 @@
 #define Gigabytes(x) ((Uint64)x*1024*1024*1024)
 #define Terabytes(x) ((Uint64)x*1024*1024*1024*1024)
 
+#define persist_alloc(num, size) (_allocate(gs, num, size, __FILE__, __LINE__))
+#define persist_alloc_gs(game_state, num, size) (_allocate(game_state, num, size, __FILE__, __LINE__))
+
+#define temp_alloc(num, size) (_temp_alloc(gs, num, size, __FILE__, __LINE__))
+#define temp_alloc_gs(game_state, num, size) (_temp_alloc(game_state, num, size, __FILE__, __LINE__))
+
+#define temp_dealloc(ptr) (_temp_dealloc(ptr, __FILE__, __LINE__))
+
 // Assert using an SDL MessageBox popup.
 #define Assert(window, condition) (_assert(condition, window, __func__, __FILE__, __LINE__))
 // Assert without the popup; use console instead.
@@ -51,6 +59,9 @@ struct Memory {
     size_t size;
 };
 
+// Theoretically contains the entirety of the game's state.
+// Perhaps to be able to load game states totally, we could
+// add an SDL_Event in here as well, and dump this to a file.
 struct Game_State {
     struct Memory memory;
 
@@ -61,6 +72,7 @@ struct Game_State {
 
     struct Textures textures; // Contains pointers to SDL textures.
     struct Surfaces surfaces;
+    struct Fonts fonts;
 
     int S; // scale
     int window_width, window_height;
@@ -70,13 +82,6 @@ struct Game_State {
 
     int current_tool, prev_tool;
     int debug_mode;
-    
-    TTF_Font *font,
-        *font_consolas,
-        *font_courier,
-        *small_font,
-        *bold_small_font,
-        *title_font;
     
     SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
 
@@ -97,7 +102,7 @@ struct Game_State {
     struct Knife knife;
     struct Point_Knife point_knife;
     clock_t global_start, global_end;
-
+    
     struct Save_State *current_state, *start_state;
     int state_count; // Number of states saved.
 
@@ -106,6 +111,7 @@ struct Game_State {
     struct Placer placers[PLACER_COUNT];
     int current_placer;
 
+    bool levels_initialized;
     struct Level levels[MAX_LEVELS];
     int level_current, level_count, new_level;
 
@@ -130,14 +136,9 @@ struct Game_State {
     struct Chisel_Hammer chisel_hammer;
 };
 
-// Defined in game.c
 extern struct Game_State *gs;
 
-#define persist_alloc(num, size) (_allocate(num, size, __FILE__, __LINE__))
-#define temp_alloc(num, size) (_temp_alloc(num, size, __FILE__, __LINE__))
-#define temp_dealloc(ptr) (_temp_dealloc(ptr, __FILE__, __LINE__))
-
-inline void *_allocate(size_t num, size_t size_individual, const char *file, int line) {
+inline void *_allocate(struct Game_State *gs, size_t num, size_t size_individual, const char *file, int line) {
     size_t size;
     void *output;
 
@@ -161,7 +162,7 @@ inline void *_allocate(size_t num, size_t size_individual, const char *file, int
 }
 
 // Used for allocations you want to deallocate soon.
-inline void *_temp_alloc(size_t num, size_t size_individual, const char *file, int line) {
+inline void *_temp_alloc(struct Game_State *gs, size_t num, size_t size_individual, const char *file, int line) {
     if (!num || !size_individual) return NULL;
     void *allocation = calloc(num, size_individual);
     if (!allocation) {

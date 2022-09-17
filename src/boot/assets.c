@@ -1,7 +1,8 @@
 #include "assets.h"
 
-#define _DO_NOT_EXPORT
-#include "../game.h"
+#include "../shared.h"
+
+#define new_render_target(width, height) (SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height))
 
 //
 // In this file, we load / unload every single asset from file,
@@ -13,6 +14,8 @@
 //
 // This is included only in the platform/SDL layer.
 //
+
+struct Game_State *gs; // Only here so the compiler won't complain.
 
 SDL_Texture *load_texture(SDL_Renderer *renderer, SDL_Window *window, const char *fp) {
     SDL_Surface *surf = IMG_Load(fp);
@@ -73,16 +76,43 @@ static void get_name_from_tool(int type, char *out) {
     }
 }
 
-void render_targets_init(SDL_Renderer *renderer, SDL_Window *window, int gw, int gh, struct Textures *textures) {
-    textures->chisel_render_target = new_render_target();
-    textures->chisel_blocker_render_target = new_render_target();
-    textures->blob_hammer_render_target = new_render_target();
-    textures->knife_render_target = new_render_target();
-    textures->render_texture = new_render_target();
+// Creates all render targets for all the levels,
+// then sets all the tools equal to them.
+void render_targets_init(struct Game_State *state,
+                         int width,
+                         int height,
+                         int amount,
+                         struct Level *levels,
+                         int level_count,
+                         struct Textures *textures)
+{
+    // So our macros pick up the right variable names.
+    SDL_Window *window = state->window;
+    SDL_Renderer *renderer = state->renderer;
+                                        
+    textures->render_targets = persist_alloc_gs(state, level_count * amount, sizeof(struct SDL_Texture*));
+
+    for (int lvl = 0; lvl < level_count; lvl++) {
+        struct Level *l = &levels[lvl];
+        for (int i = 0; i < amount; i++) {
+            if (i == 0) {
+                textures->render_targets[amount*lvl+i] = new_render_target(width, GUI_H);
+                continue;
+            }
+
+            textures->render_targets[amount*lvl+i] = new_render_target(l->w, l->h);
+        }
+    }
 }
 
-void textures_init(SDL_Renderer *renderer, SDL_Window *window, int window_width, int gw, int gh, struct Textures *textures) {
+void textures_init(struct Game_State *state, int window_width, int gw, int gh, struct Textures *textures) {
+    // For the macros to pick these up.
+    SDL_Window *window = state->window;
+    SDL_Renderer *renderer = state->renderer;
+                                        
     SDL_Surface *surf = NULL;
+
+    render_targets_init(state, gw, gh, RENDER_TARGET_COUNT, state->levels, 10, textures);
 
     // Converter Item Textures || previously item_init()
     for (int i = 0; i < CELL_COUNT; i++) {
@@ -105,7 +135,6 @@ void textures_init(SDL_Renderer *renderer, SDL_Window *window, int window_width,
     textures->placer = load_texture(renderer, window,  "../res/placer.png");
     textures->knife = load_texture(renderer, window,  "../res/knife.png");
     textures->popup = load_texture(renderer, window,  "../res/popup.png");
-    textures->gui_target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, window_width, GUI_H);
 
     for (int i = 0; i < TOOL_COUNT; i++) {
         char filename[128] = {0};
@@ -150,8 +179,6 @@ void textures_init(SDL_Renderer *renderer, SDL_Window *window, int window_width,
             }
         }
     }
-
-    render_targets_init(renderer, window, gw, gh, textures);
 }
 
 void textures_deinit(struct Textures *textures) {
@@ -182,20 +209,20 @@ void surfaces_deinit(struct Surfaces *surfaces) {
     }
 }
 
-void fonts_init(struct Game_State *gs) {
-    gs->font = TTF_OpenFont("../res/cour.ttf", 19);
-    gs->font_consolas = TTF_OpenFont("../res/consola.ttf", 24);
-    gs->font_courier = TTF_OpenFont("../res/cour.ttf", 20);
-    gs->small_font = TTF_OpenFont("../res/cour.ttf", 16);
-    gs->bold_small_font = TTF_OpenFont("../res/courbd.ttf", 16);
-    gs->title_font = TTF_OpenFont("../res/cour.ttf", 45);
+void fonts_init(struct Fonts *fonts) {
+    fonts->font = TTF_OpenFont("../res/cour.ttf", 19);
+    fonts->font_consolas = TTF_OpenFont("../res/consola.ttf", 24);
+    fonts->font_courier = TTF_OpenFont("../res/cour.ttf", 20);
+    fonts->font_small = TTF_OpenFont("../res/cour.ttf", 16);
+    fonts->font_bold_small = TTF_OpenFont("../res/courbd.ttf", 16);
+    fonts->font_title = TTF_OpenFont("../res/cour.ttf", 45);
 }
 
-void fonts_deinit(struct Game_State *gs) {
-    TTF_CloseFont(gs->font);
-    TTF_CloseFont(gs->font_consolas);
-    TTF_CloseFont(gs->font_courier);
-    TTF_CloseFont(gs->bold_small_font);
-    TTF_CloseFont(gs->small_font);
-    TTF_CloseFont(gs->title_font);
+void fonts_deinit(struct Fonts *fonts) {
+    TTF_Font **ttf_fonts = (TTF_Font**) fonts;
+    size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);
+
+    for (size_t i = 0; i < font_count; i++) {
+        TTF_CloseFont(ttf_fonts[i]);
+    }
 }

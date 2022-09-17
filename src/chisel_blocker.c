@@ -22,8 +22,6 @@ void chisel_blocker_init() {
 
     chisel_blocker->side = 1;
 
-    chisel_blocker->render_texture = gs->textures.chisel_blocker_render_target;
-    SDL_SetTextureBlendMode(chisel_blocker->render_texture, SDL_BLENDMODE_BLEND);
     chisel_blocker->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));
 }
 
@@ -62,10 +60,6 @@ void chisel_blocker_tick() {
     }
 
     if (!gs->chisel_blocker_mode || chisel_blocker->state == CHISEL_BLOCKER_OFF) return;
-
-    /* SDL_ShowCursor(1); */
-    if (SDL_GetCursor() != gs->grabber_cursor)
-        SDL_SetCursor(gs->grabber_cursor);
 
     if (input->mouse_pressed[SDL_BUTTON_RIGHT]) {
         chisel_blocker->side = (chisel_blocker->side == 1) ? 2 : 1;

@@ -18,7 +18,6 @@ void knife_init() {
 
     knife->texture = gs->textures.knife;
     SDL_QueryTexture(knife->texture, NULL, NULL, &knife->w, &knife->h);
-    knife->render_texture = gs->textures.knife_render_target;
     
     knife->angle = 0;
     knife->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));

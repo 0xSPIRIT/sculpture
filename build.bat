@@ -1,11 +1,12 @@
 @echo off
 
-REM /MT if you want to use CRT.
-set Common_Compiler_Flags=/nologo /Zi /GR- /EHa- /Odi /WX /FC /Fo:"obj\\"
+set Common_Compiler_Flags=/nologo /Zi /MT /GR- /EHa- /Odi /WX /FC /Fo:"obj\\"
 set Common_Linker_Libs=user32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib
 
 rem @echo off
-rem gcc boot/main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -g -o ..\bin\win32_sculpture.exe
+rem gcc src/boot/main.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -g -o bin\win32_sculpture.exe
+
+rem exit errorlevel
 
 pushd bin\
 

@@ -12,6 +12,7 @@
 #include "chisel_blocker.h"
 #include "undo.h"
 #include "game.h"
+#include "shared.h"
 
 void chisel_init(struct Chisel *type) {
     struct Chisel *chisel = NULL;
@@ -45,7 +46,6 @@ void chisel_init(struct Chisel *type) {
     chisel->line = NULL;
     chisel->face_mode = false;
 
-    chisel->render_texture = gs->textures.chisel_render_target;
     chisel->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));
 
     chisel->texture = chisel->outside_texture;
@@ -285,11 +285,6 @@ void chisel_update_texture() {
         SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
         SDL_RenderDrawPoint(gs->renderer, (int)chisel->x, (int)chisel->y);
     }
-
-    int w, h;
-
-    SDL_QueryTexture(chisel->render_texture, NULL, NULL, &w, &h);
-    Assert(gs->window, w == gs->gw && h == gs->gh);
     
     SDL_RenderReadPixels(gs->renderer, NULL, 0, chisel->pixels, 4*gs->gw);
 
