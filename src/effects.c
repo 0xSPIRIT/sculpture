@@ -4,8 +4,8 @@
 #include <SDL2/SDL.h>
 
 #include "grid.h"
-#include "util.h"
 #include "game.h"
+#include "util.h"
 
 void effect_set(int type) {
     gs->current_effect.type = type;
@@ -98,7 +98,7 @@ void effect_draw(struct Effect *effect) {
             int px = (int)particle->x;
             int py = (int)particle->y;
 
-            if (gs->grid[px+py*gs->gw].type) continue;
+            /* if (gs->grid[px+py*gs->gw].type) continue; */
 
             SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, (Uint8) (255 * (length/max)));
             SDL_RenderDrawPoint(gs->renderer, px, py);

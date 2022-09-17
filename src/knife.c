@@ -94,11 +94,6 @@ void knife_update_texture() {
 
     SDL_RenderCopyEx(gs->renderer, knife->texture, NULL, &dst, knife->angle, &center, SDL_FLIP_NONE);
 
-    int w, h;
-
-    SDL_QueryTexture(knife->render_texture, NULL, NULL, &w, &h);
-    Assert(gs->window, w == gs->gw && h == gs->gh);
-    
     SDL_RenderReadPixels(gs->renderer, NULL, 0, knife->pixels, 4*gs->gw);
 
     SDL_SetRenderTarget(gs->renderer, prev_target);

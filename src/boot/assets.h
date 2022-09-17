@@ -8,19 +8,18 @@
 #include <SDL2/SDL_image.h>
 
 #include "../grid.h"
+#include "../level.h"
 
 // Only contains textures!
 struct Textures {
+    SDL_Texture *render_targets[RENDER_TARGET_COUNT*LEVEL_COUNT];
+
     SDL_Texture *point_knife,
         *placer,
         *knife,
         *popup,
         *blob_hammer,
         *converter_arrow;
-
-    // Contains render unique targets for each unique type,
-    // with new ones for every level because of the different sizes.
-    SDL_Texture **render_targets;
 
     SDL_Texture *chisel_outside[3],
         *chisel_face[3],
@@ -50,20 +49,16 @@ struct Fonts {
         *font_title;
 };
 
-struct Game_State;
-struct Level;
-
 SDL_Texture *load_texture(SDL_Renderer *renderer, SDL_Window *window, const char *fp);
 
-void textures_init(struct Game_State *state, int window_width, int gw, int gh, struct Textures *textures);
+void textures_init(SDL_Window *window, SDL_Renderer *renderer, struct Level *levels, int window_width, int gw, int gh, struct Textures *textures);
 void textures_deinit(struct Textures *textures);
 
-void render_targets_init(struct Game_State *state,
+void render_targets_init(SDL_Window *window,
+                         SDL_Renderer *renderer,
                          int width,
                          int height,
-                         int amount,
                          struct Level *levels,
-                         int level_count,
                          struct Textures *textures);
 
 void surfaces_init(struct Surfaces *surfaces);

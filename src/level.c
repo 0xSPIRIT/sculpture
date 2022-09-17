@@ -20,10 +20,8 @@
 #include "effects.h"
 #include "boot/cursor.h"
 #include "undo.h"
-#include "globals.h"
 #include "game.h"
-
-internal void render_targets_set_pointers(struct Game_State *gs, int level);
+#include "globals.h"
 
 internal int level_add(const char *name, char *desired_image, char *initial_image, int effect_type) {
     struct Level *level = &gs->levels[gs->level_count++];
@@ -57,8 +55,6 @@ internal int level_add(const char *name, char *desired_image, char *initial_imag
 }
 
 void levels_setup() {
-    gs->levels_initialized = true;
-    
     level_add("Alaska",
               "../res/lvl/desired/level 1.png",
               "../res/lvl/initial/level 1.png",
@@ -105,16 +101,21 @@ void goto_level_string_hook(const char *string) {
     int lvl = atoi(string) - 1;
 
     if (lvl < 0) return;
-    if (lvl >= MAX_LEVELS) return;
+    if (lvl >= LEVEL_COUNT) return;
 
     goto_level(lvl);
 }
 
-static void initialize_level(struct Level *level) {
-    grid_init(level->w, level->h);
+void goto_level(int lvl) {
+    gs->level_current = lvl;
 
-    // Set the pointers
-    render_targets_set_pointers(gs, level->index);
+    grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
+
+    // TODO: Change this to be in the platform layer instead.
+    SDL_DestroyTexture(gs->render_texture);
+    printf("Level Size: %d, %d\n", gs->gw, gs->gh);
+    
+    gs->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
 
     gs->S = gs->window_width/gs->gw;
     Assert(gs->window, gs->gw==gs->gh);
@@ -135,14 +136,9 @@ static void initialize_level(struct Level *level) {
     gui_init();
     all_converters_init();
 
-    effect_set(gs->levels[level->index].effect_type);
+    effect_set(gs->levels[lvl].effect_type);
 
-    memcpy(gs->grid, gs->levels[level->index].desired_grid, sizeof(struct Cell)*gs->gw*gs->gh);
-}
-
-void goto_level(int lvl) {
-    gs->level_current = lvl;
-    initialize_level(&gs->levels[lvl]);
+    memcpy(gs->grid, gs->levels[lvl].desired_grid, sizeof(struct Cell)*gs->gw*gs->gh);
 }
 
 // Most deinitialization functions are just freeing textures, but
@@ -210,6 +206,21 @@ void level_tick() {
             gs->step_one = 0;
         }
 
+        if (input->my < 0) { // If the mouse is in the GUI gs->window...
+            /* SDL_ShowCursor(1); */
+            if (SDL_GetCursor() != gs->normal_cursor) {
+                SDL_SetCursor(gs->normal_cursor);
+            }
+            break;
+        } else if (gs->current_tool == TOOL_GRABBER) {
+            if (SDL_GetCursor() != gs->grabber_cursor) {
+                /* SDL_ShowCursor(1); */
+                SDL_SetCursor(gs->grabber_cursor);
+            }
+        } else if (SDL_GetCursor() != gs->normal_cursor) {
+            SDL_SetCursor(gs->normal_cursor);
+        }
+    
         chisel_blocker_tick();
         if (gs->chisel_blocker_mode) break;
         
@@ -553,34 +564,4 @@ void level_output_to_png(const char *output_file) {
     }
 
     Assert(gs->window, IMG_SavePNG(surf, output_file) == 0);
-}
-
-// TODO: The converter fucks up because SDL_RenderReadPixels is called on
-//       a render target that is probably NULL, causing the converter's
-//       memory to set to zero, resulting in a debug break when trying
-//       to render the converter.
-//       The issue is with the render targets, and their allocations.
-
-// Also, visual studio doesn't seem to enjoy showing me
-// the members of Game_State when i'm in the game dll.
-// Not sure why. That is very important. Perhaps since
-// we're calling VirtualAlloc on the same base address
-// I could just store each member's address?
-// Run in GCC to figure it out
-
-internal void render_targets_set_pointers(struct Game_State *gs, int level) {
-    int i = 0;
-
-    gs->render_texture                = gs->textures.render_targets[RENDER_TARGET_COUNT*level + (i++)];
-    gs->gui_texture                   = gs->textures.render_targets[RENDER_TARGET_COUNT*level + (i++)];
-    gs->knife.render_texture          = gs->textures.render_targets[RENDER_TARGET_COUNT*level + (i++)];
-    gs->blob_hammer.render_texture    = gs->textures.render_targets[RENDER_TARGET_COUNT*level + (i++)];
-    gs->chisel_blocker.render_texture = gs->textures.render_targets[RENDER_TARGET_COUNT*level + (i++)];
-
-    // All of these share the same render target.
-    gs->chisel_small.render_texture   = gs->textures.render_targets[RENDER_TARGET_COUNT*level + i];
-    gs->chisel_medium.render_texture  = gs->textures.render_targets[RENDER_TARGET_COUNT*level + i];
-    gs->chisel_large.render_texture   = gs->textures.render_targets[RENDER_TARGET_COUNT*level + i];
-
-    printf("Got here!\n");
 }

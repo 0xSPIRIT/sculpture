@@ -408,8 +408,6 @@ void converter_draw(struct Converter *converter) {
         converter->arrow.w,
         converter->arrow.h
     };
-
-    printf("Fuel: %d || Material: %d\n", gs->fuel_converter->state, gs->material_converter->state);
     
     // Flashing the arrow itself.
     if (converter->state == CONVERTER_ON) {
@@ -420,13 +418,6 @@ void converter_draw(struct Converter *converter) {
     }
     
     SDL_RenderCopy(gs->renderer, converter->arrow.texture, NULL, &arrow_dst);
-
-    // converter->arrow.texture is the same for both converters
-    // so we must reset it so it doesn't change the look of both
-    // converters' arrows.
-    if (converter->state == CONVERTER_ON) {
-        SDL_SetTextureColorMod(converter->arrow.texture, 255, 255, 255);
-    }
     
     SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_courier, converter->name, (SDL_Color){0, 0, 0, 255});
     if (!surf) {
@@ -526,8 +517,6 @@ bool converter_is_layout_valid(struct Converter *converter) {
 
 void converter_begin_converting(void *converter_ptr) {
     struct Converter *converter = (struct Converter *) converter_ptr;
-
-    printf("%d!\n", converter->type); fflush(stdout);
     
     if (!converter_is_layout_valid(converter))
         return;

@@ -7,8 +7,8 @@
 #include "chisel.h"
 #include "chisel_blocker.h"
 #include "boot/cursor.h"
-#include "globals.h"
 #include "game.h"
+#include "globals.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -69,6 +69,11 @@ void gui_tick() {
     all_converters_tick();
 
     if (gui->popup) {
+        if (SDL_GetCursor() != gs->grabber_cursor) {
+            SDL_SetCursor(gs->grabber_cursor);
+            /* SDL_ShowCursor(1); */
+        }
+
         if (gui->popup_y > gs->S*gs->gh-gui->popup_h) {
             gui->popup_y_vel -= speed;
         } else {
@@ -95,6 +100,7 @@ void gui_tick() {
     }
 
     if (!gui->popup) {
+        /* SDL_SetCursor(normal_cursor); */
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_tick(gui->tool_buttons[i], &i);
         }

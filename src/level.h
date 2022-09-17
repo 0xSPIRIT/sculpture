@@ -1,7 +1,7 @@
 #ifndef LEVEL_H_
 #define LEVEL_H_
 
-#define MAX_LEVELS 16
+#define LEVEL_COUNT 10
 #define POPUP_TIME 45
 
 enum Level_State {

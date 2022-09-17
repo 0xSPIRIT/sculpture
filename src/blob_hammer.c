@@ -171,11 +171,7 @@ void blob_hammer_update_texture() {
 
     SDL_RenderCopyEx(gs->renderer, blob_hammer->texture, NULL, &dst, angle, &center, flip);
 
-    int w, h;
-
-    SDL_QueryTexture(blob_hammer->render_texture, NULL, NULL, &w, &h);
-    Assert(gs->window, w == gs->gw && h == gs->gh);
-    
+    // Update pixels & reset render target.
     SDL_RenderReadPixels(gs->renderer, NULL, 0, blob_hammer->pixels, 4*gs->gw);
 
     SDL_SetRenderTarget(gs->renderer, prev_target);

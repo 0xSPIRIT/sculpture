@@ -22,6 +22,7 @@ void chisel_blocker_init() {
 
     chisel_blocker->side = 1;
 
+    SDL_SetTextureBlendMode(chisel_blocker->render_texture, SDL_BLENDMODE_BLEND);
     chisel_blocker->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));
 }
 
@@ -60,6 +61,10 @@ void chisel_blocker_tick() {
     }
 
     if (!gs->chisel_blocker_mode || chisel_blocker->state == CHISEL_BLOCKER_OFF) return;
+
+    /* SDL_ShowCursor(1); */
+    if (SDL_GetCursor() != gs->grabber_cursor)
+        SDL_SetCursor(gs->grabber_cursor);
 
     if (input->mouse_pressed[SDL_BUTTON_RIGHT]) {
         chisel_blocker->side = (chisel_blocker->side == 1) ? 2 : 1;
@@ -103,7 +108,7 @@ void chisel_blocker_tick() {
                 /* angle /= 45.; */
                 /* angle = round(angle) * 45; */
 
-                /* SDL_Log("Angle: %f\n", angle); fflush(stdout); */
+                /* printf("Angle: %f\n", angle); fflush(stdout); */
 
                 /* angle = 2*M_PI * angle/360.0; */
                 
@@ -300,11 +305,6 @@ void chisel_blocker_draw() {
         SDL_RenderDrawLine(gs->renderer, l.x1, l.y1, l.x2, l.y2);
     }
 
-    int w, h;
-
-    SDL_QueryTexture(chisel_blocker->render_texture, NULL, NULL, &w, &h);
-    Assert(gs->window, w == gs->gw && h == gs->gh);
-    
     SDL_RenderReadPixels(gs->renderer, NULL, 0, chisel_blocker->pixels, 4*gs->gw);
     SDL_SetRenderTarget(gs->renderer, prev_target);
 

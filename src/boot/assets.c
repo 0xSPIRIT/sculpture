@@ -15,8 +15,6 @@
 // This is included only in the platform/SDL layer.
 //
 
-struct Game_State *gs; // Only here so the compiler won't complain.
-
 SDL_Texture *load_texture(SDL_Renderer *renderer, SDL_Window *window, const char *fp) {
     SDL_Surface *surf = IMG_Load(fp);
     Assert(window, surf);
@@ -78,21 +76,15 @@ static void get_name_from_tool(int type, char *out) {
 
 // Creates all render targets for all the levels,
 // then sets all the tools equal to them.
-void render_targets_init(struct Game_State *state,
+void render_targets_init(SDL_Window *window,
+                         SDL_Renderer *renderer,
                          int width,
                          int height,
-                         int amount,
                          struct Level *levels,
-                         int level_count,
-                         struct Textures *textures)
-{
-    // So our macros pick up the right variable names.
-    SDL_Window *window = state->window;
-    SDL_Renderer *renderer = state->renderer;
-                                        
-    textures->render_targets = persist_alloc_gs(state, level_count * amount, sizeof(struct SDL_Texture*));
-
-    for (int lvl = 0; lvl < level_count; lvl++) {
+                         struct Textures *textures) {
+    const int amount = RENDER_TARGET_COUNT;
+    
+    for (int lvl = 0; lvl < LEVEL_COUNT; lvl++) {
         struct Level *l = &levels[lvl];
         for (int i = 0; i < amount; i++) {
             if (i == 0) {
@@ -105,14 +97,16 @@ void render_targets_init(struct Game_State *state,
     }
 }
 
-void textures_init(struct Game_State *state, int window_width, int gw, int gh, struct Textures *textures) {
-    // For the macros to pick these up.
-    SDL_Window *window = state->window;
-    SDL_Renderer *renderer = state->renderer;
-                                        
+ void textures_init(SDL_Window *window,
+                    SDL_Renderer *renderer,
+                    struct Level *levels,
+                    int window_width,
+                    int gw,
+                    int gh,
+                    struct Textures *textures) {
     SDL_Surface *surf = NULL;
 
-    render_targets_init(state, gw, gh, RENDER_TARGET_COUNT, state->levels, 10, textures);
+    render_targets_init(window, renderer, gw, gh, levels, textures);
 
     // Converter Item Textures || previously item_init()
     for (int i = 0; i < CELL_COUNT; i++) {

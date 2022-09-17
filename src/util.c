@@ -17,7 +17,7 @@ void start_timer() {
 void _end_timer(const char *func) {
     gs->global_end = clock();
     float cpu_time_used = ((double) (gs->global_end-gs->global_start))/CLOCKS_PER_SEC;
-    SDL_Log("(%s) Time: %f\n", func, cpu_time_used); fflush(stdout);
+    printf("(%s) Time: %f\n", func, cpu_time_used); fflush(stdout);
 }
 
 // Moves the mouse to the middle of the grid cell, not the top-left.

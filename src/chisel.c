@@ -12,7 +12,6 @@
 #include "chisel_blocker.h"
 #include "undo.h"
 #include "game.h"
-#include "shared.h"
 
 void chisel_init(struct Chisel *type) {
     struct Chisel *chisel = NULL;
@@ -219,6 +218,10 @@ void chisel_tick() {
     chisel_hammer_tick();
 }
 
+// TODO: Compare chisel_update_texture and knife_update_texture.
+//       Something about SDL_RenderReadPixels writes into
+//       out of bounds memory into converter data.
+
 void chisel_update_texture() {
     struct Chisel *chisel = gs->chisel;
 
@@ -285,6 +288,12 @@ void chisel_update_texture() {
         SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
         SDL_RenderDrawPoint(gs->renderer, (int)chisel->x, (int)chisel->y);
     }
+
+    // PROBLEM AREA!
+    int w, h;
+
+    SDL_QueryTexture(chisel->render_texture, NULL, NULL, &w, &h);
+    Assert(gs->window, w == gs->gw && h == gs->gh);
     
     SDL_RenderReadPixels(gs->renderer, NULL, 0, chisel->pixels, 4*gs->gw);
 

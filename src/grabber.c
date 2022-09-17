@@ -3,8 +3,8 @@
 #include <SDL2/SDL_image.h>
 
 #include "grid.h"
-#include "undo.h"
 #include "game.h"
+#include "undo.h"
 
 void grabber_init() {
     gs->grabber.texture = 0;
