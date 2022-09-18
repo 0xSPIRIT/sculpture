@@ -234,7 +234,7 @@ int main(int argc, char **argv) {
     bool running = true;
     
     while (running) {
-        game_state->temp_allocation_count = 0;
+        game_state->transient_allocation_count = 0;
         
         // We push the DLL reload to a delay because if we lock the file too fast
         // the compiler doesn't have enough time to write to it... or something.
@@ -279,7 +279,7 @@ int main(int argc, char **argv) {
         game_code.game_run(game_state);
 
         // Ensure our allocations are not leaked!
-        Assert(game_state->window, game_state->temp_allocation_count == 0);
+        Assert(game_state->window, game_state->transient_allocation_count == 0);
 
         if (should_stop) {
             running = false;

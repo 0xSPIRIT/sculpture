@@ -7,7 +7,7 @@
 //
 // Otherwise, when allocating memory that you will
 // just need for a specific function and will free it,
-// use temp_alloc.
+// use transient_alloc.
 //
 
 #include "shared.h"

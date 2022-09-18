@@ -130,7 +130,7 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
         /* r = my_rand(i*i) % 100 < 5; */
         color = get_pixel(gs->surfaces.glass_surface, i%gs->gw, i/gs->gw);
         color.a = 255;
-        /* if (r || get_neighbour_count_of_object(i%gs->gw, i/gs->gw, 1, cells[i].object) < 8) { */
+        /* if (r || number_neighbours_of_object(i%gs->gw, i/gs->gw, 1, cells[i].object) < 8) { */
         /*     color.a = 240; */
         /* } */
         break;
@@ -651,16 +651,27 @@ int get_any_neighbour_object(int x, int y) {
     return -1;
 }
 
-int get_neighbour_count(int x, int y, int r) {
+int number_neighbours(struct Cell *array, int x, int y, int r) {
     int c = 0;
     for (int xx = -r; xx <= r; xx++) {
         for (int yy = -r; yy <= r; yy++) {
             if (xx == 0 && yy == 0) continue;
             if (!is_in_bounds(x+xx, y+yy)) continue;
-            if (gs->grid[x+xx+(y+yy)*gs->gw].type) c++;
+            if (array[x+xx+(y+yy)*gs->gw].type) c++;
         }
     }
     return c;
+}
+
+int number_direct_neighbours(struct Cell *array, int x, int y) {
+    int count = 0;
+
+    if (array[x-1 + (y  ) * gs->gw].type) count++;
+    if (array[x+1 + (y  ) * gs->gw].type) count++;
+    if (array[x   + (y-1) * gs->gw].type) count++;
+    if (array[x   + (y+1) * gs->gw].type) count++;
+
+    return count;
 }
 
 internal int is_any_neighbour_hard(int x, int y) {
@@ -675,7 +686,7 @@ internal int is_any_neighbour_hard(int x, int y) {
     return 0;
 }
 
-int get_neighbour_count_of_object(int x, int y, int r, int obj) {
+int number_neighbours_of_object(int x, int y, int r, int obj) {
     int c = 0;
 
     for (int xx = -r; xx <= r; xx++) {
@@ -699,7 +710,7 @@ int blob_find_pressure(int obj, Uint32 blob, int x, int y, int r) {
             int rx = x+dx;
             int ry = y+dy;
             if (object->blob_data[gs->chisel->size].blobs[rx+ry*gs->gw] == blob) {
-                pressure += get_neighbour_count_of_object(rx, ry, r, obj);
+                pressure += number_neighbours_of_object(rx, ry, r, obj);
                 count++;
             }
         }
@@ -749,7 +760,7 @@ void object_tick(int obj) {
 }
 
 void object_blobs_set_pressure(int obj, int chisel_size) {
-    int *temp_blobs = temp_alloc(gs->gw*gs->gh, sizeof(int));
+    int *temp_blobs = transient_alloc(gs->gw*gs->gh, sizeof(int));
     struct Object *object = &gs->objects[obj];
     
     for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -828,7 +839,7 @@ internal int blob_find_count_from_position(int object, int chisel_size, int x, i
 /*         for (int x = 0; x < gs->gw; x++) { */
 /*             if (!gs->grid[x+y*gs->gw].type) continue; */
 
-/*             int neighbour_count = get_neighbour_count(x, y, 1); */
+/*             int neighbour_count = number_neighbours(gs->grid, x, y, 1); */
 /*             if (neighbour_count == 8) continue; */
 
 /*             struct Object *o = &objects[obj]; */
@@ -1261,15 +1272,15 @@ int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_o
             if (outside) {
                 if (on_edge) {
                     if (must_be_hard) {
-                        condition = get_neighbour_count(x, y, 1) < 8 && is_any_neighbour_hard(x, y);
+                        condition = number_neighbours(gs->grid, x, y, 1) < 8 && is_any_neighbour_hard(x, y);
                     } else {
-                        condition = get_neighbour_count(x, y, 1) < 8;
+                        condition = number_neighbours(gs->grid, x, y, 1) < 8;
                     }
                 } else {
                     if (must_be_hard) {
-                        condition = (get_neighbour_count(x, y, 1) >= 1) && is_any_neighbour_hard(x, y);
+                        condition = (number_neighbours(gs->grid, x, y, 1) >= 1) && is_any_neighbour_hard(x, y);
                     } else {
-                        condition = get_neighbour_count(x, y, 1) >= 1;
+                        condition = number_neighbours(gs->grid, x, y, 1) >= 1;
                     }
                 }
             } else {
@@ -1330,7 +1341,7 @@ int clamp_to_grid_angle(int x, int y, float rad_angle, bool set_current_object) 
 
     for (int yy = 0; yy < gs->gh; yy++) {
         for (int xx = 0; xx < gs->gw; xx++) {
-            if (!gs->grid[xx+yy*gs->gw].type && is_point_on_line((SDL_Point){xx, yy}, (SDL_Point){x1, y1}, (SDL_Point){x2, y2}) && get_neighbour_count(xx, yy, 1) >= 1) {
+            if (!gs->grid[xx+yy*gs->gw].type && is_point_on_line((SDL_Point){xx, yy}, (SDL_Point){x1, y1}, (SDL_Point){x2, y2}) && number_neighbours(gs->grid, xx, yy, 1) >= 1) {
                 float dist = distance(xx, yy, x, y);
                 if (dist < closest_distance) {
                     closest_distance = dist;

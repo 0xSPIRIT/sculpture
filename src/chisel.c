@@ -216,10 +216,6 @@ void chisel_tick() {
     chisel_hammer_tick();
 }
 
-// TODO: Compare chisel_update_texture and knife_update_texture.
-//       Something about SDL_RenderReadPixels writes into
-//       out of bounds memory into converter data.
-
 void chisel_update_texture() {
     struct Chisel *chisel = gs->chisel;
 
@@ -236,6 +232,7 @@ void chisel_update_texture() {
     int y = (int)chisel->y;
 
     // Disgusting hardcoding to adjust the weird rotation SDL does.
+    // TODO: Clean this up.
     if (!chisel->face_mode) {
         if (chisel->size == 0 || chisel->size == 1) {
             if (chisel->angle == 225) {
@@ -322,59 +319,78 @@ void chisel_draw() {
 Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len) {
     struct Chisel *chisel = gs->chisel;
     struct Object *objects = gs->objects;
+    int *curr_blobs = objects[gs->object_current].blob_data[chisel->size].blobs;
 
     bool did_hit_blocker = false;
     float px = chisel->x, py = chisel->y;
 
     if (gs->object_current == -1) return 0;
 
-    while (sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y)) < len) {
+    float current_length = sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
+
+    while (current_length < len) {
         // If we hit the chisel blocker, keep that in mind for later.
-        if (gs->current_tool == TOOL_CHISEL_MEDIUM && gs->chisel_blocker.state != CHISEL_BLOCKER_OFF && gs->chisel_blocker.pixels[(int)chisel->x + ((int)chisel->y)*gs->gw] != gs->chisel_blocker.side) {
-            did_hit_blocker = true;
-        }
+
+        struct Chisel_Blocker *cb = &gs->chisel_blocker;
+        if (gs->current_tool == TOOL_CHISEL_MEDIUM &&
+            cb->state != CHISEL_BLOCKER_OFF &&
+            cb->pixels[(int)chisel->x + ((int)chisel->y)*gs->gw] != cb->side)
+            {
+                did_hit_blocker = true;
+            }
 
         // If we come into contact with a cell, locate its blob
         // then remove it. We only remove one blob per chisel,
         // so we stop our speed right here.
-        Uint32 b = objects[gs->object_current].blob_data[chisel->size].blobs[(int)chisel->x + ((int)chisel->y)*gs->gw];
+        Uint32 b = curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw];
+
         if (b > 0 && !remove) {
-            if (gs->grid[(int)chisel->x + ((int)chisel->y)*gs->gw].type == 0) b = -1;
+            if (gs->grid[(int)chisel->x + (int)chisel->y*gs->gw].type == 0) b = -1;
             return b;
         } else if (remove && b > 0 && !chisel->did_remove) {
-            // We want to have the chisel end up right at the edge of the
-            // blob itself, to make it seem like it really did knock that
-            // entire thing out.
-            // So, we continue at our current direction until we reach
-            // another blob, and we backtrack one.
+            // We want to attempt to destroy this blob now.
+            // Firstly, we want to do a diagonal check.
+            
+            //      /       
+            //   xx/    xxx/
+            //   xxx    xx/x
+            //   xxx    xxxxxi
 
-            while (objects[gs->object_current].blob_data[chisel->size].blobs[(int)chisel->x + ((int)chisel->y)*gs->gw] == b) {
-                chisel->x += ux;
-                chisel->y += uy;
+            //  ^ This is what we want to prevent.
+
+            if (number_direct_neighbours(gs->grid, (int)chisel->x, (int)chisel->y) < 4) {
+                // We continue at our current direction until we reach
+                // another blob, then backtrack one.
+                while (curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw] == b) {
+                    chisel->x += ux;
+                    chisel->y += uy;
+                }
+
+                chisel->x -= ux;
+                chisel->y -= uy;
+
+                if (blob_can_destroy(gs->object_current, chisel->size, b)) {
+                    object_remove_blob(gs->object_current, b, chisel->size, true);
+
+                    move_mouse_to_grid_position(chisel->x, chisel->y);
+                    chisel->did_remove = true;
+                }
+
+                chisel->click_cooldown = CHISEL_COOLDOWN-CHISEL_TIME-1;
             }
 
-            chisel->x -= ux;
-            chisel->y -= uy;
-
-            if (blob_can_destroy(gs->object_current, chisel->size, b)) {
-                object_remove_blob(gs->object_current, b, chisel->size, true);
-
-                /* SDL_WarpMouseInWindow(gs->window, (int)(chisel->x * gs->S), GUI_H + (int)(chisel->y * gs->S)); */
-                move_mouse_to_grid_position(chisel->x, chisel->y);
-                chisel->did_remove = true;
-            }
-
-            chisel->click_cooldown = CHISEL_COOLDOWN-CHISEL_TIME-1;
             break;
         }
 
         chisel->x += ux;
         chisel->y += uy;
+
+        current_length = sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
     }
 
-    Uint32 b = objects[gs->object_current].blob_data[chisel->size].blobs[(int)chisel->x + ((int)chisel->y)*gs->gw];
+    Uint32 b = curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw];
     if (!remove) {
-        if (gs->grid[(int)chisel->x + ((int)chisel->y)*gs->gw].type == 0) b = -1;
+        if (gs->grid[(int)chisel->x + (int)chisel->y*gs->gw].type == 0) b = -1;
         return b;
     }
 
@@ -389,7 +405,7 @@ Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len) {
                 if (x*x + y*y > r*r) continue;
                 int xx = (int)chisel->x + x;
                 int yy = (int)chisel->y + y;
-                Uint32 blob = objects[gs->object_current].blob_data[chisel->size].blobs[xx+yy*gs->gw];
+                Uint32 blob = curr_blobs[xx+yy*gs->gw];
 
                 if (blob > 0) {
                     object_remove_blob(gs->object_current, blob, chisel->size, true);

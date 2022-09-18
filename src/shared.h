@@ -53,7 +53,7 @@
 //
 // Otherwise, when allocating memory that you will
 // just need for a specific function and will free it,
-// use temp_alloc and temp_dealloc respsectively.
+// use transient_alloc and temp_dealloc respsectively.
 //
 
 struct Memory {
@@ -68,7 +68,7 @@ struct Memory {
 struct Game_State {
     struct Memory *memory;
 
-    int temp_allocation_count; // A counter for every temp_alloc.
+    int transient_allocation_count; // A counter for every transient_alloc.
 
     struct SDL_Window *window;
     struct SDL_Renderer *renderer;
@@ -88,7 +88,7 @@ struct Game_State {
 
     // A temporary buffer for algorithms.
     // Allocated persistantly so you don't
-    // need to call temp_alloc every time you
+    // need to call transient_alloc every time you
     // do the algorithm.
     struct Cell *grid_temp;
 
@@ -146,7 +146,7 @@ struct Game_State {
 extern struct Game_State *gs;
 
 #define persist_alloc(mem, num, size) (_persist_allocate(mem, num, size, __FILE__, __LINE__))
-#define temp_alloc(num, size) (_temp_alloc(num, size, __FILE__, __LINE__))
+#define transient_alloc(num, size) (_transient_alloc(num, size, __FILE__, __LINE__))
 #define temp_dealloc(ptr) (_temp_dealloc(ptr, __FILE__, __LINE__))
 
 inline void *_persist_allocate(struct Memory *memory, size_t num, size_t size_individual, const char *file, int line) {
@@ -172,12 +172,13 @@ inline void *_persist_allocate(struct Memory *memory, size_t num, size_t size_in
     return output;
 }
 
-// Used for allocations you want to deallocate soon.
+// Used for allocations you want to deallocate at the end of the frame.
 // Try not to use this too much, especially things
 // that occur every frame.
-inline void *_temp_alloc(size_t num, size_t size_individual, const char *file, int line) {
+inline void *_transient_alloc(size_t num, size_t size_individual, const char *file, int line) {
     if (!num || !size_individual) return NULL;
 
+    // TODO: Replace this with your own allocated transient memory.
     void *allocation = calloc(num, size_individual);
 
     /* printf("Allocated %zd at %s(%d)!\n", num*size_individual, file, line); */
@@ -189,14 +190,14 @@ inline void *_temp_alloc(size_t num, size_t size_individual, const char *file, i
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory Error :(", message, gs->window);
         exit(1);
     }
-    gs->temp_allocation_count++;
+    gs->transient_allocation_count++;
     return allocation;
 }
 
 inline void _temp_dealloc(void *ptr, const char *file, int line) {
     free(ptr);
     /* printf("Freed pointer! at %s(%d)\n", file, line); */
-    gs->temp_allocation_count--;
+    gs->transient_allocation_count--;
 }
 
 inline bool _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line) {

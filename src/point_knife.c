@@ -75,7 +75,7 @@ void point_knife_tick() {
             point_knife->y = (int)point_knife->y;
         } else {
             if (point_knife->cooldown == -1) {
-                if (get_neighbour_count((int)point_knife->x, (int)point_knife->y, 2) <= 21) { /* Must be identical to statement in array_clamped_to_grid */
+                if (number_neighbours(gs->grid, (int)point_knife->x, (int)point_knife->y, 2) <= 21) { /* Must be identical to statement in array_clamped_to_grid */
                     set((int)point_knife->x, (int)point_knife->y, 0, -1);
                 }
                 point_knife->cooldown = 12;
@@ -116,7 +116,7 @@ internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int
     while (x < 17) {
         int i = clamp_to_grid(px, py, outside, on_edge, false, true);
         if (i == -1) break;
-        if (get_neighbour_count(i%gs->gw, i/gs->gw, 2) <= 21) { /* Must be identical to the statement above */
+        if (number_neighbours(gs->grid, i%gs->gw, i/gs->gw, 2) <= 21) { /* Must be identical to the statement above */
             o_arr[count++] = i;
             gs->grid[i].type = 0;
         }

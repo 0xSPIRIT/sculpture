@@ -112,8 +112,9 @@ int object_attempt_move(int object, int dx, int dy);
 void convert_object_to_dust(int object);
 
 int get_any_neighbour_object(int x, int y);
-int get_neighbour_count_of_object(int x, int y, int r, int obj);
-int get_neighbour_count(int x, int y, int r);
+int number_neighbours_of_object(int x, int y, int r, int obj);
+int number_neighbours(struct Cell *array, int x, int y, int r);
+int number_direct_neighbours(struct Cell *array, int x, int y);
 int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_object, bool must_be_hard);
 int clamp_to_grid_angle(int x, int y, float rad_angle, bool set_current_object);
 
