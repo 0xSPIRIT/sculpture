@@ -23,7 +23,7 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, SDL_Window *window, const char
     return texture;
 }
 
-static void get_filename_from_type(int type, char *out) {
+internal void get_filename_from_type(int type, char *out) {
     switch (type) {
     case CELL_NONE:        strcpy(out, "nothing"); break;
     case CELL_MARBLE:      strcpy(out, "../res/items/marble.png"); break;
@@ -48,7 +48,7 @@ static void get_filename_from_type(int type, char *out) {
     }
 }
 
-static void get_file_from_tool(int type, char *out) {
+internal void get_file_from_tool(int type, char *out) {
     switch (type) {
     case TOOL_CHISEL_SMALL:  strcpy(out, "chisel_small.png"); break;
     case TOOL_CHISEL_MEDIUM: strcpy(out, "chisel_medium.png"); break;
@@ -61,7 +61,7 @@ static void get_file_from_tool(int type, char *out) {
     }
 }
 
-static void get_name_from_tool(int type, char *out) {
+internal void get_name_from_tool(int type, char *out) {
     switch (type) {
     case TOOL_CHISEL_SMALL:  strcpy(out, "Small Chisel"); break;
     case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel"); break;
@@ -78,8 +78,7 @@ static void get_name_from_tool(int type, char *out) {
 // then sets all the tools equal to them.
 void render_targets_init(SDL_Window *window,
                          SDL_Renderer *renderer,
-                         int width,
-                         int height,
+                         int width, // In screen coords, not game coords.
                          struct Level *levels,
                          struct Textures *textures) {
     const int amount = RENDER_TARGET_COUNT;
@@ -87,26 +86,26 @@ void render_targets_init(SDL_Window *window,
     for (int lvl = 0; lvl < LEVEL_COUNT; lvl++) {
         struct Level *l = &levels[lvl];
         for (int i = 0; i < amount; i++) {
-            if (i == 0) {
-                textures->render_targets[amount*lvl+i] = new_render_target(width, GUI_H);
+            if (i == 1) {
+                textures->render_targets[lvl][i] = new_render_target(width, GUI_H);
                 continue;
             }
 
-            textures->render_targets[amount*lvl+i] = new_render_target(l->w, l->h);
+            Assert(window, l->w != 0 && l->h != 0);
+            textures->render_targets[lvl][i] = new_render_target(l->w, l->h);
+            Assert(window, textures->render_targets[lvl][i]);
         }
     }
 }
 
- void textures_init(SDL_Window *window,
-                    SDL_Renderer *renderer,
-                    struct Level *levels,
-                    int window_width,
-                    int gw,
-                    int gh,
-                    struct Textures *textures) {
+void textures_init(SDL_Window *window,
+                   SDL_Renderer *renderer,
+                   struct Level *levels,
+                   int window_width,
+                   int gw,
+                   int gh,
+                   struct Textures *textures) {
     SDL_Surface *surf = NULL;
-
-    render_targets_init(window, renderer, gw, gh, levels, textures);
 
     // Converter Item Textures || previously item_init()
     for (int i = 0; i < CELL_COUNT; i++) {
@@ -180,7 +179,8 @@ void textures_deinit(struct Textures *textures) {
     size_t tex_count = sizeof(struct Textures)/sizeof(SDL_Texture*);
 
     for (size_t i = 0; i < tex_count; i++) {
-        SDL_DestroyTexture(texs[i]);
+        if (texs[i])
+            SDL_DestroyTexture(texs[i]);
     }
 }
 
@@ -199,7 +199,8 @@ void surfaces_deinit(struct Surfaces *surfaces) {
     size_t surf_count = sizeof(struct Surfaces)/sizeof(SDL_Surface*);
 
     for (size_t i = 0; i < surf_count; i++) {
-        SDL_FreeSurface(surfs[i]);
+        if (surfs[i])
+            SDL_FreeSurface(surfs[i]);
     }
 }
 

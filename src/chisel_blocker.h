@@ -24,7 +24,6 @@ struct Chisel_Blocker {
     int active; // Not to be confused with chisel_blocker_mode.
 
     Uint32 *pixels;
-    SDL_Texture *render_texture;
 
     int side;
 };

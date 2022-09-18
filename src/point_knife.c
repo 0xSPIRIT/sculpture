@@ -4,7 +4,6 @@
 #include <SDL2/SDL_image.h>
 
 #include "grid.h"
-#include "globals.h"
 #include "game.h"
 
 internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int *o_arr, int *o_count);
@@ -22,6 +21,8 @@ void point_knife_init() {
 
     point_knife->highlight_count = 0;
     memset(point_knife->highlights, 0, 50 * sizeof(int));
+
+    point_knife->cooldown = -1;
 }
 
 void point_knife_tick() {
@@ -49,8 +50,6 @@ void point_knife_tick() {
         point_knife->face_mode = !point_knife->face_mode;
     }
 
-    persist int cooldown = -1;
-
     if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
         if (point_knife->face_mode) {
             float dx = point_knife->x - px;
@@ -69,16 +68,16 @@ void point_knife_tick() {
             point_knife->x = (int)point_knife->x;
             point_knife->y = (int)point_knife->y;
         } else {
-            if (cooldown == -1) {
+            if (point_knife->cooldown == -1) {
                 if (get_neighbour_count((int)point_knife->x, (int)point_knife->y, 2) <= 21) { /* Must be identical to statement in array_clamped_to_grid */
                     set((int)point_knife->x, (int)point_knife->y, 0, -1);
                 }
-                cooldown = 12;
+                point_knife->cooldown = 12;
                 objects_reevaluate();
             }
         }
     }
-    if (cooldown >= 0) cooldown--;
+    if (point_knife->cooldown >= 0) point_knife->cooldown--;
 }
 
 void point_knife_draw() {

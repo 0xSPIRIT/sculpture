@@ -1,0 +1,81 @@
+      --------------------------TODO----------------------------
+
+Look at gui_popup_draw() and overlay_draw()
+
+- Fix all the memory bugs.
+ - There are two converters- the fuel converter and the material
+   converter. Upon chiseling, dust is generated and put onto a second
+   layer, which is able to be picked up by the placer. Materials
+   however such as dirt or sand can be picked up straight without
+   chiseling.
+   The dust can be placed into the fuel converter to make fuel out of
+   it. For eg. two cobblestone dusts can make 1 coal. However if you
+   put more than one type of dust into the fuel converter you can have
+   better output ratios to the coal. Further, you can add different
+   higher tier materials' dusts to create a higher tier of coal.
+   The fuel can be used in the main material converter to convert for
+   eg. sand to glass and ice to water. With other types of fuel though,
+   the output changes.
+     x Implement fuel conversion.
+     x Implement material conversions
+     - Add and refine the actual conversions.
+
+- Make the small chisel unable to chisel diagonally, like so:
+
+    Before:
+             /
+          xx/
+          xxx
+          xxxx
+
+    After:
+             
+          xx/
+          x/x
+          xxxx
+    
+          xx 
+          x x
+          xxxx
+    
+
+- Improve the grabber to actually grab objects properly. Upon
+  clicking, store the position of a cell in the object then track
+  that cell upon grabbing the object.
+
+     ---------------------------Ideas----------------------------
+
+- In the first level, instead of having multiple materials, have only
+  one that you actually manipulate and then when you're done, it
+  transforms itself into the wood etc. Perhaps do this for some
+  levels in the beginning.
+- Make diamond completely brittle unless you use the small chisel.
+- Inner monologue, Inscryption-style text between each level. Judging
+  yourself or praising yourself. Gets you amped up for the final
+  level, setting up the "failure".
+- Instead of ending on Glass Body falling down, add some dialogue
+  afterward then end on the first level "Alaska". End on happy note?
+- Find a way to get the pretension point across better (more than the
+  zero-depth glass body). Push that to the dialogue!
+- You gain more tools as you go along.
+
+- Orb imagery! Use it in Diamond & Quartz!
+  Figures reaching for something that is offscreen
+  then we finally see it's the orb
+- On the dust layer, check collisions on main grid.
+- Put toolbar on left instead of top? Leave space for metadata?
+
+For Level 3 (Conversion), we still need to get a shape.
+It must be simple enough to be the second level (you're still getting
+used to the chiseling etc.) but also complex enough to be thematically
+relevent. I don't want any level to not be thematically tied because
+there's just so little of them and the game must be as polished as
+possible. However, if we can't figure out a good shape we could leave
+it as something simple for now, and iterate on it later.
+
+I think chiseling shapes is sort of too complex, but we'll need
+playtesting to make sure that is the case. If it is too complex, then
+we can change the chisel blocker to have more nodes, or have a line
+mode where it's a bunch of points you can move around with only
+straight lines. You can then switch between this mode (default) and
+the smooth mode (we'll do a pixelizer pass on this like Aseprite).

@@ -14,7 +14,6 @@
 #include "level.h"
 #include "chisel_blocker.h"
 #include "placer.h"
-#include "globals.h"
 #include "game.h"
 
 internal int draw_lines = 1;

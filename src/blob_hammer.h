@@ -29,7 +29,6 @@ struct Blob_Hammer {
 
     SDL_Texture *texture;
 
-    SDL_Texture *render_texture;
     Uint32 *pixels;
 
     Uint32 blobs_touched[MAX_BLOBS_TOUCHED];

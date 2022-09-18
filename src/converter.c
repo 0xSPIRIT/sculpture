@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "globals.h"
-
 #include "grid.h"
 #include "gui.h"
 #include "placer.h"
@@ -418,28 +416,29 @@ void converter_draw(struct Converter *converter) {
     }
     
     SDL_RenderCopy(gs->renderer, converter->arrow.texture, NULL, &arrow_dst);
+
+    SDL_Surface **surf = &gs->surfaces.converter_names[converter->type];
+    SDL_Texture **tex = &gs->textures.converter_names[converter->type];
     
-    SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_courier, converter->name, (SDL_Color){0, 0, 0, 255});
-    if (!surf) {
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error allocating render surface.", SDL_GetError(), gs->window);
-        DebugBreak();
-        exit(1);
+    if (!*surf) {
+        *surf = TTF_RenderText_Blended(gs->fonts.font_courier, converter->name, (SDL_Color){0, 0, 0, 255});
     }
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-    Assert(gs->window, texture);
+    Assert(gs->window, *surf);
+
+    if (!*tex) {
+        *tex = SDL_CreateTextureFromSurface(gs->renderer, *surf);
+    }
+    Assert(gs->window, *tex);
     
     int margin = 8;
     SDL_Rect r = {
         converter->x + margin,
         converter->y + margin + GUI_H,
-        surf->w,
-        surf->h
+        (*surf)->w,
+        (*surf)->h
     };
     
-    SDL_RenderCopy(gs->renderer, texture, NULL, &r);
-    
-    SDL_FreeSurface(surf);
-    SDL_DestroyTexture(texture);
+    SDL_RenderCopy(gs->renderer, *tex, NULL, &r);
     
     button_draw(converter->go_button);
 }
@@ -481,21 +480,28 @@ void slot_draw(struct Slot *slot) {
     bounds.h -= 2;
     
     if (*slot->name) {
-        SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_small, slot->name, (SDL_Color){0, 0, 0, 255});
-        Assert(gs->window, surf);
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-        Assert(gs->window, texture);
+        SDL_Surface **surf = &gs->surfaces.slot_names[SLOT_MAX_COUNT * c->type + slot->type];
+        SDL_Texture **texture = &gs->textures.slot_names[SLOT_MAX_COUNT * c->type + slot->type];
+        
+        if (!*surf) {
+            *surf = TTF_RenderText_Blended(gs->fonts.font_small, slot->name, (SDL_Color){0, 0, 0, 255});
+        }
+        Assert(gs->window, *surf);
+
+        if (!*texture) {
+            *texture = SDL_CreateTextureFromSurface(gs->renderer, *surf);
+            printf("Happened!\n");
+        }
+
+        Assert(gs->window, *texture);
         
         SDL_Rect dst = {
-            bounds.x + slot->w/2 - surf->w/2,
-            bounds.y - surf->h - 2,
-            surf->w,
-            surf->h
+            bounds.x + slot->w/2 - (*surf)->w/2,
+            bounds.y - (*surf)->h - 2,
+            (*surf)->w,
+            (*surf)->h
         };
-        SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
-        
-        SDL_DestroyTexture(texture);
-        SDL_FreeSurface(surf);
+        SDL_RenderCopy(gs->renderer, *texture, NULL, &dst);
     }
     
     item_draw(&slot->item, bounds.x, bounds.y, bounds.w, bounds.h);

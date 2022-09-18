@@ -144,9 +144,10 @@ void blob_hammer_update_texture() {
     struct Blob_Hammer *blob_hammer = &gs->blob_hammer;
     
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
-    SDL_SetTextureBlendMode(blob_hammer->render_texture, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(RenderTarget(gs, TARGET_BLOB_HAMMER), SDL_BLENDMODE_BLEND);
     
-    SDL_SetRenderTarget(gs->renderer, blob_hammer->render_texture);
+    Assert(gs->window, RenderTarget(gs, TARGET_BLOB_HAMMER));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, TARGET_BLOB_HAMMER));
 
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
     SDL_RenderClear(gs->renderer);
@@ -181,5 +182,5 @@ void blob_hammer_draw() {
     struct Blob_Hammer *blob_hammer = &gs->blob_hammer;
     
     blob_hammer_update_texture();
-    SDL_RenderCopy(gs->renderer, blob_hammer->render_texture, NULL, NULL);
+    SDL_RenderCopy(gs->renderer, RenderTarget(gs, TARGET_BLOB_HAMMER), NULL, NULL);
 }

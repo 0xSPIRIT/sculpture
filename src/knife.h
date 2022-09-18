@@ -9,7 +9,7 @@ struct Knife {
     float x, y;
     int w, h;
     float angle;
-    SDL_Texture *texture, *render_texture;
+    SDL_Texture *texture;
     Uint32 *pixels;
 };
 

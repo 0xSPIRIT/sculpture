@@ -1,7 +1,6 @@
 #include "input.h"
 
 #include "../shared.h"
-#include "../globals.h"
 
 void input_tick(struct Game_State *state) {
     struct Input *in = &state->input;

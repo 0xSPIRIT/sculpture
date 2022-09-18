@@ -18,7 +18,7 @@ typedef enum PROCESS_DPI_AWARENESS
 typedef BOOL (WINAPI * SETPROCESSDPIAWARE_T)(void);
 typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);
 
-static inline bool win32_SetProcessDpiAware(void) {
+internal inline bool win32_SetProcessDpiAware(void) {
     HMODULE shcore = LoadLibraryA("Shcore.dll");
     SETPROCESSDPIAWARENESS_T SetProcessDpiAwareness = NULL;
     if (shcore) {

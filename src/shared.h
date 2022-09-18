@@ -1,3 +1,12 @@
+//
+// This file is shared between the platform layer
+// and game layer, containing information necessary
+// for both.
+//
+// For example, the Game_State structure, memory
+// information, assert macros etc. are all here.
+//
+
 #ifndef SHARED_H_
 #define SHARED_H_
 
@@ -26,15 +35,18 @@
 #include "chisel_blocker.h"
 #include "boot/assets.h"
 
+#define internal static
+#define persist static // You shouldn't use this anywhere in the game layer.
+
 #define Kilobytes(x) ((Uint64)x*1024)
 #define Megabytes(x) ((Uint64)x*1024*1024)
 #define Gigabytes(x) ((Uint64)x*1024*1024*1024)
 #define Terabytes(x) ((Uint64)x*1024*1024*1024*1024)
 
-// Assert using an SDL MessageBox popup.
-#define Assert(window, condition) (_assert(condition, window, __func__, __FILE__, __LINE__))
-// Assert without the popup; use console instead.
-#define AssertNW(condition) (_assert(condition, NULL, __func__, __FILE__, __LINE__))
+// Assert using an SDL MessageBox popup. Prints to the console too.
+#define Assert(window, condition) (_assert(condition, window, __func__, __FILE__, __LINE__) ? DebugBreak() : 0 )
+// Assert without the popup (no window); use only console instead.
+#define AssertNW(condition) (_assert(condition, NULL, __func__, __FILE__, __LINE__) ? DebugBreak() : 0 )
 
 //
 // To allocate permanent memory that will persist until
@@ -69,8 +81,6 @@ struct Game_State {
     int S; // scale
     int window_width, window_height;
     float delta_time;
-
-    SDL_Texture *render_texture;
 
     int current_tool, prev_tool;
     int debug_mode;
@@ -177,8 +187,8 @@ inline void _temp_dealloc(void *ptr, const char *file, int line) {
     gs->temp_allocation_count--;
 }
 
-inline void _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line) {
-    if (condition) return;
+inline bool _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line) {
+    if (condition) return false;
 
     char message[64] = {0};
     char line_of_code[2048] = {0};
@@ -204,9 +214,12 @@ inline void _assert(bool condition, SDL_Window *window, const char *func, const 
     }
 
     fprintf(stderr, "\n:::: ASSERTION FAILED ::::\n%s", message);
-    fflush(stdout);
+    fflush(stderr);
 
-    DebugBreak();
+    return !condition;
 }
+
+// which is an enum in assets.h
+#define RenderTarget(gs, which) (gs->textures.render_targets[gs->level_current][which])
 
 #endif // SHARED_H_

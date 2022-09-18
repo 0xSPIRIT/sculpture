@@ -9,7 +9,6 @@
 #include "gui.h"
 #include "util.h"
 #include "grid.h"
-#include "globals.h"
 #include "game.h"
 
 void placer_init(int num) {
@@ -40,7 +39,7 @@ void placer_init(int num) {
 }
 
 // Places a circle down.
-static void placer_place_circle(struct Placer *placer) {
+internal void placer_place_circle(struct Placer *placer) {
     float dx = placer->x - placer->px;
     float dy = placer->y - placer->py;
     float len = sqrt(dx*dx + dy*dy);
@@ -117,7 +116,7 @@ static void placer_place_circle(struct Placer *placer) {
     placer->did_click = did_set_object;
 }
 
-static void placer_set_and_resize_rect(struct Placer *placer) {
+internal void placer_set_and_resize_rect(struct Placer *placer) {
     struct Input *input = &gs->input;
 
     if (placer->rect.x == -1) {
@@ -144,7 +143,7 @@ static void placer_set_and_resize_rect(struct Placer *placer) {
     }
 }
 
-static void placer_place_rect(struct Placer *placer) {
+internal void placer_place_rect(struct Placer *placer) {
     if (placer->rect.x == -1) return;
 
     placer->rect.w--;

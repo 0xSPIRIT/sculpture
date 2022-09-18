@@ -17,7 +17,8 @@ enum Slot_Type {
     SLOT_INPUT1,
     SLOT_INPUT2,
     SLOT_OUTPUT,
-    SLOT_FUEL
+    SLOT_FUEL,
+    SLOT_MAX_COUNT
 };
 
 struct Slot {
@@ -34,7 +35,8 @@ struct Slot {
 
 enum Converter_Type {
     CONVERTER_MATERIAL,
-    CONVERTER_FUEL
+    CONVERTER_FUEL,
+    CONVERTER_COUNT
 };
 
 struct Arrow {

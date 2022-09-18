@@ -14,6 +14,8 @@ struct Point_Knife {
 
     int *highlights;
     int highlight_count;
+
+    int cooldown;
 };
 
 void point_knife_init();

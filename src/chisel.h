@@ -30,7 +30,7 @@ struct Chisel {
     float spd;
     float angle;
     Uint32 *pixels;
-    SDL_Texture *texture, *outside_texture, *face_texture, *render_texture;
+    SDL_Texture *texture, *outside_texture, *face_texture;
     int w, h;
     int face_w, face_h;
     int outside_w, outside_h;

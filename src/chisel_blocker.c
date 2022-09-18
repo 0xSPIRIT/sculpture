@@ -6,7 +6,6 @@
 
 #include "util.h"
 #include "boot/cursor.h"
-#include "globals.h"
 #include "game.h"
 
 void chisel_blocker_init() {
@@ -22,7 +21,7 @@ void chisel_blocker_init() {
 
     chisel_blocker->side = 1;
 
-    SDL_SetTextureBlendMode(chisel_blocker->render_texture, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(RenderTarget(gs, TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
     chisel_blocker->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));
 }
 
@@ -201,9 +200,10 @@ void chisel_blocker_draw() {
     }
 
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
-    SDL_SetTextureBlendMode(chisel_blocker->render_texture, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(RenderTarget(gs, TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
     
-    SDL_SetRenderTarget(gs->renderer, chisel_blocker->render_texture);
+    Assert(gs->window, RenderTarget(gs, TARGET_CHISEL_BLOCKER));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, TARGET_CHISEL_BLOCKER));
 
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
     SDL_RenderClear(gs->renderer);
@@ -318,13 +318,13 @@ void chisel_blocker_draw() {
         }
     }
 
-    SDL_SetTextureBlendMode(chisel_blocker->render_texture, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(RenderTarget(gs, TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
     if (gs->chisel_blocker_mode)
-        SDL_SetTextureAlphaMod(chisel_blocker->render_texture, 255);
+        SDL_SetTextureAlphaMod(RenderTarget(gs, TARGET_CHISEL_BLOCKER), 255);
     else
-        SDL_SetTextureAlphaMod(chisel_blocker->render_texture, 128);
+        SDL_SetTextureAlphaMod(RenderTarget(gs, TARGET_CHISEL_BLOCKER), 128);
 
-    SDL_RenderCopy(gs->renderer, chisel_blocker->render_texture, NULL, NULL);
+    SDL_RenderCopy(gs->renderer, RenderTarget(gs, TARGET_CHISEL_BLOCKER), NULL, NULL);
     
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 16);

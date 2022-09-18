@@ -21,7 +21,6 @@
 #include "boot/cursor.h"
 #include "undo.h"
 #include "game.h"
-#include "globals.h"
 
 internal int level_add(const char *name, char *desired_image, char *initial_image, int effect_type) {
     struct Level *level = &gs->levels[gs->level_count++];
@@ -110,12 +109,6 @@ void goto_level(int lvl) {
     gs->level_current = lvl;
 
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
-
-    // TODO: Change this to be in the platform layer instead.
-    SDL_DestroyTexture(gs->render_texture);
-    printf("Level Size: %d, %d\n", gs->gw, gs->gh);
-    
-    gs->render_texture = SDL_CreateTexture(gs->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, gs->gw, gs->gh);
 
     gs->S = gs->window_width/gs->gw;
     Assert(gs->window, gs->gw==gs->gh);
@@ -261,7 +254,8 @@ void level_draw() {
         level_draw_intro();
         break;
     case LEVEL_STATE_OUTRO: case LEVEL_STATE_PLAY:
-        SDL_SetRenderTarget(gs->renderer, gs->render_texture);
+        Assert(gs->window, RenderTarget(gs, TARGET_GLOBAL));
+        SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, TARGET_GLOBAL));
         
         SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
         SDL_RenderClear(gs->renderer);
@@ -305,7 +299,7 @@ void level_draw() {
         };
 
         SDL_SetRenderTarget(gs->renderer, NULL);
-        SDL_RenderCopy(gs->renderer, gs->render_texture, NULL, &dst);
+        SDL_RenderCopy(gs->renderer, RenderTarget(gs, TARGET_GLOBAL), NULL, &dst);
 
         gui_popup_draw();
         
@@ -401,7 +395,8 @@ void level_draw() {
 void level_draw_intro() {
     struct Level *level = &gs->levels[gs->level_current];
 
-    SDL_SetRenderTarget(gs->renderer, gs->render_texture);
+    Assert(gs->window, RenderTarget(gs, TARGET_GLOBAL));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, TARGET_GLOBAL));
         
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
     SDL_RenderClear(gs->renderer);
@@ -416,7 +411,7 @@ void level_draw_intro() {
     }
 
     SDL_SetRenderTarget(gs->renderer, NULL);
-    SDL_RenderCopy(gs->renderer, gs->render_texture, NULL, NULL);
+    SDL_RenderCopy(gs->renderer, RenderTarget(gs, TARGET_GLOBAL), NULL, NULL);
 
     char name[256] = {0};
     sprintf(name, "Level %d: %s", level->index+1, level->name);

@@ -21,7 +21,7 @@
 // using VirtualAlloc() and give it pointers into that
 // memory block through functions defined in ../shared.h
 //
-// This method also means you can't store local persistant
+// This method also means you can't store "local persistant"
 // (static) variables inside functions nor global variables
 // because they reset every time you reload the DLL.
 // They're probably not very good practice in a lot of uses
@@ -45,7 +45,7 @@
 #define GAME_DLL_NAME "sculpture.dll"
 #define TEMP_DLL_NAME "sculpture_temp.dll"
 
-typedef void (*GameInitProc)(struct Game_State *state);
+typedef void (*GameInitProc)(struct Game_State *state, int start_level);
 typedef bool (*GameTickEventProc)(struct Game_State *state, SDL_Event *event);
 typedef void (*GameRunProc)(struct Game_State *state);
 typedef void (*GameDeinitProc)(struct Game_State *state);
@@ -60,7 +60,7 @@ struct Game_Code {
     GameDeinitProc game_deinit;
 };
 
-static void game_init_sdl(struct Game_State *state, const char *window_title, int w, int h) {
+internal void game_init_sdl(struct Game_State *state, const char *window_title, int w, int h) {
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
@@ -80,8 +80,10 @@ static void game_init_sdl(struct Game_State *state, const char *window_title, in
     Assert(state->window, state->renderer);
 }
 
-static struct Memory make_memory(size_t size) {
+internal struct Memory make_memory(size_t size) {
     struct Memory memory = {0};
+
+    AssertNW(size >= sizeof(struct Game_State));
     
     LPVOID base_address = (LPVOID) Terabytes(2);
     
@@ -93,7 +95,7 @@ static struct Memory make_memory(size_t size) {
     return memory;
 }
 
-static void game_init(struct Game_State *state) {
+internal void game_init(struct Game_State *state) {
     srand(time(0));
     
     state->S = 6;
@@ -105,7 +107,9 @@ static void game_init(struct Game_State *state) {
 
     game_init_sdl(state, "Alaska", state->window_width, state->window_height);
     
-    // Load all assets.
+    // Load all assets... except for render targets.
+    // We can't load render targets until levels
+    // are initialized.
     textures_init(state->window,
                   state->renderer,
                   state->levels,
@@ -124,7 +128,7 @@ static void game_init(struct Game_State *state) {
     fonts_init(&state->fonts);
 }
 
-static void game_deinit(struct Game_State *state) {
+internal void game_deinit(struct Game_State *state) {
     textures_deinit(&state->textures);
     surfaces_deinit(&state->surfaces);
     fonts_deinit(&state->fonts);
@@ -150,7 +154,7 @@ inline FILETIME get_last_write_time(char *filename) {
     return write_time;
 }
 
-static void load_game_code(struct Game_Code *code) {
+internal void load_game_code(struct Game_Code *code) {
     code->last_write_time = get_last_write_time(GAME_DLL_NAME);
     
     CopyFileA(GAME_DLL_NAME, TEMP_DLL_NAME, FALSE);
@@ -169,7 +173,7 @@ static void load_game_code(struct Game_Code *code) {
     }
 }
 
-static void unload_game_code(struct Game_Code *code) {
+internal void unload_game_code(struct Game_Code *code) {
     FreeLibrary(code->dll);
     code->game_init = 0;
     code->game_run = 0;
@@ -193,6 +197,12 @@ int main(int argc, char **argv) {
         AssertNW(0 == strcmp(final_three_chars, "bin"));
     }
 
+    // The level to start on
+    int start_level = 0;
+    if (argc == 2) {
+        start_level = atoi(argv[1]);
+    }
+
     struct Game_Code game_code;
     load_game_code(&game_code);
     
@@ -200,7 +210,13 @@ int main(int argc, char **argv) {
     game_state.memory = make_memory(Megabytes(512));
     
     game_init(&game_state);
-    game_code.game_init(&game_state);
+    game_code.game_init(&game_state, start_level);
+
+    // Only now, since the levels have been instantiated,
+    // can we initialize render targets (since they depend
+    // on each level's width/height)
+
+    render_targets_init(game_state.window, game_state.renderer, game_state.window_width, game_state.levels, &game_state.textures);
 
     const int reload_delay_max = 5;
     int reload_delay = reload_delay_max; // Frames of delay.

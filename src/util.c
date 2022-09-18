@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "globals.h"
 #include "gui.h"
 #include "grid.h"
 #include "game.h"

@@ -24,14 +24,13 @@
 #include "util.c"
 
 #include "boot/cursor.h"
-#include "globals.h"
 
 struct Game_State *gs = NULL;
 
-void game_init(struct Game_State *state) {
+void game_init(struct Game_State *state, int level) {
     gs = state;
     levels_setup();
-    goto_level(0);
+    goto_level(level);
 }
 
 void game_deinit(struct Game_State *state) {
@@ -49,7 +48,6 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     gs->prev_tool = gs->current_tool;
 
     if (event->type == SDL_QUIT) {
-        printf("Happened!\n");
         is_running = false;
     }
 
