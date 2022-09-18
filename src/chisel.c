@@ -43,13 +43,13 @@ void chisel_init(struct Chisel *type) {
     chisel->line = NULL;
     chisel->face_mode = false;
 
-    chisel->pixels = persist_alloc(gs->gw*gs->gh, sizeof(Uint32));
+    chisel->pixels = persist_alloc(gs->memory, gs->gw*gs->gh, sizeof(Uint32));
 
     chisel->texture = chisel->outside_texture;
     chisel->w = chisel->outside_w;
     chisel->h = chisel->outside_h;
 
-    chisel->highlights = persist_alloc(gs->gw*gs->gh, sizeof(int));
+    chisel->highlights = persist_alloc(gs->memory, gs->gw*gs->gh, sizeof(int));
     chisel->highlight_count = 0;
 
     chisel->spd = 3.;
@@ -308,7 +308,7 @@ void chisel_draw() {
     // Draw the highlights for blobs now.
     if (DRAW_CHISEL_HIGHLIGHTS) {
         for (int i = 0; i < chisel->highlight_count; i++) {
-            SDL_SetRenderDrawColor(gs->renderer, 234, 103, 93, 64);
+            SDL_SetRenderDrawColor(gs->renderer, 255, 103, 93, 200);
             SDL_RenderDrawPoint(gs->renderer, chisel->highlights[i]%gs->gw, chisel->highlights[i]/gs->gw);
         }
     }

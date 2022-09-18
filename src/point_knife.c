@@ -17,7 +17,7 @@ void point_knife_init() {
     SDL_QueryTexture(point_knife->texture, NULL, NULL, &point_knife->w, &point_knife->h);
 
     point_knife->face_mode = false;
-    point_knife->highlights = persist_alloc(gs->gw*gs->gh, sizeof(int));
+    point_knife->highlights = persist_alloc(gs->memory, gs->gw*gs->gh, sizeof(int));
 
     point_knife->highlight_count = 0;
     memset(point_knife->highlights, 0, 50 * sizeof(int));
@@ -38,7 +38,13 @@ void point_knife_tick() {
     point_knife->y = index/gs->gw;
 
     if (point_knife->x - px != 0 || point_knife->y - py != 0) {
-        point_knife->highlight_count = array_clamped_to_grid(input->mx, input->my, !point_knife->face_mode, 1, point_knife->highlights, &point_knife->highlight_count);
+        point_knife->highlight_count =
+            array_clamped_to_grid(input->mx,
+                                  input->my,
+                                  !point_knife->face_mode,
+                                  1,
+                                  point_knife->highlights,
+                                  &point_knife->highlight_count);
     }
 
     /* float dx = point_knife->x - input->mx; */
@@ -100,31 +106,26 @@ void point_knife_draw() {
     SDL_RenderCopy(gs->renderer, point_knife->texture, NULL, &dst);
 }
 
+// o_arr (highlights) must be allocated.
 internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int *o_arr, int *o_count) {
-    int *array = temp_alloc(gs->gw*gs->gh, sizeof(int));
     int count = 0;
     
-    struct Cell *grid_copy = temp_alloc(gs->gw*gs->gh, sizeof(struct Cell));
-    memcpy(grid_copy, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
+    memcpy(gs->grid_temp , gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
 
     int x = 0;
     while (x < 17) {
         int i = clamp_to_grid(px, py, outside, on_edge, false, true);
         if (i == -1) break;
         if (get_neighbour_count(i%gs->gw, i/gs->gw, 2) <= 21) { /* Must be identical to the statement above */
-            array[count++] = i;
+            o_arr[count++] = i;
             gs->grid[i].type = 0;
         }
         x++;
     }
 
-    memcpy(gs->grid, grid_copy, sizeof(*grid_copy)*gs->gw*gs->gh);
+    memcpy(gs->grid, gs->grid_temp, sizeof(*gs->grid_temp)*gs->gw*gs->gh);
     
     *o_count = count;
-    memcpy(o_arr, array, sizeof(int) * count);
-
-    temp_dealloc(array);
-    temp_dealloc(grid_copy);
 
     return count;
 }

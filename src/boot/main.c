@@ -50,6 +50,8 @@ typedef bool (*GameTickEventProc)(struct Game_State *state, SDL_Event *event);
 typedef void (*GameRunProc)(struct Game_State *state);
 typedef void (*GameDeinitProc)(struct Game_State *state);
 
+struct Game_State *gs = NULL;
+
 struct Game_Code {
     HMODULE dll;
     FILETIME last_write_time;
@@ -129,11 +131,13 @@ internal void game_init(struct Game_State *state) {
 }
 
 internal void game_deinit(struct Game_State *state) {
+    // Close the window first so it'll feel snappy.
+    SDL_DestroyWindow(state->window);
+
     textures_deinit(&state->textures);
     surfaces_deinit(&state->surfaces);
     fonts_deinit(&state->fonts);
     
-    SDL_DestroyWindow(state->window);
     SDL_DestroyRenderer(state->renderer);
     
     TTF_Quit();
@@ -141,6 +145,7 @@ internal void game_deinit(struct Game_State *state) {
     SDL_Quit();
 }
 
+// @Performance
 inline FILETIME get_last_write_time(char *filename) {
     FILETIME write_time = {0};
     
@@ -206,17 +211,22 @@ int main(int argc, char **argv) {
     struct Game_Code game_code;
     load_game_code(&game_code);
     
-    struct Game_State game_state = {0};
-    game_state.memory = make_memory(Megabytes(512));
+    struct Memory memory = make_memory(Megabytes(512));
+
+    // *2 in case we add more values at runtime.
+    struct Game_State *game_state = persist_alloc(&memory, 1, sizeof(struct Game_State)*2);
+    gs = game_state;
     
-    game_init(&game_state);
-    game_code.game_init(&game_state, start_level);
+    game_state->memory = &memory;
+    
+    game_init(game_state);
+    game_code.game_init(game_state, start_level);
 
     // Only now, since the levels have been instantiated,
     // can we initialize render targets (since they depend
     // on each level's width/height)
 
-    render_targets_init(game_state.window, game_state.renderer, game_state.window_width, game_state.levels, &game_state.textures);
+    render_targets_init(game_state->window, game_state->renderer, game_state->window_width, game_state->levels, &game_state->textures);
 
     const int reload_delay_max = 5;
     int reload_delay = reload_delay_max; // Frames of delay.
@@ -224,7 +234,7 @@ int main(int argc, char **argv) {
     bool running = true;
     
     while (running) {
-        game_state.temp_allocation_count = 0;
+        game_state->temp_allocation_count = 0;
         
         // We push the DLL reload to a delay because if we lock the file too fast
         // the compiler doesn't have enough time to write to it... or something.
@@ -241,37 +251,45 @@ int main(int argc, char **argv) {
             reload_delay = reload_delay_max;
         }
         
-        input_tick(&game_state);
+        input_tick(game_state);
         
         // Memory usage statistics.
         {
-            unsigned size_current = game_state.memory.cursor - game_state.memory.data;
-            unsigned size_max = game_state.memory.size;
+            unsigned size_current = memory.cursor - memory.data;
+            unsigned size_max = memory.size;
             float percentage = (float)size_current / (float)size_max;
             percentage *= 100.f;
 
             char title[128] = {0};
             sprintf(title, "Alaska | Memory Used: %.2f%%", percentage);
 
-            SDL_SetWindowTitle(game_state.window, title);
+            SDL_SetWindowTitle(game_state->window, title);
         }
 
         SDL_Event event;
 
-        if (SDL_PollEvent(&event)) {
-            running = game_code.game_tick_event(&game_state, &event);
+        bool should_stop = false;
+        while (SDL_PollEvent(&event)) {
+            bool is_running = game_code.game_tick_event(game_state, &event);
+            if (!is_running) {
+                should_stop = true;
+            }
         }
 
-        game_code.game_run(&game_state);
+        game_code.game_run(game_state);
 
         // Ensure our allocations are not leaked!
-        Assert(game_state.window, game_state.temp_allocation_count == 0);
+        Assert(game_state->window, game_state->temp_allocation_count == 0);
+
+        if (should_stop) {
+            running = false;
+        }
     }
     
-    game_code.game_deinit(&game_state);
-    game_deinit(&game_state);
+    game_code.game_deinit(game_state);
+    game_deinit(game_state);
     
-    VirtualFree(game_state.memory.data, 0, MEM_RELEASE);
+    VirtualFree(memory.data, 0, MEM_RELEASE);
     
     return 0;
 }

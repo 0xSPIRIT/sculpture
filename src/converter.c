@@ -258,7 +258,7 @@ bool was_mouse_in_slot(struct Slot *slot) {
 }
 
 struct Converter *converter_init(int type) {
-    struct Converter *converter = persist_alloc(1, sizeof(struct Converter));
+    struct Converter *converter = persist_alloc(gs->memory, 1, sizeof(struct Converter));
     converter->type = type;
     converter->w = gs->window_width/2;
     converter->h = GUI_POPUP_H;
@@ -269,7 +269,7 @@ struct Converter *converter_init(int type) {
     switch (type) {
         case CONVERTER_MATERIAL:
         converter->slot_count = 4;
-        converter->slots = persist_alloc(converter->slot_count, sizeof(struct Slot));
+        converter->slots = persist_alloc(gs->memory, converter->slot_count, sizeof(struct Slot));
         
         converter->slots[SLOT_INPUT1].x = converter->w/3.0;
         converter->slots[SLOT_INPUT1].y = converter->h/4.0;
@@ -291,7 +291,7 @@ struct Converter *converter_init(int type) {
         break;
     case CONVERTER_FUEL:
         converter->slot_count = 3;
-        converter->slots = persist_alloc(converter->slot_count, sizeof(struct Slot));
+        converter->slots = persist_alloc(gs->memory, converter->slot_count, sizeof(struct Slot));
         
         converter->slots[SLOT_INPUT1].x = converter->w/3.0;
         converter->slots[SLOT_INPUT1].y = converter->h/4.0;
@@ -490,7 +490,6 @@ void slot_draw(struct Slot *slot) {
 
         if (!*texture) {
             *texture = SDL_CreateTextureFromSurface(gs->renderer, *surf);
-            printf("Happened!\n");
         }
 
         Assert(gs->window, *texture);
@@ -569,17 +568,17 @@ bool converter_convert(struct Converter *converter) {
     
     if (converter->type == CONVERTER_FUEL) {
         switch (input->type) {
-            case CELL_COBBLESTONE: case CELL_MARBLE: case CELL_DIRT: case CELL_SAND: case CELL_WOOD_PLANK:
+        case CELL_COBBLESTONE: case CELL_MARBLE: case CELL_DIRT: case CELL_SAND: case CELL_WOOD_PLANK:
             output_type = CELL_WOOD_LOG;
             break;
-            case CELL_GLASS: case CELL_WOOD_LOG: case CELL_QUARTZ:
+        case CELL_GLASS: case CELL_WOOD_LOG: case CELL_QUARTZ:
             output_type = CELL_COAL;
             break;
         }
     } else if (converter->type == CONVERTER_MATERIAL) {
         switch (input->type) {
             case CELL_SAND:
-            output_type = CELL_GLASS;
+                output_type = CELL_GLASS;
             break;
         }
     }

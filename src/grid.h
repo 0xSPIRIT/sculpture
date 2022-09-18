@@ -50,8 +50,10 @@ enum Cell_Type {
     CELL_LAVA,
     CELL_COUNT
 };
+
 struct Cell {
     enum Cell_Type type;  // The type of this cell.
+    int id;               // Unique ID for each cell.
     int object;           // Object index the cell belongs. -1 for none
     int temp;             // Temporary variable for algorithms
     bool updated;         // Updated for the frame yet?

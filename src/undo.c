@@ -7,11 +7,11 @@
 
 // No need to deinit because we're using persist_alloc
 void undo_system_init() {
-    gs->start_state = persist_alloc(1, sizeof(struct Save_State));
+    gs->start_state = persist_alloc(gs->memory, 1, sizeof(struct Save_State));
     gs->current_state = gs->start_state;
 
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        gs->current_state->grid_layers[i] = persist_alloc(gs->gw*gs->gh, sizeof(struct Cell));
+        gs->current_state->grid_layers[i] = persist_alloc(gs->memory, gs->gw*gs->gh, sizeof(struct Cell));
         memcpy(gs->current_state->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
     }
 }
@@ -26,11 +26,11 @@ void save_state_to_next() {
     }
 
     struct Save_State *state;
-    state = persist_alloc(1, sizeof(struct Save_State));
+    state = persist_alloc(gs->memory, 1, sizeof(struct Save_State));
 
     if (!state->grid_layers[0]) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-            state->grid_layers[i] = persist_alloc(gs->gw*gs->gh, sizeof(struct Cell));
+            state->grid_layers[i] = persist_alloc(gs->memory, gs->gw*gs->gh, sizeof(struct Cell));
         }
     }
 

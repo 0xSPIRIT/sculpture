@@ -16,7 +16,6 @@
 
 #include <time.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -67,7 +66,7 @@ struct Memory {
 // Perhaps to be able to load game states totally, we could
 // add an SDL_Event in here as well, and dump this to a file.
 struct Game_State {
-    struct Memory memory;
+    struct Memory *memory;
 
     int temp_allocation_count; // A counter for every temp_alloc.
 
@@ -86,6 +85,12 @@ struct Game_State {
     int debug_mode;
     
     SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
+
+    // A temporary buffer for algorithms.
+    // Allocated persistantly so you don't
+    // need to call temp_alloc every time you
+    // do the algorithm.
+    struct Cell *grid_temp;
 
     struct Cell *grid_layers[NUM_GRID_LAYERS]; 
     struct Cell *grid, *fg_grid, *gas_grid, *pickup_grid;
@@ -137,40 +142,46 @@ struct Game_State {
     struct Chisel_Hammer chisel_hammer;
 };
 
-// Defined in game.c
+// Defined in game.c and main.c
 extern struct Game_State *gs;
 
-#define persist_alloc(num, size) (_allocate(num, size, __FILE__, __LINE__))
+#define persist_alloc(mem, num, size) (_persist_allocate(mem, num, size, __FILE__, __LINE__))
 #define temp_alloc(num, size) (_temp_alloc(num, size, __FILE__, __LINE__))
 #define temp_dealloc(ptr) (_temp_dealloc(ptr, __FILE__, __LINE__))
 
-inline void *_allocate(size_t num, size_t size_individual, const char *file, int line) {
+inline void *_persist_allocate(struct Memory *memory, size_t num, size_t size_individual, const char *file, int line) {
     size_t size;
     void *output;
 
     size = num * size_individual;
 
-    if (gs->memory.cursor+size > gs->memory.data+gs->memory.size) {
+    if (memory->cursor+size > memory->data+memory->size) {
         char message[256] = {0};
         sprintf(message, "Out of Memory!\nAllowed memory: %zd bytes, Attempted allocation to %zd bytes.\n%s:%d",
-                gs->memory.size,
-                size+(gs->memory.cursor-gs->memory.data),
+                memory->size,
+                size+(memory->cursor-memory->data),
                 file, line);
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory Error :(", message, gs->window);
         exit(1);
         return NULL;
     }
 
-    output = gs->memory.cursor;
-    gs->memory.cursor += size;
+    output = memory->cursor;
+    memory->cursor += size;
 
     return output;
 }
 
 // Used for allocations you want to deallocate soon.
+// Try not to use this too much, especially things
+// that occur every frame.
 inline void *_temp_alloc(size_t num, size_t size_individual, const char *file, int line) {
     if (!num || !size_individual) return NULL;
+
     void *allocation = calloc(num, size_individual);
+
+    /* printf("Allocated %zd at %s(%d)!\n", num*size_individual, file, line); */
+
     if (!allocation) {
         char message[256] = {0};
         sprintf(message, "Failed temporary allocation at %s:%d", file, line);
@@ -184,6 +195,7 @@ inline void *_temp_alloc(size_t num, size_t size_individual, const char *file, i
 
 inline void _temp_dealloc(void *ptr, const char *file, int line) {
     free(ptr);
+    /* printf("Freed pointer! at %s(%d)\n", file, line); */
     gs->temp_allocation_count--;
 }
 

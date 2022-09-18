@@ -1,8 +1,5 @@
       --------------------------TODO----------------------------
 
-Look at gui_popup_draw() and overlay_draw()
-
-- Fix all the memory bugs.
  - There are two converters- the fuel converter and the material
    converter. Upon chiseling, dust is generated and put onto a second
    layer, which is able to be picked up by the placer. Materials
@@ -38,6 +35,7 @@ Look at gui_popup_draw() and overlay_draw()
           x x
           xxxx
     
+x Improve performance a little.
 
 - Improve the grabber to actually grab objects properly. Upon
   clicking, store the position of a cell in the object then track

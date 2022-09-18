@@ -213,6 +213,7 @@ void overlay_draw(struct Overlay *overlay) {
         else
             color = (SDL_Color){255,255,255,255};
 
+        // @Performance
         surfaces[i] = TTF_RenderText_Solid(gs->fonts.font, overlay->str[i], color);
         Assert(gs->window, surfaces[i]);
         textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surfaces[i]);
@@ -267,7 +268,7 @@ void overlay_get_string(int type, int amt, char *out_str) {
 }
 
 struct Button *button_allocate(SDL_Texture *texture, const char *overlay_text, void (*on_pressed)(void*)) {
-    struct Button *b = persist_alloc(1, sizeof(struct Button));
+    struct Button *b = persist_alloc(gs->memory, 1, sizeof(struct Button));
     b->texture = texture;
     SDL_QueryTexture(texture, NULL, NULL, &b->w, &b->h);
 

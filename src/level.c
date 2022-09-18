@@ -262,6 +262,8 @@ void level_draw() {
 
         grid_draw();
 
+        effect_draw(&gs->current_effect);
+
         switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE:
             chisel_draw();
@@ -288,8 +290,6 @@ void level_draw() {
 
         draw_blobs();
         draw_objects();
-
-        effect_draw(&gs->current_effect);
 
         gui_draw();
 
@@ -446,7 +446,7 @@ void level_get_cells_from_image(char *path, struct Cell **out, struct Source_Cel
     *out_w = w;
     *out_h = h;
 
-    *out = persist_alloc(w*h, sizeof(struct Cell));
+    *out = persist_alloc(gs->memory, w*h, sizeof(struct Cell));
 
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
