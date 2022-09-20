@@ -5,7 +5,7 @@
 #include "grid.h"
 
 #include "util.h"
-#include "boot/cursor.h"
+#include "cursor.h"
 #include "game.h"
 
 void chisel_blocker_init() {
@@ -22,7 +22,7 @@ void chisel_blocker_init() {
     chisel_blocker->side = 1;
 
     SDL_SetTextureBlendMode(RenderTarget(gs, TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
-    chisel_blocker->pixels = persist_alloc(gs->memory, gs->gw*gs->gh, sizeof(Uint32));
+    chisel_blocker->pixels = push_memory(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
 }
 
 void chisel_blocker_deinit() {

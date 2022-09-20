@@ -4,7 +4,7 @@ set Common_Compiler_Flags=/nologo /Zi /GR- /EHa- /Odi /MT /FC /Fo:"obj\\" /D_CRT
 set Common_Linker_Flags=user32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib
 
 rem @echo off
-rem gcc boot/main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -g -o ..\bin\win32_sculpture.exe
+rem gcc main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -g -o ..\bin\win32_sculpture.exe
 
 pushd bin\
 
@@ -22,7 +22,7 @@ REM and we still retain the errorlevel from the DLL compilation.
 (>>win32_sculpture.exe call;) 2>nul || goto end
 
 REM Build the SDL layer (.exe)
-cl.exe %Common_Compiler_Flags% ..\src\boot\main.c %Common_Linker_Flags% SDL2main.lib /link /incremental:no /out:win32_sculpture.exe
+cl.exe %Common_Compiler_Flags% ..\src\main.c %Common_Linker_Flags% SDL2main.lib /link /incremental:no /out:win32_sculpture.exe
 set err=errorlevel
 
 popd

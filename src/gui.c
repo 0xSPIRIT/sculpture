@@ -6,7 +6,7 @@
 #include "placer.h"
 #include "chisel.h"
 #include "chisel_blocker.h"
-#include "boot/cursor.h"
+#include "cursor.h"
 #include "game.h"
 
 #include <SDL2/SDL.h>
@@ -57,7 +57,7 @@ void gui_tick() {
         gui->popup = !gui->popup;
         gui->popup_y_vel = 0;
         overlay_reset(&gui->overlay);
-        /* all_converters_reset(); */
+
         // Just in case the player had reset it.
         if (gs->current_placer == -1)
             gs->current_placer = 0;
@@ -268,7 +268,7 @@ void overlay_get_string(int type, int amt, char *out_str) {
 }
 
 struct Button *button_allocate(SDL_Texture *texture, const char *overlay_text, void (*on_pressed)(void*)) {
-    struct Button *b = persist_alloc(gs->memory, 1, sizeof(struct Button));
+    struct Button *b = push_memory(gs->persistent_memory, 1, sizeof(struct Button));
     b->texture = texture;
     SDL_QueryTexture(texture, NULL, NULL, &b->w, &b->h);
 

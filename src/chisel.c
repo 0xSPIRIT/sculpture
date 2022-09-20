@@ -43,13 +43,13 @@ void chisel_init(struct Chisel *type) {
     chisel->line = NULL;
     chisel->face_mode = false;
 
-    chisel->pixels = persist_alloc(gs->memory, gs->gw*gs->gh, sizeof(Uint32));
+    chisel->pixels = push_memory(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
 
     chisel->texture = chisel->outside_texture;
     chisel->w = chisel->outside_w;
     chisel->h = chisel->outside_h;
 
-    chisel->highlights = persist_alloc(gs->memory, gs->gw*gs->gh, sizeof(int));
+    chisel->highlights = push_memory(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
     chisel->highlight_count = 0;
 
     chisel->spd = 3.;
@@ -354,7 +354,7 @@ Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len) {
             //      /       
             //   xx/    xxx/
             //   xxx    xx/x
-            //   xxx    xxxxxi
+            //   xxx    xxxxx
 
             //  ^ This is what we want to prevent.
 

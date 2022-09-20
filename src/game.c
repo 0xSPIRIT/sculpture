@@ -23,13 +23,14 @@
 #include "undo.c"
 #include "util.c"
 
-#include "boot/cursor.h"
+#include "cursor.h"
 
 struct Game_State *gs = NULL;
 
 void game_init(struct Game_State *state, int level) {
     gs = state;
     levels_setup();
+
     goto_level(level);
 }
 
@@ -40,7 +41,7 @@ void game_deinit(struct Game_State *state) {
 
 bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     gs = state;
-    
+
     bool is_running = true;
     struct Input *input = &gs->input;
 
@@ -200,7 +201,7 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     }
 
     text_field_tick(event);
-    
+
     if (selected_tool) {
         gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
         gs->gui.tool_buttons[gs->current_tool]->activated = 1;

@@ -55,9 +55,8 @@ void grid_init(int w, int h) {
     gs->gh = h;
 
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        gs->grid_layers[i] = persist_alloc(gs->memory, w*h, sizeof(struct Cell));
+        gs->grid_layers[i] = push_memory(gs->persistent_memory, w*h, sizeof(struct Cell));
     }
-    gs->grid_temp = persist_alloc(gs->memory, w*h, sizeof(struct Cell));
 
     gs->grid = gs->grid_layers[0];
     gs->fg_grid = gs->grid_layers[1];
@@ -67,8 +66,8 @@ void grid_init(int w, int h) {
     memset(gs->objects, 0, sizeof(struct Object)*MAX_OBJECTS);
     for (int i = 0; i < MAX_OBJECTS; i++) {
         for (int j = 0; j < 3; j++) {
-            gs->objects[i].blob_data[j].blobs = persist_alloc(gs->memory, w*h, sizeof(Uint32));
-            gs->objects[i].blob_data[j].blob_pressures = persist_alloc(gs->memory, w*h, sizeof(int));
+            gs->objects[i].blob_data[j].blobs = push_memory(gs->persistent_memory, w*h, sizeof(Uint32));
+            gs->objects[i].blob_data[j].blob_pressures = push_memory(gs->persistent_memory, w*h, sizeof(int));
         }
     }
 
@@ -729,7 +728,8 @@ void object_tick(int obj) {
     if (gs->current_tool == TOOL_GRABBER && gs->grabber.object_holding == obj) return;
 
     // Copy of grid to fall back to if we abort.
-    memcpy(gs->grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
+    struct Cell *grid_temp = push_memory(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
+    memcpy(grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
 
     int dy = 1;
     
@@ -739,7 +739,7 @@ void object_tick(int obj) {
             
             if (y+1 >= gs->gh || gs->grid[x+(y+1)*gs->gw].type) {
                 // Abort!
-                memcpy(gs->grid, gs->grid_temp, sizeof(struct Cell)*gs->gw*gs->gh);
+                memcpy(gs->grid, grid_temp, sizeof(struct Cell)*gs->gw*gs->gh);
                 return;
             } else {
                 swap(x, y, x, y+dy);
@@ -760,7 +760,7 @@ void object_tick(int obj) {
 }
 
 void object_blobs_set_pressure(int obj, int chisel_size) {
-    int *temp_blobs = transient_alloc(gs->gw*gs->gh, sizeof(int));
+    int *temp_blobs = push_memory(gs->transient_memory, gs->gw*gs->gh, sizeof(int));
     struct Object *object = &gs->objects[obj];
     
     for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -792,8 +792,6 @@ void object_blobs_set_pressure(int obj, int chisel_size) {
             }
         }
     }
-
-    temp_dealloc(temp_blobs);
 }
 
 internal void random_set_blob(struct Object *obj, int x, int y, Uint32 blob, int chisel_size, int perc) {
@@ -958,7 +956,7 @@ void object_generate_blobs(int object_index, int chisel_size) {
     int percentage = 0;
 
     if (chisel_size == 1) {
-        percentage = 0;
+        percentage = 30;
     }
 
     struct Object *obj = &gs->objects[object_index];
@@ -1173,9 +1171,8 @@ int object_attempt_move(int object, int dx, int dy) {
     float vx = ux; // = 0;
     float vy = uy; // = 0;
 
-    struct Cell *result_grid = persist_alloc(gs->memory, gs->gw*gs->gh, sizeof(struct Cell));
-
-    memcpy(result_grid, gs->grid, sizeof(struct Cell) * gs->gw * gs->gh);
+    struct Cell *grid_temp = push_memory(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
+    memcpy(grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
 
     /* while (sqrt(vx*vx + vy*vy) < len) { */
     /*     vx += ux; */
@@ -1187,7 +1184,7 @@ int object_attempt_move(int object, int dx, int dy) {
                 int ry = y + vy;
                 if (rx < 0 || ry < 0 || rx >= gs->gw || ry >= gs->gh || gs->grid[rx+ry*gs->gw].type) {
                     // Abort
-                    memcpy(gs->grid, result_grid, sizeof(struct Cell) * gs->gw * gs->gh);
+                    memcpy(gs->grid, grid_temp, sizeof(struct Cell) * gs->gw * gs->gh);
                     /* temp_dealloc(result_grid); */
                     return 0;
                 }
@@ -1201,8 +1198,6 @@ int object_attempt_move(int object, int dx, int dy) {
     object_generate_blobs(object, 0);
     object_generate_blobs(object, 1);
     object_generate_blobs(object, 2);
-
-    /* temp_dealloc(result_grid); */
 
     return (int) (ux+uy*gs->gw);
 }

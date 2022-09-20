@@ -22,7 +22,7 @@ internal bool can_place_item_in_slot(int type, int slot) {
     
     if (slot == SLOT_FUEL) {
         switch (type) {
-            case CELL_COAL: case CELL_WOOD_LOG:
+        case CELL_COAL: case CELL_WOOD_LOG:
             can_put_fuel = true;
             break;
         }
@@ -258,7 +258,7 @@ bool was_mouse_in_slot(struct Slot *slot) {
 }
 
 struct Converter *converter_init(int type) {
-    struct Converter *converter = persist_alloc(gs->memory, 1, sizeof(struct Converter));
+    struct Converter *converter = push_memory(gs->persistent_memory, 1, sizeof(struct Converter));
     converter->type = type;
     converter->w = gs->window_width/2;
     converter->h = GUI_POPUP_H;
@@ -267,9 +267,9 @@ struct Converter *converter_init(int type) {
     converter->timer_current = 0;
     
     switch (type) {
-        case CONVERTER_MATERIAL:
+    case CONVERTER_MATERIAL:
         converter->slot_count = 4;
-        converter->slots = persist_alloc(gs->memory, converter->slot_count, sizeof(struct Slot));
+        converter->slots = push_memory(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
         
         converter->slots[SLOT_INPUT1].x = converter->w/3.0;
         converter->slots[SLOT_INPUT1].y = converter->h/4.0;
@@ -291,7 +291,7 @@ struct Converter *converter_init(int type) {
         break;
     case CONVERTER_FUEL:
         converter->slot_count = 3;
-        converter->slots = persist_alloc(gs->memory, converter->slot_count, sizeof(struct Slot));
+        converter->slots = push_memory(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
         
         converter->slots[SLOT_INPUT1].x = converter->w/3.0;
         converter->slots[SLOT_INPUT1].y = converter->h/4.0;
@@ -340,11 +340,11 @@ void converter_tick(struct Converter *converter) {
     converter->arrow.y = converter->h/2 + 18;
     
     switch (converter->type) {
-        case CONVERTER_MATERIAL:
+    case CONVERTER_MATERIAL:
         converter->x = 0;
         converter->y = gs->gui.popup_y;
         break;
-        case CONVERTER_FUEL:
+    case CONVERTER_FUEL:
         converter->x = gs->S*gs->gw/2;
         converter->y = gs->gui.popup_y;
         break;
@@ -366,20 +366,20 @@ void converter_tick(struct Converter *converter) {
         } else {
             converter->timer_current = 0;
             switch (converter->type) {
-                case CONVERTER_MATERIAL: {
-                    bool did_convert = converter_convert(gs->material_converter);
-                    if (!did_convert) {
-                        converter_set_state(gs->material_converter, CONVERTER_OFF);
-                    }
-                    break;
+            case CONVERTER_MATERIAL: {
+                bool did_convert = converter_convert(gs->material_converter);
+                if (!did_convert) {
+                    converter_set_state(gs->material_converter, CONVERTER_OFF);
                 }
-                case CONVERTER_FUEL: {
-                    bool did_convert = converter_convert(gs->fuel_converter);
-                    if (!did_convert) {
-                        converter_set_state(gs->fuel_converter, CONVERTER_OFF);
-                    }
-                    break;
+                break;
+            }
+            case CONVERTER_FUEL: {
+                bool did_convert = converter_convert(gs->fuel_converter);
+                if (!did_convert) {
+                    converter_set_state(gs->fuel_converter, CONVERTER_OFF);
                 }
+                break;
+            }
             }
         }
     }
@@ -412,7 +412,13 @@ void converter_draw(struct Converter *converter) {
         const int period = 500; // Milliseconds.
         Uint8 a = (SDL_GetTicks()/period) % 2 == 0;
         a = a ? 255 : 190;
+
         SDL_SetTextureColorMod(converter->arrow.texture, a, a, a);
+    }
+    // Since we use the same texture for both converters,
+    // we need to reset it every time as well.
+    else {
+        SDL_SetTextureColorMod(converter->arrow.texture, 255, 255, 255);
     }
     
     SDL_RenderCopy(gs->renderer, converter->arrow.texture, NULL, &arrow_dst);
@@ -522,10 +528,10 @@ bool converter_is_layout_valid(struct Converter *converter) {
 
 void converter_begin_converting(void *converter_ptr) {
     struct Converter *converter = (struct Converter *) converter_ptr;
-    
+
     if (!converter_is_layout_valid(converter))
         return;
-    
+
     converter_set_state(converter, converter->state == CONVERTER_ON ? CONVERTER_OFF : CONVERTER_ON);
 }
 
@@ -537,54 +543,57 @@ void converter_set_state(struct Converter *converter, enum Converter_State state
     }
 }
 
-// Returns if the conversion went succesfully.
-bool converter_convert(struct Converter *converter) {
-    bool did_convert = false;
-    
-    struct Item *input1 = &converter->slots[SLOT_INPUT1].item;
-    struct Item *input2 = &converter->slots[SLOT_INPUT2].item;
-    struct Item *output = &converter->slots[SLOT_OUTPUT].item;
-    struct Item *fuel = NULL;
-    
-    if (converter->type == CONVERTER_MATERIAL) {
-        fuel = &converter->slots[SLOT_FUEL].item;
-    }
-    
+static int fuel_converter_convert(struct Item *input1, struct Item *input2) {
+    int result_type = 0;
     int number_inputs = (input1->type != 0) + (input2->type != 0);
-    
-    if (!number_inputs) return false;
-    if (fuel && !fuel->type && fuel->amount == 0) return false;
-    
-    int output_type = 0;
-    int output_ratio = 0;
-    
+
     struct Item *input = NULL;
-    
+
     if (number_inputs == 1) {
         input = input1->type ? input1 : input2;
     } else if (number_inputs == 2) {
         input = input1;
     }
-    
-    if (converter->type == CONVERTER_FUEL) {
-        switch (input->type) {
-        case CELL_COBBLESTONE: case CELL_MARBLE: case CELL_DIRT: case CELL_SAND: case CELL_WOOD_PLANK:
-            output_type = CELL_WOOD_LOG;
-            break;
-        case CELL_GLASS: case CELL_WOOD_LOG: case CELL_QUARTZ:
-            output_type = CELL_COAL;
-            break;
-        }
-    } else if (converter->type == CONVERTER_MATERIAL) {
-        switch (input->type) {
-            case CELL_SAND:
-                output_type = CELL_GLASS;
-            break;
-        }
+
+    switch (input->type) {
+    case CELL_COBBLESTONE: case CELL_MARBLE: case CELL_DIRT: case CELL_SAND: case CELL_WOOD_PLANK:
+        result_type = CELL_WOOD_LOG;
+        break;
+    case CELL_GLASS: case CELL_WOOD_LOG: case CELL_QUARTZ:
+        result_type = CELL_COAL;
+        break;
     }
-    
+
+    return result_type;
+}
+
+static int material_converter_convert(struct Item *input1, struct Item *input2) {
+    int result_type = 0;
+    int number_inputs = (input1->type != 0) + (input2->type != 0);
+
+    struct Item *input = NULL;
+
+    if (number_inputs == 1) {
+        input = input1->type ? input1 : input2;
+    } else if (number_inputs == 2) {
+        input = input1;
+    }
+
+    switch (input->type) {
+    case CELL_SAND:
+        result_type = CELL_GLASS;
+        break;
+    }
+
+    return result_type;
+}
+
+// Calculate the ratio of inputs -> output.
+static float calculate_output_ratio(struct Item *input1, struct Item *input2) {
+    float result = 0.f;
+    int number_inputs = (input1->type != 0) + (input2->type != 0);
     int number_unique_inputs = 0;
-    
+
     if (number_inputs == 1) {
         number_unique_inputs = 1;
     } else if (number_inputs == 2) {
@@ -594,54 +603,90 @@ bool converter_convert(struct Converter *converter) {
             number_unique_inputs = 1;
         }
     }
-    
-    output_ratio = number_unique_inputs * number_unique_inputs;
-    
-    if (!output_type) return false;
-    
+
+    result = number_unique_inputs * number_unique_inputs;
+
+    return result;
+}
+
+// Returns if the conversion went succesfully.
+bool converter_convert(struct Converter *converter) {
+    bool did_convert = false;
+
+    int temp_output_type = 0;
+
+    struct Item *input1 = &converter->slots[SLOT_INPUT1].item;
+    struct Item *input2 = &converter->slots[SLOT_INPUT2].item;
+    struct Item *output = &converter->slots[SLOT_OUTPUT].item;
+    struct Item *fuel = NULL;
+
+    if (converter->type == CONVERTER_MATERIAL) {
+        fuel = &converter->slots[SLOT_FUEL].item;
+    }
+
+    int number_inputs = (input1->type != 0) + (input2->type != 0);
+
+    if (!number_inputs) return false;
+    if (fuel && !fuel->type && fuel->amount == 0) return false;
+
+    struct Item *input = NULL;
+
+    if (converter->type == CONVERTER_FUEL) {
+        temp_output_type = fuel_converter_convert(input1, input2);
+    } else if (converter->type == CONVERTER_MATERIAL) {
+        temp_output_type = material_converter_convert(input1, input2);
+    }
+
+    if (!temp_output_type) return false;
+
+    float output_ratio = calculate_output_ratio(input1, input2);
+
     bool final_conversion = false;
-    if (output_type == output->type || output->type == 0) {
-        output->type = output_type;
-        
-        int amt = converter->speed * output_ratio;
-        
+
+    // Actually remove amounts from the inputs and increase
+    // or set the output.
+    if (temp_output_type == output->type || output->type == 0) {
+        output->type = temp_output_type;
+
+        int amount = converter->speed * output_ratio;
+
         // Check if any input, when reduced by the amount,
         // gives negative amount. If so, lock the amount
         // we're reducing to by the correct amount.
-        if (input1->type && input1->amount-amt < 0) {
-            amt = input1->amount;
+        if (input1->type && input1->amount-amount < 0) {
+            amount = input1->amount;
             final_conversion = true;
         }
-        if (input2->type && input2->amount-amt < 0) {
-            amt = input2->amount;
+        if (input2->type && input2->amount-amount < 0) {
+            amount = input2->amount;
             final_conversion = true;
         }
-        
+
         // The same for fuel, but make sure to multiple by the
         // number of inputs to compensate otherwise you'd be able
         // to use half the amount of fuel for the same output if
         // you just split the input in two.
-        if (fuel && fuel->type && fuel->amount-amt < 0) {
-            amt = fuel->amount * number_inputs; // *ing to compensate.
+        if (fuel && fuel->type && fuel->amount-amount < 0) {
+            amount = fuel->amount * number_inputs; // *ing to compensate.
             final_conversion = true;
         }
-        
-        int amt_add = 0;
+
+        int amount_add = 0;
         if (input1->type) {
-            input1->amount -= amt;
-            amt_add += amt;
+            input1->amount -= amount;
+            amount_add += amount;
         }
         if (input2->type) {
-            input2->amount -= amt;
-            amt_add += amt;
+            input2->amount -= amount;
+            amount_add += amount;
         }
-        
+
         if (fuel && fuel->type)
-            fuel->amount -= amt_add;
-        output->amount += amt_add;
-        
+            fuel->amount -= amount_add;
+        output->amount += amount_add;
+
         did_convert = true;
     }
-    
+
     return !final_conversion || !did_convert;
 }

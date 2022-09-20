@@ -1,0 +1,140 @@
+               Stone       |    Tier
+         ------------------+-------------
+         Marble            |   Tier 1
+         Cobblestone       |   Tier 1
+         Sandstone         |   Tier 1
+         ------------------+-------------
+         Cement & Concrete |   Tier 2
+         Quartz            |   Tier 2
+         Glass             |   Tier 2
+         ------------------+-------------
+         Granite           |   Tier 3
+         Basalt            |   Tier 3
+         Diamond           |   Tier 3
+         Gold              |   Tier 3
+         ------------------+-------------
+               Fuel        |    Tier
+         ------------------+-------------
+         Unref. Coal       |   Tier 1
+         Ref. Coal         |   Tier 2
+         Lava              |   Tier 3
+         ------------------+-------------
+             Others        |
+         ------------------+-------------
+         Wood Logs         |
+         Wood Planks       |
+         Dirt              |
+         Sand              |
+         Water             |
+         Steam             |
+         Ice               |
+
+Fuel Converter Combinations:
+    
+    Any single ones of these
+    {
+       Tier 1 \
+               \
+                v
+       Dirt ---> Unref. Coal
+                ^
+               /
+       Sand --/
+    }
+    
+    Must have both of these
+    {
+       Unref. Coal --\
+                      \
+                       v
+       Tier 2 -------> Refined Coal
+    }
+    
+    Must have both of these
+    {
+       Unref. Coal --\
+                      \
+                       v
+       Lava ---------> Refined Coal [Much higher output ratio]
+    }
+
+    Must have both of these
+    {
+       Any Stone \
+                  \
+                   v
+       Ref. Coal -> Lava
+    }
+
+Material Converter Combinations:
+
+   With Fuel: none
+      {
+         Wood log -> wood planks
+      }
+ 
+   With Fuel: Unref. Coal
+      {
+         Sand -> Glass
+      }
+      {
+         Dirt -> Cobblestone
+      }
+      {
+         Cobblestone -> Marble
+      }
+      {
+         Cobblestone \
+                      \
+                       v
+         Sand --------> Sandstone
+      }
+      {
+         Ice -> Water
+      }
+      {
+         Water -> Steam
+      }
+
+   With Fuel: Ref. Coal
+      {
+         Sandstone \
+                    \
+                     v
+         Marble ----> Quartz
+      }
+      {
+         Dirt -> Cobblestone [2x]
+      }
+      {
+         Ice -> Steam
+      }
+      {
+         Water -\
+                 \
+                  v
+         Cobble -> Cement
+      }
+
+   With Fuel: Lava
+      {
+         Any Coal -> Basalt
+      }
+      {
+         Quartz \
+                 \
+                  v
+         Marble -> Granite
+      }
+      {
+         Basalt -\
+                  \
+                   v
+         Granite -> Diamond
+      }
+      {
+         Granite \
+                  \
+                   v
+         Diamond -> Gold
+      }

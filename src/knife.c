@@ -19,7 +19,7 @@ void knife_init() {
     SDL_QueryTexture(knife->texture, NULL, NULL, &knife->w, &knife->h);
     
     knife->angle = 0;
-    knife->pixels = persist_alloc(gs->memory, gs->gw*gs->gh, sizeof(Uint32));
+    knife->pixels = push_memory(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
 }
 
 void knife_tick() {

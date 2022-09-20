@@ -28,11 +28,11 @@
 #include "placer.h"
 #include "level.h"
 #include "gui.h"
-#include "boot/input.h"
+#include "input.h"
 #include "grabber.h"
 #include "effects.h"
 #include "chisel_blocker.h"
-#include "boot/assets.h"
+#include "assets.h"
 
 #define internal static
 #define persist static // You shouldn't use this anywhere in the game layer.
@@ -49,24 +49,28 @@
 
 //
 // To allocate permanent memory that will persist until
-// the end of the session, use persist_alloc.
+// the end of the session, use persistent allocation.
+//  [push_memory(gs->persistent_memory, ...)]
 //
 // Otherwise, when allocating memory that you will
 // just need for a specific function and will free it,
-// use transient_alloc and temp_dealloc respsectively.
+// use transient allocation.
+//  [push_memory(gs->transient_memory, ...)]
 //
 
 struct Memory {
-    uint8_t *data;
-    uint8_t *cursor;
-    size_t size;
+    char name[64]; // The name of this memory buffer.
+
+    Uint8 *data;
+    Uint8 *cursor;
+    Uint64 size;
 };
 
 // Theoretically contains the entirety of the game's state.
 // Perhaps to be able to load game states totally, we could
 // add an SDL_Event in here as well, and dump this to a file.
 struct Game_State {
-    struct Memory *memory;
+    struct Memory *persistent_memory, *transient_memory;
 
     int transient_allocation_count; // A counter for every transient_alloc.
 
@@ -86,15 +90,9 @@ struct Game_State {
     
     SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
 
-    // A temporary buffer for algorithms.
-    // Allocated persistantly so you don't
-    // need to call transient_alloc every time you
-    // do the algorithm.
-    struct Cell *grid_temp;
-
     struct Cell *grid_layers[NUM_GRID_LAYERS]; 
     struct Cell *grid, *fg_grid, *gas_grid, *pickup_grid;
-    int gw, gh;
+    int gw, gh; // Grid width, grid height
     int grid_show_ghost;
 
     struct Object objects[MAX_OBJECTS];
@@ -145,15 +143,15 @@ struct Game_State {
 // Defined in game.c and main.c
 extern struct Game_State *gs;
 
-#define persist_alloc(mem, num, size) (_persist_allocate(mem, num, size, __FILE__, __LINE__))
-#define transient_alloc(num, size) (_transient_alloc(num, size, __FILE__, __LINE__))
-#define temp_dealloc(ptr) (_temp_dealloc(ptr, __FILE__, __LINE__))
+#define push_memory(mem, num, size) (_push_memory(mem, num, size, __FILE__, __LINE__))
 
-inline void *_persist_allocate(struct Memory *memory, size_t num, size_t size_individual, const char *file, int line) {
-    size_t size;
-    void *output;
+inline void *_push_memory(struct Memory *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
+    Uint64 size;
+    void *output = NULL;
 
     size = num * size_individual;
+
+    // printf("%s Memory :: Allocated %zd at %s(%d)\n", memory->name, size, file, line);
 
     if (memory->cursor+size > memory->data+memory->size) {
         char message[256] = {0};
@@ -170,34 +168,6 @@ inline void *_persist_allocate(struct Memory *memory, size_t num, size_t size_in
     memory->cursor += size;
 
     return output;
-}
-
-// Used for allocations you want to deallocate at the end of the frame.
-// Try not to use this too much, especially things
-// that occur every frame.
-inline void *_transient_alloc(size_t num, size_t size_individual, const char *file, int line) {
-    if (!num || !size_individual) return NULL;
-
-    // TODO: Replace this with your own allocated transient memory.
-    void *allocation = calloc(num, size_individual);
-
-    /* printf("Allocated %zd at %s(%d)!\n", num*size_individual, file, line); */
-
-    if (!allocation) {
-        char message[256] = {0};
-        sprintf(message, "Failed temporary allocation at %s:%d", file, line);
-        fprintf(stderr, message); fflush(stderr);
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory Error :(", message, gs->window);
-        exit(1);
-    }
-    gs->transient_allocation_count++;
-    return allocation;
-}
-
-inline void _temp_dealloc(void *ptr, const char *file, int line) {
-    free(ptr);
-    /* printf("Freed pointer! at %s(%d)\n", file, line); */
-    gs->transient_allocation_count--;
 }
 
 inline bool _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line) {

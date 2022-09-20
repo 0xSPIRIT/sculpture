@@ -22,7 +22,7 @@ void effect_set(int type) {
         break;
     }
 
-    gs->current_effect.particles = persist_alloc(gs->memory, gs->current_effect.particle_count, sizeof(struct Effect_Particle));
+    gs->current_effect.particles = push_memory(gs->persistent_memory, gs->current_effect.particle_count, sizeof(struct Effect_Particle));
 
     switch (type) {
     case EFFECT_SNOW:

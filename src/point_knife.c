@@ -17,7 +17,7 @@ void point_knife_init() {
     SDL_QueryTexture(point_knife->texture, NULL, NULL, &point_knife->w, &point_knife->h);
 
     point_knife->face_mode = false;
-    point_knife->highlights = persist_alloc(gs->memory, gs->gw*gs->gh, sizeof(int));
+    point_knife->highlights = push_memory(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
 
     point_knife->highlight_count = 0;
     memset(point_knife->highlights, 0, 50 * sizeof(int));
@@ -109,8 +109,9 @@ void point_knife_draw() {
 // o_arr (highlights) must be allocated.
 internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int *o_arr, int *o_count) {
     int count = 0;
-    
-    memcpy(gs->grid_temp , gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
+
+    struct Cell *grid_temp = push_memory(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
+    memcpy(grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
 
     int x = 0;
     while (x < 17) {
@@ -123,7 +124,7 @@ internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int
         x++;
     }
 
-    memcpy(gs->grid, gs->grid_temp, sizeof(*gs->grid_temp)*gs->gw*gs->gh);
+    memcpy(gs->grid, grid_temp, sizeof(struct Cell)*gs->gw*gs->gh);
     
     *o_count = count;
 

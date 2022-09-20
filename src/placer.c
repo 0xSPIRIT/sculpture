@@ -224,9 +224,20 @@ void placer_suck(struct Placer *placer) {
     while (distance(x, y, placer->px, placer->py) < len) {
 
         // Include the grid as well as pickup grid.
-        for (int a = 0; a < 2; a++) {
+        for (int a = 0; a < 3; a++) {
+            struct Cell *arr = NULL;
 
-            struct Cell *arr = a == 0 ? gs->grid : gs->pickup_grid;
+            switch (a) {
+            case 0:
+                arr = gs->grid;
+                break;
+            case 1:
+                arr = gs->pickup_grid;
+                break;
+            case 2:
+                arr = gs->gas_grid;
+                break;
+            }
 
             // Remove cells in a circle
             const int r = placer->radius;

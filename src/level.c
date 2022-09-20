@@ -18,7 +18,7 @@
 #include "util.h"
 #include "chisel_blocker.h"
 #include "effects.h"
-#include "boot/cursor.h"
+#include "cursor.h"
 #include "undo.h"
 #include "game.h"
 
@@ -136,7 +136,7 @@ void goto_level(int lvl) {
 
 // Most deinitialization functions are just freeing textures, but
 // since we have assets.c, we don't need to do that. General freeing
-// pointers are usually unused because we allocate using game_state->memory
+// pointers are usually unused because we allocate using game_state->persistent_memory
 void levels_deinit() {
     effect_set(EFFECT_NONE);
 }
@@ -446,7 +446,7 @@ void level_get_cells_from_image(char *path, struct Cell **out, struct Source_Cel
     *out_w = w;
     *out_h = h;
 
-    *out = persist_alloc(gs->memory, w*h, sizeof(struct Cell));
+    *out = push_memory(gs->persistent_memory, w*h, sizeof(struct Cell));
 
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
