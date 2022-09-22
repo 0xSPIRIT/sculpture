@@ -38,7 +38,7 @@ struct Textures {
         *chisel_face[3],
         *chisel_hammer;
 
-    SDL_Texture *items[CELL_COUNT];
+    SDL_Texture *items[CELL_TYPE_COUNT];
     SDL_Texture *tool_buttons[TOOL_COUNT];
     SDL_Texture *convert_button;
 

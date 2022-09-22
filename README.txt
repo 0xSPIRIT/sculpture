@@ -1,7 +1,7 @@
 View src\boot\main.c for more information on how the project
 is laid out and such.
 
-:: Building
+ Building
 
 Ensure you have MSVC installed (I used MSVC 2022, unsure if
 it would be compatible with older versions). Install SDL2,

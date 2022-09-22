@@ -89,35 +89,7 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
     switch (cells[i].type) {
     default:
         break;
-    case CELL_GRANITE:
-        color = (SDL_Color){255, 255, 255, 255};
-        break;
-    case CELL_BASALT:
-        color = (SDL_Color){255, 255, 255, 255};
-        break;
-    case CELL_LAVA:
-        color = (SDL_Color){255, 255, 255, 255};
-        break;
-    case CELL_MARBLE:
-        color = (SDL_Color){230+(i*i*i)%25, 230+(i*i*i*i)%25, 230+(i*i*i*i*i*i)%25, 255};
-        break;
-    case CELL_COBBLESTONE:
-        r = my_rand(i*i) % 100 < 10;
-        amt = 25;
-        color = (SDL_Color){140 + r*amt + ((i*i*i*i)%20 - 10), 140 + r*amt + ((i*i*i*i)%20 - 10), 135 + r*amt + ((i*i*i*i)%20 - 10), 255};
-        /* color = (SDL_Color){127, 255, 0, 255}; */
-        break;
-    case CELL_QUARTZ:
-        r = my_rand(i*i) % 100 < 10;
-        amt = 25;
-        color = (SDL_Color){213-10 + r*amt + ((i*i*i*i)%20 - 10), 215-10 + r*amt + ((i*i*i*i)%20 - 10), 226-10 + r*amt + ((i*i*i*i)%20 - 10), 255};
-        break;
-    case CELL_WOOD_LOG:
-        color = get_pixel(gs->surfaces.bark_surface, i%gs->gw, i/gs->gh);
-        break;
-    case CELL_WOOD_PLANK:
-        color = get_pixel(gs->surfaces.wood_plank_surface, i%gs->gw, i/gs->gw);
-        break;
+
     case CELL_DIRT:;
         const int variance = 10;
         color = (SDL_Color){70+(i*i*i)%variance, 50+(i*i*i*i)%variance, 33+(i*i*i*i*i)%variance, 255};
@@ -125,6 +97,58 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
     case CELL_SAND:
         color = (SDL_Color){216-30+(i*i*i)%30, 190-30+(i*i*i*i)%30, 125-30+(i*i*i*i*i)%30, 255};
         break;
+    case CELL_STEAM:
+        color = (SDL_Color){50, 50, 50, 255};
+        break;
+
+    case CELL_WATER:
+        color = (SDL_Color){131, 160, 226, 255};
+        break;
+    case CELL_ICE:
+        color = get_pixel(gs->surfaces.ice_surface, i%gs->gw, i/gs->gw);
+        break;
+
+    case CELL_WOOD_LOG:
+        color = get_pixel(gs->surfaces.bark_surface, i%gs->gw, i/gs->gh);
+        break;
+    case CELL_WOOD_PLANK:
+        color = get_pixel(gs->surfaces.wood_plank_surface, i%gs->gw, i/gs->gw);
+        break;
+
+    case CELL_COBBLESTONE:
+        r = my_rand(i*i) % 100 < 10;
+        amt = 25;
+        color = (SDL_Color){140 + r*amt + ((i*i*i*i)%20 - 10), 140 + r*amt + ((i*i*i*i)%20 - 10), 135 + r*amt + ((i*i*i*i)%20 - 10), 255};
+        /* color = (SDL_Color){127, 255, 0, 255}; */
+        break;
+    case CELL_MARBLE:
+        color = (SDL_Color){230+(i*i*i)%25, 230+(i*i*i*i)%25, 230+(i*i*i*i*i*i)%25, 255};
+        break;
+    case CELL_SANDSTONE:
+        r = my_rand(i*i) % 100 < 10;
+        amt = 25;
+        color = (SDL_Color){200 + r*amt + ((i*i*i*i)%20 - 10), 140 + r*amt + ((i*i*i*i)%20 - 10), 100 + r*amt + ((i*i*i*i)%20 - 10), 255};
+        /* color = (SDL_Color){127, 255, 0, 255}; */
+        break;
+
+    case CELL_CEMENT:
+        color = (SDL_Color){100, 100, 100, 255};
+        break;
+    case CELL_CONCRETE:
+        color = (SDL_Color){125, 125, 125, 255};
+        break;
+        
+    case CELL_QUARTZ:
+        r = my_rand(i*i) % 100 < 10;
+        amt = 20;
+        color = (SDL_Color){
+            140 + r*amt,
+            140 + r*amt,
+            140 + r*amt,
+            255
+        };
+        break;
+
     case CELL_GLASS:; 
         /* r = my_rand(i*i) % 100 < 5; */
         color = get_pixel(gs->surfaces.glass_surface, i%gs->gw, i/gs->gw);
@@ -133,26 +157,26 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
         /*     color.a = 240; */
         /* } */
         break;
-    case CELL_WATER:
-        color = (SDL_Color){131, 160, 226, 255};
+
+    case CELL_GRANITE:
+        color = (SDL_Color){255, 255, 255, 255};
         break;
-    case CELL_COAL:
-        r = my_rand(i*i) % 100 < 10;
-        amt = 25;
-        color = (SDL_Color){70-10 + r*amt + ((i*i*i*i)%20 - 10), 70-10 + r*amt + ((i*i*i*i)%20 - 10), 70-10 + r*amt + ((i*i*i*i)%20 - 10), 255};
-        break;
-    case CELL_STEAM:
-        color = (SDL_Color){50, 50, 50, 255};
+    case CELL_BASALT:
+        color = (SDL_Color){200, 200, 200, 255};
         break;
     case CELL_DIAMOND:
         color = get_pixel(gs->surfaces.diamond_surface, i%gs->gw, i/gs->gw);
         break;
-    case CELL_ICE:
-        color = get_pixel(gs->surfaces.ice_surface, i%gs->gw, i/gs->gw);
+
+    case CELL_UNREFINED_COAL: case CELL_REFINED_COAL:
+        r = my_rand(i*i) % 100 < 10;
+        amt = 25;
+        color = (SDL_Color){70-10 + r*amt + ((i*i*i*i)%20 - 10), 70-10 + r*amt + ((i*i*i*i)%20 - 10), 70-10 + r*amt + ((i*i*i*i)%20 - 10), 255};
         break;
-    case CELL_LEAF:
-        color = get_pixel(gs->surfaces.grass_surface, i%gs->gw, i/gs->gw);
+    case CELL_LAVA:
+        color = (SDL_Color){255, 255, 255, 255};
         break;
+
     case CELL_SMOKE:
         color = (SDL_Color){120, 120, 120, 255};
         break;
@@ -1355,15 +1379,23 @@ int clamp_to_grid_angle(int x, int y, float rad_angle, bool set_current_object) 
 
 int is_cell_hard(int type) {
     return
-        type == CELL_MARBLE      ||
-        type == CELL_QUARTZ      ||
-        type == CELL_COBBLESTONE ||
+        type == CELL_ICE         ||
         type == CELL_WOOD_LOG    ||
         type == CELL_WOOD_PLANK  ||
+        type == CELL_COBBLESTONE ||
+        type == CELL_MARBLE      ||
+        type == CELL_SANDSTONE   ||
+
+        type == CELL_CONCRETE    ||
+        type == CELL_QUARTZ      ||
         type == CELL_GLASS       ||
-        type == CELL_COAL        ||
+
+        type == CELL_GRANITE     ||
+        type == CELL_BASALT      ||
         type == CELL_DIAMOND     ||
-        type == CELL_ICE;
+
+        type == CELL_UNREFINED_COAL ||
+        type == CELL_REFINED_COAL;
 }
 
 int is_cell_liquid(int type) {

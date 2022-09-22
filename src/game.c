@@ -58,7 +58,7 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             if (input->keys[SDL_SCANCODE_LCTRL]) {
                 placer->contains_type += event->wheel.y;
                 if (placer->contains_type < CELL_NONE+1) placer->contains_type = CELL_NONE+1;
-                if (placer->contains_type >= CELL_COUNT) placer->contains_type = CELL_COUNT-1;
+                if (placer->contains_type >= CELL_TYPE_COUNT) placer->contains_type = CELL_TYPE_COUNT-1;
             } else {
                 placer->radius += event->wheel.y;
                 placer->radius = clamp(placer->radius, 1, 5);

@@ -50,16 +50,16 @@
 //
 // To allocate permanent memory that will persist until
 // the end of the session, use persistent allocation.
-//  [push_memory(gs->persistent_memory, ...)]
+//   [push_memory(gs->persistent_memory, ...)]
 //
 // Otherwise, when allocating memory that you will
 // just need for a specific function and will free it,
 // use transient allocation.
-//  [push_memory(gs->transient_memory, ...)]
+//   [push_memory(gs->transient_memory, ...)]
 //
 
 struct Memory {
-    char name[64]; // The name of this memory buffer.
+    char name[64]; // The name of this memory buffer. For debugging purposes.
 
     Uint8 *data;
     Uint8 *cursor;

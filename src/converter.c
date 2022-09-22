@@ -22,7 +22,7 @@ internal bool can_place_item_in_slot(int type, int slot) {
     
     if (slot == SLOT_FUEL) {
         switch (type) {
-        case CELL_COAL: case CELL_WOOD_LOG:
+        case CELL_UNREFINED_COAL: case CELL_REFINED_COAL:
             can_put_fuel = true;
             break;
         }
@@ -560,7 +560,7 @@ static int fuel_converter_convert(struct Item *input1, struct Item *input2) {
         result_type = CELL_WOOD_LOG;
         break;
     case CELL_GLASS: case CELL_WOOD_LOG: case CELL_QUARTZ:
-        result_type = CELL_COAL;
+        result_type = CELL_UNREFINED_COAL;
         break;
     }
 

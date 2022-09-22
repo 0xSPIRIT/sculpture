@@ -426,6 +426,41 @@ void level_draw_intro() {
     SDL_FreeSurface(surf);
 }
 
+Uint8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
+    // Type              R    G    B
+    CELL_NONE,            0,   0,   0,
+    CELL_DIRT,          200,   0,   0,
+    CELL_SAND,          255, 255,   0,
+
+    CELL_WATER,           0,   0, 255,
+    CELL_ICE,           188, 255, 255,
+    CELL_STEAM,         225, 225, 225,
+
+    CELL_WOOD_LOG,      128,  80,   0,
+    CELL_WOOD_PLANK,    200,  80,   0,
+
+    CELL_COBBLESTONE,   128, 128, 128,
+    CELL_MARBLE,        255, 255, 255,
+    CELL_SANDSTONE,     255, 128,   0,
+
+    CELL_CEMENT,        130, 130, 130,
+    CELL_CONCRETE,      140, 140, 140,
+
+    CELL_QUARTZ,        200, 200, 200,
+    CELL_GLASS,         180, 180, 180,
+
+    CELL_GRANITE,       132, 158, 183,
+    CELL_BASALT,         32,  32,  32,
+    CELL_DIAMOND,       150, 200, 200,
+
+    CELL_UNREFINED_COAL, 50,  50,  50,
+    CELL_REFINED_COAL,   70,  70,  70,
+    CELL_LAVA,          255,   0,   0,
+
+    CELL_SMOKE,         170, 170, 170,
+    CELL_DUST,          150, 150, 150
+};
+
 // Image must be formatted as Uint32 RGBA.
 // Gets cells based on pixels in the image.
 //
@@ -462,45 +497,22 @@ void level_get_cells_from_image(char *path, struct Cell **out, struct Source_Cel
                 s->x = x;
                 s->y = y;
                 s->type = CELL_STEAM;
-            } else if (r == 255 && g == 255 && b == 255) {
-                cell = CELL_MARBLE;
-            } else if (r == 128 && g == 128 && b == 128) {
-                cell = CELL_COBBLESTONE;
-            } else if (r == 200 && r == 200 && g == 200) {
-                cell = CELL_QUARTZ;
-            } else if (r == 128 && g == 80 && b == 0) {
-                cell = CELL_WOOD_LOG;
-            } else if (r == 200 && g == 80 && b == 0) {
-                cell = CELL_WOOD_PLANK;
-            } else if (r == 200 && g == 0 && b == 0) {
-                cell = CELL_DIRT;
-            } else if (r == 255 && g == 255 && b == 0) {
-                cell = CELL_SAND;
-            } else if (r == 180 && g == 180 && b == 180) {
-                cell = CELL_GLASS;
-            } else if (r == 0 && g == 0 && b == 255) {
-                cell = CELL_WATER;
-            } else if (r == 50 && g == 50 && b == 50) {
-                cell = CELL_COAL;
-            } else if (0) {
-                cell = CELL_STEAM;
-            } else if (r == 150 && g == 200 && b == 200) {
-                cell = CELL_DIAMOND;
-            } else if (r == 188 && g == 255 && b == 255) {
-                cell = CELL_ICE;
-            } else if (r == 0 && g == 255 && b == 0) {
-                cell = CELL_LEAF;
-            } else if (0) {
-                cell = CELL_SMOKE;
-            } else if (0) {
-                cell = CELL_DUST;
-            } else if (r == 0 && g == 0 && b == 0) {
-                cell = CELL_NONE;
             } else {
-                fprintf(stderr, "Unknown color (%d, %d, %d) at (%d, %d) in file %s.\n", r, g, b, x, y, path);
-                fflush(stderr);
-                exit(1);
+                for (int i = 0; i < CELL_TYPE_COUNT; i++) {
+                    SDL_Color c = {
+                        type_to_rgb_table[i*4 + 1],
+                        type_to_rgb_table[i*4 + 2],
+                        type_to_rgb_table[i*4 + 3],
+                        255
+                    };
+                        
+                    if (r == c.r && g == c.g && b == c.b) {
+                        cell = i;
+                        break;
+                    }
+                }
             }
+
             (*out)[x+y*w].type = cell;
         }
     }
@@ -509,34 +521,13 @@ void level_get_cells_from_image(char *path, struct Cell **out, struct Source_Cel
     SDL_DestroyTexture(texture);
 }
 
-Uint8 type_to_rgb_table[CELL_COUNT*4] = {
-    // Type              R    G    B
-    CELL_NONE,            0,   0,   0,
-    CELL_MARBLE,        255, 255, 255,
-    CELL_COBBLESTONE,   128, 128, 128,
-    CELL_QUARTZ,        200, 200, 200,
-    CELL_WOOD_LOG,      128,  80,   0,
-    CELL_WOOD_PLANK,    200,  80,   0,
-    CELL_DIRT,          200,   0,   0,
-    CELL_SAND,          255, 255,   0,
-    CELL_GLASS,         180, 180, 180,
-    CELL_WATER,           0,   0, 255,
-    CELL_COAL,           50,  50,  50,
-    CELL_STEAM,         225, 225, 225,
-    CELL_DIAMOND,       150, 200, 200,
-    CELL_ICE,           188, 255, 255,
-    CELL_LEAF,            0, 255,   0,
-    CELL_SMOKE,         170, 170, 170,
-    CELL_DUST,          150, 150, 150
-};
-
 SDL_Color type_to_rgb(int type) {
-    Assert(gs->window, type < CELL_COUNT);
+    Assert(gs->window, type < CELL_TYPE_COUNT);
     return (SDL_Color){type_to_rgb_table[4*type+1], type_to_rgb_table[4*type+2], type_to_rgb_table[4*type+3], 255};
 }
 
 int rgb_to_type(Uint8 r, Uint8 g, Uint8 b) {
-    for (int i = 0; i < CELL_COUNT; i++) {
+    for (int i = 0; i < CELL_TYPE_COUNT; i++) {
         SDL_Color col = type_to_rgb(i);
         if (col.r == r && col.g == g && col.b == b) {
             return i;

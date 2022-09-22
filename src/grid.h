@@ -29,27 +29,65 @@ enum Tool_Type {
 
 enum Cell_Type {
     CELL_NONE,
-    CELL_MARBLE,
-    CELL_COBBLESTONE,
-    CELL_QUARTZ,
-    CELL_GRANITE,
-    CELL_BASALT,
-    CELL_WOOD_LOG,
-    CELL_WOOD_PLANK,
+
     CELL_DIRT,
     CELL_SAND,
-    CELL_GLASS,
+
     CELL_WATER,
-    CELL_COAL,
-    CELL_STEAM,
-    CELL_DIAMOND,
     CELL_ICE,
-    CELL_LEAF,
+    CELL_STEAM,
+
+    CELL_WOOD_LOG,
+    CELL_WOOD_PLANK,
+
+    CELL_COBBLESTONE,
+    CELL_MARBLE,
+    CELL_SANDSTONE,
+
+    CELL_CEMENT,
+    CELL_CONCRETE,
+
+    CELL_QUARTZ,
+    CELL_GLASS,
+
+    CELL_GRANITE,
+    CELL_BASALT,
+    CELL_DIAMOND,
+    // CELL_GOLD,    // Perhaps too much cell types. Not that many levels.
+    
+    CELL_UNREFINED_COAL,
+    CELL_REFINED_COAL,
+    CELL_LAVA,
+
     CELL_SMOKE,
     CELL_DUST,
-    CELL_LAVA,
-    CELL_COUNT
+
+    CELL_TYPE_COUNT
 };
+
+/* enum Cell_Type { */
+/*     CELL_NONE, */
+/*     CELL_MARBLE, */
+/*     CELL_COBBLESTONE, */
+/*     CELL_QUARTZ, */
+/*     CELL_GRANITE, */
+/*     CELL_BASALT, */
+/*     CELL_WOOD_LOG, */
+/*     CELL_WOOD_PLANK, */
+/*     CELL_DIRT, */
+/*     CELL_SAND, */
+/*     CELL_GLASS, */
+/*     CELL_WATER, */
+/*     CELL_COAL, */
+/*     CELL_STEAM, */
+/*     CELL_DIAMOND, */
+/*     CELL_ICE, */
+/*     CELL_LEAF, */
+/*     CELL_SMOKE, */
+/*     CELL_DUST, */
+/*     CELL_LAVA, */
+/*     CELL_TYPE_COUNT */
+/* }; */
 
 struct Cell {
     enum Cell_Type type;  // The type of this cell.

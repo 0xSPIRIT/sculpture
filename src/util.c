@@ -38,11 +38,13 @@ void get_filename_from_type(int type, char *out) {
     case CELL_SAND:        strcpy(out, "../res/items/sand.png"); break;
     case CELL_GLASS:       strcpy(out, "../res/items/glass.png"); break;
     case CELL_WATER:       strcpy(out, "../res/items/water.png"); break;
-    case CELL_COAL:        strcpy(out, "../res/items/coal.png"); break;
+
+    case CELL_UNREFINED_COAL: strcpy(out, "../res/items/coal.png"); break;
+    case CELL_REFINED_COAL:   strcpy(out, "../res/items/coal.png"); break;
+
     case CELL_STEAM:       strcpy(out, "../res/items/steam.png"); break;
     case CELL_DIAMOND:     strcpy(out, "../res/items/diamond.png"); break;
     case CELL_ICE:         strcpy(out, "../res/items/ice.png"); break;
-    case CELL_LEAF:        strcpy(out, "../res/items/leaf.png"); break;
     case CELL_SMOKE:       strcpy(out, "../res/items/smoke.png"); break;
     case CELL_DUST:        strcpy(out, "../res/items/dust.png"); break;
     case CELL_LAVA:        strcpy(out, "../res/items/quartz.png"); break;
@@ -52,25 +54,37 @@ void get_filename_from_type(int type, char *out) {
 void get_name_from_type(int type, char *out) {
     switch (type) {
     case CELL_NONE:        strcpy(out, "nothing"); break;
-    case CELL_MARBLE:      strcpy(out, "Marble"); break;
-    case CELL_COBBLESTONE: strcpy(out, "Cobblestone"); break;
-    case CELL_QUARTZ:      strcpy(out, "Quartz"); break;
-    case CELL_GRANITE:     strcpy(out, "Granite"); break;
-    case CELL_BASALT:      strcpy(out, "Basalt"); break;
-    case CELL_WOOD_LOG:    strcpy(out, "Wood Log"); break;
-    case CELL_WOOD_PLANK:  strcpy(out, "Wood Plank"); break;
+
     case CELL_DIRT:        strcpy(out, "Dirt"); break;
     case CELL_SAND:        strcpy(out, "Sand"); break;
-    case CELL_GLASS:       strcpy(out, "Glass"); break;
+
     case CELL_WATER:       strcpy(out, "Water"); break;
-    case CELL_COAL:        strcpy(out, "Coal"); break;
-    case CELL_STEAM:       strcpy(out, "Steam"); break;
-    case CELL_DIAMOND:     strcpy(out, "Diamond"); break;
     case CELL_ICE:         strcpy(out, "Ice"); break;
-    case CELL_LEAF:        strcpy(out, "Leaf"); break;
+    case CELL_STEAM:       strcpy(out, "Steam"); break;
+
+    case CELL_WOOD_LOG:    strcpy(out, "Wood Log"); break;
+    case CELL_WOOD_PLANK:  strcpy(out, "Wood Plank"); break;
+
+    case CELL_COBBLESTONE: strcpy(out, "Cobblestone"); break;
+    case CELL_MARBLE:      strcpy(out, "Marble"); break;
+    case CELL_SANDSTONE:   strcpy(out, "Sandstone"); break;
+
+    case CELL_CEMENT:      strcpy(out, "Cement"); break;
+    case CELL_CONCRETE:    strcpy(out, "Concrete"); break;
+
+    case CELL_QUARTZ:      strcpy(out, "Quartz"); break;
+    case CELL_GLASS:       strcpy(out, "Glass"); break;
+
+    case CELL_GRANITE:     strcpy(out, "Granite"); break;
+    case CELL_BASALT:      strcpy(out, "Basalt"); break;
+    case CELL_DIAMOND:     strcpy(out, "Diamond"); break;
+
+    case CELL_UNREFINED_COAL: strcpy(out, "Unref. Coal"); break;
+    case CELL_REFINED_COAL: strcpy(out, "Ref. Coal"); break;
+    case CELL_LAVA:        strcpy(out, "Lava"); break;
+
     case CELL_SMOKE:       strcpy(out, "Smoke"); break;
     case CELL_DUST:        strcpy(out, "Dust"); break;
-    case CELL_LAVA:        strcpy(out, "Lava"); break;
     }
 }
 

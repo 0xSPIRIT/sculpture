@@ -1,5 +1,7 @@
       --------------------------TODO----------------------------
 
+x Add the new types into the game and set everything up structurally.
+
  - There are two converters- the fuel converter and the material
    converter. Upon chiseling, dust is generated and put onto a second
    layer, which is able to be picked up by the placer. Materials
@@ -20,14 +22,14 @@
      x Implement material conversions
      - Add and refine the actual conversions.
 
-- Remove all warnings at /W4
-
 - Improve the grabber to actually grab objects properly. Upon
   clicking, store the position of a cell in the object then track
   that cell upon grabbing the object.
 
-- Implement transient memory instead of grid_temp and replace
+x Implement transient memory instead of grid_temp and replace
   transient_alloc with another memory arena.
+
+- Remove all warnings at /W4
 
      ---------------------------Ideas----------------------------
 

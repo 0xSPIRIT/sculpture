@@ -26,25 +26,36 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, SDL_Window *window, const char
 internal void get_filename_from_type(int type, char *out) {
     switch (type) {
     case CELL_NONE:        strcpy(out, "nothing"); break;
-    case CELL_MARBLE:      strcpy(out, "../res/items/marble.png"); break;
-    case CELL_COBBLESTONE: strcpy(out, "../res/items/cobblestone.png"); break;
-    case CELL_QUARTZ:      strcpy(out, "../res/items/quartz.png"); break;
-    case CELL_GRANITE:     strcpy(out, "../res/items/quartz.png"); break;
-    case CELL_BASALT:      strcpy(out, "../res/items/quartz.png"); break;
-    case CELL_WOOD_LOG:    strcpy(out, "../res/items/wood_log.png"); break;
-    case CELL_WOOD_PLANK:  strcpy(out, "../res/items/wood_plank.png"); break;
     case CELL_DIRT:        strcpy(out, "../res/items/dirt.png"); break;
     case CELL_SAND:        strcpy(out, "../res/items/sand.png"); break;
-    case CELL_GLASS:       strcpy(out, "../res/items/glass.png"); break;
+        
     case CELL_WATER:       strcpy(out, "../res/items/water.png"); break;
-    case CELL_COAL:        strcpy(out, "../res/items/coal.png"); break;
-    case CELL_STEAM:       strcpy(out, "../res/items/steam.png"); break;
-    case CELL_DIAMOND:     strcpy(out, "../res/items/diamond.png"); break;
     case CELL_ICE:         strcpy(out, "../res/items/ice.png"); break;
-    case CELL_LEAF:        strcpy(out, "../res/items/leaf.png"); break;
+    case CELL_STEAM:       strcpy(out, "../res/items/steam.png"); break;
+
+    case CELL_WOOD_LOG:    strcpy(out, "../res/items/wood_log.png"); break;
+    case CELL_WOOD_PLANK:  strcpy(out, "../res/items/wood_plank.png"); break;
+
+    case CELL_COBBLESTONE: strcpy(out, "../res/items/cobblestone.png"); break;
+    case CELL_MARBLE:      strcpy(out, "../res/items/marble.png"); break;
+    case CELL_SANDSTONE:   strcpy(out, "../res/items/sandstone.png"); break;
+
+    case CELL_CEMENT:      strcpy(out, "../res/items/cement.png"); break;
+    case CELL_CONCRETE:    strcpy(out, "../res/items/concrete.png"); break;
+
+    case CELL_QUARTZ:      strcpy(out, "../res/items/quartz.png"); break;
+    case CELL_GLASS:       strcpy(out, "../res/items/glass.png"); break;
+
+    case CELL_GRANITE:     strcpy(out, "../res/items/granite.png"); break;
+    case CELL_BASALT:      strcpy(out, "../res/items/basalt.png"); break;
+    case CELL_DIAMOND:     strcpy(out, "../res/items/diamond.png"); break;
+
+    case CELL_UNREFINED_COAL: strcpy(out, "../res/items/coal.png"); break;
+    case CELL_REFINED_COAL:   strcpy(out, "../res/items/coal.png"); break;
+    case CELL_LAVA:           strcpy(out, "../res/items/lava.png"); break;
+
     case CELL_SMOKE:       strcpy(out, "../res/items/smoke.png"); break;
     case CELL_DUST:        strcpy(out, "../res/items/dust.png"); break;
-    case CELL_LAVA:        strcpy(out, "../res/items/quartz.png"); break;
     }
 }
 
@@ -108,7 +119,7 @@ void textures_init(SDL_Window *window,
     SDL_Surface *surf = NULL;
 
     // Converter Item Textures || previously item_init()
-    for (int i = 0; i < CELL_COUNT; i++) {
+    for (int i = 0; i < CELL_TYPE_COUNT; i++) {
         if (i == CELL_NONE) continue;
         
         char file[64] = {0};
