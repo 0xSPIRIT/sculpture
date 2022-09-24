@@ -83,7 +83,7 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             break;
         case SDLK_g:
             if (input->keys[SDL_SCANCODE_LCTRL]) {
-                set_text_field("Goto Level", "", goto_level_string_hook);
+	            set_text_field("Goto Level", "", goto_level_string_hook);
             }
             break;
         case SDLK_o:
@@ -126,12 +126,13 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
 
             Assert(gs->window, obj != -1);
 
-            printf("Cell %d, %d: Pos: (%f, %f), Type: %s, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
+            printf("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
                    input->mx,
                    input->my,
                    c->vx_acc,
                    c->vy_acc,
                    name,
+                   c->id,
                    c->rand,
                    c->object,
                    c->time,
@@ -210,7 +211,6 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     return is_running;
 }
 
-// Returns false if we want to exit.
 void game_run(struct Game_State *state) {
     gs = state;
 

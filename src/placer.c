@@ -24,8 +24,8 @@ void placer_init(int num) {
     
     placer->object_index = -1;
     placer->did_click = 0;
-    placer->contains_type = CELL_DIRT;
-    placer->contains_amount = 5000;
+    placer->contains_type = 0;
+    placer->contains_amount = 0;
     placer->radius = 2;
 
     placer->placing_solid_time = 0;
@@ -33,8 +33,11 @@ void placer_init(int num) {
     placer->rect.x = placer->rect.y = -1;
 
     if (num == 1) {
-        placer->contains_type = 0;
-        placer->contains_amount = 0;
+        placer->contains_type = CELL_UNREFINED_COAL;
+        placer->contains_amount = 200;
+    } else if (num == 0) {
+        placer->contains_type = CELL_LAVA;
+        placer->contains_amount = 200;
     }
 }
 
@@ -365,10 +368,10 @@ void placer_draw(struct Placer *placer, bool full_size) {
 
     if (gs->gui.popup) {
         if (SDL_GetCursor() != gs->placer_cursor) {
-            SDL_SetCursor(gs->placer_cursor);
+            /* SDL_SetCursor(gs->placer_cursor); */
         }
     } else if (SDL_GetCursor() == gs->placer_cursor) {
-        SDL_SetCursor(gs->normal_cursor);
+        /* SDL_SetCursor(gs->normal_cursor); */
     }
     
     if (placer->state == PLACER_SUCK_MODE || placer->state == PLACER_PLACE_CIRCLE_MODE) {

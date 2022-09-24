@@ -59,7 +59,7 @@
 //
 
 struct Memory {
-    char name[64]; // The name of this memory buffer. For debugging purposes.
+    char name[64]; // The name of this memory buffer for debugging purposes.
 
     Uint8 *data;
     Uint8 *cursor;

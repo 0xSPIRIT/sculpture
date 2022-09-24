@@ -7,7 +7,7 @@
 #define CONVERTER_NAME_LEN 32
 
 struct Item {
-    int type;
+    enum Cell_Type type;
     int amount;
 };
 
@@ -68,6 +68,11 @@ struct Converter {
     struct Arrow arrow;
 };
 
+struct Converter_Checker {
+    struct Item *input1, *input2;
+    int current; // 1 or 2 [0 when first initialized]
+};
+
 void item_draw(struct Item *item, int x, int y, int w, int h);
 void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h);
 
@@ -91,5 +96,8 @@ void slot_tick(struct Slot *slot);
 void slot_draw(struct Slot *slot);
 
 struct Placer *converter_get_current_placer();
+
+int get_cell_tier(int type);
+bool is_cell_fuel(int type);
 
 #endif  /* CONVERTER_H */

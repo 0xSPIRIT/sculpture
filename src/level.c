@@ -202,16 +202,16 @@ void level_tick() {
         if (input->my < 0) { // If the mouse is in the GUI gs->window...
             /* SDL_ShowCursor(1); */
             if (SDL_GetCursor() != gs->normal_cursor) {
-                SDL_SetCursor(gs->normal_cursor);
+                /* SDL_SetCursor(gs->normal_cursor); */
             }
             break;
         } else if (gs->current_tool == TOOL_GRABBER) {
             if (SDL_GetCursor() != gs->grabber_cursor) {
                 /* SDL_ShowCursor(1); */
-                SDL_SetCursor(gs->grabber_cursor);
+                /* SDL_SetCursor(gs->grabber_cursor); */
             }
         } else if (SDL_GetCursor() != gs->normal_cursor) {
-            SDL_SetCursor(gs->normal_cursor);
+            /* SDL_SetCursor(gs->normal_cursor); */
         }
     
         chisel_blocker_tick();
@@ -254,8 +254,8 @@ void level_draw() {
         level_draw_intro();
         break;
     case LEVEL_STATE_OUTRO: case LEVEL_STATE_PLAY:
-        Assert(gs->window, RenderTarget(gs, TARGET_GLOBAL));
-        SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, TARGET_GLOBAL));
+        Assert(gs->window, RenderTarget(gs, RENDER_TARGET_GLOBAL));
+        SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_GLOBAL));
         
         SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
         SDL_RenderClear(gs->renderer);
@@ -299,7 +299,7 @@ void level_draw() {
         };
 
         SDL_SetRenderTarget(gs->renderer, NULL);
-        SDL_RenderCopy(gs->renderer, RenderTarget(gs, TARGET_GLOBAL), NULL, &dst);
+        SDL_RenderCopy(gs->renderer, RenderTarget(gs, RENDER_TARGET_GLOBAL), NULL, &dst);
 
         gui_popup_draw();
         
@@ -395,8 +395,8 @@ void level_draw() {
 void level_draw_intro() {
     struct Level *level = &gs->levels[gs->level_current];
 
-    Assert(gs->window, RenderTarget(gs, TARGET_GLOBAL));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, TARGET_GLOBAL));
+    Assert(gs->window, RenderTarget(gs, RENDER_TARGET_GLOBAL));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_GLOBAL));
         
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
     SDL_RenderClear(gs->renderer);
@@ -411,7 +411,7 @@ void level_draw_intro() {
     }
 
     SDL_SetRenderTarget(gs->renderer, NULL);
-    SDL_RenderCopy(gs->renderer, RenderTarget(gs, TARGET_GLOBAL), NULL, NULL);
+    SDL_RenderCopy(gs->renderer, RenderTarget(gs, RENDER_TARGET_GLOBAL), NULL, NULL);
 
     char name[256] = {0};
     sprintf(name, "Level %d: %s", level->index+1, level->name);

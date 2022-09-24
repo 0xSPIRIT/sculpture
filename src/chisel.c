@@ -220,10 +220,10 @@ void chisel_update_texture() {
     struct Chisel *chisel = gs->chisel;
 
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
-    SDL_SetTextureBlendMode(RenderTarget(gs, TARGET_CHISEL), SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(RenderTarget(gs, RENDER_TARGET_CHISEL), SDL_BLENDMODE_BLEND);
     
-    Assert(gs->window, RenderTarget(gs, TARGET_CHISEL));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, TARGET_CHISEL));
+    Assert(gs->window, RenderTarget(gs, RENDER_TARGET_CHISEL));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_CHISEL));
 
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
     SDL_RenderClear(gs->renderer);
@@ -288,7 +288,7 @@ void chisel_update_texture() {
     // PROBLEM AREA!
     int w, h;
 
-    SDL_QueryTexture(RenderTarget(gs, TARGET_CHISEL), NULL, NULL, &w, &h);
+    SDL_QueryTexture(RenderTarget(gs, RENDER_TARGET_CHISEL), NULL, NULL, &w, &h);
     Assert(gs->window, w == gs->gw && h == gs->gh);
     
     SDL_RenderReadPixels(gs->renderer, NULL, 0, chisel->pixels, 4*gs->gw);
@@ -300,7 +300,7 @@ void chisel_draw() {
     struct Chisel *chisel = gs->chisel;
 
     chisel_update_texture();
-    SDL_RenderCopy(gs->renderer, RenderTarget(gs, TARGET_CHISEL), NULL, NULL);
+    SDL_RenderCopy(gs->renderer, RenderTarget(gs, RENDER_TARGET_CHISEL), NULL, NULL);
 
     // Draw the highlights for blobs now.
     if (DRAW_CHISEL_HIGHLIGHTS) {

@@ -46,7 +46,7 @@ void gui_init() {
 /*         button_deallocate(gui->tool_buttons[i]); */
 /*     } */
 /*     SDL_DestroyTexture(gui->popup_texture); */
-/*     SDL_DestroyTexture(RenderTarget(gs, TARGET_GUI_TOOLBAR)); */
+/*     SDL_DestroyTexture(RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR)); */
 /* } */
 
 void gui_tick() {
@@ -69,7 +69,7 @@ void gui_tick() {
 
     if (gui->popup) {
         if (SDL_GetCursor() != gs->grabber_cursor) {
-            SDL_SetCursor(gs->grabber_cursor);
+            /* SDL_SetCursor(gs->grabber_cursor); */
             /* SDL_ShowCursor(1); */
         }
 
@@ -118,10 +118,10 @@ void gui_draw() {
     // Draw the toolbar buttons.
     SDL_Texture *old = SDL_GetRenderTarget(gs->renderer);
 
-    SDL_SetTextureBlendMode(RenderTarget(gs, TARGET_GUI_TOOLBAR), SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR), SDL_BLENDMODE_BLEND);
 
-    Assert(gs->window, RenderTarget(gs, TARGET_GUI_TOOLBAR));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, TARGET_GUI_TOOLBAR));
+    Assert(gs->window, RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR));
 
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
     SDL_RenderClear(gs->renderer);
@@ -140,7 +140,7 @@ void gui_draw() {
     };
 
     SDL_SetRenderTarget(gs->renderer, NULL);
-    SDL_RenderCopy(gs->renderer, RenderTarget(gs, TARGET_GUI_TOOLBAR), NULL, &dst);
+    SDL_RenderCopy(gs->renderer, RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR), NULL, &dst);
     SDL_SetRenderTarget(gs->renderer, old);
 }
 

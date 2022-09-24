@@ -5,7 +5,7 @@
 // calls functions to run the game etc.
 //
 // The app itself is, as I said, compiled to a .dll and can
-// be found in ../game.c
+// be found in game.c
 //
 // The benefit of doing this is you get live code reloading;
 // you can compile your code while the app is running and
@@ -19,7 +19,7 @@
 // the same heap. The solution is to simply allocate a huge
 // block of memory at the start of the program in this file
 // using VirtualAlloc() and give it pointers into that
-// memory block through functions defined in ../shared.h
+// memory block through functions defined in shared.h
 //
 // This method also means you can't store "local persistant"
 // (static) variables inside functions nor global variables

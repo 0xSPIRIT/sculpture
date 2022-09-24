@@ -92,11 +92,9 @@ void render_targets_init(SDL_Window *window,
                          int width, // In screen coords, not game coords.
                          struct Level *levels,
                          struct Textures *textures) {
-    const int amount = RENDER_TARGET_COUNT;
-    
     for (int lvl = 0; lvl < LEVEL_COUNT; lvl++) {
         struct Level *l = &levels[lvl];
-        for (int i = 0; i < amount; i++) {
+        for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
             if (i == 1) {
                 textures->render_targets[lvl][i] = new_render_target(width, GUI_H);
                 continue;

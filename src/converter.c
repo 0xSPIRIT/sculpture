@@ -21,11 +21,7 @@ internal bool can_place_item_in_slot(int type, int slot) {
     bool can_put_fuel = false;
     
     if (slot == SLOT_FUEL) {
-        switch (type) {
-        case CELL_UNREFINED_COAL: case CELL_REFINED_COAL:
-            can_put_fuel = true;
-            break;
-        }
+        can_put_fuel = is_cell_fuel(type);
     }
     
     return
@@ -543,7 +539,133 @@ void converter_set_state(struct Converter *converter, enum Converter_State state
     }
 }
 
-static int fuel_converter_convert(struct Item *input1, struct Item *input2) {
+internal struct Converter_Checker converter_checker(struct Item *input1, struct Item *input2) {
+    Assert(gs->window, input1);
+    Assert(gs->window, input2);
+
+    return (struct Converter_Checker) {
+        input1, input2, 0
+    };
+}
+
+internal bool is_either_input_type(struct Converter_Checker *checker, int type, bool restart) {
+    Assert(gs->window, checker->input1);
+    Assert(gs->window, checker->input2);
+
+    if (restart) {
+        checker->current = 0;
+    }
+
+    if (checker->current == 0) {
+        if (checker->input1->type == type) {
+            checker->current = 2;
+        } else if (checker->input2->type == type) {
+            checker->current = 1;
+        } else {
+            return false;
+        }
+    } else {
+        if ((checker->current == 2 && checker->input2->type != type) ||
+            (checker->current == 1 && checker->input1->type != type)) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+internal bool is_either_input_tier(struct Converter_Checker *checker, int tier, bool is_fuel, bool restart) {
+    Assert(gs->window, checker->input1);
+    Assert(gs->window, checker->input2);
+
+    if (restart) {
+        checker->current = 0;
+    }
+
+    if (checker->current == 0) {
+        if (get_cell_tier(checker->input1->type) == tier) {
+            checker->current = 2;
+        } else if (get_cell_tier(checker->input2->type) == tier) {
+            checker->current = 1;
+        }
+    } else {
+        if (is_fuel) {
+            if ((checker->current == 2 && is_cell_fuel(checker->input2->type) && tier == get_cell_tier(checker->input2->type)) ||
+                (checker->current == 1 && is_cell_fuel(checker->input1->type) && tier == get_cell_tier(checker->input1->type)))
+            {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if ((checker->current == 2 && !is_cell_fuel(checker->input2->type) && tier == get_cell_tier(checker->input2->type)) ||
+                (checker->current == 1 && !is_cell_fuel(checker->input1->type) && tier == get_cell_tier(checker->input1->type)))
+            {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+//
+// TODO: We're trying to add working converters to the game with
+//       a little system to check if either input slots have the
+//       desired items. Right now, it doesn't really work properly,
+//       and has a bug on line 657 where the checker->current
+//       remains zero even after the first function call?
+//
+
+internal int fuel_converter_convert(struct Item *input1, struct Item *input2) {
+    int result_type = 0;
+    int number_inputs = (input1->type != 0) + (input2->type != 0);
+    int number_unique_inputs = 0;
+
+    struct Item *input = NULL;
+
+    if (number_inputs == 1) {
+        input = input1->type ? input1 : input2;
+    } else if (number_inputs == 2) {
+        input = input1;
+    }
+
+    number_unique_inputs = get_number_unique_inputs(input1, input2);
+
+    if (number_unique_inputs == 1) {
+        if (input->type == CELL_DIRT ||
+            input->type == CELL_SAND ||
+            !is_cell_fuel(input->type) && get_cell_tier(input->type) == 1)
+        {
+            result_type = CELL_UNREFINED_COAL;
+        }
+    }
+    else if (number_unique_inputs == 2) {
+        struct Converter_Checker checker = converter_checker(input1, input2);
+
+        if (is_either_input_type(&checker, CELL_UNREFINED_COAL, false) &&
+            is_either_input_tier(&checker, 2, false, false))
+        {
+            result_type = CELL_REFINED_COAL;
+        }
+
+        else if (is_either_input_type(&checker, CELL_UNREFINED_COAL, true) &&
+                 is_either_input_type(&checker, CELL_LAVA, false))
+        {
+            result_type = CELL_ICE;
+        }
+    }
+
+    return result_type;
+}
+
+internal int material_converter_convert(struct Item *input1, struct Item *input2, struct Item *fuel) {
+    Assert(gs->window, input1);
+    Assert(gs->window, input2);
+    Assert(gs->window, fuel);
+
     int result_type = 0;
     int number_inputs = (input1->type != 0) + (input2->type != 0);
 
@@ -554,43 +676,35 @@ static int fuel_converter_convert(struct Item *input1, struct Item *input2) {
     } else if (number_inputs == 2) {
         input = input1;
     }
-
-    switch (input->type) {
-    case CELL_COBBLESTONE: case CELL_MARBLE: case CELL_DIRT: case CELL_SAND: case CELL_WOOD_PLANK:
-        result_type = CELL_WOOD_LOG;
+    
+    switch (fuel->type) {
+    case CELL_UNREFINED_COAL:
+        switch (input->type) {
+        case CELL_SAND:
+            result_type = CELL_GLASS;
+            break;
+        }
         break;
-    case CELL_GLASS: case CELL_WOOD_LOG: case CELL_QUARTZ:
-        result_type = CELL_UNREFINED_COAL;
+    case CELL_REFINED_COAL:
+        switch (input->type) {
+        case CELL_SAND:
+            result_type = CELL_GRANITE;
+            break;
+        }
+        break;
+    case CELL_LAVA:
+        switch (input->type) {
+        case CELL_SAND:
+            result_type = CELL_SANDSTONE;
+            break;
+        }
         break;
     }
-
+    
     return result_type;
 }
 
-static int material_converter_convert(struct Item *input1, struct Item *input2) {
-    int result_type = 0;
-    int number_inputs = (input1->type != 0) + (input2->type != 0);
-
-    struct Item *input = NULL;
-
-    if (number_inputs == 1) {
-        input = input1->type ? input1 : input2;
-    } else if (number_inputs == 2) {
-        input = input1;
-    }
-
-    switch (input->type) {
-    case CELL_SAND:
-        result_type = CELL_GLASS;
-        break;
-    }
-
-    return result_type;
-}
-
-// Calculate the ratio of inputs -> output.
-static float calculate_output_ratio(struct Item *input1, struct Item *input2) {
-    float result = 0.f;
+internal int get_number_unique_inputs(struct Item *input1, struct Item *input2) {
     int number_inputs = (input1->type != 0) + (input2->type != 0);
     int number_unique_inputs = 0;
 
@@ -603,6 +717,14 @@ static float calculate_output_ratio(struct Item *input1, struct Item *input2) {
             number_unique_inputs = 1;
         }
     }
+
+    return number_unique_inputs;
+}
+
+// Calculate the ratio of inputs -> output.
+internal float calculate_output_ratio(struct Item *input1, struct Item *input2) {
+    float result = 0.f;
+    int number_unique_inputs = get_number_unique_inputs(input1, input2);
 
     result = number_unique_inputs * number_unique_inputs;
 
@@ -622,19 +744,23 @@ bool converter_convert(struct Converter *converter) {
 
     if (converter->type == CONVERTER_MATERIAL) {
         fuel = &converter->slots[SLOT_FUEL].item;
+        if (!fuel)
+        {
+            return false;
+        }
     }
 
     int number_inputs = (input1->type != 0) + (input2->type != 0);
 
     if (!number_inputs) return false;
-    if (fuel && !fuel->type && fuel->amount == 0) return false;
+    if (fuel && (!fuel->type || fuel->amount == 0)) return false;
 
     struct Item *input = NULL;
 
     if (converter->type == CONVERTER_FUEL) {
         temp_output_type = fuel_converter_convert(input1, input2);
     } else if (converter->type == CONVERTER_MATERIAL) {
-        temp_output_type = material_converter_convert(input1, input2);
+        temp_output_type = material_converter_convert(input1, input2, fuel);
     }
 
     if (!temp_output_type) return false;
@@ -689,4 +815,38 @@ bool converter_convert(struct Converter *converter) {
     }
 
     return !final_conversion || !did_convert;
+}
+
+// Possibilities:
+//   Tiers 1, 2, or 3.
+//   Returns 0 if no tier is specified.
+int get_cell_tier(int type) {
+    switch (type) {
+    case CELL_MARBLE: case CELL_COBBLESTONE: case CELL_SANDSTONE:
+        return 1;
+        break;
+    case CELL_CEMENT: case CELL_CONCRETE: case CELL_QUARTZ: case CELL_GLASS:
+        return 2;
+        break;
+    case CELL_GRANITE: case CELL_BASALT: case CELL_DIAMOND: // case CELL_GOLD:
+        return 3;
+        break;
+
+    case CELL_UNREFINED_COAL:
+        return 1;
+    case CELL_REFINED_COAL:
+        return 2;
+    case CELL_LAVA:
+        return 3;
+    }
+
+    return 0; // 0 = not specified in any tier.
+}
+
+bool is_cell_fuel(int type) {
+    switch (type) {
+    case CELL_REFINED_COAL: case CELL_UNREFINED_COAL: case CELL_LAVA:
+        return true;
+    }
+    return false;
 }

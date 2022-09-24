@@ -24,18 +24,7 @@ void grabber_tick() {
     if (grabber->object_holding != -1) {
         int dx = (int)grabber->x-px;
         int dy = (int)grabber->y-py;
-        /* float len = sqrt(dx*dx + dy*dy); */
-        /* float ux = dx/len; */
-        /* float uy = dy/len; */
-
-        /* float vx = 0, vy = 0; */
-
-        /* int i = 0; */
-        /* while (sqrt(vx*vx + vy*vy) < len) { */
         object_attempt_move(grabber->object_holding, dx, dy);
-        /*     vx += ux; */
-        /*     vy += uy; */
-        /* } */
     }
 
     if (gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {

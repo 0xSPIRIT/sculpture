@@ -58,11 +58,6 @@ void grid_init(int w, int h) {
         gs->grid_layers[i] = push_memory(gs->persistent_memory, w*h, sizeof(struct Cell));
     }
 
-    gs->grid = gs->grid_layers[0];
-    gs->fg_grid = gs->grid_layers[1];
-    gs->gas_grid = gs->grid_layers[2];
-    gs->pickup_grid = gs->grid_layers[3];
-
     memset(gs->objects, 0, sizeof(struct Object)*MAX_OBJECTS);
     for (int i = 0; i < MAX_OBJECTS; i++) {
         for (int j = 0; j < 3; j++) {
@@ -77,8 +72,18 @@ void grid_init(int w, int h) {
         for (int j = 0; j < NUM_GRID_LAYERS; j++) {
             gs->grid_layers[j][i] = (struct Cell){.type = 0, .object = -1, .depth = 255 };
             gs->grid_layers[j][i].rand = rand();
+            gs->grid_layers[j][i].id = i;
         }
     }
+
+    // TODO: Make sure the grid IDs work properly
+    //       so the grabber can latch onto a cell
+    //       from frame to frame.
+
+    gs->grid = gs->grid_layers[0];
+    gs->fg_grid = gs->grid_layers[1];
+    gs->gas_grid = gs->grid_layers[2];
+    gs->pickup_grid = gs->grid_layers[3];
 }
 
 SDL_Color pixel_from_index(struct Cell *cells, int i) {
@@ -610,10 +615,19 @@ void grid_array_draw(struct Cell *array) {
                 col.g *= fac;
                 col.b *= fac;
             }
-            
+
             if (DRAW_PRESSURE && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]) {
-                Uint8 c = (Uint8)(255 * ((float)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]] / MAX_PRESSURE)); // ??? Holy fuck.
-                SDL_SetRenderDrawColor(gs->renderer, c, c, c, 255);
+                // Uint8 c = (Uint8)(255 * ((float)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]] / MAX_PRESSURE)); // ??? Holy fuck.
+
+                int blob_pressure = (float)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]];
+                float normalized_pressure = (float)blob_pressure / MAX_PRESSURE;
+
+                if (normalized_pressure >= get_pressure_threshold(gs->chisel->size)) {
+                    SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
+                } else {
+                    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+                }
+
             } else {
                 SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, col.a);
             }

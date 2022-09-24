@@ -65,30 +65,6 @@ enum Cell_Type {
     CELL_TYPE_COUNT
 };
 
-/* enum Cell_Type { */
-/*     CELL_NONE, */
-/*     CELL_MARBLE, */
-/*     CELL_COBBLESTONE, */
-/*     CELL_QUARTZ, */
-/*     CELL_GRANITE, */
-/*     CELL_BASALT, */
-/*     CELL_WOOD_LOG, */
-/*     CELL_WOOD_PLANK, */
-/*     CELL_DIRT, */
-/*     CELL_SAND, */
-/*     CELL_GLASS, */
-/*     CELL_WATER, */
-/*     CELL_COAL, */
-/*     CELL_STEAM, */
-/*     CELL_DIAMOND, */
-/*     CELL_ICE, */
-/*     CELL_LEAF, */
-/*     CELL_SMOKE, */
-/*     CELL_DUST, */
-/*     CELL_LAVA, */
-/*     CELL_TYPE_COUNT */
-/* }; */
-
 struct Cell {
     enum Cell_Type type;  // The type of this cell.
     int id;               // Unique ID for each cell.
