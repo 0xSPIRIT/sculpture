@@ -123,6 +123,8 @@ void object_darken_blob(struct Object *obj, Uint32 blob, int amt, int chisel_siz
 void objects_reevaluate();
 int object_attempt_move(int object, int dx, int dy);
 
+int get_cell_index_by_id(struct Cell *array, int id);
+
 void convert_object_to_dust(int object);
 
 int get_any_neighbour_object(int x, int y);

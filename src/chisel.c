@@ -189,7 +189,7 @@ void chisel_tick() {
                 uy = 1;
                 break;
             }
-            
+
             if (chisel->face_mode) {
                 while (sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y)) < len) {
                     chisel->x += ux;
@@ -222,7 +222,7 @@ void chisel_update_texture() {
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
     SDL_SetTextureBlendMode(RenderTarget(gs, RENDER_TARGET_CHISEL), SDL_BLENDMODE_BLEND);
     
-    Assert(gs->window, RenderTarget(gs, RENDER_TARGET_CHISEL));
+    Assert(RenderTarget(gs, RENDER_TARGET_CHISEL));
     SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_CHISEL));
 
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
@@ -289,7 +289,7 @@ void chisel_update_texture() {
     int w, h;
 
     SDL_QueryTexture(RenderTarget(gs, RENDER_TARGET_CHISEL), NULL, NULL, &w, &h);
-    Assert(gs->window, w == gs->gw && h == gs->gh);
+    Assert(w == gs->gw && h == gs->gh);
     
     SDL_RenderReadPixels(gs->renderer, NULL, 0, chisel->pixels, 4*gs->gw);
 
@@ -358,7 +358,8 @@ Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len) {
 
             //  ^ This is what we want to prevent.
 
-            if (number_direct_neighbours(gs->grid, (int)chisel->x, (int)chisel->y) < 4) {
+            /* if (number_direct_neighbours(gs->grid, (int)chisel->x, (int)chisel->y) < 4) { */
+            if (1) {
                 // We continue at our current direction until we reach
                 // another blob, then backtrack one.
                 while (curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw] == b) {

@@ -146,7 +146,7 @@ void blob_hammer_update_texture() {
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
     SDL_SetTextureBlendMode(RenderTarget(gs, RENDER_TARGET_BLOB_HAMMER), SDL_BLENDMODE_BLEND);
     
-    Assert(gs->window, RenderTarget(gs, RENDER_TARGET_BLOB_HAMMER));
+    Assert(RenderTarget(gs, RENDER_TARGET_BLOB_HAMMER));
     SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_BLOB_HAMMER));
 
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);

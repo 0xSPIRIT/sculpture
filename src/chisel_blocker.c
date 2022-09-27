@@ -107,10 +107,10 @@ void chisel_blocker_tick() {
                 /* angle /= 45.; */
                 /* angle = round(angle) * 45; */
 
-                /* printf("Angle: %f\n", angle); fflush(stdout); */
+                /* printf("Angle: %f\n", angle); */
 
                 /* angle = 2*M_PI * angle/360.0; */
-                
+
                 /* float ux = sin(angle); */
                 /* float uy = cos(angle); */
 
@@ -201,8 +201,8 @@ void chisel_blocker_draw() {
 
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
     SDL_SetTextureBlendMode(RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
-    
-    Assert(gs->window, RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER));
+
+    Assert(RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER));
     SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER));
 
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
@@ -220,7 +220,7 @@ void chisel_blocker_draw() {
             SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
             SDL_RenderDrawLine(gs->renderer, line.x1, line.y1, line.x2, line.y2);
         }
-        
+
         for (int i = 0; i < 2; i++) {
             struct Line a = (struct Line){
                 chisel_blocker->control_points[i == 0 ? 0 : 3].x,
@@ -285,14 +285,14 @@ void chisel_blocker_draw() {
                     SDL_Point point = chisel_blocker->control_points[0];
                     chisel_blocker->lines[0] = (struct Line){ point.x - start.x, point.y - start.y, point.x - gs->gw*start.x, point.y - gs->gw*start.y };
                 }
-    
+
                 {
                     SDL_FPoint end = bezier_tangent(1, chisel_blocker->control_points[0], chisel_blocker->control_points[1], chisel_blocker->control_points[2], chisel_blocker->control_points[3]);
                     SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
                     SDL_Point point = chisel_blocker->control_points[3];
                     chisel_blocker->lines[1] = (struct Line){ point.x, point.y, point.x + gs->gw*end.x, point.y + gs->gw*end.y };
                 }
-        
+
             }
         }
         break;
@@ -325,7 +325,7 @@ void chisel_blocker_draw() {
         SDL_SetTextureAlphaMod(RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER), 128);
 
     SDL_RenderCopy(gs->renderer, RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER), NULL, NULL);
-    
+
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 16);
         if (chisel_blocker->pixels[i] != chisel_blocker->side) {

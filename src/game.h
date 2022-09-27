@@ -1,15 +1,6 @@
 #ifndef GAME_H_
 #define GAME_H_
 
-//
-// To allocate permanent memory that will persist until
-// the end of the session, use persist_alloc.
-//
-// Otherwise, when allocating memory that you will
-// just need for a specific function and will free it,
-// use transient_alloc.
-//
-
 #include "shared.h"
 
 __declspec(dllexport) void game_init(struct Game_State *state, int level);

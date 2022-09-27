@@ -10,7 +10,6 @@ your include and lib directories for MSVC. Open the native
 developer console from the Start Menu, and navigate to this
 directory with the build.bat, then simply call it. Two
 binaries will be produced in ./bin/: win32_sculpture.exe and
-sculpture_something.dll. Double-click win32_sculpture.exe
-and run it!
+sculpture.dll. Double-click win32_sculpture.exe and run it!
 
 The game *should* work with GCC as well.

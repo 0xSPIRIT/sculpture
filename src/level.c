@@ -22,7 +22,7 @@
 #include "undo.h"
 #include "game.h"
 
-internal int level_add(const char *name, char *desired_image, char *initial_image, int effect_type) {
+internal int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
     struct Level *level = &gs->levels[gs->level_count++];
     level->index = gs->level_count-1;
     strcpy(level->name, name);
@@ -55,44 +55,44 @@ internal int level_add(const char *name, char *desired_image, char *initial_imag
 
 void levels_setup() {
     level_add("Alaska",
-              "../res/lvl/desired/level 1.png",
-              "../res/lvl/initial/level 1.png",
+              RES_DIR "/lvl/desired/level 1.png",
+              RES_DIR "/lvl/initial/level 1.png",
               EFFECT_SNOW);
     level_add("Masonry",
-              "../res/lvl/desired/level 2.png",
-              "../res/lvl/initial/level 2.png",
+              RES_DIR "/lvl/desired/level 2.png",
+              RES_DIR "/lvl/initial/level 2.png",
               EFFECT_NONE);
     level_add("Conversion",
-              "../res/lvl/desired/level 3.png",
-              "../res/lvl/initial/level 3.png",
+              RES_DIR "/lvl/desired/level 3.png",
+              RES_DIR "/lvl/initial/level 3.png",
               EFFECT_NONE);
     level_add("Remainder",
-              "../res/lvl/desired/level 4.png",
-              "../res/lvl/initial/level 4.png",
+              RES_DIR "/lvl/desired/level 4.png",
+              RES_DIR "/lvl/initial/level 4.png",
               EFFECT_RAIN);
     level_add("Carbon Copy",
-              "../res/lvl/desired/level 5.png",
-              "../res/lvl/initial/level 5.png",
+              RES_DIR "/lvl/desired/level 5.png",
+              RES_DIR "/lvl/initial/level 5.png",
               EFFECT_RAIN);
     level_add("Metamorphosis",
-              "../res/lvl/desired/level 1.png",
-              "../res/lvl/initial/level 1.png",
+              RES_DIR "/lvl/desired/level 1.png",
+              RES_DIR "/lvl/initial/level 1.png",
               EFFECT_NONE);
     level_add("Procedure Lullaby",
-              "../res/lvl/desired/level 1.png",
-              "../res/lvl/initial/level 1.png",
+              RES_DIR "/lvl/desired/level 1.png",
+              RES_DIR "/lvl/initial/level 1.png",
               EFFECT_NONE);
     level_add("Polished Turd",
-              "../res/lvl/desired/level 1.png",
-              "../res/lvl/initial/level 1.png",
+              RES_DIR "/lvl/desired/level 1.png",
+              RES_DIR "/lvl/initial/level 1.png",
               EFFECT_NONE);
     level_add("Showpiece",
-              "../res/lvl/desired/level 1.png",
-              "../res/lvl/initial/level 1.png",
+              RES_DIR "/lvl/desired/level 1.png",
+              RES_DIR "/lvl/initial/level 1.png",
               EFFECT_NONE);
     level_add("Glass Body",
-              "../res/lvl/desired/level 1.png",
-              "../res/lvl/initial/level 1.png",
+              RES_DIR "/lvl/desired/level 1.png",
+              RES_DIR "/lvl/initial/level 1.png",
               EFFECT_NONE);
 }
 
@@ -111,7 +111,7 @@ void goto_level(int lvl) {
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
 
     gs->S = gs->window_width/gs->gw;
-    Assert(gs->window, gs->gw==gs->gh);
+    Assert(gs->gw==gs->gh);
 
     chisel_init(&gs->chisel_small);
     chisel_init(&gs->chisel_medium);
@@ -131,7 +131,9 @@ void goto_level(int lvl) {
 
     effect_set(gs->levels[lvl].effect_type);
 
-    memcpy(gs->grid, gs->levels[lvl].desired_grid, sizeof(struct Cell)*gs->gw*gs->gh);
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        gs->grid[i].type = gs->levels[lvl].desired_grid[i].type;
+    }
 }
 
 // Most deinitialization functions are just freeing textures, but
@@ -159,8 +161,11 @@ void level_tick() {
             level->popup_time_current = 0;
             level->state = LEVEL_STATE_PLAY;
             srand(time(0));
+
+            // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
             for (int i = 0; i < gs->gw*gs->gh; i++) {
-                gs->grid[i] = (struct Cell){.type = level->initial_grid[i].type, .rand = rand(), .object = -1, .depth = 255};
+                int id = gs->grid[i].id;
+                gs->grid[i] = (struct Cell){.type = level->initial_grid[i].type, .rand = rand(), .id = id, .object = -1, .depth = 255};
             }
             objects_reevaluate();
 
@@ -254,7 +259,7 @@ void level_draw() {
         level_draw_intro();
         break;
     case LEVEL_STATE_OUTRO: case LEVEL_STATE_PLAY:
-        Assert(gs->window, RenderTarget(gs, RENDER_TARGET_GLOBAL));
+        Assert(RenderTarget(gs, RENDER_TARGET_GLOBAL));
         SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_GLOBAL));
         
         SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
@@ -395,7 +400,7 @@ void level_draw() {
 void level_draw_intro() {
     struct Level *level = &gs->levels[gs->level_current];
 
-    Assert(gs->window, RenderTarget(gs, RENDER_TARGET_GLOBAL));
+    Assert(RenderTarget(gs, RENDER_TARGET_GLOBAL));
     SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_GLOBAL));
         
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
@@ -416,7 +421,7 @@ void level_draw_intro() {
     char name[256] = {0};
     sprintf(name, "Level %d: %s", level->index+1, level->name);
 
-    SDL_Surface *surf = TTF_RenderText_Solid(gs->fonts.font_title, name, (SDL_Color){255,255,255,255});
+    SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_title, name, (SDL_Color){255,255,255,255});
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     SDL_Rect dst = {
         gs->S*gs->gw/2 - surf->w/2, gs->S*gs->gh/2 - surf->h/2,
@@ -469,11 +474,11 @@ Uint8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
 // source_cells - pointer to a bunch of source cells (NULL if don't want). Must not be heap allocated.
 // out_source_cell_count - Pointer to the cell count. Updates in this func.
 // out_w & out_h - width and height of the image.
-void level_get_cells_from_image(char *path, struct Cell **out, struct Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h) {
+void level_get_cells_from_image(const char *path, struct Cell **out, struct Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h) {
     SDL_Surface *surface = IMG_Load(path);
-    Assert(gs->window, surface);
+    Assert(surface);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surface);
-    Assert(gs->window, texture);
+    Assert(texture);
 
     int w = surface->w;
     int h = surface->h;
@@ -522,7 +527,7 @@ void level_get_cells_from_image(char *path, struct Cell **out, struct Source_Cel
 }
 
 SDL_Color type_to_rgb(int type) {
-    Assert(gs->window, type < CELL_TYPE_COUNT);
+    Assert(type < CELL_TYPE_COUNT);
     return (SDL_Color){type_to_rgb_table[4*type+1], type_to_rgb_table[4*type+2], type_to_rgb_table[4*type+3], 255};
 }
 
@@ -549,5 +554,5 @@ void level_output_to_png(const char *output_file) {
         }
     }
 
-    Assert(gs->window, IMG_SavePNG(surf, output_file) == 0);
+    Assert(IMG_SavePNG(surf, output_file) == 0);
 }

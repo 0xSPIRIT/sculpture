@@ -132,9 +132,3 @@ Material Converter Combinations:
                    v
          Granite -> Diamond
       }
-      {
-         Granite \
-                  \
-                   v
-         Diamond -> Gold
-      }

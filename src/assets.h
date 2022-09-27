@@ -2,6 +2,7 @@
 #define ASSETS_H_
 
 #define RENDER_TARGET_COUNT 7
+#define RES_DIR "../res" 
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>

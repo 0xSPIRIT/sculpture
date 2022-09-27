@@ -120,7 +120,7 @@ void gui_draw() {
 
     SDL_SetTextureBlendMode(RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR), SDL_BLENDMODE_BLEND);
 
-    Assert(gs->window, RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR));
+    Assert(RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR));
     SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR));
 
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
@@ -215,9 +215,9 @@ void overlay_draw(struct Overlay *overlay) {
 
         // @Performance
         surfaces[i] = TTF_RenderText_Solid(gs->fonts.font, overlay->str[i], color);
-        Assert(gs->window, surfaces[i]);
+        Assert(surfaces[i]);
         textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surfaces[i]);
-        Assert(gs->window, textures[i]);
+        Assert(textures[i]);
         dsts[i] = (SDL_Rect){ gs->S * overlay->x + margin, height + gs->S * overlay->y + margin, surfaces[i]->w, surfaces[i]->h };
         dsts[i].y += GUI_H;
 

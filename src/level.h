@@ -35,7 +35,7 @@ void levels_deinit();
 void level_tick();
 void level_draw();
 void level_draw_intro();
-void level_get_cells_from_image(char *path, struct Cell **out, struct Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h);
+void level_get_cells_from_image(const char *path, struct Cell **out, struct Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h);
 void level_output_to_png(const char *output_file);
 
 #endif

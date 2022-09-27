@@ -53,7 +53,7 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     }
 
     if (event->type == SDL_MOUSEWHEEL) {
-        if (!gs->gui.popup && gs->current_tool == TOOL_PLACER) {
+        if (gs->current_tool == TOOL_PLACER) {
             struct Placer *placer = &gs->placers[gs->current_placer];
             if (input->keys[SDL_SCANCODE_LCTRL]) {
                 placer->contains_type += event->wheel.y;
@@ -124,7 +124,7 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             int obj = c->object;
             if (obj == -1) obj = 0;
 
-            Assert(gs->window, obj != -1);
+            Assert(obj != -1);
 
             printf("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
                    input->mx,
@@ -139,7 +139,6 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                    c->vx,
                    c->vy,
                    gs->objects[obj].blob_data[gs->chisel->size].blobs[input->mx+input->my*gs->gw]);
-            fflush(stdout);
             break;
         }
         case SDLK_i:

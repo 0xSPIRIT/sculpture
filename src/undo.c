@@ -82,7 +82,7 @@ void undo() {
 }
 
 void view_save_state_linked_list() {
-    printf("\n\nSTART.\n"); fflush(stdout);
+    printf("\n\nSTART.\n");
     for (struct Save_State *state = gs->start_state; state; state = state->next) {
         printf("Me:   %p", (void*) state);
         if (state == gs->current_state) {
@@ -98,5 +98,4 @@ void view_save_state_linked_list() {
             printf("\nEND.\n");
         }
     }
-    fflush(stdout);
 }

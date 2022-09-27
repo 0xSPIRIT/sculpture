@@ -50,7 +50,7 @@ typedef bool (*GameTickEventProc)(struct Game_State *state, SDL_Event *event);
 typedef void (*GameRunProc)(struct Game_State *state);
 typedef void (*GameDeinitProc)(struct Game_State *state);
 
-struct Game_State *gs = NULL;
+struct Game_State *gs = NULL; // This is so that our macros can pick up "gs" instead of game_state.
 
 struct Game_Code {
     HMODULE dll;
@@ -73,13 +73,13 @@ internal void game_init_sdl(struct Game_State *state, const char *window_title, 
                                      w,
                                      h,
                                      0);
-    Assert(state->window, state->window);
+    Assert(state->window);
     
     /* SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d11"); */
     state->renderer = SDL_CreateRenderer(state->window,
                                          -1,
                                          SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    Assert(state->window, state->renderer);
+    Assert(state->renderer);
 }
 
 internal void make_memory(struct Memory *persistent_memory, struct Memory *transient_memory) {
@@ -101,7 +101,7 @@ internal void make_memory(struct Memory *persistent_memory, struct Memory *trans
     AssertNW(persistent_memory->data);
     persistent_memory->cursor = persistent_memory->data;
 
-    // Offset the transient memory
+    // Set the transient memory as an offset into persistent memory.
     transient_memory->data = persistent_memory->data + persistent_memory->size;
     transient_memory->cursor = transient_memory->data;
 }
@@ -227,7 +227,8 @@ int main(int argc, char **argv) {
 
     // *2 in case we add more values at runtime.
     struct Game_State *game_state = push_memory(&persistent_memory, 1, sizeof(struct Game_State)*2);
-    gs = game_state;
+
+    gs = game_state; // This is so that our macros can pick up "gs" instead of game_state.
     
     game_state->persistent_memory = &persistent_memory;
     game_state->transient_memory = &transient_memory;
@@ -283,8 +284,8 @@ int main(int argc, char **argv) {
 
         bool should_stop = false;
         while (SDL_PollEvent(&event)) {
-            bool is_running = game_code.game_tick_event(game_state, &event);
-            if (!is_running) {
+            bool should_continue = game_code.game_tick_event(game_state, &event);
+            if (!should_continue) {
                 should_stop = true;
             }
         }

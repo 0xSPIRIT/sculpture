@@ -43,7 +43,7 @@
 #define Terabytes(x) ((Uint64)x*1024*1024*1024*1024)
 
 // Assert using an SDL MessageBox popup. Prints to the console too.
-#define Assert(window, condition) (_assert(condition, window, __func__, __FILE__, __LINE__) ? DebugBreak() : 0 )
+#define Assert(condition) (_assert(condition, gs->window, __func__, __FILE__, __LINE__) ? DebugBreak() : 0 )
 // Assert without the popup (no window); use only console instead.
 #define AssertNW(condition) (_assert(condition, NULL, __func__, __FILE__, __LINE__) ? DebugBreak() : 0 )
 
@@ -179,11 +179,9 @@ inline bool _assert(bool condition, SDL_Window *window, const char *func, const 
     FILE *f = fopen(file, "r");
     if (f) {
         int iterator = 0;
-        char temp_buffer[2048] = {0};
-        while (fgets(temp_buffer, 2048, f)) {
+        while (fgets(line_of_code, 2048, f)) {
             iterator++;
             if (iterator == line) {
-                strncpy(line_of_code, temp_buffer, 2048);
                 break;
             }
         }
@@ -193,7 +191,7 @@ inline bool _assert(bool condition, SDL_Window *window, const char *func, const 
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, window);
         }
     } else {
-        DebugBreak();
+        __debugbreak();
     }
 
     fprintf(stderr, "\n:::: ASSERTION FAILED ::::\n%s", message);

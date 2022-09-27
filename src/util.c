@@ -8,6 +8,7 @@
 #include "gui.h"
 #include "grid.h"
 #include "game.h"
+#include "assets.h"
 
 void start_timer() {
     gs->global_start = clock();
@@ -16,7 +17,7 @@ void start_timer() {
 void _end_timer(const char *func) {
     gs->global_end = clock();
     float cpu_time_used = ((double) (gs->global_end-gs->global_start))/CLOCKS_PER_SEC;
-    printf("(%s) Time: %f\n", func, cpu_time_used); fflush(stdout);
+    printf("(%s) Time: %f\n", func, cpu_time_used);
 }
 
 // Moves the mouse to the middle of the grid cell, not the top-left.
@@ -27,27 +28,27 @@ void move_mouse_to_grid_position(float x, float y) {
 void get_filename_from_type(int type, char *out) {
     switch (type) {
     case CELL_NONE:        strcpy(out, "nothing"); break;
-    case CELL_MARBLE:      strcpy(out, "../res/items/marble.png"); break;
-    case CELL_COBBLESTONE: strcpy(out, "../res/items/cobblestone.png"); break;
-    case CELL_QUARTZ:      strcpy(out, "../res/items/quartz.png"); break;
-    case CELL_GRANITE:     strcpy(out, "../res/items/quartz.png"); break;
-    case CELL_BASALT:      strcpy(out, "../res/items/quartz.png"); break;
-    case CELL_WOOD_LOG:    strcpy(out, "../res/items/wood_log.png"); break;
-    case CELL_WOOD_PLANK:  strcpy(out, "../res/items/wood_plank.png"); break;
-    case CELL_DIRT:        strcpy(out, "../res/items/dirt.png"); break;
-    case CELL_SAND:        strcpy(out, "../res/items/sand.png"); break;
-    case CELL_GLASS:       strcpy(out, "../res/items/glass.png"); break;
-    case CELL_WATER:       strcpy(out, "../res/items/water.png"); break;
+    case CELL_MARBLE:      strcpy(out, RES_DIR "/items/marble.png"); break;
+    case CELL_COBBLESTONE: strcpy(out, RES_DIR "/items/cobblestone.png"); break;
+    case CELL_QUARTZ:      strcpy(out, RES_DIR "/items/quartz.png"); break;
+    case CELL_GRANITE:     strcpy(out, RES_DIR "/items/quartz.png"); break;
+    case CELL_BASALT:      strcpy(out, RES_DIR "/items/quartz.png"); break;
+    case CELL_WOOD_LOG:    strcpy(out, RES_DIR "/items/wood_log.png"); break;
+    case CELL_WOOD_PLANK:  strcpy(out, RES_DIR "/items/wood_plank.png"); break;
+    case CELL_DIRT:        strcpy(out, RES_DIR "/items/dirt.png"); break;
+    case CELL_SAND:        strcpy(out, RES_DIR "/items/sand.png"); break;
+    case CELL_GLASS:       strcpy(out, RES_DIR "/items/glass.png"); break;
+    case CELL_WATER:       strcpy(out, RES_DIR "/items/water.png"); break;
 
-    case CELL_UNREFINED_COAL: strcpy(out, "../res/items/coal.png"); break;
-    case CELL_REFINED_COAL:   strcpy(out, "../res/items/coal.png"); break;
+    case CELL_UNREFINED_COAL: strcpy(out, RES_DIR "/items/coal.png"); break;
+    case CELL_REFINED_COAL:   strcpy(out, RES_DIR "/items/coal.png"); break;
 
-    case CELL_STEAM:       strcpy(out, "../res/items/steam.png"); break;
-    case CELL_DIAMOND:     strcpy(out, "../res/items/diamond.png"); break;
-    case CELL_ICE:         strcpy(out, "../res/items/ice.png"); break;
-    case CELL_SMOKE:       strcpy(out, "../res/items/smoke.png"); break;
-    case CELL_DUST:        strcpy(out, "../res/items/dust.png"); break;
-    case CELL_LAVA:        strcpy(out, "../res/items/quartz.png"); break;
+    case CELL_STEAM:       strcpy(out, RES_DIR "/items/steam.png"); break;
+    case CELL_DIAMOND:     strcpy(out, RES_DIR "/items/diamond.png"); break;
+    case CELL_ICE:         strcpy(out, RES_DIR "/items/ice.png"); break;
+    case CELL_SMOKE:       strcpy(out, RES_DIR "/items/smoke.png"); break;
+    case CELL_DUST:        strcpy(out, RES_DIR "/items/dust.png"); break;
+    case CELL_LAVA:        strcpy(out, RES_DIR "/items/quartz.png"); break;
     }
 }
 
@@ -126,7 +127,7 @@ SDL_Color get_pixel(SDL_Surface *surf, int x, int y) {
     if (x >= surf->w) x %= surf->w;
     if (y >= surf->h) y %= surf->h;
     int bpp = surf->format->BytesPerPixel;
-    Assert(gs->window, bpp == 4);
+    Assert(bpp == 4);
 
     Uint32 *pixels = (Uint32*)surf->pixels;
     SDL_Color color;
@@ -142,7 +143,7 @@ Uint32 get_pixel_int(SDL_Surface *surf, int x, int y) {
     if (x >= surf->w) x %= surf->w;
     if (y >= surf->h) y %= surf->h;
     int bpp = surf->format->BytesPerPixel;
-    Assert(gs->window, bpp == 4);
+    Assert(bpp == 4);
     Uint32 *pixels = (Uint32*)surf->pixels;
     return pixels[x+y*surf->w];
 }

@@ -1,3 +1,6 @@
+TODO:
+    - Hourglass! (early level)
+
 Level 1 - "Alaska"
   You make a house from stone and wood, while snowing.
 

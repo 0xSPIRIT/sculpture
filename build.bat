@@ -1,6 +1,6 @@
 @echo off
 
-set Common_Compiler_Flags=/nologo /Zi /GR- /EHa- /Odi /MT /FC /Fo:"obj\\" /D_CRT_SECURE_NO_WARNINGS
+set Common_Compiler_Flags=/nologo /Zi /GR- /EHa- /Odi /MT /FC /Fo:"obj\\"
 set Common_Linker_Flags=user32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib
 
 rem @echo off

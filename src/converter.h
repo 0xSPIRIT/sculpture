@@ -99,5 +99,6 @@ struct Placer *converter_get_current_placer();
 
 int get_cell_tier(int type);
 bool is_cell_fuel(int type);
+bool is_cell_stone(int type);
 
 #endif  /* CONVERTER_H */
