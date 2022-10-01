@@ -4,11 +4,12 @@
 #include <SDL2/SDL.h>
 
 #include "grid.h"
+#include "typedefs.h"
 
 struct Knife {
-    float x, y;
+    f32 x, y;
     int w, h;
-    float angle;
+    f32 angle;
     SDL_Texture *texture;
     Uint32 *pixels;
 };

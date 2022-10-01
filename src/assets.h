@@ -74,19 +74,14 @@ struct Fonts {
         *font_title;
 };
 
-SDL_Texture *load_texture(SDL_Renderer *renderer, SDL_Window *window, const char *fp);
+SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp);
 
 void textures_init(SDL_Window *window,
                    SDL_Renderer *renderer,
-                   struct Level *levels,
-                   int window_width,
-                   int gw,
-                   int gh,
                    struct Textures *textures);
 void textures_deinit(struct Textures *textures);
 
-void render_targets_init(SDL_Window *window,
-                         SDL_Renderer *renderer,
+void render_targets_init(SDL_Renderer *renderer,
                          int width, // In screen coords, not game coords.
                          struct Level *levels,
                          struct Textures *textures);

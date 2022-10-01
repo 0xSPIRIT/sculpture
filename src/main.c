@@ -34,6 +34,8 @@
 #include <windows.h>
 #include <stdbool.h>
 
+#include "shared.h"
+
 // Include all files to compile in one translation unit for
 // compilation speed's sake.
 #include "assets.c"
@@ -123,10 +125,6 @@ internal void game_init(struct Game_State *state) {
     // are initialized.
     textures_init(state->window,
                   state->renderer,
-                  state->levels,
-                  state->window_width,
-                  64,
-                  64,
                   &state->textures);
     surfaces_init(&state->surfaces);
     
@@ -225,8 +223,8 @@ int main(int argc, char **argv) {
 
     make_memory(&persistent_memory, &transient_memory);
 
-    // *2 in case we add more values at runtime.
-    struct Game_State *game_state = arena_alloc(&persistent_memory, 1, sizeof(struct Game_State)*2);
+    // *1.5 in case we add more values at runtime.
+    struct Game_State *game_state = arena_alloc(&persistent_memory, 1, (Uint64) (sizeof(struct Game_State)*1.5));
 
     gs = game_state; // This is so that our macros can pick up "gs" instead of game_state.
     
@@ -240,7 +238,7 @@ int main(int argc, char **argv) {
     // can we initialize render targets (since they depend
     // on each level's width/height)
 
-    render_targets_init(game_state->window, game_state->renderer, game_state->window_width, game_state->levels, &game_state->textures);
+    render_targets_init(game_state->renderer, game_state->window_width, game_state->levels, &game_state->textures);
 
     const int reload_delay_max = 5;
     int reload_delay = reload_delay_max; // Frames of delay.
@@ -269,7 +267,7 @@ int main(int argc, char **argv) {
         {
             Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
             Uint64 size_max = persistent_memory.size;
-            float percentage = (float)size_current / (float)size_max;
+            f32 percentage = (f32)size_current / (f32)size_max;
             percentage *= 100.f;
 
             char title[128] = {0};
@@ -291,8 +289,8 @@ int main(int argc, char **argv) {
         game_code.game_run(game_state);
 
         // Zero out the transient memory for next frame!
-        // Reset its cursor as well.
         ZeroMemory(transient_memory.data, transient_memory.size);
+        // Reset its cursor as well.
         transient_memory.cursor = transient_memory.data;
 
         if (should_stop) {

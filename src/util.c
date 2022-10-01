@@ -16,12 +16,12 @@ void start_timer() {
 
 void _end_timer(const char *func) {
     gs->global_end = clock();
-    double cpu_time_used = ((double) (gs->global_end-gs->global_start))/CLOCKS_PER_SEC;
+    f64 cpu_time_used = ((f64) (gs->global_end-gs->global_start))/CLOCKS_PER_SEC;
     printf("(%s) Time: %f\n", func, cpu_time_used);
 }
 
 // Moves the mouse to the middle of the grid cell, not the top-left.
-void move_mouse_to_grid_position(float x, float y) {
+void move_mouse_to_grid_position(f32 x, f32 y) {
     SDL_WarpMouseInWindow(gs->window, (int)(x*gs->S + gs->S/2), GUI_H + (int)(y*gs->S + gs->S/2));
 }
 
@@ -156,12 +156,12 @@ int my_rand(int seed) {
     return (a * seed + c) % m;
 }
 
-float my_rand_float(int seed) {
-    return (float)my_rand(seed)/(float)m;
+f32 my_rand_f32(int seed) {
+    return (f32)my_rand(seed)/(f32)m;
 }
 
-float randf(float size) {
-    return size * ((float)(rand()%RAND_MAX))/(float)RAND_MAX;
+f32 randf(f32 size) {
+    return size * ((f32)(rand()%RAND_MAX))/(f32)RAND_MAX;
 }
 
 int minimum(int a, int b) {
@@ -169,7 +169,7 @@ int minimum(int a, int b) {
     return b;
 }
 
-float lerp(float a, float b, float t) {
+f32 lerp(f32 a, f32 b, f32 t) {
     return a + t*(b-a); // or a(1-t) + tb -- same thing.
 }
 
@@ -179,18 +179,18 @@ int clamp(int a, int min, int max) {
     return a;
 }
 
-float clampf(float a, float min, float max) {
+f32 clampf(f32 a, f32 min, f32 max) {
     if (a < min) return min;
     if (a > max) return max;
     return a;
 }
 
-float distance(float ax, float ay, float bx, float by) {
+f32 distance(f32 ax, f32 ay, f32 bx, f32 by) {
     return sqrtf((bx-ax)*(bx-ax) + (by-ay)*(by-ay));
 }
 
-float distancei(int ax, int ay, int bx, int by) {
-    return sqrtf((float) ((bx-ax)*(bx-ax)) + (float)((by-ay)*(by-ay)));
+f32 distancei(int ax, int ay, int bx, int by) {
+    return sqrtf((f32) ((bx-ax)*(bx-ax)) + (f32)((by-ay)*(by-ay)));
 }
 
 bool is_point_on_line(SDL_Point p, SDL_Point a, SDL_Point b) {
@@ -202,9 +202,9 @@ SDL_Point closest_point_on_line(SDL_Point a, SDL_Point b, SDL_Point p) {
     SDL_Point AP = {p.x - a.x, p.y - a.y};
     SDL_Point AB = {b.x - a.x, b.y - a.y};
 
-    float magnitudeAB = (float) (AB.x*AB.x + AB.y*AB.y);
-    float ABAPproduct = (float) (AP.x*AB.x + AP.y*AB.y);
-    float distance = ABAPproduct / magnitudeAB;
+    f32 magnitudeAB = (f32) (AB.x*AB.x + AB.y*AB.y);
+    f32 ABAPproduct = (f32) (AP.x*AB.x + AP.y*AB.y);
+    f32 distance = ABAPproduct / magnitudeAB;
 
     if (distance < 0) {
         return a;
@@ -220,12 +220,12 @@ bool is_point_in_rect(SDL_Point p, SDL_Rect r) {
 }
 
 // Stolen from https://stackoverflow.com/a/2049593
-internal float sign(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
-    return (float)(p1.x - p3.x) * (float)(p2.y - p3.y) - (float)(p2.x - p3.x) * (float)(p1.y - p3.y);
+internal f32 sign(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
+    return (f32)(p1.x - p3.x) * (f32)(p2.y - p3.y) - (f32)(p2.x - p3.x) * (f32)(p1.y - p3.y);
 }
 
 bool is_point_in_triangle(SDL_Point pt, SDL_Point v1, SDL_Point v2, SDL_Point v3) {
-    float d1, d2, d3;
+    f32 d1, d2, d3;
     int has_neg, has_pos;
 
     d1 = sign(pt, v1, v2);

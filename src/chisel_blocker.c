@@ -26,7 +26,7 @@ void chisel_blocker_init() {
 }
 
 void chisel_blocker_deinit() {
-    struct Chisel_Blocker *chisel_blocker = &gs->chisel_blocker;
+    /* struct Chisel_Blocker *chisel_blocker = &gs->chisel_blocker; */
     /* temp_dealloc(chisel_blocker->pixels); */
 }
 
@@ -74,7 +74,7 @@ void chisel_blocker_tick() {
             int found_point = 0;
             for (int i = 0; i < chisel_blocker->point_count; i++) {
                 SDL_Point p = chisel_blocker->control_points[i];
-                if (distance((float)p.x, (float)p.y, (float)input->mx, (float)input->my) <= 3) {
+                if (distance((f32)p.x, (f32)p.y, (f32)input->mx, (f32)input->my) <= 3) {
                     chisel_blocker->current_point = i;
                     found_point = 1;
                 }
@@ -96,10 +96,10 @@ void chisel_blocker_tick() {
             SDL_Point p1 = chisel_blocker->control_points[1];
             if (p0.x == p1.x && p0.y == p1.y) {
                 int xx = input->mx, yy = input->my;
-                /* float angle = atan2(xx-p0.x, yy-p0.y); */
-                /* float dx = xx-p0.x; */
-                /* float dy = yy-p0.y; */
-                /* float len = sqrt(dx*dx + dy*dy); */
+                /* f32 angle = atan2(xx-p0.x, yy-p0.y); */
+                /* f32 dx = xx-p0.x; */
+                /* f32 dy = yy-p0.y; */
+                /* f32 len = sqrt(dx*dx + dy*dy); */
 
                 /* angle = angle/(2*M_PI); */
                 /* angle *= 360; */
@@ -111,8 +111,8 @@ void chisel_blocker_tick() {
 
                 /* angle = 2*M_PI * angle/360.0; */
 
-                /* float ux = sin(angle); */
-                /* float uy = cos(angle); */
+                /* f32 ux = sin(angle); */
+                /* f32 uy = cos(angle); */
 
                 /* xx = p0.x + ux * len; */
                 /* yy = p0.y + uy * len; */
@@ -143,7 +143,7 @@ void chisel_blocker_tick() {
 
 // Finds tangent at point in cubic bezier curve.
 // abcd = P0, P1, P2, P3
-internal SDL_FPoint bezier_tangent(float t, SDL_Point a, SDL_Point b, SDL_Point c, SDL_Point d) {
+internal SDL_FPoint bezier_tangent(f32 t, SDL_Point a, SDL_Point b, SDL_Point c, SDL_Point d) {
     // To do this, we find the derivative.
 
     // Original bezier:
@@ -173,12 +173,12 @@ internal SDL_FPoint bezier_tangent(float t, SDL_Point a, SDL_Point b, SDL_Point 
     // replace with abcd:
     // P'(t) = A(-3t^2 + 6t - 3) + b(9t^2 - 12t + 3) + c(-9t^2 + 6t) + d(3t^2)
 
-    float xp = a.x * (-3 * t*t + 6*t - 3) + b.x * (9*t*t - 12*t + 3) + c.x * (-9*t*t + 6*t) + d.x*(3*t*t);
-    float yp = a.y * (-3 * t*t + 6*t - 3) + b.y * (9*t*t - 12*t + 3) + c.y * (-9*t*t + 6*t) + d.y*(3*t*t);
+    f32 xp = a.x * (-3 * t*t + 6*t - 3) + b.x * (9*t*t - 12*t + 3) + c.x * (-9*t*t + 6*t) + d.x*(3*t*t);
+    f32 yp = a.y * (-3 * t*t + 6*t - 3) + b.y * (9*t*t - 12*t + 3) + c.y * (-9*t*t + 6*t) + d.y*(3*t*t);
 
     SDL_FPoint p = {xp/gs->gw, yp/gs->gh};
 
-    float len = (float)sqrt(p.x*p.x + p.y*p.y);
+    f32 len = (f32)sqrt(p.x*p.x + p.y*p.y);
     p.x /= len;
     p.y /= len;
 
@@ -228,34 +228,34 @@ void chisel_blocker_draw() {
                 chisel_blocker->control_points[i == 0 ? 1 : 2].x,
                 chisel_blocker->control_points[i == 0 ? 1 : 2].y,
             };
-            float dx = (float) (a.x1 - a.x2);
-            float dy = (float) (a.y1 - a.y2);
-            float len = (float) sqrt(dx*dx + dy*dy);
-            float ux = dx/len;
-            float uy = dy/len;
+            f32 dx = (f32) (a.x1 - a.x2);
+            f32 dy = (f32) (a.y1 - a.y2);
+            f32 len = (f32) sqrt(dx*dx + dy*dy);
+            f32 ux = dx/len;
+            f32 uy = dy/len;
             chisel_blocker->lines[i] = (struct Line){(int)a.x1, (int)a.y1, (int)(a.x1+ux*gs->gw), (int)(a.y1+uy*gs->gw)};
         }
 
         break;
     }
     case CHISEL_BLOCKER_CURVE_MODE: {
-        float x, y;
-        float px, py;
+        f32 x = 0, y = 0;
+        f32 px = 0, py = 0;
 
         // Bezier calculation.
-        const float step = 0.02f;
-        for (float t = 0.0; t < 1.0; t += step) {
-            float m1x = lerp((float) chisel_blocker->control_points[0].x, (float) chisel_blocker->control_points[1].x, t);
-            float m1y = lerp((float) chisel_blocker->control_points[0].y, (float) chisel_blocker->control_points[1].y, t);
-            float m2x = lerp((float) chisel_blocker->control_points[1].x, (float) chisel_blocker->control_points[2].x, t);
-            float m2y = lerp((float) chisel_blocker->control_points[1].y, (float) chisel_blocker->control_points[2].y, t);
-            float m3x = lerp((float) chisel_blocker->control_points[2].x, (float) chisel_blocker->control_points[3].x, t);
-            float m3y = lerp((float) chisel_blocker->control_points[2].y, (float) chisel_blocker->control_points[3].y, t);
+        const f32 step = 0.02f;
+        for (f32 t = 0.0; t < 1.0; t += step) {
+            f32 m1x = lerp((f32) chisel_blocker->control_points[0].x, (f32) chisel_blocker->control_points[1].x, t);
+            f32 m1y = lerp((f32) chisel_blocker->control_points[0].y, (f32) chisel_blocker->control_points[1].y, t);
+            f32 m2x = lerp((f32) chisel_blocker->control_points[1].x, (f32) chisel_blocker->control_points[2].x, t);
+            f32 m2y = lerp((f32) chisel_blocker->control_points[1].y, (f32) chisel_blocker->control_points[2].y, t);
+            f32 m3x = lerp((f32) chisel_blocker->control_points[2].x, (f32) chisel_blocker->control_points[3].x, t);
+            f32 m3y = lerp((f32) chisel_blocker->control_points[2].y, (f32) chisel_blocker->control_points[3].y, t);
 
-            float pax = lerp(m1x, m2x, t);
-            float pay = lerp(m1y, m2y, t);
-            float pbx = lerp(m2x, m3x, t);
-            float pby = lerp(m2y, m3y, t);
+            f32 pax = lerp(m1x, m2x, t);
+            f32 pay = lerp(m1y, m2y, t);
+            f32 pbx = lerp(m2x, m3x, t);
+            f32 pby = lerp(m2y, m3y, t);
 
             if (t != 0.0) {
                 px = x;

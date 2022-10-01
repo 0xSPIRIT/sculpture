@@ -495,7 +495,7 @@ void level_get_cells_from_image(const char *path, struct Cell **out, struct Sour
             Uint32 pixel = ((Uint32*)surface->pixels)[x+y*w];
             SDL_GetRGB(pixel, surface->format, &r, &g, &b);
 
-            int cell;
+            int cell = 0;
 
             if (r == 255 && g == 0 && b == 0) {
                 struct Source_Cell *s = &source_cells[(*out_source_cell_count)++];

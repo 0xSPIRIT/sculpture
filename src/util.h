@@ -12,8 +12,8 @@
 void start_timer();
 void _end_timer(const char *func);
 
-float randf(float size);
-void move_mouse_to_grid_position(float x, float y);
+f32 randf(f32 size);
+void move_mouse_to_grid_position(f32 x, f32 y);
 
 void get_name_from_type(int type, char *out);
 void get_name_from_tool(int type, char *out);
@@ -25,15 +25,15 @@ Uint32 get_pixel_int(SDL_Surface *surf, int x, int y);
 void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel);
 
 int my_rand(int seed);
-float my_rand_float(int seed);
+f32 my_rand_f32(int seed);
 
 int minimum(int a, int b);
 
-float lerp(float a, float b, float t);
+f32 lerp(f32 a, f32 b, f32 t);
 int clamp(int a, int min, int max);
-float clampf(float a, float min, float max);
+f32 clampf(f32 a, f32 min, f32 max);
 
-float distance(float ax, float ay, float bx, float by);
+f32 distance(f32 ax, f32 ay, f32 bx, f32 by);
 
 bool is_point_on_line(SDL_Point p, SDL_Point a, SDL_Point b);
 bool is_point_in_rect(SDL_Point p, SDL_Rect r);

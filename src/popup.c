@@ -54,9 +54,9 @@ void text_field_draw() {
     if (!text_field->active) return;
 
     SDL_Surface *description_surf = 0, *text_surf = 0;
-    SDL_Texture *description_texture, *text_texture;
+    SDL_Texture *description_texture = 0, *text_texture = 0;
 
-    SDL_Rect field_rect, text_field_rect, description_rect;
+    SDL_Rect field_rect = {0}, text_field_rect = {0}, description_rect = {0};
 
     if (*text_field->description)
         description_surf = TTF_RenderText_Blended(gs->fonts.font_consolas, text_field->description, (SDL_Color){180,180,180,255});
@@ -93,7 +93,7 @@ void text_field_draw() {
     if (description_surf) {
         int x = gs->gw*gs->S/2;
         int y = gs->gh*gs->S/2;
-        int hh;
+        int hh = 0;
 
         if (text_surf) {
             hh = field_rect.h;

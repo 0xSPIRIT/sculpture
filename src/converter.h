@@ -4,6 +4,8 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 
+#include "typedefs.h"
+
 #define CONVERTER_NAME_LEN 32
 
 struct Item {
@@ -30,7 +32,7 @@ struct Slot {
     char name[32];
     int dx, dy;                  // Orientation of the name string.
 
-    float x, y, w, h;            // Relative to the converter it's in.
+    f32 x, y, w, h;            // Relative to the converter it's in.
 };
 
 enum Converter_Type {
@@ -55,7 +57,7 @@ struct Converter {
 
     char name[CONVERTER_NAME_LEN];
 
-    float x, y, w, h;
+    f32 x, y, w, h;
     int speed; // Amount of cells converted per tick.
 
     int timer_max, timer_current;

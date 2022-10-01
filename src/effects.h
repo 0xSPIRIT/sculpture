@@ -8,8 +8,8 @@ enum Effect_Type {
 };
 
 struct Effect_Particle {
-    float x, y;
-    float vx, vy;
+    f32 x, y;
+    f32 vx, vy;
 };
 
 struct Effect {

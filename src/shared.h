@@ -43,9 +43,9 @@
 #define Terabytes(x) ((Uint64)x*1024*1024*1024*1024)
 
 // Assert using an SDL MessageBox popup. Prints to the console too.
-#define Assert(condition) (_assert(condition, gs->window, __func__, __FILE__, __LINE__) ? SDL_TriggerBreakpoint() : 0 )
+#define Assert(condition) (_assert(condition, gs->window, __func__, __FILE__, __LINE__) ? __debugbreak() : 0 )
 // Assert without the popup (no window); use only console instead.
-#define AssertNW(condition) (_assert(condition, NULL, __func__, __FILE__, __LINE__) ? SDL_TriggerBreakpoint() : 0 )
+#define AssertNW(condition) (_assert(condition, NULL, __func__, __FILE__, __LINE__) ? __debugbreak() : 0 )
 
 //
 // To allocate permanent memory that will persist until
@@ -66,9 +66,10 @@ struct Memory {
     Uint64 size;
 };
 
-// Theoretically contains the entirety of the game's state.
-// Perhaps to be able to load game states totally, we could
-// add an SDL_Event in here as well, and dump this to a file.
+// Contains the entirety of the game's state.
+// If you're adding values at runtime into the struct, add it
+// to the end, because we have pointers pointing to variables
+// in here and we don't want to mess that up.
 struct Game_State {
     struct Memory *persistent_memory, *transient_memory;
 
@@ -81,7 +82,7 @@ struct Game_State {
 
     int S; // scale
     int window_width, window_height;
-    float delta_time;
+    f32 delta_time;
 
     int current_tool, prev_tool;
     int debug_mode;
@@ -159,7 +160,6 @@ inline void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 size_individ
                 file, line);
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory Error :(", message, gs->window);
         exit(1);
-        return NULL;
     }
 
     output = memory->cursor;
@@ -189,7 +189,7 @@ inline bool _assert(bool condition, SDL_Window *window, const char *func, const 
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, window);
         }
     } else {
-        SDL_TriggerBreakpoint();
+        __debugbreak();
     }
 
     fprintf(stderr, "\n:::: ASSERTION FAILED ::::\n%s", message);

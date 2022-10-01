@@ -16,8 +16,8 @@ void blob_hammer_init() {
     blob_hammer->timer = 0;
     blob_hammer->swing_direction = 1;
 
-    blob_hammer->x = (float)gs->gw/2;
-    blob_hammer->y = (float)gs->gh/2;
+    blob_hammer->x = (f32)gs->gw/2;
+    blob_hammer->y = (f32)gs->gh/2;
     blob_hammer->texture = gs->textures.blob_hammer;
     SDL_QueryTexture(blob_hammer->texture, NULL, NULL, &blob_hammer->w, &blob_hammer->h);
     blob_hammer->angle = 0;
@@ -43,11 +43,11 @@ void blob_hammer_tick() {
     blob_hammer->is_changing_angle = input->keys[SDL_SCANCODE_LCTRL];
 
     if (blob_hammer->is_changing_angle) {
-        float dx = input->mx - blob_hammer->x;
-        float dy = input->my - blob_hammer->y;
+        f32 dx = input->mx - blob_hammer->x;
+        f32 dy = input->my - blob_hammer->y;
         
-        float angle = (float)atan2(dy, dx);
-        angle /= 2 * (float)M_PI;
+        f32 angle = (f32)atan2(dy, dx);
+        angle /= 2 * (f32)M_PI;
         angle *= 360;
         angle += 270;
         angle = angle / 22.5f;
@@ -56,10 +56,10 @@ void blob_hammer_tick() {
         int int_angle = (int)angle;
         int_angle %= 360;
 
-        blob_hammer->angle = (float)int_angle;
+        blob_hammer->angle = (f32)int_angle;
     } else {
-        blob_hammer->x = (float)input->mx;
-        blob_hammer->y = (float)input->my;
+        blob_hammer->x = (f32)input->mx;
+        blob_hammer->y = (f32)input->my;
     }
 
     switch (blob_hammer->state) {
@@ -72,7 +72,7 @@ void blob_hammer_tick() {
             break;
         }
 
-        const float speed = 5.0f;
+        const f32 speed = 5.0f;
 
         blob_hammer->angle += blob_hammer->swing_direction * speed;
         break;
@@ -179,8 +179,6 @@ void blob_hammer_update_texture() {
 }
 
 void blob_hammer_draw() {
-    struct Blob_Hammer *blob_hammer = &gs->blob_hammer;
-    
     blob_hammer_update_texture();
     SDL_RenderCopy(gs->renderer, RenderTarget(gs, RENDER_TARGET_BLOB_HAMMER), NULL, NULL);
 }

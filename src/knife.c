@@ -26,11 +26,11 @@ void knife_tick() {
     struct Knife *knife = &gs->knife;
     struct Input *input = &gs->input;
 
-    float px = knife->x;
-    float py = knife->y;
+    f32 px = knife->x;
+    f32 py = knife->y;
     
     if (input->keys[SDL_SCANCODE_LCTRL]) {
-        knife->angle = 180.f + 360.f * (float)(atan2(input->my - knife->y, input->mx - knife->x)) / (2.f*(float)M_PI);
+        knife->angle = 180.f + 360.f * (f32)(atan2(input->my - knife->y, input->mx - knife->x)) / (2.f*(f32)M_PI);
         /* SDL_ShowCursor(1); */
     } else if (input->keys_released[SDL_SCANCODE_LCTRL]) {
         move_mouse_to_grid_position(knife->x, knife->y);
@@ -40,16 +40,16 @@ void knife_tick() {
     }
 
     if (!input->keys[SDL_SCANCODE_LCTRL]) {
-        knife->x = (float) input->mx;
-        knife->y = (float) input->my;
+        knife->x = (f32) input->mx;
+        knife->y = (f32) input->my;
     }
 
     if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        float dx = knife->x - px;
-        float dy = knife->y - py;
-        float len = sqrtf(dx*dx + dy*dy);
-        float ux = dx/len;
-        float uy = dy/len;
+        f32 dx = knife->x - px;
+        f32 dy = knife->y - py;
+        f32 len = sqrtf(dx*dx + dy*dy);
+        f32 ux = dx/len;
+        f32 uy = dy/len;
 
         knife->x = px;
         knife->y = py;
@@ -67,8 +67,8 @@ void knife_tick() {
             knife->y += uy;
             knife_update_texture();
         }
-        knife->x = (float)knife->x;
-        knife->y = (float)knife->y;
+        knife->x = (f32)knife->x;
+        knife->y = (f32)knife->y;
     }
 }
 
@@ -100,8 +100,6 @@ void knife_update_texture() {
 }
 
 void knife_draw() {
-    struct Knife *knife = &gs->knife;
-
     knife_update_texture();
     SDL_RenderCopy(gs->renderer, RenderTarget(gs, RENDER_TARGET_KNIFE), NULL, NULL);
 }

@@ -20,6 +20,8 @@ struct Input {
     Uint8 mouse_released[MOUSE_BUTTONS];
 };
 
+struct Game_State;
+
 void input_tick(struct Game_State *state);
 
 #endif  /* INPUT_H_ */

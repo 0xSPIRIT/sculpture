@@ -31,11 +31,11 @@ void point_knife_tick() {
 
     int index = clamp_to_grid(input->mx, input->my, !point_knife->face_mode, true, true, true);
     
-    float px = point_knife->x;
-    float py = point_knife->y;
+    f32 px = point_knife->x;
+    f32 py = point_knife->y;
     
-    point_knife->x = (float) (index%gs->gw);
-    point_knife->y = (float) (index/gs->gw);
+    point_knife->x = (f32) (index%gs->gw);
+    point_knife->y = (f32) (index/gs->gw);
 
     if (point_knife->x - px != 0 || point_knife->y - py != 0) {
         point_knife->highlight_count =
@@ -47,9 +47,9 @@ void point_knife_tick() {
                                   &point_knife->highlight_count);
     }
 
-    /* float dx = point_knife->x - input->mx; */
-    /* float dy = point_knife->y - input->my; */
-    /* float dist = sqrt(dx*dx + dy*dy); */
+    /* f32 dx = point_knife->x - input->mx; */
+    /* f32 dy = point_knife->y - input->my; */
+    /* f32 dist = sqrt(dx*dx + dy*dy); */
     /* SDL_ShowCursor(dist > 2); */
     
     if (input->keys_pressed[SDL_SCANCODE_S]) {
@@ -58,11 +58,11 @@ void point_knife_tick() {
 
     if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
         if (point_knife->face_mode) {
-            float dx = point_knife->x - px;
-            float dy = point_knife->y - py;
-            float len = sqrtf(dx*dx + dy*dy);
-            float ux = dx/len;
-            float uy = dy/len;
+            f32 dx = point_knife->x - px;
+            f32 dy = point_knife->y - py;
+            f32 len = sqrtf(dx*dx + dy*dy);
+            f32 ux = dx/len;
+            f32 uy = dy/len;
             point_knife->x = px;
             point_knife->y = py;
             while (len == 0 || sqrt((point_knife->x-px)*(point_knife->x-px) + (point_knife->y-py)*(point_knife->y-py)) < len) {
@@ -71,8 +71,8 @@ void point_knife_tick() {
                 point_knife->x += ux;
                 point_knife->y += uy;
             }
-            point_knife->x = (float)point_knife->x;
-            point_knife->y = (float)point_knife->y;
+            point_knife->x = (f32)point_knife->x;
+            point_knife->y = (f32)point_knife->y;
         } else {
             if (point_knife->cooldown == -1) {
                 if (number_neighbours(gs->grid, (int)point_knife->x, (int)point_knife->y, 2) <= 21) { /* Must be identical to statement in array_clamped_to_grid */

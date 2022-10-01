@@ -97,18 +97,18 @@ void chisel_tick() {
     if (hammer->state == HAMMER_STATE_IDLE && !chisel->is_changing_angle && !chisel->click_cooldown) {
         int index = clamp_to_grid(input->mx, input->my, !chisel->face_mode, false, true, true);
         if (index != -1) {
-            chisel->x = (float) (index%gs->gw);
-            chisel->y = (float) (index/gs->gw);
+            chisel->x = (f32) (index%gs->gw);
+            chisel->y = (f32) (index/gs->gw);
 
             // Highlight the current blob.
             // This is a fake chiseling- we're resetting position afterwards.
-            float chisel_dx = (float) cosf(2.f*(float)M_PI * ((chisel->angle+180) / 360.f));
-            float chisel_dy = (float) sinf(2.f*(float)M_PI * ((chisel->angle+180) / 360.f));
-            float dx = chisel->spd * chisel_dx;
-            float dy = chisel->spd * chisel_dy;
-            float len = sqrtf(dx*dx + dy*dy);
-            float ux = dx/len;
-            float uy = dy/len;
+            f32 chisel_dx = (f32) cosf(2.f*(f32)M_PI * ((chisel->angle+180) / 360.f));
+            f32 chisel_dy = (f32) sinf(2.f*(f32)M_PI * ((chisel->angle+180) / 360.f));
+            f32 dx = chisel->spd * chisel_dx;
+            f32 dy = chisel->spd * chisel_dy;
+            f32 len = sqrtf(dx*dx + dy*dy);
+            f32 ux = dx/len;
+            f32 uy = dy/len;
 
             struct Chisel copy = *chisel;
 
@@ -133,11 +133,11 @@ void chisel_tick() {
     }
 
     if (chisel->is_changing_angle) {
-        float rmx = (float)input->real_mx / (float)gs->S;
-        float rmy = (float)(input->real_my-GUI_H) / (float)gs->S;
-        chisel->angle = 180 + 360 * (float)(atan2(rmy - chisel->y, rmx - chisel->x)) / (float)(2*M_PI);
+        f32 rmx = (f32)input->real_mx / (f32)gs->S;
+        f32 rmy = (f32)(input->real_my-GUI_H) / (f32)gs->S;
+        chisel->angle = 180 + 360 * (f32)(atan2(rmy - chisel->y, rmx - chisel->x)) / (f32)(2*M_PI);
 
-        float step = 45.0;
+        f32 step = 45.0;
         if (chisel->face_mode) {
             step = 22.5;
         }
@@ -145,9 +145,9 @@ void chisel_tick() {
         chisel->angle = ((int)chisel->angle) * step;
         /* SDL_ShowCursor(1); */
     }/*  else { */
-    /*     float dx = chisel->x - input->mx; */
-    /*     float dy = chisel->y - input->my; */
-    /*     float dist = sqrt(dx*dx + dy*dy); */
+    /*     f32 dx = chisel->x - input->mx; */
+    /*     f32 dy = chisel->y - input->my; */
+    /*     f32 dist = sqrt(dx*dx + dy*dy); */
     /*     SDL_ShowCursor(dist > 1); */
     /* } */
 
@@ -165,11 +165,11 @@ void chisel_tick() {
     if (chisel->click_cooldown) {
         if (chisel->click_cooldown >= CHISEL_COOLDOWN-CHISEL_TIME) {
             // Cut out the stone.
-            float px = chisel->x;
-            float py = chisel->y;
-            float ux = (float) cosf(2.f * (float)M_PI * ((chisel->angle+180) / 360.f));
-            float uy = (float) sinf(2.f * (float)M_PI * ((chisel->angle+180) / 360.f));
-            float len = chisel->spd;
+            f32 px = chisel->x;
+            f32 py = chisel->y;
+            f32 ux = (f32) cosf(2.f * (f32)M_PI * ((chisel->angle+180) / 360.f));
+            f32 uy = (f32) sinf(2.f * (f32)M_PI * ((chisel->angle+180) / 360.f));
+            f32 len = chisel->spd;
 
             switch ((int)chisel->angle) {
             case 135:
@@ -209,8 +209,8 @@ void chisel_tick() {
         if (chisel->click_cooldown == 0) {
             chisel->line = NULL;
             int index = clamp_to_grid(input->mx, input->my, !chisel->face_mode, false, true, true);
-            chisel->x = (float) (index%gs->gw);
-            chisel->y = (float) (index/gs->gw);
+            chisel->x = (f32) (index%gs->gw);
+            chisel->y = (f32) (index/gs->gw);
         }
     }
     chisel_hammer_tick();
@@ -316,17 +316,17 @@ void chisel_draw() {
 // ux, uy = unit vector for the direction of chisel.
 // px, py = initial positions.
 // Returns the blob it reaches only if remove == 0.
-Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len) {
+Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
     struct Chisel *chisel = gs->chisel;
     struct Object *objects = gs->objects;
     int *curr_blobs = objects[gs->object_current].blob_data[chisel->size].blobs;
 
     bool did_hit_blocker = false;
-    float px = chisel->x, py = chisel->y;
+    f32 px = chisel->x, py = chisel->y;
 
     if (gs->object_current == -1) return 0;
 
-    float current_length = (float) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
+    f32 current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
 
     while (current_length < len) {
         // If we hit the chisel blocker, keep that in mind for later.
@@ -386,7 +386,7 @@ Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len) {
         chisel->x += ux;
         chisel->y += uy;
 
-        current_length = (float) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
+        current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
     }
 
     Uint32 b = curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw];
@@ -445,7 +445,7 @@ void chisel_hammer_init() {
 
     hammer->x = chisel->x;
     hammer->y = chisel->y;
-    hammer->normal_dist = (float) (chisel->w+4);
+    hammer->normal_dist = (f32) (chisel->w+4);
     hammer->dist = hammer->normal_dist;
     hammer->time = 0;
     hammer->angle = 0;
@@ -461,10 +461,10 @@ void chisel_hammer_tick() {
 
     hammer->angle = chisel->angle;
 
-    float rad = (hammer->angle) / 360.f;
-    rad *= 2 * (float)M_PI;
+    f32 rad = (hammer->angle) / 360.f;
+    rad *= 2 * (f32)M_PI;
 
-    const float off = 6;
+    const f32 off = 6;
 
     int dir = 1;
 
@@ -490,7 +490,7 @@ void chisel_hammer_tick() {
     case HAMMER_STATE_SWING:
         hammer->dist -= 8;
         if (hammer->dist < stop) {
-            hammer->dist = (float) stop;
+            hammer->dist = (f32) stop;
             // Activate the chisel.
             if (chisel->click_cooldown == 0) {
                 chisel->click_cooldown = CHISEL_COOLDOWN;

@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 
 struct Grabber {
-    float x, y;
+    f32 x, y;
     int w, h;
     SDL_Texture *texture;
 

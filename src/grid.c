@@ -18,16 +18,16 @@
 
 internal int draw_lines = 1;
 
-internal float damp(int i) {
+internal f32 damp(int i) {
     srand(i);
-    return 0.5f + ((float)rand())/RAND_MAX * 0.4f;
+    return 0.5f + ((f32)rand())/RAND_MAX * 0.4f;
 }
 
-internal float water_spread() {
-    return rand()%3 + ((float)rand())/RAND_MAX;
+internal f32 water_spread() {
+    return rand()%3 + ((f32)rand())/RAND_MAX;
 }
 
-float get_pressure_threshold(int chisel_size) {
+f32 get_pressure_threshold(int chisel_size) {
     switch (chisel_size) {
     case 0:
         return 0.75f;
@@ -84,7 +84,7 @@ void grid_init(int w, int h) {
 }
 
 SDL_Color pixel_from_index(struct Cell *cells, int i) {
-    SDL_Color color;
+    SDL_Color color = {0};
     int r, amt;
 
     // TODO: Granite, Basalt, Lava.
@@ -196,8 +196,8 @@ bool move_by_velocity_gas(struct Cell *arr, int x, int y) {
     struct Cell *p = &arr[x+y*gs->gw];
 
     if (p->vx_acc == 0 && p->vy_acc == 0) {
-        p->vx_acc = (float) x;
-        p->vy_acc = (float) y;
+        p->vx_acc = (f32) x;
+        p->vy_acc = (f32) y;
         return false;
     }
 
@@ -208,8 +208,8 @@ bool move_by_velocity_gas(struct Cell *arr, int x, int y) {
     int ty = (int)p->vy_acc;
     
     if (!is_in_bounds(tx, ty) || (is_in_bounds(tx, ty) && arr[tx+ty*gs->gw].type && arr[tx+ty*gs->gw].type != p->type)) {
-        p->vx_acc = (float) x;
-        p->vy_acc = (float) y;
+        p->vx_acc = (f32) x;
+        p->vy_acc = (f32) y;
         p->vx = 0;
         p->vy = 0;
         return true;
@@ -243,12 +243,12 @@ void move_by_velocity(struct Cell *arr, int x, int y) {
         p->vy_acc = 0;
     }
 
-    float xx = (float) x;
-    float yy = (float) y;
+    f32 xx = (f32) x;
+    f32 yy = (f32) y;
 
-    float len = sqrtf(p->vx*p->vx + p->vy*p->vy);
-    float ux = p->vx/len;
-    float uy = p->vy/len;
+    f32 len = sqrtf(p->vx*p->vx + p->vy*p->vy);
+    f32 ux = p->vx/len;
+    f32 uy = p->vy/len;
 
     while (sqrt((xx-x)*(xx-x) + (yy-y)*(yy-y)) <= len) {
         xx += ux;
@@ -294,7 +294,7 @@ int is_in_bounds(int x, int y) {
     return x >= 0 && y >= 0 && x < gs->gw && y < gs->gh;
 }
 
-int is_in_boundsf(float x, float y) {
+int is_in_boundsf(f32 x, f32 y) {
     return is_in_bounds((int)x, (int)y);
 }
 
@@ -388,7 +388,7 @@ void set(int x, int y, int val, int object) {
 // Can we destroy this blob or is it too far inside?
 bool blob_can_destroy(int obj, int chisel_size, int blob) {
     int blob_pressure = gs->objects[obj].blob_data[chisel_size].blob_pressures[blob];
-    float normalized_pressure = (float) (blob_pressure / MAX_PRESSURE);
+    f32 normalized_pressure = (f32) (blob_pressure / MAX_PRESSURE);
 
     if (normalized_pressure >= get_pressure_threshold(chisel_size)) {
         /* printf("Blocked due to too much pressure (%f > %f).\n", normalized_pressure, get_pressure_threshold(chisel_size)); */
@@ -441,7 +441,7 @@ int grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
 
             switch (c->type) {
             case CELL_WATER: {
-                float sp = 0.5;
+                f32 sp = 0.5;
 
                 if (is_in_bounds(x, y+1) && !array[x+(y+1)*gs->gw].type) {
                     c->vy += GRAV;
@@ -453,7 +453,7 @@ int grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
                     c->vx = -sp;
                     c->vy = sp;
                 } else if (is_in_bounds(x+1, y) && is_in_bounds(x-1, y) && !array[x+1+y*gs->gw].type && x-1 >= 0 && !array[x-1+y*gs->gw].type) {
-                    float dx = water_spread() * ((rand()%2==0)?1:-1);
+                    f32 dx = water_spread() * ((rand()%2==0)?1:-1);
                     c->vx = dx/4.f;
                     c->vy = 0;
                 } else if (is_in_bounds(x+1, y) && !array[x+1+y*gs->gw].type) {
@@ -496,8 +496,8 @@ int grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
             case CELL_STEAM: case CELL_SMOKE: {
                 Assert(array == gs->gas_grid);
                 
-                float fac = 0.4f*randf(1.f);
-                float amplitude = 1.0;
+                f32 fac = 0.4f*randf(1.f);
+                f32 amplitude = 1.0;
 
                 // If we hit something last frame...
                 if (is_in_bounds(x, y-1) && can_gas_cell_swap(x, y-1)) {
@@ -612,10 +612,10 @@ void grid_array_draw(struct Cell *array) {
             }
 
             if (DRAW_PRESSURE && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]) {
-                // Uint8 c = (Uint8)(255 * ((float)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]] / MAX_PRESSURE)); // ??? Holy fuck.
+                // Uint8 c = (Uint8)(255 * ((f32)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]] / MAX_PRESSURE)); // ??? Holy fuck.
 
                 int blob_pressure = (int)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]];
-                float normalized_pressure = (float) (blob_pressure / MAX_PRESSURE);
+                f32 normalized_pressure = (f32) (blob_pressure / MAX_PRESSURE);
 
                 if (normalized_pressure >= get_pressure_threshold(gs->chisel->size)) {
                     SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
@@ -660,9 +660,9 @@ void grid_draw(void) {
                 if (!gs->levels[gs->level_current].desired_grid[x+y*gs->gw].type) continue;
 
                 SDL_Color col = pixel_from_index(gs->levels[gs->level_current].desired_grid, x+y*gs->gw);
-                float b = (float) (col.r + col.g + col.b);
+                f32 b = (f32) (col.r + col.g + col.b);
                 b /= 3.;
-                b = (float) clamp((int)b, 0, 255);
+                b = (f32) clamp((int)b, 0, 255);
                 SDL_SetRenderDrawColor(gs->renderer,
                                        (Uint8) (b/2),
                                        (Uint8) (b/4),
@@ -737,7 +737,7 @@ int number_neighbours_of_object(int x, int y, int r, int obj) {
 
 int blob_find_pressure(int obj, Uint32 blob, int x, int y, int r) {
     int max_blob_size = 8;
-    float pressure = 0.f;
+    f32 pressure = 0.f;
     int count = 0;
     struct Object *object = &gs->objects[obj];
 
@@ -923,9 +923,6 @@ internal void diamond_fill(Uint32 *blobs, Uint32 *blob_count, int obj, int x, in
 }
 
 internal void blob_generate_diamonds(int obj, int chisel_size, Uint32 *blob_count) {
-    int w = 3, h = 3;
-    bool next = false;
-
     int x = -100, y = -100;
 
     struct Object *o = &gs->objects[obj];
@@ -1071,10 +1068,10 @@ void object_generate_blobs(int object_index, int chisel_size) {
 
 internal void dust_set_random_velocity(int x, int y) {
     struct Cell *c = &gs->pickup_grid[x+y*gs->gw];
-    c->vx = 3.f  * (float)(rand()%100) / 100.f;
-    c->vy = -2.f * (float)(rand()%100) / 100.f;
-    c->vx_acc = (float) x;
-    c->vy_acc = (float) y;
+    c->vx = 3.f  * (f32)(rand()%100) / 100.f;
+    c->vy = -2.f * (f32)(rand()%100) / 100.f;
+    c->vx_acc = (f32) x;
+    c->vy_acc = (f32) y;
 }
 
 bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_dust) {
@@ -1183,7 +1180,6 @@ void objects_reevaluate() {
     
     /* if (update_blobs || object_count != previous_count) { */
     for (int i = 0; i < gs->object_count; i++) {
-        printf("Happened!\n");
         object_generate_blobs(i, 0);
         object_generate_blobs(i, 1);
         object_generate_blobs(i, 2);
@@ -1199,11 +1195,11 @@ internal int condition(int a, int end, int dir) {
 }
 
 int object_attempt_move(int object, int dx, int dy) {
-    float len = sqrtf((float) (dx*dx + dy*dy));
+    f32 len = sqrtf((f32) (dx*dx + dy*dy));
     if (len == 0) return 0;
 
-    float ux = dx/len;
-    float uy = dy/len;
+    f32 ux = dx/len;
+    f32 uy = dy/len;
 
     int start_y = 0;
     int end_y = 0;
@@ -1232,8 +1228,8 @@ int object_attempt_move(int object, int dx, int dy) {
 		dir_x = 1;
 	}
 
-    float vx = ux; // = 0;
-    float vy = uy; // = 0;
+    f32 vx = ux; // = 0;
+    f32 vy = uy; // = 0;
 
     struct Cell *grid_temp = arena_alloc(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
     memcpy(grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
@@ -1322,7 +1318,7 @@ void draw_objects() {
 // Returns the index of the closest cell to the point (px, py)
 int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_object, bool must_be_hard) {
     int closest_index = -1;
-    float closest_distance = (float) (gs->gw*gs->gh); // Arbitrarily high number
+    f32 closest_distance = (f32) (gs->gw*gs->gh); // Arbitrarily high number
 
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
@@ -1356,9 +1352,9 @@ int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_o
             }
 
             if (condition) {
-                float dx = (float) (px - x);
-                float dy = (float) (py - y);
-                float dist = sqrtf(dx*dx + dy*dy);
+                f32 dx = (f32) (px - x);
+                f32 dy = (f32) (py - y);
+                f32 dist = sqrtf(dx*dx + dy*dy);
 
                 if (dist < closest_distance) {
                     closest_distance = dist;
@@ -1383,18 +1379,18 @@ int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_o
     return closest_index;
 }
 
-int clamp_to_grid_angle(int x, int y, float rad_angle, bool set_current_object) {
+int clamp_to_grid_angle(int x, int y, f32 rad_angle, bool set_current_object) {
     int l = gs->gw;
-    float x1 = (float) x;
-    float y1 = (float) y;
-    float y2 = y1 + l * sinf(rad_angle);
-    float x2 = x1 + l * cosf(rad_angle);
+    f32 x1 = (f32) x;
+    f32 y1 = (f32) y;
+    f32 y2 = y1 + l * sinf(rad_angle);
+    f32 x2 = x1 + l * cosf(rad_angle);
 
-    float dx = x2-x1;
-    float dy = y2-y1;
-    float len = sqrtf(dx*dx + dy*dy);
-    float ux = dx/len;
-    float uy = dy/len;
+    f32 dx = x2-x1;
+    f32 dy = y2-y1;
+    f32 len = sqrtf(dx*dx + dy*dy);
+    f32 ux = dx/len;
+    f32 uy = dy/len;
 
     // Loop until one of the values goes off-screen.
     // This is so that we expand the line out so that it reaches
@@ -1404,13 +1400,13 @@ int clamp_to_grid_angle(int x, int y, float rad_angle, bool set_current_object) 
         y1 -= uy;
     }
 
-    float closest_distance = (float) (gs->gw*gs->gh);
+    f32 closest_distance = (f32) (gs->gw*gs->gh);
     int closest_index = -1;
 
     for (int yy = 0; yy < gs->gh; yy++) {
         for (int xx = 0; xx < gs->gw; xx++) {
             if (!gs->grid[xx+yy*gs->gw].type && is_point_on_line((SDL_Point){(int)xx, (int)yy}, (SDL_Point){(int)x1, (int)y1}, (SDL_Point){(int)x2, (int)y2}) && number_neighbours(gs->grid, (int)xx, (int)yy, 1) >= 1) {
-                float dist = distance((float) xx, (float) yy, (float)x, (float)y);
+                f32 dist = distance((f32) xx, (f32) yy, (f32)x, (f32)y);
                 if (dist < closest_distance) {
                     closest_distance = dist;
                     closest_index = xx+yy*gs->gw;

@@ -123,7 +123,7 @@ SDL_Cursor *init_system_cursor(const char **image) {
     return SDL_CreateCursor(data, mask, 32, 32, hot_x, hot_y);
 }
 
-void _set_cursor(SDL_Cursor *cursor, const char *file, int line) {
+/* void _set_cursor(SDL_Cursor *cursor, const char *file, int line) { */
     /* printf("Set to %p at file %s and line %d.\n", (void*)cursor, file, line); */
     /* SDL_SetCursor(cursor); */
-}
+/* } */

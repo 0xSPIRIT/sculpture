@@ -15,7 +15,7 @@
 void gui_init() {
     struct GUI *gui = &gs->gui;
 
-    *gui = (struct GUI){ .popup_y = (float) (gs->gh*gs->S), .popup_y_vel = 0, .popup_h = GUI_POPUP_H, .popup = 0 };
+    *gui = (struct GUI){ .popup_y = (f32) (gs->gh*gs->S), .popup_y_vel = 0, .popup_h = GUI_POPUP_H, .popup = 0 };
     gui->popup_texture = gs->textures.popup;
 
     overlay_reset(&gui->overlay);
@@ -63,7 +63,7 @@ void gui_tick() {
             gs->current_placer = 0;
     }
 
-    const float speed = 3.0f;
+    const f32 speed = 3.0f;
 
     all_converters_tick();
 
@@ -94,7 +94,7 @@ void gui_tick() {
     } else if (gui->popup_y < gs->S*gs->gh) {
         gui->popup_y_vel += speed;
     } else {
-        gui->popup_y = (float) (gs->S*gs->gh);
+        gui->popup_y = (f32) (gs->S*gs->gh);
         gui->popup_y_vel = 0;
     }
 
@@ -109,7 +109,7 @@ void gui_tick() {
     }
 
     gui->popup_y += gui->popup_y_vel;
-    gui->popup_y = (float) clamp((int) gui->popup_y, (int) (gs->S*gs->gh - gui->popup_h), gs->window_height);
+    gui->popup_y = (f32) clamp((int) gui->popup_y, (int) (gs->S*gs->gh - gui->popup_h), gs->window_height);
 }
 
 void gui_draw() {
@@ -180,14 +180,14 @@ void overlay_reset(struct Overlay *overlay) {
 
 void overlay_set_position_to_cursor(struct Overlay *overlay, int type) {
     struct Input *input = &gs->input;
-    overlay->x = (float)input->real_mx/gs->S;
-    overlay->y = (float)input->real_my/gs->S - GUI_H/gs->S;
+    overlay->x = (f32)input->real_mx/gs->S;
+    overlay->y = (f32)input->real_my/gs->S - GUI_H/gs->S;
     overlay->type = type;
 }
 
 void overlay_set_position(struct Overlay *overlay, int x, int y, int type) {
-    overlay->x = (float) x;
-    overlay->y = (float) y;
+    overlay->x = (f32) x;
+    overlay->y = (f32) y;
     overlay->type = type;
 }
 
@@ -347,20 +347,20 @@ void click_gui_tool_button(void *type_ptr) {
         gs->chisel = &gs->chisel_small;
         for (int i = 0; i < gs->object_count; i++)
             object_generate_blobs(i, 0);
-        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (float) (gs->chisel->w+2);
+        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+2);
         break;
     case TOOL_CHISEL_MEDIUM:
         gs->chisel = &gs->chisel_medium;
         for (int i = 0; i < gs->object_count; i++)
             object_generate_blobs(i, 1);
-        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (float) (gs->chisel->w+4);
+        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+4);
         break;
     case TOOL_CHISEL_LARGE:
         gs->current_tool = TOOL_CHISEL_LARGE;
         gs->chisel = &gs->chisel_large;
         for (int i = 0; i < gs->object_count; i++)
             object_generate_blobs(i, 2);
-        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (float) (gs->chisel->w+4);
+        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+4);
         break;
     }
 

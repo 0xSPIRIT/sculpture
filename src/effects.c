@@ -28,13 +28,13 @@ void effect_set(int type) {
     case EFFECT_SNOW:
         for (int i = 0; i < gs->current_effect.particle_count; i++) {
             struct Effect_Particle *particle = &gs->current_effect.particles[i];
-            particle->x = (float) (rand()%gs->gw);
-            particle->y = (float) (rand()%gs->gh);
+            particle->x = (f32) (rand()%gs->gw);
+            particle->y = (f32) (rand()%gs->gh);
 
             particle->vx = 0.3f + randf(0.5);
             particle->vy = 0.3f + randf(1.0);
 
-            const float spd = 0.3f;
+            const f32 spd = 0.3f;
             particle->vx *= spd;
             particle->vy *= spd;
         }
@@ -42,8 +42,8 @@ void effect_set(int type) {
     case EFFECT_RAIN:
         for (int i = 0; i < gs->current_effect.particle_count; i++) {
             struct Effect_Particle *particle = &gs->current_effect.particles[i];
-            particle->x = (float) (rand()%gs->gw);
-            particle->y = (float) (rand()%gs->gh);
+            particle->x = (f32) (rand()%gs->gw);
+            particle->y = (f32) (rand()%gs->gh);
 
             particle->vx = 0.3f + randf(0.3f);
             particle->vy = 1.f;
@@ -68,12 +68,12 @@ void effect_tick(struct Effect *effect) {
             }
 
             if (is_in_bounds((int)particle->x, (int)particle->y) && gs->grid[(int)particle->x + ((int)particle->y)*gs->gw].type) {
-                particle->x = (float) (rand()%gs->gw);
+                particle->x = (f32) (rand()%gs->gw);
                 particle->y = 0;
             }
 
-            if (particle->x < 0) particle->x = (float) gs->gw-1;
-            if (particle->y < 0) particle->y = (float) gs->gh-1;
+            if (particle->x < 0) particle->x = (f32) gs->gw-1;
+            if (particle->y < 0) particle->y = (f32) gs->gh-1;
 
             if (particle->x-particle->vx*3 > gs->gw-1) particle->x = 0;
             if (particle->y-particle->vy*3 > gs->gh-1) particle->y = 0;
@@ -92,13 +92,11 @@ void effect_draw(struct Effect *effect) {
     case EFFECT_SNOW:
         for (int i = 0; i < effect->particle_count; i++) {
             struct Effect_Particle *particle = &gs->current_effect.particles[i];
-            float length = (float) sqrt(particle->vx*particle->vx + particle->vy*particle->vy);
-            const float max = 1.125;
+            f32 length = (f32) sqrt(particle->vx*particle->vx + particle->vy*particle->vy);
+            const f32 max = 1.125;
 
             int px = (int)particle->x;
             int py = (int)particle->y;
-
-            const float speed = 0.2f;
 
             // Confetti Mode:
             /* SDL_SetRenderDrawColor(gs->renderer, my_rand(px), my_rand(py), my_rand(px*py), (Uint8) (255 * (length/max))); */

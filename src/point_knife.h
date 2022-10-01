@@ -4,9 +4,10 @@
 #include <SDL2/SDL.h>
 
 #include "grid.h"
+#include "typedefs.h"
 
 struct Point_Knife {
-    float x, y;
+    f32 x, y;
     int w, h;
     SDL_Texture *texture;
 

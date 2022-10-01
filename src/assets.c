@@ -16,7 +16,7 @@
 // This is included only in the platform/SDL layer.
 //
 
-SDL_Texture *load_texture(SDL_Renderer *renderer, SDL_Window *window, const char *fp) {
+SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
     SDL_Surface *surf = IMG_Load(fp);
     Assert(surf);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
@@ -87,8 +87,7 @@ internal void get_name_from_tool(int type, char *out) {
 }
 
 // Creates all render targets for all the levels.
-void render_targets_init(SDL_Window *window,
-                         SDL_Renderer *renderer,
+void render_targets_init(SDL_Renderer *renderer,
                          int width, // In screen coords, not game coords.
                          struct Level *levels,
                          struct Textures *textures) {
@@ -109,10 +108,6 @@ void render_targets_init(SDL_Window *window,
 
 void textures_init(SDL_Window *window,
                    SDL_Renderer *renderer,
-                   struct Level *levels,
-                   int window_width,
-                   int gw,
-                   int gh,
                    struct Textures *textures) {
     SDL_Surface *surf = NULL;
 
@@ -133,10 +128,10 @@ void textures_init(SDL_Window *window,
         surf = NULL;
     }
 
-    textures->point_knife = load_texture(renderer, window,  RES_DIR "/point_knife.png");
-    textures->placer = load_texture(renderer, window,  RES_DIR "/placer.png");
-    textures->knife = load_texture(renderer, window,  RES_DIR "/knife.png");
-    textures->popup = load_texture(renderer, window,  RES_DIR "/popup.png");
+    textures->point_knife = load_texture(renderer, RES_DIR "/point_knife.png");
+    textures->placer = load_texture(renderer, RES_DIR "/placer.png");
+    textures->knife = load_texture(renderer, RES_DIR "/knife.png");
+    textures->popup = load_texture(renderer, RES_DIR "/popup.png");
 
     for (int i = 0; i < TOOL_COUNT; i++) {
         char filename[128] = {0};
@@ -145,20 +140,20 @@ void textures_init(SDL_Window *window,
         get_file_from_tool(i, filename);
         sprintf(path, RES_DIR "/buttons/%s", filename);
 
-        textures->tool_buttons[i] = load_texture(renderer, window, path);
+        textures->tool_buttons[i] = load_texture(renderer, path);
         Assert(textures->tool_buttons[i]);
     }
 
-    textures->blob_hammer = load_texture(renderer, window,  RES_DIR "/hammer.png");
-    textures->converter_arrow = load_texture(renderer, window,  RES_DIR "/arrow.png");
-    textures->convert_button = load_texture(renderer, window,  RES_DIR "/buttons/convert.png");
+    textures->blob_hammer = load_texture(renderer, RES_DIR "/hammer.png");
+    textures->converter_arrow = load_texture(renderer, RES_DIR "/arrow.png");
+    textures->convert_button = load_texture(renderer, RES_DIR "/buttons/convert.png");
 
     const char *chisel_files[] = {
         RES_DIR "/chisel_small",
         RES_DIR "/chisel_medium",
         RES_DIR "/chisel_large",
     };
-    textures->chisel_hammer = load_texture(renderer, window,  RES_DIR "/hammer.png");
+    textures->chisel_hammer = load_texture(renderer, RES_DIR "/hammer.png");
 
     // Loop through all chisels
     for (int i = 0; i < 3; i++) {
@@ -173,10 +168,10 @@ void textures_init(SDL_Window *window,
             strcat(file, ".png");
 
             if (face) {
-                textures->chisel_face[i] = load_texture(renderer, window,  file);
+                textures->chisel_face[i] = load_texture(renderer, file);
                 Assert(textures->chisel_face[i]);
             } else {
-                textures->chisel_outside[i] = load_texture(renderer, window,  file);
+                textures->chisel_outside[i] = load_texture(renderer, file);
                 Assert(textures->chisel_outside[i]);
             }
         }

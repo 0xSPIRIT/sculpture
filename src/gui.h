@@ -24,7 +24,7 @@ enum Overlay_Type {
 struct Overlay {
     enum Overlay_Type type;
 
-    float x, y;
+    f32 x, y;
     char str[MAX_OVERLAY_LEN][MAX_OVERLAY_LINE_LEN];
     int w, h;
 };
@@ -32,7 +32,7 @@ struct Overlay {
 struct GUI {
     int popup;
     bool is_placer_active;
-    float popup_y, popup_y_vel, popup_h;
+    f32 popup_y, popup_y_vel, popup_h;
     SDL_Texture *popup_texture;
     struct Overlay overlay;
 

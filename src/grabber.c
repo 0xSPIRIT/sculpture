@@ -14,10 +14,10 @@ void grabber_init() {
 void grabber_tick() {
     struct Grabber *grabber = &gs->grabber;
 
-    float px = grabber->x, py = grabber->y;
+    f32 px = grabber->x, py = grabber->y;
 
-    grabber->x = (float) gs->input.mx;
-    grabber->y = (float) gs->input.my;
+    grabber->x = (f32) gs->input.mx;
+    grabber->y = (f32) gs->input.my;
 
     if (!is_in_bounds((int)grabber->x, (int)grabber->y)) return;
 

@@ -20,12 +20,12 @@ struct Blob_Hammer {
     int state;
     int timer;
     
-    float x, y;
+    f32 x, y;
     int w, h;
 
     bool is_changing_angle;
     int swing_direction;
-    float angle, prev_angle;
+    f32 angle, prev_angle;
 
     SDL_Texture *texture;
 

@@ -15,6 +15,8 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 
+#include "typedefs.h"
+
 enum Tool_Type {
     TOOL_CHISEL_SMALL,
     TOOL_CHISEL_MEDIUM,
@@ -73,8 +75,8 @@ struct Cell {
     bool updated;         // Updated for the frame yet?
     Uint8 depth;          // Z-depth. Controls brightness of the cell.
     int time;             // Time since set
-    float vx, vy;         // Velocity
-    float vx_acc, vy_acc; // When vel < 1, we need to keep track of that
+    f32 vx, vy;         // Velocity
+    f32 vx_acc, vy_acc; // When vel < 1, we need to keep track of that
     int px, py;           // Previous positions
     int rand;             // Random value per cell
 };
@@ -100,7 +102,7 @@ void grid_draw(void);
 SDL_Color pixel_from_index(struct Cell *cells, int i);
 
 int is_in_bounds(int x, int y);
-int is_in_boundsf(float x, float y);
+int is_in_boundsf(f32 x, f32 y);
 
 void move_by_velocity(struct Cell *arr, int x, int y);
 bool move_by_velocity_gas(struct Cell *arr, int x, int y);
@@ -109,7 +111,7 @@ void swap_array(struct Cell *grid, int x1, int y1, int x2, int y2);
 void swap(int x1, int y1, int x2, int y2);
 void switch_blob_to_array(struct Cell *from, struct Cell *to, int obj, int blob, int chisel_size);
 
-float get_pressure_threshold(int chisel_size);
+f32 get_pressure_threshold(int chisel_size);
 void print_blob_data(struct Object *object, int chisel_size);
 bool blob_can_destroy(int obj, int chisel_size, int blob);
 
@@ -132,7 +134,7 @@ int number_neighbours_of_object(int x, int y, int r, int obj);
 int number_neighbours(struct Cell *array, int x, int y, int r);
 int number_direct_neighbours(struct Cell *array, int x, int y);
 int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_object, bool must_be_hard);
-int clamp_to_grid_angle(int x, int y, float rad_angle, bool set_current_object);
+int clamp_to_grid_angle(int x, int y, f32 rad_angle, bool set_current_object);
 
 void draw_blobs();
 void draw_objects();

@@ -6,7 +6,6 @@
 - Finally, create levels.
 
 - Change placer behaviour to be continuous in the converter.
-- Remove all warnings at /W4
 
 - Some kind of crash when closing the game, and sometimes when using
   the material converter... but only when in release mode... sigh.

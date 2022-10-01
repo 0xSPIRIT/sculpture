@@ -141,7 +141,6 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
         }
         
         if (input->mouse_pressed[SDL_BUTTON_RIGHT]) {
-            printf("%d\n", p->contains_type);
             if (p->contains_amount == 0) p->contains_type = 0;
             if (p->contains_type == 0 || p->contains_type == item->type) {
                 p->contains_type = item->type;
@@ -150,7 +149,7 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
                 item->type = 0;
                 item->amount = 0;
             }
-        } else if (can_place_item && input->mouse_pressed[SDL_BUTTON_LEFT]) {
+        } else if (can_place_item && input->mouse & SDL_BUTTON_LEFT) {
             int amt = 0;
             const int place_speed = 6;
             
@@ -276,7 +275,7 @@ bool was_mouse_in_slot(struct Slot *slot) {
 struct Converter *converter_init(int type) {
     struct Converter *converter = arena_alloc(gs->persistent_memory, 1, sizeof(struct Converter));
     converter->type = type;
-    converter->w = (float) (gs->window_width/2);
+    converter->w = (f32) (gs->window_width/2);
     converter->h = GUI_POPUP_H;
     
     converter->timer_max = 1;
@@ -361,8 +360,8 @@ void converter_tick(struct Converter *converter) {
         converter->y = gs->gui.popup_y;
         break;
     case CONVERTER_FUEL:
-        converter->x = (float) (gs->S*gs->gw/2);
-        converter->y = (float) (gs->gui.popup_y);
+        converter->x = (f32) (gs->S*gs->gw/2);
+        converter->y = (f32) (gs->gui.popup_y);
         break;
     }
     
@@ -820,11 +819,11 @@ int get_number_unique_inputs(struct Item *input1, struct Item *input2) {
 }
 
 // Calculate the ratio of inputs -> output.
-internal float calculate_output_ratio(struct Item *input1, struct Item *input2) {
-    float result = 0.f;
+internal f32 calculate_output_ratio(struct Item *input1, struct Item *input2) {
+    f32 result = 0.f;
     int number_unique_inputs = get_number_unique_inputs(input1, input2);
 
-    result = (float) (number_unique_inputs * number_unique_inputs);
+    result = (f32) (number_unique_inputs * number_unique_inputs);
 
     return result;
 }
@@ -849,8 +848,6 @@ bool converter_convert(struct Converter *converter) {
     if (!number_inputs) return false;
     /* if (fuel && (!fuel->type || fuel->amount == 0)) return false; */
 
-    struct Item *input = NULL;
-
     if (converter->type == CONVERTER_FUEL) {
         temp_output_type = fuel_converter_convert(input1, input2);
     } else if (converter->type == CONVERTER_MATERIAL) {
@@ -859,7 +856,7 @@ bool converter_convert(struct Converter *converter) {
 
     if (!temp_output_type) return false;
 
-    float output_ratio = calculate_output_ratio(input1, input2);
+    f32 output_ratio = calculate_output_ratio(input1, input2);
 
     bool final_conversion = false;
 
@@ -954,6 +951,4 @@ bool is_cell_stone(int type) {
     default:
         return false;
     }
-
-    return false;
 }
