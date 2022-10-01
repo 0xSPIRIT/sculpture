@@ -20,7 +20,7 @@ internal int draw_lines = 1;
 
 internal float damp(int i) {
     srand(i);
-    return 0.5 + ((float)rand())/RAND_MAX * 0.4;
+    return 0.5f + ((float)rand())/RAND_MAX * 0.4f;
 }
 
 internal float water_spread() {
@@ -30,11 +30,11 @@ internal float water_spread() {
 float get_pressure_threshold(int chisel_size) {
     switch (chisel_size) {
     case 0:
-        return 0.75;
+        return 0.75f;
     case 1:
-        return 0.85;
+        return 0.85f;
     case 2:
-        return 0.8;
+        return 0.8f;
     }
     return 0;
 }
@@ -54,18 +54,18 @@ void grid_init(int w, int h) {
     gs->gh = h;
 
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        gs->grid_layers[i] = push_memory(gs->persistent_memory, w*h, sizeof(struct Cell));
+        gs->grid_layers[i] = arena_alloc(gs->persistent_memory, w*h, sizeof(struct Cell));
     }
 
     memset(gs->objects, 0, sizeof(struct Object)*MAX_OBJECTS);
     for (int i = 0; i < MAX_OBJECTS; i++) {
         for (int j = 0; j < 3; j++) {
-            gs->objects[i].blob_data[j].blobs = push_memory(gs->persistent_memory, w*h, sizeof(Uint32));
-            gs->objects[i].blob_data[j].blob_pressures = push_memory(gs->persistent_memory, w*h, sizeof(int));
+            gs->objects[i].blob_data[j].blobs = arena_alloc(gs->persistent_memory, w*h, sizeof(Uint32));
+            gs->objects[i].blob_data[j].blob_pressures = arena_alloc(gs->persistent_memory, w*h, sizeof(int));
         }
     }
 
-    srand(time(0));
+    srand((unsigned int) time(0));
 
     for (int i = 0; i < w*h; i++) {
         for (int j = 0; j < NUM_GRID_LAYERS; j++) {
@@ -196,8 +196,8 @@ bool move_by_velocity_gas(struct Cell *arr, int x, int y) {
     struct Cell *p = &arr[x+y*gs->gw];
 
     if (p->vx_acc == 0 && p->vy_acc == 0) {
-        p->vx_acc = x;
-        p->vy_acc = y;
+        p->vx_acc = (float) x;
+        p->vy_acc = (float) y;
         return false;
     }
 
@@ -208,8 +208,8 @@ bool move_by_velocity_gas(struct Cell *arr, int x, int y) {
     int ty = (int)p->vy_acc;
     
     if (!is_in_bounds(tx, ty) || (is_in_bounds(tx, ty) && arr[tx+ty*gs->gw].type && arr[tx+ty*gs->gw].type != p->type)) {
-        p->vx_acc = x;
-        p->vy_acc = y;
+        p->vx_acc = (float) x;
+        p->vy_acc = (float) y;
         p->vx = 0;
         p->vy = 0;
         return true;
@@ -243,10 +243,10 @@ void move_by_velocity(struct Cell *arr, int x, int y) {
         p->vy_acc = 0;
     }
 
-    float xx = x;
-    float yy = y;
+    float xx = (float) x;
+    float yy = (float) y;
 
-    float len = sqrt(p->vx*p->vx + p->vy*p->vy);
+    float len = sqrtf(p->vx*p->vx + p->vy*p->vy);
     float ux = p->vx/len;
     float uy = p->vy/len;
 
@@ -268,14 +268,14 @@ void move_by_velocity(struct Cell *arr, int x, int y) {
         if (((int)xx != x || (int)yy != y) && arr[(int)xx+((int)yy)*gs->gw].type) {
             if (ux) {
                 if (!is_cell_liquid(p->type)) {
-                    p->vx *= -0.2;
+                    p->vx *= -0.2f;
                 } else {
                     p->vx = 0;
                 }
             }
             if (uy) {
                 if (!is_cell_liquid(p->type)) {
-                    p->vy *= -0.6;
+                    p->vy *= -0.6f;
                 } else {
                     p->vx = 0;
                 }
@@ -388,7 +388,7 @@ void set(int x, int y, int val, int object) {
 // Can we destroy this blob or is it too far inside?
 bool blob_can_destroy(int obj, int chisel_size, int blob) {
     int blob_pressure = gs->objects[obj].blob_data[chisel_size].blob_pressures[blob];
-    float normalized_pressure = (float)blob_pressure / MAX_PRESSURE;
+    float normalized_pressure = (float) (blob_pressure / MAX_PRESSURE);
 
     if (normalized_pressure >= get_pressure_threshold(chisel_size)) {
         /* printf("Blocked due to too much pressure (%f > %f).\n", normalized_pressure, get_pressure_threshold(chisel_size)); */
@@ -454,7 +454,7 @@ int grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
                     c->vy = sp;
                 } else if (is_in_bounds(x+1, y) && is_in_bounds(x-1, y) && !array[x+1+y*gs->gw].type && x-1 >= 0 && !array[x-1+y*gs->gw].type) {
                     float dx = water_spread() * ((rand()%2==0)?1:-1);
-                    c->vx = dx/4.;
+                    c->vx = dx/4.f;
                     c->vy = 0;
                 } else if (is_in_bounds(x+1, y) && !array[x+1+y*gs->gw].type) {
                     c->vx = sp;
@@ -496,7 +496,7 @@ int grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
             case CELL_STEAM: case CELL_SMOKE: {
                 Assert(array == gs->gas_grid);
                 
-                float fac = 0.4*randf(1.0);
+                float fac = 0.4f*randf(1.f);
                 float amplitude = 1.0;
 
                 // If we hit something last frame...
@@ -606,17 +606,16 @@ void grid_array_draw(struct Cell *array) {
 
             SDL_Color col = pixel_from_index(array, x+y*gs->gw);
             if (array == gs->pickup_grid) {
-                const float fac = 0.5;
-                col.r *= fac;
-                col.g *= fac;
-                col.b *= fac;
+                col.r /= 2;
+                col.g /= 2;
+                col.b /= 2;
             }
 
             if (DRAW_PRESSURE && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]) {
                 // Uint8 c = (Uint8)(255 * ((float)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]] / MAX_PRESSURE)); // ??? Holy fuck.
 
-                int blob_pressure = (float)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]];
-                float normalized_pressure = (float)blob_pressure / MAX_PRESSURE;
+                int blob_pressure = (int)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]];
+                float normalized_pressure = (float) (blob_pressure / MAX_PRESSURE);
 
                 if (normalized_pressure >= get_pressure_threshold(gs->chisel->size)) {
                     SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
@@ -661,10 +660,14 @@ void grid_draw(void) {
                 if (!gs->levels[gs->level_current].desired_grid[x+y*gs->gw].type) continue;
 
                 SDL_Color col = pixel_from_index(gs->levels[gs->level_current].desired_grid, x+y*gs->gw);
-                float b = col.r + col.g + col.b;
+                float b = (float) (col.r + col.g + col.b);
                 b /= 3.;
-                b = (int)clamp((int)b, 0, 255);
-                SDL_SetRenderDrawColor(gs->renderer, b/2, b/4, b, 200 + sinf((2*x+2*y+SDL_GetTicks())/700.0)*10);
+                b = (float) clamp((int)b, 0, 255);
+                SDL_SetRenderDrawColor(gs->renderer,
+                                       (Uint8) (b/2),
+                                       (Uint8) (b/4),
+                                       (Uint8) (b),
+                                       (Uint8) (200 + sinf((2*x+2*y+SDL_GetTicks())/700.f)*10));
                 SDL_RenderDrawPoint(gs->renderer, x, y);
             }
         }
@@ -753,7 +756,7 @@ int blob_find_pressure(int obj, Uint32 blob, int x, int y, int r) {
 
     pressure /= count;
 
-    return pressure;
+    return (int)pressure;
 }
 
 // Try to move us down 1 cell.
@@ -762,7 +765,7 @@ void object_tick(int obj) {
     if (gs->current_tool == TOOL_GRABBER && gs->grabber.object_holding == obj) return;
 
     // Copy of grid to fall back to if we abort.
-    struct Cell *grid_temp = push_memory(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
+    struct Cell *grid_temp = arena_alloc(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
     memcpy(grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
 
     int dy = 1;
@@ -794,7 +797,7 @@ void object_tick(int obj) {
 }
 
 void object_blobs_set_pressure(int obj, int chisel_size) {
-    int *temp_blobs = push_memory(gs->transient_memory, gs->gw*gs->gh, sizeof(int));
+    int *temp_blobs = arena_alloc(gs->transient_memory, gs->gw*gs->gh, sizeof(int));
     struct Object *object = &gs->objects[obj];
     
     for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -923,7 +926,7 @@ internal void blob_generate_diamonds(int obj, int chisel_size, Uint32 *blob_coun
     int w = 3, h = 3;
     bool next = false;
 
-    int x = -30, y = -20;
+    int x = -100, y = -100;
 
     struct Object *o = &gs->objects[obj];
     Uint32 *blobs = o->blob_data[chisel_size].blobs;
@@ -1068,10 +1071,10 @@ void object_generate_blobs(int object_index, int chisel_size) {
 
 internal void dust_set_random_velocity(int x, int y) {
     struct Cell *c = &gs->pickup_grid[x+y*gs->gw];
-    c->vx = 3.0  * (float)(rand()%100) / 100.0;
-    c->vy = -2.0 * (float)(rand()%100) / 100.0;
-    c->vx_acc = x;
-    c->vy_acc = y;
+    c->vx = 3.f  * (float)(rand()%100) / 100.f;
+    c->vy = -2.f * (float)(rand()%100) / 100.f;
+    c->vx_acc = (float) x;
+    c->vy_acc = (float) y;
 }
 
 bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_dust) {
@@ -1180,6 +1183,7 @@ void objects_reevaluate() {
     
     /* if (update_blobs || object_count != previous_count) { */
     for (int i = 0; i < gs->object_count; i++) {
+        printf("Happened!\n");
         object_generate_blobs(i, 0);
         object_generate_blobs(i, 1);
         object_generate_blobs(i, 2);
@@ -1195,7 +1199,7 @@ internal int condition(int a, int end, int dir) {
 }
 
 int object_attempt_move(int object, int dx, int dy) {
-    float len = sqrt(dx*dx + dy*dy);
+    float len = sqrtf((float) (dx*dx + dy*dy));
     if (len == 0) return 0;
 
     float ux = dx/len;
@@ -1231,7 +1235,7 @@ int object_attempt_move(int object, int dx, int dy) {
     float vx = ux; // = 0;
     float vy = uy; // = 0;
 
-    struct Cell *grid_temp = push_memory(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
+    struct Cell *grid_temp = arena_alloc(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
     memcpy(grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
 
     /* while (sqrt(vx*vx + vy*vy) < len) { */
@@ -1240,8 +1244,8 @@ int object_attempt_move(int object, int dx, int dy) {
     for (int y = start_y; condition(y, end_y, dir_y); y += dir_y) {
         for (int x = start_x; condition(x, end_x, dir_x); x += dir_x) {
             if (gs->grid[x+y*gs->gw].object == object) {
-                int rx = x + vx;
-                int ry = y + vy;
+                int rx = x + (int)vx;
+                int ry = y + (int)vy;
                 if (rx < 0 || ry < 0 || rx >= gs->gw || ry >= gs->gh || gs->grid[rx+ry*gs->gw].type) {
                     // Abort
                     memcpy(gs->grid, grid_temp, sizeof(struct Cell) * gs->gw * gs->gh);
@@ -1297,7 +1301,7 @@ void draw_blobs() {
             }
         }
     }
-    srand(time(NULL));
+    srand((unsigned int) time(0));
 }
 
 void draw_objects() {
@@ -1318,7 +1322,7 @@ void draw_objects() {
 // Returns the index of the closest cell to the point (px, py)
 int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_object, bool must_be_hard) {
     int closest_index = -1;
-    float closest_distance = gs->gw*gs->gh; // Arbitrarily high number
+    float closest_distance = (float) (gs->gw*gs->gh); // Arbitrarily high number
 
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
@@ -1352,9 +1356,9 @@ int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_o
             }
 
             if (condition) {
-                float dx = px - x;
-                float dy = py - y;
-                float dist = sqrt(dx*dx + dy*dy);
+                float dx = (float) (px - x);
+                float dy = (float) (py - y);
+                float dist = sqrtf(dx*dx + dy*dy);
 
                 if (dist < closest_distance) {
                     closest_distance = dist;
@@ -1381,14 +1385,14 @@ int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_o
 
 int clamp_to_grid_angle(int x, int y, float rad_angle, bool set_current_object) {
     int l = gs->gw;
-    float x1 = x;
-    float y1 = y;
+    float x1 = (float) x;
+    float y1 = (float) y;
     float y2 = y1 + l * sinf(rad_angle);
     float x2 = x1 + l * cosf(rad_angle);
 
     float dx = x2-x1;
     float dy = y2-y1;
-    float len = sqrt(dx*dx + dy*dy);
+    float len = sqrtf(dx*dx + dy*dy);
     float ux = dx/len;
     float uy = dy/len;
 
@@ -1400,13 +1404,13 @@ int clamp_to_grid_angle(int x, int y, float rad_angle, bool set_current_object) 
         y1 -= uy;
     }
 
-    float closest_distance = gs->gw*gs->gh;
+    float closest_distance = (float) (gs->gw*gs->gh);
     int closest_index = -1;
 
     for (int yy = 0; yy < gs->gh; yy++) {
         for (int xx = 0; xx < gs->gw; xx++) {
-            if (!gs->grid[xx+yy*gs->gw].type && is_point_on_line((SDL_Point){xx, yy}, (SDL_Point){x1, y1}, (SDL_Point){x2, y2}) && number_neighbours(gs->grid, xx, yy, 1) >= 1) {
-                float dist = distance(xx, yy, x, y);
+            if (!gs->grid[xx+yy*gs->gw].type && is_point_on_line((SDL_Point){(int)xx, (int)yy}, (SDL_Point){(int)x1, (int)y1}, (SDL_Point){(int)x2, (int)y2}) && number_neighbours(gs->grid, (int)xx, (int)yy, 1) >= 1) {
+                float dist = distance((float) xx, (float) yy, (float)x, (float)y);
                 if (dist < closest_distance) {
                     closest_distance = dist;
                     closest_index = xx+yy*gs->gw;

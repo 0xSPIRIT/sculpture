@@ -16,14 +16,14 @@ void grabber_tick() {
 
     float px = grabber->x, py = grabber->y;
 
-    grabber->x = gs->input.mx;
-    grabber->y = gs->input.my;
+    grabber->x = (float) gs->input.mx;
+    grabber->y = (float) gs->input.my;
 
-    if (!is_in_bounds(grabber->x, grabber->y)) return;
+    if (!is_in_bounds((int)grabber->x, (int)grabber->y)) return;
 
     if (grabber->object_holding != -1) {
-        int dx = (int)grabber->x-px;
-        int dy = (int)grabber->y-py;
+        int dx = (int) (grabber->x-px);
+        int dy = (int) (grabber->y-py);
         object_attempt_move(grabber->object_holding, dx, dy);
     }
 

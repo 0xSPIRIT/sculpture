@@ -43,13 +43,13 @@ void chisel_init(struct Chisel *type) {
     chisel->line = NULL;
     chisel->face_mode = false;
 
-    chisel->pixels = push_memory(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+    chisel->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
 
     chisel->texture = chisel->outside_texture;
     chisel->w = chisel->outside_w;
     chisel->h = chisel->outside_h;
 
-    chisel->highlights = push_memory(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
+    chisel->highlights = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
     chisel->highlight_count = 0;
 
     chisel->spd = 3.;
@@ -102,8 +102,8 @@ void chisel_tick() {
 
             // Highlight the current blob.
             // This is a fake chiseling- we're resetting position afterwards.
-            float chisel_dx = cosf(2.f*(float)M_PI * ((chisel->angle+180) / 360.0));
-            float chisel_dy = sinf(2.f*(float)M_PI * ((chisel->angle+180) / 360.0));
+            float chisel_dx = (float) cosf(2.f*(float)M_PI * ((chisel->angle+180) / 360.f));
+            float chisel_dy = (float) sinf(2.f*(float)M_PI * ((chisel->angle+180) / 360.f));
             float dx = chisel->spd * chisel_dx;
             float dy = chisel->spd * chisel_dy;
             float len = sqrtf(dx*dx + dy*dy);
@@ -167,8 +167,8 @@ void chisel_tick() {
             // Cut out the stone.
             float px = chisel->x;
             float py = chisel->y;
-            float ux = cosf(2*M_PI * ((chisel->angle+180) / 360.0));
-            float uy = sinf(2*M_PI * ((chisel->angle+180) / 360.0));
+            float ux = (float) cosf(2.f * (float)M_PI * ((chisel->angle+180) / 360.f));
+            float uy = (float) sinf(2.f * (float)M_PI * ((chisel->angle+180) / 360.f));
             float len = chisel->spd;
 
             switch ((int)chisel->angle) {
@@ -326,7 +326,7 @@ Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len) {
 
     if (gs->object_current == -1) return 0;
 
-    float current_length = sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
+    float current_length = (float) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
 
     while (current_length < len) {
         // If we hit the chisel blocker, keep that in mind for later.
@@ -386,7 +386,7 @@ Uint32 chisel_goto_blob(bool remove, float ux, float uy, float len) {
         chisel->x += ux;
         chisel->y += uy;
 
-        current_length = sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
+        current_length = (float) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
     }
 
     Uint32 b = curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw];
@@ -461,7 +461,7 @@ void chisel_hammer_tick() {
 
     hammer->angle = chisel->angle;
 
-    float rad = (hammer->angle) / 360.0;
+    float rad = (hammer->angle) / 360.f;
     rad *= 2 * (float)M_PI;
 
     const float off = 6;
@@ -490,7 +490,7 @@ void chisel_hammer_tick() {
     case HAMMER_STATE_SWING:
         hammer->dist -= 8;
         if (hammer->dist < stop) {
-            hammer->dist = stop;
+            hammer->dist = (float) stop;
             // Activate the chisel.
             if (chisel->click_cooldown == 0) {
                 chisel->click_cooldown = CHISEL_COOLDOWN;
@@ -514,7 +514,7 @@ void chisel_hammer_draw() {
     struct Chisel_Hammer *hammer = &gs->chisel_hammer;
 
     const SDL_Rect dst = {
-        hammer->x, hammer->y - hammer->h/2,
+        (int)hammer->x, (int)(hammer->y - hammer->h/2),
         hammer->w, hammer->h
     };
     const SDL_Point center = { 0, hammer->h/2 };

@@ -1,10 +1,11 @@
 @echo off
 
-set Common_Compiler_Flags=/nologo /O2 /GR- /EHa- /MT /FC /Fo:"obj\\" /D_CRT_SECURE_NO_WARNINGS
+set Common_Compiler_Flags=/nologo /O2 /GR- /EHa- /MT /FC /Fo:"obj\\"
 set Common_Linker_Flags=user32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib
 
-rem @echo off
-rem gcc boot/main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -g -o ..\bin\win32_sculpture.exe
+rem gcc main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -g -o ..\bin\win32_sculpture.exe
+
+if not exist src/main.c goto INVALID_DIR
 
 pushd bin\
 
@@ -22,10 +23,17 @@ REM and we still retain the errorlevel from the DLL compilation.
 (>>win32_sculpture.exe call;) 2>nul || goto end
 
 REM Build the SDL layer (.exe)
-cl.exe %Common_Compiler_Flags% ..\src\boot\main.c %Common_Linker_Flags% SDL2main.lib /link /incremental:no /out:win32_sculpture.exe
-set err=errorlevel
+cl.exe %Common_Compiler_Flags% ..\src\main.c %Common_Linker_Flags% SDL2main.lib /link /incremental:no /out:win32_sculpture.exe
+
+if NOT %errorlevel%==0 (set err=%errorlevel%)
 
 popd
+goto end
+   
+:INVALID_DIR
+echo.
+echo Invalid current path. Execute from the base directory (one up from src/)
+echo.
    
 :end
 exit /b %err%

@@ -11,13 +11,13 @@ internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int
 void point_knife_init() {
     struct Point_Knife *point_knife = &gs->point_knife;
 
-    point_knife->x = gs->gw/2;
-    point_knife->y = gs->gh/2;
+    point_knife->x = gs->gw/2.f;
+    point_knife->y = gs->gh/2.f;
     point_knife->texture = gs->textures.point_knife;
     SDL_QueryTexture(point_knife->texture, NULL, NULL, &point_knife->w, &point_knife->h);
 
     point_knife->face_mode = false;
-    point_knife->highlights = push_memory(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
+    point_knife->highlights = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
 
     point_knife->highlight_count = 0;
     memset(point_knife->highlights, 0, 50 * sizeof(int));
@@ -34,8 +34,8 @@ void point_knife_tick() {
     float px = point_knife->x;
     float py = point_knife->y;
     
-    point_knife->x = index%gs->gw;
-    point_knife->y = index/gs->gw;
+    point_knife->x = (float) (index%gs->gw);
+    point_knife->y = (float) (index/gs->gw);
 
     if (point_knife->x - px != 0 || point_knife->y - py != 0) {
         point_knife->highlight_count =
@@ -60,7 +60,7 @@ void point_knife_tick() {
         if (point_knife->face_mode) {
             float dx = point_knife->x - px;
             float dy = point_knife->y - py;
-            float len = sqrt(dx*dx + dy*dy);
+            float len = sqrtf(dx*dx + dy*dy);
             float ux = dx/len;
             float uy = dy/len;
             point_knife->x = px;
@@ -71,8 +71,8 @@ void point_knife_tick() {
                 point_knife->x += ux;
                 point_knife->y += uy;
             }
-            point_knife->x = (int)point_knife->x;
-            point_knife->y = (int)point_knife->y;
+            point_knife->x = (float)point_knife->x;
+            point_knife->y = (float)point_knife->y;
         } else {
             if (point_knife->cooldown == -1) {
                 if (number_neighbours(gs->grid, (int)point_knife->x, (int)point_knife->y, 2) <= 21) { /* Must be identical to statement in array_clamped_to_grid */
@@ -100,7 +100,7 @@ void point_knife_draw() {
     // One more thing...
 
     const SDL_Rect dst = {
-        point_knife->x, point_knife->y,
+        (int) point_knife->x, (int) point_knife->y,
         point_knife->w, point_knife->h
     };
     SDL_RenderCopy(gs->renderer, point_knife->texture, NULL, &dst);
@@ -110,7 +110,7 @@ void point_knife_draw() {
 internal int array_clamped_to_grid(int px, int py, int outside, int on_edge, int *o_arr, int *o_count) {
     int count = 0;
 
-    struct Cell *grid_temp = push_memory(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
+    struct Cell *grid_temp = arena_alloc(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
     memcpy(grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
 
     int x = 0;

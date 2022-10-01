@@ -15,7 +15,7 @@
 void gui_init() {
     struct GUI *gui = &gs->gui;
 
-    *gui = (struct GUI){ .popup_y = gs->gh*gs->S, .popup_y_vel = 0, .popup_h = GUI_POPUP_H, .popup = 0 };
+    *gui = (struct GUI){ .popup_y = (float) (gs->gh*gs->S), .popup_y_vel = 0, .popup_h = GUI_POPUP_H, .popup = 0 };
     gui->popup_texture = gs->textures.popup;
 
     overlay_reset(&gui->overlay);
@@ -94,7 +94,7 @@ void gui_tick() {
     } else if (gui->popup_y < gs->S*gs->gh) {
         gui->popup_y_vel += speed;
     } else {
-        gui->popup_y = gs->S*gs->gh;
+        gui->popup_y = (float) (gs->S*gs->gh);
         gui->popup_y_vel = 0;
     }
 
@@ -109,7 +109,7 @@ void gui_tick() {
     }
 
     gui->popup_y += gui->popup_y_vel;
-    gui->popup_y = clamp(gui->popup_y, gs->S*gs->gh - gui->popup_h, gs->window_height);
+    gui->popup_y = (float) clamp((int) gui->popup_y, (int) (gs->S*gs->gh - gui->popup_h), gs->window_height);
 }
 
 void gui_draw() {
@@ -148,8 +148,8 @@ void gui_popup_draw() {
     struct GUI *gui = &gs->gui;
 
     SDL_Rect popup = {
-        0, GUI_H + gui->popup_y,
-        gs->gw*gs->S, gui->popup_h
+        0, (int)(GUI_H + gui->popup_y),
+        gs->gw*gs->S, (int)gui->popup_h
     };
 
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
@@ -162,7 +162,11 @@ internal void overlay_draw_box(struct Overlay *overlay, int w, int h) {
     overlay->w = w;
     overlay->h = h;
 
-    SDL_Rect r = { overlay->x * gs->S, overlay->y * gs->S + GUI_H, w, h };
+    SDL_Rect r = {
+        (int) (overlay->x * gs->S),
+        (int) (overlay->y * gs->S + GUI_H),
+        w,
+        h };
     SDL_SetRenderDrawColor(gs->renderer, 12, 12, 12, 255);
     SDL_RenderFillRect(gs->renderer, &r);
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
@@ -182,8 +186,8 @@ void overlay_set_position_to_cursor(struct Overlay *overlay, int type) {
 }
 
 void overlay_set_position(struct Overlay *overlay, int x, int y, int type) {
-    overlay->x = x;
-    overlay->y = y;
+    overlay->x = (float) x;
+    overlay->y = (float) y;
     overlay->type = type;
 }
 
@@ -218,7 +222,11 @@ void overlay_draw(struct Overlay *overlay) {
         Assert(surfaces[i]);
         textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surfaces[i]);
         Assert(textures[i]);
-        dsts[i] = (SDL_Rect){ gs->S * overlay->x + margin, height + gs->S * overlay->y + margin, surfaces[i]->w, surfaces[i]->h };
+        dsts[i] = (SDL_Rect){
+            (int) (gs->S * overlay->x + margin),
+            (int) (height + gs->S * overlay->y + margin),
+            surfaces[i]->w,
+            surfaces[i]->h };
         dsts[i].y += GUI_H;
 
         height += surfaces[i]->h;
@@ -232,7 +240,7 @@ void overlay_draw(struct Overlay *overlay) {
     if (overlay->x*gs->S + highest_w >= gs->S*gs->gw) {
         overlay->x -= highest_w/gs->S;
         for (int i = 0; i < count; i++)
-            dsts[i].x -= highest_w;
+            dsts[i].x -= highest_w - margin/2;
         clamped = true;
     }
 
@@ -268,7 +276,7 @@ void overlay_get_string(int type, int amt, char *out_str) {
 }
 
 struct Button *button_allocate(SDL_Texture *texture, const char *overlay_text, void (*on_pressed)(void*)) {
-    struct Button *b = push_memory(gs->persistent_memory, 1, sizeof(struct Button));
+    struct Button *b = arena_alloc(gs->persistent_memory, 1, sizeof(struct Button));
     b->texture = texture;
     SDL_QueryTexture(texture, NULL, NULL, &b->w, &b->h);
 
@@ -339,20 +347,20 @@ void click_gui_tool_button(void *type_ptr) {
         gs->chisel = &gs->chisel_small;
         for (int i = 0; i < gs->object_count; i++)
             object_generate_blobs(i, 0);
-        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = gs->chisel->w+2;
+        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (float) (gs->chisel->w+2);
         break;
     case TOOL_CHISEL_MEDIUM:
         gs->chisel = &gs->chisel_medium;
         for (int i = 0; i < gs->object_count; i++)
             object_generate_blobs(i, 1);
-        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = gs->chisel->w+4;
+        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (float) (gs->chisel->w+4);
         break;
     case TOOL_CHISEL_LARGE:
         gs->current_tool = TOOL_CHISEL_LARGE;
         gs->chisel = &gs->chisel_large;
         for (int i = 0; i < gs->object_count; i++)
             object_generate_blobs(i, 2);
-        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = gs->chisel->w+4;
+        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (float) (gs->chisel->w+4);
         break;
     }
 

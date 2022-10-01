@@ -6,11 +6,11 @@
 #include "game.h"
 
 void undo_system_init() {
-    gs->start_state = push_memory(gs->persistent_memory, 1, sizeof(struct Save_State));
+    gs->start_state = arena_alloc(gs->persistent_memory, 1, sizeof(struct Save_State));
     gs->current_state = gs->start_state;
 
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        gs->current_state->grid_layers[i] = push_memory(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
+        gs->current_state->grid_layers[i] = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
         memcpy(gs->current_state->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
     }
 }
@@ -25,11 +25,11 @@ void save_state_to_next() {
     }
 
     struct Save_State *state;
-    state = push_memory(gs->persistent_memory, 1, sizeof(struct Save_State));
+    state = arena_alloc(gs->persistent_memory, 1, sizeof(struct Save_State));
 
     if (!state->grid_layers[0]) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-            state->grid_layers[i] = push_memory(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
+            state->grid_layers[i] = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
         }
     }
 
@@ -79,6 +79,7 @@ void undo() {
     } else { // Just reset to the current state
         set_state(gs->current_state);
     }
+    objects_reevaluate();
 }
 
 void view_save_state_linked_list() {

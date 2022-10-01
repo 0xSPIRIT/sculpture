@@ -138,7 +138,7 @@ void goto_level(int lvl) {
 
 // Most deinitialization functions are just freeing textures, but
 // since we have assets.c, we don't need to do that. General freeing
-// pointers are usually unused because we allocate using game_state->persistent_memory
+// pointers are usually unused because we allocate using gs->persistent_memory
 void levels_deinit() {
     effect_set(EFFECT_NONE);
 }
@@ -160,7 +160,7 @@ void level_tick() {
         if (level->popup_time_current >= level->popup_time_max) {
             level->popup_time_current = 0;
             level->state = LEVEL_STATE_PLAY;
-            srand(time(0));
+            srand((unsigned int) time(0));
 
             // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
             for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -486,7 +486,7 @@ void level_get_cells_from_image(const char *path, struct Cell **out, struct Sour
     *out_w = w;
     *out_h = h;
 
-    *out = push_memory(gs->persistent_memory, w*h, sizeof(struct Cell));
+    *out = arena_alloc(gs->persistent_memory, w*h, sizeof(struct Cell));
 
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {

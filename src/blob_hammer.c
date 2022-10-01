@@ -22,7 +22,7 @@ void blob_hammer_init() {
     SDL_QueryTexture(blob_hammer->texture, NULL, NULL, &blob_hammer->w, &blob_hammer->h);
     blob_hammer->angle = 0;
 
-    blob_hammer->pixels = push_memory(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+    blob_hammer->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
 }
 
 void blob_hammer_tick() {

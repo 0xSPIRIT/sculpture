@@ -72,7 +72,7 @@ internal void game_init_sdl(struct Game_State *state, const char *window_title, 
                                      SDL_WINDOWPOS_UNDEFINED,
                                      w,
                                      h,
-                                     0);
+                                     SDL_WINDOW_ALWAYS_ON_TOP);
     Assert(state->window);
     
     /* SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d11"); */
@@ -83,6 +83,7 @@ internal void game_init_sdl(struct Game_State *state, const char *window_title, 
 }
 
 internal void make_memory(struct Memory *persistent_memory, struct Memory *transient_memory) {
+    // Debugging purposes.
     strcpy(persistent_memory->name, "Persistent");
     strcpy(transient_memory->name, "Transient");
 
@@ -94,8 +95,7 @@ internal void make_memory(struct Memory *persistent_memory, struct Memory *trans
     LPVOID base_address = (LPVOID) Terabytes(2);
 
     persistent_memory->data = VirtualAlloc(base_address,
-                                           persistent_memory->size +
-                                           transient_memory->size,
+                                           persistent_memory->size + transient_memory->size,
                                            MEM_COMMIT | MEM_RESERVE,
                                            PAGE_READWRITE);
     AssertNW(persistent_memory->data);
@@ -107,7 +107,7 @@ internal void make_memory(struct Memory *persistent_memory, struct Memory *trans
 }
 
 internal void game_init(struct Game_State *state) {
-    srand(time(0));
+    srand((unsigned int) time(0));
     
     state->S = 6;
     state->window_width = 128*state->S;
@@ -119,7 +119,7 @@ internal void game_init(struct Game_State *state) {
     game_init_sdl(state, "Alaska", state->window_width, state->window_height);
     
     // Load all assets... except for render targets.
-    // We can't load render targets until levels
+    // We can't create render targets until levels
     // are initialized.
     textures_init(state->window,
                   state->renderer,
@@ -226,7 +226,7 @@ int main(int argc, char **argv) {
     make_memory(&persistent_memory, &transient_memory);
 
     // *2 in case we add more values at runtime.
-    struct Game_State *game_state = push_memory(&persistent_memory, 1, sizeof(struct Game_State)*2);
+    struct Game_State *game_state = arena_alloc(&persistent_memory, 1, sizeof(struct Game_State)*2);
 
     gs = game_state; // This is so that our macros can pick up "gs" instead of game_state.
     
@@ -248,8 +248,6 @@ int main(int argc, char **argv) {
     bool running = true;
     
     while (running) {
-        game_state->transient_allocation_count = 0;
-        
         // We push the DLL reload to a delay because if we lock the file too fast
         // the compiler doesn't have enough time to write to it... or something.
         // It's only a 5-frame delay so it doesn't matter compared to compilation
@@ -269,8 +267,8 @@ int main(int argc, char **argv) {
         
         // Memory usage statistics.
         {
-            unsigned size_current = persistent_memory.cursor - persistent_memory.data;
-            unsigned size_max = persistent_memory.size;
+            Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
+            Uint64 size_max = persistent_memory.size;
             float percentage = (float)size_current / (float)size_max;
             percentage *= 100.f;
 

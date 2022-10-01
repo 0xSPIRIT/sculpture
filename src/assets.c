@@ -86,8 +86,7 @@ internal void get_name_from_tool(int type, char *out) {
     }
 }
 
-// Creates all render targets for all the levels,
-// then sets all the tools equal to them.
+// Creates all render targets for all the levels.
 void render_targets_init(SDL_Window *window,
                          SDL_Renderer *renderer,
                          int width, // In screen coords, not game coords.

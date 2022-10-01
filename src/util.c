@@ -16,7 +16,7 @@ void start_timer() {
 
 void _end_timer(const char *func) {
     gs->global_end = clock();
-    float cpu_time_used = ((double) (gs->global_end-gs->global_start))/CLOCKS_PER_SEC;
+    double cpu_time_used = ((double) (gs->global_end-gs->global_start))/CLOCKS_PER_SEC;
     printf("(%s) Time: %f\n", func, cpu_time_used);
 }
 
@@ -189,8 +189,12 @@ float distance(float ax, float ay, float bx, float by) {
     return sqrtf((bx-ax)*(bx-ax) + (by-ay)*(by-ay));
 }
 
+float distancei(int ax, int ay, int bx, int by) {
+    return sqrtf((float) ((bx-ax)*(bx-ax)) + (float)((by-ay)*(by-ay)));
+}
+
 bool is_point_on_line(SDL_Point p, SDL_Point a, SDL_Point b) {
-    return (distance(a.x, a.y, p.x, p.y) + distance(b.x, b.y, p.x, p.y)) == distance(a.x, a.y, b.x, b.y);
+    return (distancei(a.x, a.y, p.x, p.y) + distancei(b.x, b.y, p.x, p.y)) == distancei(a.x, a.y, b.x, b.y);
 }
 
 // Taken from stackoverflow
@@ -198,8 +202,8 @@ SDL_Point closest_point_on_line(SDL_Point a, SDL_Point b, SDL_Point p) {
     SDL_Point AP = {p.x - a.x, p.y - a.y};
     SDL_Point AB = {b.x - a.x, b.y - a.y};
 
-    float magnitudeAB = AB.x*AB.x + AB.y*AB.y;
-    float ABAPproduct = AP.x*AB.x + AP.y*AB.y;
+    float magnitudeAB = (float) (AB.x*AB.x + AB.y*AB.y);
+    float ABAPproduct = (float) (AP.x*AB.x + AP.y*AB.y);
     float distance = ABAPproduct / magnitudeAB;
 
     if (distance < 0) {
@@ -207,7 +211,7 @@ SDL_Point closest_point_on_line(SDL_Point a, SDL_Point b, SDL_Point p) {
     } else if (distance > 1) {
         return b;
     } else {
-        return (SDL_Point){a.x + AB.x * distance, a.y + AB.y * distance};
+        return (SDL_Point){(int) (a.x + AB.x * distance), (int) (a.y + AB.y * distance)};
     }
 }
 
@@ -217,7 +221,7 @@ bool is_point_in_rect(SDL_Point p, SDL_Rect r) {
 
 // Stolen from https://stackoverflow.com/a/2049593
 internal float sign(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
-    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+    return (float)(p1.x - p3.x) * (float)(p2.y - p3.y) - (float)(p2.x - p3.x) * (float)(p1.y - p3.y);
 }
 
 bool is_point_in_triangle(SDL_Point pt, SDL_Point v1, SDL_Point v2, SDL_Point v3) {

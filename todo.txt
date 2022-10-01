@@ -1,11 +1,6 @@
       --------------------------TODO----------------------------
 
-- Improve the chiseling
-    x Diamond blobs.
-    - Improve the diamond blobs; make it more robust, and
-      find a solution for the blobs not lining up to the
-      sculpture itself. Perhaps only generate blobs for
-      the outside.
+- Improve the chiseling system... BY COMPLETELY AUTOMATING IT.
 
 - Play around with the converter.
 - Finally, create levels.
@@ -30,10 +25,6 @@ Bugs / Crashes:
 
      ---------------------------Ideas----------------------------
 
-- In the first level, instead of having multiple materials, have only
-  one that you actually manipulate and then when you're done, it
-  transforms itself into the wood etc. Perhaps do this for some
-  levels in the beginning.
 - Make diamond completely brittle unless you use the small chisel.
 - Inner monologue, Inscryption-style text between each level. Judging
   yourself or praising yourself. Gets you amped up for the final
@@ -65,6 +56,11 @@ mode where it's a bunch of points you can move around with only
 straight lines. You can then switch between this mode (default) and
 the smooth mode (we'll do a pixelizer pass on this like Aseprite).
 
+Update: Pretty sure the solution is just to have the player draw
+lines that convert into a bezier curve, then using that as a base
+to do an automated chisel, chiseling everything in that segment
+the player just drew on. The option will still be there to chisel
+manually for simple modifications, though, such as very fine-tuned
+edging, bevels, details, etc.
+
 -------------------------------------------------------------------
-
-

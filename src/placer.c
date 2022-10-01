@@ -43,14 +43,14 @@ void placer_init(int num) {
 
 // Places a circle down.
 internal void placer_place_circle(struct Placer *placer) {
-    float dx = placer->x - placer->px;
-    float dy = placer->y - placer->py;
-    float len = sqrt(dx*dx + dy*dy);
+    float dx = (float) (placer->x - placer->px);
+    float dy = (float) (placer->y - placer->py);
+    float len = sqrtf(dx*dx + dy*dy);
     float ux = dx/len;
     float uy = dy/len;
 
-    float fx = placer->px;
-    float fy = placer->py;
+    float fx = (float) placer->px;
+    float fy = (float) placer->py;
 
     int did_set_object = 1;
 
@@ -208,12 +208,12 @@ void placer_suck(struct Placer *placer) {
 
     if (!can_continue) return;
 
-    float x = placer->px;
-    float y = placer->py;
+    float x = (float) placer->px;
+    float y = (float) placer->py;
 
-    float dx = input->mx - x;
-    float dy = input->my - y;
-    float len = sqrt((dx*dx)+(dy*dy));
+    float dx = (float) (input->mx - x);
+    float dy = (float) (input->my - y);
+    float len = sqrtf(dx*dx + dy*dy);
     float ux, uy;
     if (len == 0) {
         ux = 0;
@@ -224,7 +224,7 @@ void placer_suck(struct Placer *placer) {
         uy = dy/len;
     }
 
-    while (distance(x, y, placer->px, placer->py) < len) {
+    while (distance(x, y, (float)placer->px, (float)placer->py) < len) {
 
         // Include the grid as well as pickup grid.
         for (int a = 0; a < 3; a++) {
@@ -249,8 +249,8 @@ void placer_suck(struct Placer *placer) {
                 for (int dx = -r; dx <= r; dx++) {
                     if (dx*dx + dy*dy > r*r)  continue;
 
-                    int xx = x+dx;
-                    int yy = y+dy;
+                    int xx = (int) (x+dx);
+                    int yy = (int) (y+dy);
                     if (!is_in_bounds(xx, yy)) continue;
 
                     int type = arr[xx+yy*gs->gw].type;
@@ -287,7 +287,7 @@ void placer_tick(struct Placer *placer) {
     placer->x = gs->input.mx;
     placer->y = gs->input.my;
 
-    // Switch from placing to sucking.
+    // Switch from ejecting to sucking.
     if (input->keys_pressed[SDL_SCANCODE_P]) {
         if (placer->state == PLACER_SUCK_MODE) {
             placer->state = PLACER_PLACE_CIRCLE_MODE;

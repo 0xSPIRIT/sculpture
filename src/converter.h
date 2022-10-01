@@ -92,6 +92,8 @@ void converter_begin_converting(void *converter);
 void converter_set_state(struct Converter *converter, enum Converter_State state);
 bool converter_convert(struct Converter *converter);
 
+int get_number_unique_inputs(struct Item *input1, struct Item *input2);
+
 void slot_tick(struct Slot *slot);
 void slot_draw(struct Slot *slot);
 

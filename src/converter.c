@@ -141,6 +141,8 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
         }
         
         if (input->mouse_pressed[SDL_BUTTON_RIGHT]) {
+            printf("%d\n", p->contains_type);
+            if (p->contains_amount == 0) p->contains_type = 0;
             if (p->contains_type == 0 || p->contains_type == item->type) {
                 p->contains_type = item->type;
                 p->contains_amount += item->amount;
@@ -235,7 +237,16 @@ void all_converters_draw() {
 bool is_mouse_in_converter(struct Converter *converter) {
     struct Input *input = &gs->input;
     
-    return is_point_in_rect((SDL_Point){input->real_mx, input->real_my-GUI_H}, (SDL_Rect){converter->x, converter->y, converter->w, converter->h});
+    return is_point_in_rect((SDL_Point){
+            input->real_mx,
+            input->real_my-GUI_H
+        },
+        (SDL_Rect){
+            (int)converter->x,
+            (int)converter->y,
+            (int)converter->w,
+            (int)converter->h
+        });
 }
 
 bool is_mouse_in_slot(struct Slot *slot) {
@@ -243,10 +254,10 @@ bool is_mouse_in_slot(struct Slot *slot) {
     
     return is_point_in_rect((SDL_Point){input->real_mx, input->real_my-GUI_H},
                             (SDL_Rect){
-                                slot->converter->x + slot->x - slot->w/2,
-                                slot->converter->y + slot->y - slot->h/2,
-                                slot->w,
-                                slot->h
+                                (int) (slot->converter->x + slot->x - slot->w/2),
+                                (int) (slot->converter->y + slot->y - slot->h/2),
+                                (int) slot->w,
+                                (int) slot->h
                             });
 }
 
@@ -255,17 +266,17 @@ bool was_mouse_in_slot(struct Slot *slot) {
     
     return is_point_in_rect((SDL_Point){input->real_pmx,input->real_pmy-GUI_H},
                             (SDL_Rect){
-                                slot->converter->x + slot->x - slot->w/2,
-                                slot->converter->y + slot->y - slot->h/2,
-                                slot->w,
-                                slot->h
+                                (int) (slot->converter->x + slot->x - slot->w/2),
+                                (int) (slot->converter->y + slot->y - slot->h/2),
+                                (int) slot->w,
+                                (int) slot->h
                             });
 }
 
 struct Converter *converter_init(int type) {
-    struct Converter *converter = push_memory(gs->persistent_memory, 1, sizeof(struct Converter));
+    struct Converter *converter = arena_alloc(gs->persistent_memory, 1, sizeof(struct Converter));
     converter->type = type;
-    converter->w = gs->window_width/2;
+    converter->w = (float) (gs->window_width/2);
     converter->h = GUI_POPUP_H;
     
     converter->timer_max = 1;
@@ -274,40 +285,40 @@ struct Converter *converter_init(int type) {
     switch (type) {
     case CONVERTER_MATERIAL:
         converter->slot_count = 4;
-        converter->slots = push_memory(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
+        converter->slots = arena_alloc(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
         
-        converter->slots[SLOT_INPUT1].x = converter->w/3.0;
-        converter->slots[SLOT_INPUT1].y = converter->h/4.0;
+        converter->slots[SLOT_INPUT1].x = converter->w/3.f;
+        converter->slots[SLOT_INPUT1].y = converter->h/4.f;
         strcpy(converter->slots[SLOT_INPUT1].name, "Inp. 1");
         
-        converter->slots[SLOT_INPUT2].x = 2.0*converter->w/3.0;
-        converter->slots[SLOT_INPUT2].y = converter->h/4.0;
+        converter->slots[SLOT_INPUT2].x = 2.f*converter->w/3.f;
+        converter->slots[SLOT_INPUT2].y = converter->h/4.f;
         strcpy(converter->slots[SLOT_INPUT2].name, "Inp. 2");
         
-        converter->slots[SLOT_FUEL].x = 3.0*converter->w/4.0;
-        converter->slots[SLOT_FUEL].y = converter->h/2.0;
+        converter->slots[SLOT_FUEL].x = 3.f*converter->w/4.f;
+        converter->slots[SLOT_FUEL].y = converter->h/2.f;
         strcpy(converter->slots[SLOT_FUEL].name, "Fuel");
         
-        converter->slots[SLOT_OUTPUT].x = converter->w/2.0;
-        converter->slots[SLOT_OUTPUT].y = 4.0*converter->h/5.0;
+        converter->slots[SLOT_OUTPUT].x = converter->w/2.f;
+        converter->slots[SLOT_OUTPUT].y = 4.f*converter->h/5.f;
         strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
         
         strcpy(converter->name, "Material Converter");
         break;
     case CONVERTER_FUEL:
         converter->slot_count = 3;
-        converter->slots = push_memory(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
+        converter->slots = arena_alloc(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
         
-        converter->slots[SLOT_INPUT1].x = converter->w/3.0;
-        converter->slots[SLOT_INPUT1].y = converter->h/4.0;
+        converter->slots[SLOT_INPUT1].x = converter->w/3.f;
+        converter->slots[SLOT_INPUT1].y = converter->h/4.f;
         strcpy(converter->slots[SLOT_INPUT1].name, "Inp. 1");
         
-        converter->slots[SLOT_INPUT2].x = 2.0*converter->w/3.0;
-        converter->slots[SLOT_INPUT2].y = converter->h/4.0;
+        converter->slots[SLOT_INPUT2].x = 2.f*converter->w/3.f;
+        converter->slots[SLOT_INPUT2].y = converter->h/4.f;
         strcpy(converter->slots[SLOT_INPUT2].name, "Inp. 2");
         
-        converter->slots[SLOT_OUTPUT].x = converter->w/2.0;
-        converter->slots[SLOT_OUTPUT].y = 4.0*converter->h/5.0;
+        converter->slots[SLOT_OUTPUT].x = converter->w/2.f;
+        converter->slots[SLOT_OUTPUT].y = 4.f*converter->h/5.f;
         strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
         
         strcpy(converter->name, "Fuel Converter");
@@ -326,8 +337,8 @@ struct Converter *converter_init(int type) {
     converter->arrow.texture = gs->textures.converter_arrow;
     SDL_QueryTexture(converter->arrow.texture, NULL, NULL, &converter->arrow.w, &converter->arrow.h);
     
-    converter->arrow.x = converter->w/2;
-    converter->arrow.y = converter->h/2 + 24;
+    converter->arrow.x = (int) (converter->w/2);
+    converter->arrow.y = (int) (converter->h/2 + 24);
     converter->speed = 1;
     
     // Both X and Y-coordinates are updated in converter_tick.
@@ -342,7 +353,7 @@ struct Converter *converter_init(int type) {
 }
 
 void converter_tick(struct Converter *converter) {
-    converter->arrow.y = converter->h/2 + 18;
+    converter->arrow.y = (int) (converter->h/2 + 18);
     
     switch (converter->type) {
     case CONVERTER_MATERIAL:
@@ -350,13 +361,13 @@ void converter_tick(struct Converter *converter) {
         converter->y = gs->gui.popup_y;
         break;
     case CONVERTER_FUEL:
-        converter->x = gs->S*gs->gw/2;
-        converter->y = gs->gui.popup_y;
+        converter->x = (float) (gs->S*gs->gw/2);
+        converter->y = (float) (gs->gui.popup_y);
         break;
     }
     
-    converter->go_button->x = converter->x + converter->arrow.x - 128;
-    converter->go_button->y = gs->gui.popup_y + 240;
+    converter->go_button->x = (int) (converter->x + converter->arrow.x - 128);
+    converter->go_button->y = (int) (gs->gui.popup_y + 240);
     
     for (int i = 0; i < converter->slot_count; i++) {
         struct Slot *s = &converter->slots[i];
@@ -394,8 +405,8 @@ void converter_tick(struct Converter *converter) {
 
 void converter_draw(struct Converter *converter) {
     SDL_Rect converter_bounds = {
-        converter->x, converter->y + GUI_H,
-        converter->w, converter->h
+        (int)converter->x, (int)converter->y + GUI_H,
+        (int)converter->w, (int)converter->h
     };
     
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
@@ -406,8 +417,8 @@ void converter_draw(struct Converter *converter) {
     }
     
     SDL_Rect arrow_dst = {
-        converter->x + converter->arrow.x - converter->arrow.w / 2.0,
-        converter->y + converter->arrow.y + converter->arrow.h / 2.0,
+        (int) (converter->x + converter->arrow.x - converter->arrow.w / 2.0),
+        (int) (converter->y + converter->arrow.y + converter->arrow.h / 2.0),
         converter->arrow.w,
         converter->arrow.h
     };
@@ -443,8 +454,8 @@ void converter_draw(struct Converter *converter) {
     
     int margin = 8;
     SDL_Rect r = {
-        converter->x + margin,
-        converter->y + margin + GUI_H,
+        (int) (converter->x + margin),
+        (int) (converter->y + margin + GUI_H),
         (*surf)->w,
         (*surf)->h
     };
@@ -457,18 +468,19 @@ void converter_draw(struct Converter *converter) {
 void slot_tick(struct Slot *slot) {
     item_tick(&slot->item,
               slot,
-              slot->converter->x + slot->x - slot->w/2,
-              slot->converter->y + slot->y - slot->h/2,
-              slot->w,
-              slot->h);
+              (int) (slot->converter->x + slot->x - slot->w/2),
+              (int) (slot->converter->y + slot->y - slot->h/2),
+              (int) slot->w,
+              (int) slot->h);
 }
 
 void slot_draw(struct Slot *slot) {
     struct Converter *c = slot->converter;
     SDL_Rect bounds = {
-        c->x + slot->x - slot->w/2,
-        c->y + slot->y - slot->h/2 + GUI_H,
-        slot->w, slot->h
+        (int) (c->x + slot->x - slot->w/2),
+        (int) (c->y + slot->y - slot->h/2 + GUI_H),
+        (int) slot->w,
+        (int) slot->h
     };
     
     int col = 200;
@@ -506,8 +518,8 @@ void slot_draw(struct Slot *slot) {
         Assert(*texture);
         
         SDL_Rect dst = {
-            bounds.x + slot->w/2 - (*surf)->w/2,
-            bounds.y - (*surf)->h - 2,
+            (int) (bounds.x + slot->w/2 - (*surf)->w/2),
+            (int) (bounds.y - (*surf)->h - 2),
             (*surf)->w,
             (*surf)->h
         };
@@ -599,21 +611,11 @@ internal bool is_either_input_tier(struct Converter_Checker *checker, int tier, 
         }
     } else {
         if (is_fuel) {
-            if ((checker->current == 2 && is_cell_fuel(checker->input2->type) && tier == get_cell_tier(checker->input2->type)) ||
-                (checker->current == 1 && is_cell_fuel(checker->input1->type) && tier == get_cell_tier(checker->input1->type)))
-            {
-                return true;
-            } else {
-                return false;
-            }
+            return ((checker->current == 2 && is_cell_fuel(checker->input2->type) && tier == get_cell_tier(checker->input2->type)) ||
+                    (checker->current == 1 && is_cell_fuel(checker->input1->type) && tier == get_cell_tier(checker->input1->type)));
         } else {
-            if ((checker->current == 2 && !is_cell_fuel(checker->input2->type) && tier == get_cell_tier(checker->input2->type)) ||
-                (checker->current == 1 && !is_cell_fuel(checker->input1->type) && tier == get_cell_tier(checker->input1->type)))
-            {
-                return true;
-            } else {
-                return false;
-            }
+            return ((checker->current == 2 && !is_cell_fuel(checker->input2->type) && tier == get_cell_tier(checker->input2->type)) ||
+                    (checker->current == 1 && !is_cell_fuel(checker->input1->type) && tier == get_cell_tier(checker->input1->type)));
         }
     }
 
@@ -636,8 +638,7 @@ internal bool is_either_input_stone(struct Converter_Checker *checker, bool rest
         }
     } else {
         if ((checker->current == 2 && !is_cell_stone(checker->input2->type)) ||
-            (checker->current == 1 && !is_cell_stone(checker->input1->type)))
-        {
+            (checker->current == 1 && !is_cell_stone(checker->input1->type))) {
             return false;
         }
     }
@@ -801,7 +802,7 @@ internal int material_converter_convert(struct Item *input1, struct Item *input2
     return result_type;
 }
 
-internal int get_number_unique_inputs(struct Item *input1, struct Item *input2) {
+int get_number_unique_inputs(struct Item *input1, struct Item *input2) {
     int number_inputs = (input1->type != 0) + (input2->type != 0);
     int number_unique_inputs = 0;
 
@@ -823,7 +824,7 @@ internal float calculate_output_ratio(struct Item *input1, struct Item *input2) 
     float result = 0.f;
     int number_unique_inputs = get_number_unique_inputs(input1, input2);
 
-    result = number_unique_inputs * number_unique_inputs;
+    result = (float) (number_unique_inputs * number_unique_inputs);
 
     return result;
 }
@@ -867,7 +868,7 @@ bool converter_convert(struct Converter *converter) {
     if (temp_output_type == output->type || output->type == 0) {
         output->type = temp_output_type;
 
-        int amount = converter->speed * output_ratio;
+        int amount = (int) (converter->speed * output_ratio);
 
         // Check if any input, when reduced by the amount,
         // gives negative amount. If so, lock the amount

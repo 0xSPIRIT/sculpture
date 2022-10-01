@@ -22,7 +22,7 @@ void chisel_blocker_init() {
     chisel_blocker->side = 1;
 
     SDL_SetTextureBlendMode(RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
-    chisel_blocker->pixels = push_memory(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+    chisel_blocker->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
 }
 
 void chisel_blocker_deinit() {
@@ -74,7 +74,7 @@ void chisel_blocker_tick() {
             int found_point = 0;
             for (int i = 0; i < chisel_blocker->point_count; i++) {
                 SDL_Point p = chisel_blocker->control_points[i];
-                if (distance(p.x, p.y, input->mx, input->my) <= 3) {
+                if (distance((float)p.x, (float)p.y, (float)input->mx, (float)input->my) <= 3) {
                     chisel_blocker->current_point = i;
                     found_point = 1;
                 }
@@ -178,7 +178,7 @@ internal SDL_FPoint bezier_tangent(float t, SDL_Point a, SDL_Point b, SDL_Point 
 
     SDL_FPoint p = {xp/gs->gw, yp/gs->gh};
 
-    float len = sqrt(p.x*p.x + p.y*p.y);
+    float len = (float)sqrt(p.x*p.x + p.y*p.y);
     p.x /= len;
     p.y /= len;
 
@@ -228,12 +228,12 @@ void chisel_blocker_draw() {
                 chisel_blocker->control_points[i == 0 ? 1 : 2].x,
                 chisel_blocker->control_points[i == 0 ? 1 : 2].y,
             };
-            float dx = a.x1 - a.x2;
-            float dy = a.y1 - a.y2;
-            float len = sqrt(dx*dx + dy*dy);
+            float dx = (float) (a.x1 - a.x2);
+            float dy = (float) (a.y1 - a.y2);
+            float len = (float) sqrt(dx*dx + dy*dy);
             float ux = dx/len;
             float uy = dy/len;
-            chisel_blocker->lines[i] = (struct Line){a.x1, a.y1, a.x1+ux*gs->gw, a.y1+uy*gs->gw};
+            chisel_blocker->lines[i] = (struct Line){(int)a.x1, (int)a.y1, (int)(a.x1+ux*gs->gw), (int)(a.y1+uy*gs->gw)};
         }
 
         break;
@@ -243,16 +243,14 @@ void chisel_blocker_draw() {
         float px, py;
 
         // Bezier calculation.
-        const float step = 0.02;
+        const float step = 0.02f;
         for (float t = 0.0; t < 1.0; t += step) {
-            float m1x = lerp(chisel_blocker->control_points[0].x, chisel_blocker->control_points[1].x, t);
-            float m1y = lerp(chisel_blocker->control_points[0].y, chisel_blocker->control_points[1].y, t);
-
-            float m2x = lerp(chisel_blocker->control_points[1].x, chisel_blocker->control_points[2].x, t);
-            float m2y = lerp(chisel_blocker->control_points[1].y, chisel_blocker->control_points[2].y, t);
-
-            float m3x = lerp(chisel_blocker->control_points[2].x, chisel_blocker->control_points[3].x, t);
-            float m3y = lerp(chisel_blocker->control_points[2].y, chisel_blocker->control_points[3].y, t);
+            float m1x = lerp((float) chisel_blocker->control_points[0].x, (float) chisel_blocker->control_points[1].x, t);
+            float m1y = lerp((float) chisel_blocker->control_points[0].y, (float) chisel_blocker->control_points[1].y, t);
+            float m2x = lerp((float) chisel_blocker->control_points[1].x, (float) chisel_blocker->control_points[2].x, t);
+            float m2y = lerp((float) chisel_blocker->control_points[1].y, (float) chisel_blocker->control_points[2].y, t);
+            float m3x = lerp((float) chisel_blocker->control_points[2].x, (float) chisel_blocker->control_points[3].x, t);
+            float m3y = lerp((float) chisel_blocker->control_points[2].y, (float) chisel_blocker->control_points[3].y, t);
 
             float pax = lerp(m1x, m2x, t);
             float pay = lerp(m1y, m2y, t);
@@ -283,14 +281,14 @@ void chisel_blocker_draw() {
                     SDL_FPoint start = bezier_tangent(0, chisel_blocker->control_points[0], chisel_blocker->control_points[1], chisel_blocker->control_points[2], chisel_blocker->control_points[3]);
                     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
                     SDL_Point point = chisel_blocker->control_points[0];
-                    chisel_blocker->lines[0] = (struct Line){ point.x - start.x, point.y - start.y, point.x - gs->gw*start.x, point.y - gs->gw*start.y };
+                    chisel_blocker->lines[0] = (struct Line){ (int)(point.x - start.x), (int)(point.y - start.y), (int)(point.x - gs->gw*start.x), (int)(point.y - gs->gw*start.y) };
                 }
 
                 {
                     SDL_FPoint end = bezier_tangent(1, chisel_blocker->control_points[0], chisel_blocker->control_points[1], chisel_blocker->control_points[2], chisel_blocker->control_points[3]);
                     SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
                     SDL_Point point = chisel_blocker->control_points[3];
-                    chisel_blocker->lines[1] = (struct Line){ point.x, point.y, point.x + gs->gw*end.x, point.y + gs->gw*end.y };
+                    chisel_blocker->lines[1] = (struct Line){ (int)point.x, (int)point.y, (int)(point.x + gs->gw*end.x), (int)(point.y + gs->gw*end.y) };
                 }
 
             }

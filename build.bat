@@ -1,9 +1,8 @@
 @echo off
 
-set Common_Compiler_Flags=/nologo /Zi /GR- /EHa- /Odi /MT /FC /Fo:"obj\\"
+set Common_Compiler_Flags=/nologo /W3 /Zi /GR- /EHa- /Odi /MT /FC /Fo:"obj\\" /D_CRT_SECURE_NO_WARNINGS
 set Common_Linker_Flags=user32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib
 
-rem @echo off
 rem gcc main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -g -o ..\bin\win32_sculpture.exe
 
 if not exist src/main.c goto INVALID_DIR
@@ -25,7 +24,8 @@ REM and we still retain the errorlevel from the DLL compilation.
 
 REM Build the SDL layer (.exe)
 cl.exe %Common_Compiler_Flags% ..\src\main.c %Common_Linker_Flags% SDL2main.lib /link /incremental:no /out:win32_sculpture.exe
-set err=errorlevel
+
+if NOT %errorlevel%==0 (set err=%errorlevel%)
 
 popd
 goto end

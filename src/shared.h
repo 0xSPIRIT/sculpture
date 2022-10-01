@@ -43,19 +43,19 @@
 #define Terabytes(x) ((Uint64)x*1024*1024*1024*1024)
 
 // Assert using an SDL MessageBox popup. Prints to the console too.
-#define Assert(condition) (_assert(condition, gs->window, __func__, __FILE__, __LINE__) ? DebugBreak() : 0 )
+#define Assert(condition) (_assert(condition, gs->window, __func__, __FILE__, __LINE__) ? SDL_TriggerBreakpoint() : 0 )
 // Assert without the popup (no window); use only console instead.
-#define AssertNW(condition) (_assert(condition, NULL, __func__, __FILE__, __LINE__) ? DebugBreak() : 0 )
+#define AssertNW(condition) (_assert(condition, NULL, __func__, __FILE__, __LINE__) ? SDL_TriggerBreakpoint() : 0 )
 
 //
 // To allocate permanent memory that will persist until
 // the end of the session, use persistent allocation.
-//   [push_memory(gs->persistent_memory, ...)]
+//   [arena_alloc(gs->persistent_memory, ...)]
 //
 // Otherwise, when allocating memory that you will
 // just need for a specific function and will free it,
 // use transient allocation.
-//   [push_memory(gs->transient_memory, ...)]
+//   [arena_alloc(gs->transient_memory, ...)]
 //
 
 struct Memory {
@@ -71,8 +71,6 @@ struct Memory {
 // add an SDL_Event in here as well, and dump this to a file.
 struct Game_State {
     struct Memory *persistent_memory, *transient_memory;
-
-    int transient_allocation_count; // A counter for every transient_alloc.
 
     struct SDL_Window *window;
     struct SDL_Renderer *renderer;
@@ -143,9 +141,9 @@ struct Game_State {
 // Defined in game.c and main.c
 extern struct Game_State *gs;
 
-#define push_memory(mem, num, size) (_push_memory(mem, num, size, __FILE__, __LINE__))
+#define arena_alloc(mem, num, size) (_arena_alloc(mem, num, size, __FILE__, __LINE__))
 
-inline void *_push_memory(struct Memory *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
+inline void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
     void *output = NULL;
 
@@ -191,7 +189,7 @@ inline bool _assert(bool condition, SDL_Window *window, const char *func, const 
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, window);
         }
     } else {
-        __debugbreak();
+        SDL_TriggerBreakpoint();
     }
 
     fprintf(stderr, "\n:::: ASSERTION FAILED ::::\n%s", message);
@@ -200,7 +198,7 @@ inline bool _assert(bool condition, SDL_Window *window, const char *func, const 
     return !condition;
 }
 
-// which is an enum in assets.h
+// 'which' is an enum in assets.h
 #define RenderTarget(gs, which) (gs->textures.render_targets[gs->level_current][which])
 
 #endif // SHARED_H_

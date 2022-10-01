@@ -34,7 +34,7 @@ void text_field_tick(SDL_Event *event) {
             memset(text_field->text, 0, 256);
             break;
         case SDLK_BACKSPACE:;
-            int length = strlen(text_field->text);
+            size_t length = strlen(text_field->text);
             if (length)
                 text_field->text[length-1] = 0;
             break;
