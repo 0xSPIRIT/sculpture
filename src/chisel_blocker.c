@@ -42,7 +42,7 @@ void chisel_blocker_tick() {
     struct Chisel_Blocker *chisel_blocker = &gs->chisel_blocker;
     struct Input *input = &gs->input;
 
-    if (chisel_blocker->state != CHISEL_BLOCKER_OFF && gs->current_tool == TOOL_CHISEL_MEDIUM && input->keys_pressed[SDL_SCANCODE_C]) {
+    if (chisel_blocker->state != CHISEL_BLOCKER_OFF && input->keys_pressed[SDL_SCANCODE_C]) {
         gs->chisel_blocker_mode = !gs->chisel_blocker_mode;
     }
 
@@ -182,9 +182,6 @@ internal SDL_FPoint bezier_tangent(f32 t, SDL_Point a, SDL_Point b, SDL_Point c,
 
 void chisel_blocker_draw() {
     struct Chisel_Blocker *chisel_blocker = &gs->chisel_blocker;
-
-    if (gs->current_tool != TOOL_CHISEL_MEDIUM)
-        return;
 
     if (chisel_blocker->state == CHISEL_BLOCKER_OFF)
         return;

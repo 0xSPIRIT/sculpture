@@ -1089,7 +1089,10 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_d
         for (int x = 0; x < gs->gw; x++) {
             if (obj->blob_data[chisel_size].blobs[x+y*gs->gw] != blob) continue;
             
-            if (gs->current_tool == TOOL_CHISEL_MEDIUM && gs->chisel_blocker.state != CHISEL_BLOCKER_OFF && gs->chisel_blocker.pixels[x+y*gs->gw] != gs->chisel_blocker.side) {
+            if (gs->current_tool == TOOL_CHISEL_MEDIUM &&
+                gs->chisel_blocker.state != CHISEL_BLOCKER_OFF &&
+                gs->chisel_blocker.pixels[x+y*gs->gw] != gs->chisel_blocker.side)
+            {
                 return true;
             }
 

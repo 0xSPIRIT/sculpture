@@ -1,11 +1,14 @@
       --------------------------TODO----------------------------
 
-- Improve the chiseling system...
+3 Things
+   - Wood chisel blocker.
+   - Small radius for deleter points. This is as to avoid using it
+     for minute changes.
+   - For the deleter, incinerate. Don't dustize the things removed
+     via the deleter.
 
 - Play around with the converter.
 - Finally, create levels.
-
-- Change placer behaviour to be continuous in the converter.
 
 - Some kind of crash when closing the game, and sometimes when using
   the material converter... but only when in release mode... sigh.
@@ -13,7 +16,7 @@
 
 - Add ability to join two objects together (Future. Don't care)
 
-- In goto_level, most of those init functions don't need to reinitialize
+- In goto_level, most of those init functions don't need to reallocate
   memory. What they really want is zeroing out the memory.
 
      ---------------------------Ideas----------------------------

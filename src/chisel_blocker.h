@@ -15,6 +15,7 @@ struct Line {
 
 struct Chisel_Blocker {
     int state;
+    // enum Chisel_Blocker_State state;
     
     SDL_Point control_points[4]; // The bezier or line control points.
     int point_count;

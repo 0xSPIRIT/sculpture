@@ -1,6 +1,6 @@
 @echo off
 
-set Common_Compiler_Flags=/nologo /W3 /Zi /GR- /EHa- /Odi /MT /FC /Fo:"obj\\" /D_CRT_SECURE_NO_WARNINGS
+set Common_Compiler_Flags=/nologo /diagnostics:caret /W3 /Zi /GR- /EHa- /Odi /MT /FC /Fo:"obj\\" /D_CRT_SECURE_NO_WARNINGS
 set Common_Linker_Flags=user32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib
 
 rem gcc main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -g -o ..\bin\win32_sculpture.exe
