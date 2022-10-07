@@ -1,7 +1,6 @@
 #include "undo.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "game.h"
 
@@ -21,7 +20,7 @@ bool is_current_grid_same_as(struct Save_State *state) {
     
 void save_state_to_next() {
     if (gs->state_count >= MAX_UNDO) {
-        return;
+        return; // TODO: Start overwriting oldest data.
     }
 
     struct Save_State *state;

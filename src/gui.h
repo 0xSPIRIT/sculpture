@@ -21,6 +21,11 @@ enum Overlay_Type {
     OVERLAY_TYPE_PLACER  // From the placer
 };
 
+enum Button_Type {
+    BUTTON_TYPE_TOOL_BAR,
+    BUTTON_TYPE_CONVERTER
+};
+
 struct Overlay {
     enum Overlay_Type type;
 
@@ -40,6 +45,7 @@ struct GUI {
 };
 
 struct Button {
+    enum Button_Type type;
     int x, y, w, h;
     int index;
     SDL_Texture *texture;
@@ -60,7 +66,7 @@ void overlay_draw(struct Overlay *overlay);
 
 void overlay_get_string(int type, int amt, char *out_str);
 
-struct Button *button_allocate(SDL_Texture *texture, const char *overlay_text, void (*on_pressed)(void*));
+struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *overlay_text, void (*on_pressed)(void*));
 void button_tick(struct Button *b, void *data);
 void button_draw(struct Button *b);
 void gui_popup_draw();

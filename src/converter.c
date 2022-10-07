@@ -2,7 +2,6 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include <stdlib.h>
 #include <stdio.h>
 
 #include "grid.h"
@@ -114,7 +113,7 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
                 overlay_reset(&gs->gui.overlay);
             } 
             
-        } else if (input->mouse_pressed[SDL_BUTTON_RIGHT] && item->type && gs->item_holding.type == 0) { // If holdingd nothing
+        } else if (input->mouse_pressed[SDL_BUTTON_RIGHT] && item->type && gs->item_holding.type == 0) { // If holding nothing
             // Split the item into two like minecraft.
             Assert(gs->item_holding.amount == 0);
             
@@ -176,8 +175,10 @@ void all_converters_init() {
 }
 
 void all_converters_tick() {
-    if (gs->gui.popup)
+    if (gs->gui.popup && gs->current_tool != TOOL_PLACER) {
+        gs->previous_tool = gs->current_tool;
         gs->current_tool = TOOL_PLACER;
+    }
     
     if (gs->gui.popup && gs->gui.is_placer_active) {
         placer_tick(converter_get_current_placer());
@@ -338,11 +339,11 @@ struct Converter *converter_init(int type) {
     
     converter->arrow.x = (int) (converter->w/2);
     converter->arrow.y = (int) (converter->h/2 + 24);
-    converter->speed = 1;
+    converter->speed = 8;
     
     // Both X and Y-coordinates are updated in converter_tick.
     struct Button *b;
-    b = button_allocate(gs->textures.convert_button, "Convert", converter_begin_converting);
+    b = button_allocate(BUTTON_TYPE_CONVERTER, gs->textures.convert_button, "Convert", converter_begin_converting);
     b->w = 48;
     b->h = 48;
     

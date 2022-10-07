@@ -76,10 +76,10 @@ void knife_update_texture() {
     struct Knife *knife = &gs->knife;
 
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
-    SDL_SetTextureBlendMode(RenderTarget(gs, RENDER_TARGET_KNIFE), SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_KNIFE), SDL_BLENDMODE_BLEND);
     
-    Assert(RenderTarget(gs, RENDER_TARGET_KNIFE));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_KNIFE));
+    Assert(RenderTarget(RENDER_TARGET_KNIFE));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_KNIFE));
 
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
     SDL_RenderClear(gs->renderer);
@@ -101,5 +101,5 @@ void knife_update_texture() {
 
 void knife_draw() {
     knife_update_texture();
-    SDL_RenderCopy(gs->renderer, RenderTarget(gs, RENDER_TARGET_KNIFE), NULL, NULL);
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_KNIFE), NULL, NULL);
 }

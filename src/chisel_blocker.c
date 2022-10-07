@@ -21,13 +21,8 @@ void chisel_blocker_init() {
 
     chisel_blocker->side = 1;
 
-    SDL_SetTextureBlendMode(RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
     chisel_blocker->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
-}
-
-void chisel_blocker_deinit() {
-    /* struct Chisel_Blocker *chisel_blocker = &gs->chisel_blocker; */
-    /* temp_dealloc(chisel_blocker->pixels); */
 }
 
 internal void flood_fill(Uint32 *pixels, int x, int y, Uint32 value) {
@@ -200,10 +195,10 @@ void chisel_blocker_draw() {
     }
 
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
-    SDL_SetTextureBlendMode(RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
 
-    Assert(RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER));
+    Assert(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_CHISEL_BLOCKER));
 
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
     SDL_RenderClear(gs->renderer);
@@ -316,13 +311,13 @@ void chisel_blocker_draw() {
         }
     }
 
-    SDL_SetTextureBlendMode(RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
     if (gs->chisel_blocker_mode)
-        SDL_SetTextureAlphaMod(RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER), 255);
+        SDL_SetTextureAlphaMod(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), 255);
     else
-        SDL_SetTextureAlphaMod(RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER), 128);
+        SDL_SetTextureAlphaMod(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), 128);
 
-    SDL_RenderCopy(gs->renderer, RenderTarget(gs, RENDER_TARGET_CHISEL_BLOCKER), NULL, NULL);
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), NULL, NULL);
 
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 16);

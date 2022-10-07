@@ -37,7 +37,7 @@
 #include "shared.h"
 
 // Include all files to compile in one translation unit for
-// compilation speed's sake.
+// compilation speed's sake. ("Unity Build")
 #include "assets.c"
 #include "cursor.c"
 #include "input.c"
@@ -50,7 +50,6 @@
 typedef void (*GameInitProc)(struct Game_State *state, int start_level);
 typedef bool (*GameTickEventProc)(struct Game_State *state, SDL_Event *event);
 typedef void (*GameRunProc)(struct Game_State *state);
-typedef void (*GameDeinitProc)(struct Game_State *state);
 
 struct Game_State *gs = NULL; // This is so that our macros can pick up "gs" instead of game_state.
 
@@ -61,7 +60,6 @@ struct Game_Code {
     GameInitProc game_init;
     GameTickEventProc game_tick_event;
     GameRunProc game_run;
-    GameDeinitProc game_deinit;
 };
 
 internal void game_init_sdl(struct Game_State *state, const char *window_title, int w, int h) {
@@ -85,10 +83,6 @@ internal void game_init_sdl(struct Game_State *state, const char *window_title, 
 }
 
 internal void make_memory(struct Memory *persistent_memory, struct Memory *transient_memory) {
-    // Debugging purposes.
-    strcpy(persistent_memory->name, "Persistent");
-    strcpy(transient_memory->name, "Transient");
-
     persistent_memory->size = Megabytes(512);
     transient_memory->size = Megabytes(32);
 
@@ -175,10 +169,11 @@ internal void load_game_code(struct Game_Code *code) {
         fprintf(stderr, "Error loading the DLL!\n");
         exit(1);
     }
+
     code->game_init = (GameInitProc) GetProcAddress(code->dll, "game_init");
     code->game_tick_event = (GameTickEventProc) GetProcAddress(code->dll, "game_tick_event");
     code->game_run = (GameRunProc) GetProcAddress(code->dll, "game_run");
-    code->game_deinit = (GameDeinitProc) GetProcAddress(code->dll, "game_deinit");
+
     if (!code->game_run) {
         fprintf(stderr, "Error finding the functions in the DLL!\n");
         exit(1);
@@ -189,7 +184,6 @@ internal void unload_game_code(struct Game_Code *code) {
     FreeLibrary(code->dll);
     code->game_init = 0;
     code->game_run = 0;
-    code->game_deinit = 0;
     code->game_tick_event = 0;
     code->dll = 0;
 }
@@ -227,7 +221,7 @@ int main(int argc, char **argv) {
     struct Game_State *game_state = arena_alloc(&persistent_memory, 1, (Uint64) (sizeof(struct Game_State)*1.5));
 
     gs = game_state; // This is so that our macros can pick up "gs" instead of game_state.
-    
+
     game_state->persistent_memory = &persistent_memory;
     game_state->transient_memory = &transient_memory;
     
@@ -262,7 +256,7 @@ int main(int argc, char **argv) {
         }
         
         input_tick(game_state);
-        
+
         // Memory usage statistics.
         {
             Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
@@ -298,7 +292,6 @@ int main(int argc, char **argv) {
         }
     }
     
-    game_code.game_deinit(game_state);
     game_deinit(game_state);
     
     VirtualFree(persistent_memory.data, 0, MEM_RELEASE);

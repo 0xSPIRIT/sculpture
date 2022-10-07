@@ -9,7 +9,7 @@
 
 #include "chisel.h"
 #include "knife.h"
-#include "point_knife.h"
+#include "deleter.h"
 #include "blob_hammer.h"
 #include "placer.h"
 #include "grabber.h"
@@ -44,6 +44,9 @@ internal int level_add(const char *name, const char *desired_image, const char *
                                &level->source_cell_count,
                                &w,
                                &h);
+
+    Assert(w > 0);
+    Assert(h > 0);
 
     if (w != level->w || h != level->h) {
         fprintf(stderr, "%s and %s aren't the same size. Initial: %d, Desired: %d.\n", initial_image, desired_image, w, level->w);
@@ -122,7 +125,7 @@ void goto_level(int lvl) {
     blob_hammer_init();
     chisel_hammer_init();
     knife_init();
-    point_knife_init();
+    deleter_init();
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_init(i);
     grabber_init();
@@ -134,13 +137,6 @@ void goto_level(int lvl) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         gs->grid[i].type = gs->levels[lvl].desired_grid[i].type;
     }
-}
-
-// Most deinitialization functions are just freeing textures, but
-// since we have assets.c, we don't need to do that. General freeing
-// pointers are usually unused because we allocate using gs->persistent_memory
-void levels_deinit() {
-    effect_set(EFFECT_NONE);
 }
 
 void level_tick() {
@@ -229,8 +225,8 @@ void level_tick() {
         case TOOL_KNIFE:
             knife_tick();
             break;
-        case TOOL_POINT_KNIFE:
-            point_knife_tick();
+        case TOOL_DELETER:
+            deleter_tick();
             break;
         case TOOL_HAMMER:
             blob_hammer_tick();
@@ -259,8 +255,7 @@ void level_draw() {
         level_draw_intro();
         break;
     case LEVEL_STATE_OUTRO: case LEVEL_STATE_PLAY:
-        Assert(RenderTarget(gs, RENDER_TARGET_GLOBAL));
-        SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_GLOBAL));
+        SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
         
         SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
         SDL_RenderClear(gs->renderer);
@@ -276,8 +271,8 @@ void level_draw() {
         case TOOL_KNIFE:
             knife_draw();
             break;
-        case TOOL_POINT_KNIFE:
-            point_knife_draw();
+        case TOOL_DELETER:
+            deleter_draw();
             break;
         case TOOL_HAMMER:
             blob_hammer_draw();
@@ -304,7 +299,7 @@ void level_draw() {
         };
 
         SDL_SetRenderTarget(gs->renderer, NULL);
-        SDL_RenderCopy(gs->renderer, RenderTarget(gs, RENDER_TARGET_GLOBAL), NULL, &dst);
+        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
 
         gui_popup_draw();
         
@@ -400,8 +395,8 @@ void level_draw() {
 void level_draw_intro() {
     struct Level *level = &gs->levels[gs->level_current];
 
-    Assert(RenderTarget(gs, RENDER_TARGET_GLOBAL));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_GLOBAL));
+    Assert(RenderTarget(RENDER_TARGET_GLOBAL));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
         
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
     SDL_RenderClear(gs->renderer);
@@ -416,7 +411,7 @@ void level_draw_intro() {
     }
 
     SDL_SetRenderTarget(gs->renderer, NULL);
-    SDL_RenderCopy(gs->renderer, RenderTarget(gs, RENDER_TARGET_GLOBAL), NULL, NULL);
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, NULL);
 
     char name[256] = {0};
     sprintf(name, "Level %d: %s", level->index+1, level->name);

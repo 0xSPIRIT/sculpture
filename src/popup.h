@@ -13,7 +13,7 @@ struct Text_Field {
 };
 
 void set_text_field(const char *description, const char *initial_text, void (*on_return)(const char *));
-void text_field_tick(SDL_Event *event);
+void text_field_tick();
 void text_field_draw();
 
 #endif // POPUP_H

@@ -2,8 +2,8 @@
 
 #include <math.h>
 #include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "gui.h"
 #include "grid.h"
@@ -95,7 +95,7 @@ void get_name_from_tool(int type, char *out) {
     case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel"); break;
     case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel"); break;
     case TOOL_KNIFE:         strcpy(out, "Knife"); break;
-    case TOOL_POINT_KNIFE:   strcpy(out, "Point Knife"); break;
+    case TOOL_DELETER:       strcpy(out, "Deleter"); break;
     case TOOL_HAMMER:        strcpy(out, "Hammer"); break;
     case TOOL_PLACER:        strcpy(out, "Placer"); break;
     case TOOL_GRABBER:       strcpy(out, "Grabber"); break;
@@ -108,7 +108,7 @@ void get_file_from_tool(int type, char *out) {
     case TOOL_CHISEL_MEDIUM: strcpy(out, "chisel_medium.png"); break;
     case TOOL_CHISEL_LARGE:  strcpy(out, "chisel_large.png"); break;
     case TOOL_KNIFE:         strcpy(out, "knife.png"); break;
-    case TOOL_POINT_KNIFE:   strcpy(out, "point_knife.png"); break;
+    case TOOL_DELETER:       strcpy(out, "deleter.png"); break;
     case TOOL_HAMMER:        strcpy(out, "hammer.png"); break;
     case TOOL_PLACER:        strcpy(out, "placer.png"); break;
     case TOOL_GRABBER:       strcpy(out, "pointer.png"); break;

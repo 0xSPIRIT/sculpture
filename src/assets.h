@@ -1,7 +1,6 @@
 #ifndef ASSETS_H_
 #define ASSETS_H_
 
-#define RENDER_TARGET_COUNT 7
 #define RES_DIR "../res" 
 
 #include <SDL2/SDL.h>
@@ -19,7 +18,9 @@ enum {
     RENDER_TARGET_KNIFE,
     RENDER_TARGET_BLOB_HAMMER,
     RENDER_TARGET_CHISEL_BLOCKER,
-    RENDER_TARGET_CHISEL // Use the same render target for each chisel.
+    RENDER_TARGET_CHISEL, // Use the same render target for each chisel.
+    RENDER_TARGET_DELETER,
+    RENDER_TARGET_COUNT 
 };
 
 // Only contains textures!
@@ -28,7 +29,7 @@ struct Textures {
     // Index into this using enum.
     SDL_Texture *render_targets[LEVEL_COUNT][RENDER_TARGET_COUNT];
 
-    SDL_Texture *point_knife,
+    SDL_Texture *deleter,
         *placer,
         *knife,
         *popup,

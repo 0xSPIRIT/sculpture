@@ -16,17 +16,17 @@ void set_text_field(const char *description, const char *initial_text, void (*on
     strcpy(text_field->text, initial_text);
 }
 
-void text_field_tick(SDL_Event *event) {
+void text_field_tick() {
     struct Text_Field *text_field = &gs->text_field;
 
     if (!text_field->active) return;
 
-    switch (event->type) {
+    switch (gs->event->type) {
     case SDL_TEXTINPUT:
-        strcat(text_field->text, event->text.text);
+        strcat(text_field->text, gs->event->text.text);
         break;
     case SDL_KEYDOWN:
-        switch (event->key.keysym.sym) {
+        switch (gs->event->key.keysym.sym) {
         case SDLK_RETURN:
             text_field->on_return(text_field->text);
             text_field->active = false;

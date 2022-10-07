@@ -3,9 +3,10 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+#include <stdlib.h>
+
 #include <time.h>
 #include <signal.h>
-#include <stdlib.h>
 #include <stdio.h>
 
 #include "util.h"
@@ -32,7 +33,7 @@ f32 get_pressure_threshold(int chisel_size) {
     case 0:
         return 0.75f;
     case 1:
-        return 0.85f;
+        return 0.7f;
     case 2:
         return 0.8f;
     }
@@ -606,6 +607,7 @@ void grid_array_draw(struct Cell *array) {
 
             SDL_Color col = pixel_from_index(array, x+y*gs->gw);
             if (array == gs->pickup_grid) {
+                col.a = (Uint8) (128 + (col.a * 0.1f*(1+sinf(SDL_GetTicks()/300.f))));
                 col.r /= 2;
                 col.g /= 2;
                 col.b /= 2;
@@ -667,7 +669,7 @@ void grid_draw(void) {
                                        (Uint8) (b/2),
                                        (Uint8) (b/4),
                                        (Uint8) (b),
-                                       (Uint8) (200 + sinf((2*x+2*y+SDL_GetTicks())/700.f)*10));
+                                       (Uint8) (255));
                 SDL_RenderDrawPoint(gs->renderer, x, y);
             }
         }
@@ -959,6 +961,8 @@ internal void blob_generate_diamonds(int obj, int chisel_size, Uint32 *blob_coun
 }
 
 internal void blob_generate_old_smart(int obj, int chisel_size, int percentage, Uint32 *blob_count) {
+    bool a = false;
+    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (gs->grid[x+y*gs->gw].object != obj) continue;
@@ -967,8 +971,13 @@ internal void blob_generate_old_smart(int obj, int chisel_size, int percentage, 
             struct Object *o = &gs->objects[obj];
             Uint32 *blobs = o->blob_data[chisel_size].blobs;
 
-            int size = (rand()%2==0) ? 2 : 3;
-            if (chisel_size == 2) size++;
+            int size;
+
+            if (chisel_size == 2) {
+                size = 4;
+            } else if (chisel_size == 1) {
+                size = 2;
+            }
 
             int did_fill = 0;
 
@@ -1047,7 +1056,7 @@ void object_generate_blobs(int object_index, int chisel_size) {
     int percentage = 0;
 
     if (chisel_size == 1) {
-        percentage = 30;
+        percentage = 0;
     }
 
     struct Object *obj = &gs->objects[object_index];
@@ -1057,8 +1066,8 @@ void object_generate_blobs(int object_index, int chisel_size) {
     if (chisel_size == 0) {
         blob_generate_dumb(object_index, chisel_size, &count);
     } else {
-        blob_generate_diamonds(object_index, chisel_size, &count);
-        /* blob_generate_old_smart(object_index, chisel_size, percentage, &count); */
+        /* blob_generate_diamonds(object_index, chisel_size, &count); */
+        blob_generate_old_smart(object_index, chisel_size, percentage, &count);
     }
 
     obj->blob_data[chisel_size].blob_count = count;
@@ -1276,8 +1285,7 @@ void convert_object_to_dust(int object) {
         for (int x = 0; x < gs->gw; x++) {
             if (gs->grid[x+y*gs->gw].object != object) continue;
             set(x, y, 0, -1);
-            set_array(gs->fg_grid, x, y, CELL_DUST, -1);
-            dust_set_random_velocity(x, y);
+            set_array(gs->pickup_grid, x, y, gs->grid[x+y*gs->gw].type, -1);
         }
     }
 }

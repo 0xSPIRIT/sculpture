@@ -1,12 +1,10 @@
-#include "game.h"
-
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <time.h>
 #include <stdio.h>
 
 // Include all files to compile in one translation unit for
-// compilation speed's sake.
+// compilation speed's sake. ("Unity Build")
 #include "blob_hammer.c"
 #include "chisel_blocker.c"
 #include "chisel.c"
@@ -18,12 +16,12 @@
 #include "knife.c"
 #include "level.c"
 #include "placer.c"
-#include "point_knife.c"
+#include "deleter.c"
 #include "popup.c"
 #include "undo.c"
 #include "util.c"
 
-#include "cursor.h"
+#include "game.h"
 
 struct Game_State *gs = NULL;
 
@@ -34,19 +32,15 @@ void game_init(struct Game_State *state, int level) {
     goto_level(level);
 }
 
-void game_deinit(struct Game_State *state) {
-    gs = state;
-    levels_deinit();
-}
-
 bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     gs = state;
+    gs->event = event;
 
     bool is_running = true;
     struct Input *input = &gs->input;
 
     // This is checked at game_run.
-    gs->prev_tool = gs->current_tool;
+    /* gs->prev_tool = gs->current_tool; */
 
     if (event->type == SDL_QUIT) {
         is_running = false;
@@ -70,7 +64,11 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     if (event->type == SDL_KEYDOWN && !gs->text_field.active) {
         switch (event->key.keysym.sym) {
         case SDLK_ESCAPE:
-            is_running = false;
+            if (gs->deleter.active) {
+                deleter_stop(true);
+            } else {
+                is_running = false;
+            }
             break;
         case SDLK_SPACE:
             gs->paused = !gs->paused;
@@ -114,7 +112,8 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         case SDLK_q: {
             struct Cell *c;
             if (input->keys[SDL_SCANCODE_LSHIFT]) {
-                c = &gs->pickup_grid[input->mx+input->my*gs->gw];
+                c = &gs->fg_grid[input->mx+input->my*gs->gw];
+                printf("Happened!\n");
             } else {
                 c = &gs->grid[input->mx+input->my*gs->gw];
             }
@@ -173,7 +172,7 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             selected_tool = 1;
             break;
         case SDLK_5:
-            gs->current_tool = TOOL_POINT_KNIFE;
+            gs->current_tool = TOOL_DELETER;
             selected_tool = 1;
             break;
         case SDLK_6:
@@ -200,7 +199,7 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         }
     }
 
-    text_field_tick(event);
+    text_field_tick();
 
     if (selected_tool) {
         gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
@@ -213,9 +212,11 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
 void game_run(struct Game_State *state) {
     gs = state;
 
-    if (state->prev_tool != gs->current_tool) {
-        overlay_reset(&gs->gui.overlay);
-    }
+    // What was the point of this again?
+
+    /* if (state->prev_tool != gs->current_tool) {
+     *     overlay_reset(&gs->gui.overlay);
+     * } */
 
     level_tick();
     level_draw();

@@ -23,7 +23,7 @@
 #include "grid.h"
 #include "chisel.h"
 #include "knife.h"
-#include "point_knife.h"
+#include "deleter.h"
 #include "popup.h"
 #include "placer.h"
 #include "level.h"
@@ -59,8 +59,6 @@
 //
 
 struct Memory {
-    char name[64]; // The name of this memory buffer for debugging purposes.
-
     Uint8 *data;
     Uint8 *cursor;
     Uint64 size;
@@ -76,6 +74,8 @@ struct Game_State {
     struct SDL_Window *window;
     struct SDL_Renderer *renderer;
 
+    SDL_Event *event;
+
     struct Textures textures; // Contains pointers to SDL textures.
     struct Surfaces surfaces;
     struct Fonts fonts;
@@ -84,7 +84,7 @@ struct Game_State {
     int window_width, window_height;
     f32 delta_time;
 
-    int current_tool, prev_tool;
+    int current_tool, previous_tool;
     int debug_mode;
     
     SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
@@ -104,7 +104,7 @@ struct Game_State {
     
     struct Blob_Hammer blob_hammer;
     struct Knife knife;
-    struct Point_Knife point_knife;
+    struct Deleter deleter;
     clock_t global_start, global_end;
 
     struct Save_State *current_state, *start_state;
@@ -144,13 +144,29 @@ extern struct Game_State *gs;
 
 #define arena_alloc(mem, num, size) (_arena_alloc(mem, num, size, __FILE__, __LINE__))
 
+// Forward declaration for _arena_alloc() function.
+bool _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line);
+
 inline void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
     void *output = NULL;
 
     size = num * size_individual;
 
-    // printf("%s Memory :: Allocated %zd at %s(%d)\n", memory->name, size, file, line);
+    const int debug_memory = false;
+    
+    if (debug_memory && gs) {
+        char memory_name[64] = {0};
+        if (memory == gs->persistent_memory) {
+            strcpy(memory_name, "Persistent");
+        } else if (memory == gs->transient_memory) {
+            strcpy(memory_name, "Transient");
+        } else {
+            Assert(0);
+        }
+
+        printf("%s Memory :: Allocated %zd bytes at %s(%d)\n", memory_name, size, file, line);
+    }
 
     if (memory->cursor+size > memory->data+memory->size) {
         char message[256] = {0};
@@ -199,6 +215,6 @@ inline bool _assert(bool condition, SDL_Window *window, const char *func, const 
 }
 
 // 'which' is an enum in assets.h
-#define RenderTarget(gs, which) (gs->textures.render_targets[gs->level_current][which])
+#define RenderTarget(which) (gs->textures.render_targets[gs->level_current][which])
 
 #endif // SHARED_H_

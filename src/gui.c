@@ -27,7 +27,7 @@ void gui_init() {
         char name[128] = {0};
         get_name_from_tool(i, name);
 
-        gui->tool_buttons[i] = button_allocate(gs->textures.tool_buttons[i], name, click_gui_tool_button);
+        gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR, gs->textures.tool_buttons[i], name, click_gui_tool_button);
         gui->tool_buttons[i]->x = cum;
         gui->tool_buttons[i]->y = 0;
         gui->tool_buttons[i]->index = i;
@@ -35,19 +35,7 @@ void gui_init() {
 
         cum += gui->tool_buttons[i]->w;
     }
-
-    /* all_converters_init(); */
 }
-
-/* void gui_deinit() { */
-/*     struct GUI *gui = &gs->gui; */
-
-/*     for (int i = 0; i < 5; i++) { */
-/*         button_deallocate(gui->tool_buttons[i]); */
-/*     } */
-/*     SDL_DestroyTexture(gui->popup_texture); */
-/*     SDL_DestroyTexture(RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR)); */
-/* } */
 
 void gui_tick() {
     struct GUI *gui = &gs->gui;
@@ -57,6 +45,8 @@ void gui_tick() {
         gui->popup = !gui->popup;
         gui->popup_y_vel = 0;
         overlay_reset(&gui->overlay);
+
+        gs->current_tool = gs->previous_tool;
 
         // Just in case the player had reset it.
         if (gs->current_placer == -1)
@@ -118,10 +108,10 @@ void gui_draw() {
     // Draw the toolbar buttons.
     SDL_Texture *old = SDL_GetRenderTarget(gs->renderer);
 
-    SDL_SetTextureBlendMode(RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR), SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_GUI_TOOLBAR), SDL_BLENDMODE_BLEND);
 
-    Assert(RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR));
+    Assert(RenderTarget(RENDER_TARGET_GUI_TOOLBAR));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR));
 
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
     SDL_RenderClear(gs->renderer);
@@ -140,7 +130,7 @@ void gui_draw() {
     };
 
     SDL_SetRenderTarget(gs->renderer, NULL);
-    SDL_RenderCopy(gs->renderer, RenderTarget(gs, RENDER_TARGET_GUI_TOOLBAR), NULL, &dst);
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR), NULL, &dst);
     SDL_SetRenderTarget(gs->renderer, old);
 }
 
@@ -275,8 +265,9 @@ void overlay_get_string(int type, int amt, char *out_str) {
     }
 }
 
-struct Button *button_allocate(SDL_Texture *texture, const char *overlay_text, void (*on_pressed)(void*)) {
+struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *overlay_text, void (*on_pressed)(void*)) {
     struct Button *b = arena_alloc(gs->persistent_memory, 1, sizeof(struct Button));
+    b->type = type;
     b->texture = texture;
     SDL_QueryTexture(texture, NULL, NULL, &b->w, &b->h);
 
@@ -291,6 +282,17 @@ void button_tick(struct Button *b, void *data) {
 
     int gui_input_mx = input->real_mx;
     int gui_input_my = input->real_my;
+
+    // TODO: This is a temporary hack so that function pointers won't stop working
+    //       upon reloading the DLL.
+    switch (b->type) {
+    case BUTTON_TYPE_CONVERTER:
+        b->on_pressed = converter_begin_converting;
+        break;
+    case BUTTON_TYPE_TOOL_BAR:
+        b->on_pressed = click_gui_tool_button;
+        break;
+    }
 
     if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
         gui_input_my >= b->y && gui_input_my < b->y+b->h) {
@@ -339,6 +341,8 @@ void click_gui_tool_button(void *type_ptr) {
     int type = *((int*)type_ptr);
     
     struct GUI *gui = &gs->gui;
+
+    if (gui->popup) return;
 
     gs->current_tool = type;
     gs->chisel_blocker_mode = 0;

@@ -1,6 +1,6 @@
       --------------------------TODO----------------------------
 
-- Improve the chiseling system... BY COMPLETELY AUTOMATING IT.
+- Improve the chiseling system...
 
 - Play around with the converter.
 - Finally, create levels.
@@ -11,16 +11,10 @@
   the material converter... but only when in release mode... sigh.
   Why do these happen so often to me?
 
-Bugs / Crashes:
+- Add ability to join two objects together (Future. Don't care)
 
-  - gui.c button_tick():
-       if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
-        -> b->on_pressed(data); // 0xC0000005: Access violation executing location 0x00007FF9B9441840
-           b->activated = true;
-       }
-
-         Most likely to do with reloading the game DLL and memory addresses to function pointers
-         changing. So don't use function pointers anywhere in your code.
+- In goto_level, most of those init functions don't need to reinitialize
+  memory. What they really want is zeroing out the memory.
 
      ---------------------------Ideas----------------------------
 
@@ -62,4 +56,17 @@ the player just drew on. The option will still be there to chisel
 manually for simple modifications, though, such as very fine-tuned
 edging, bevels, details, etc.
 
+Progress - Use chisels first, then deleter comes in after a while.
+
 -------------------------------------------------------------------
+
+Notes
+
+- Chiseling small portions menially
+  is not very fun, especially at the
+  start. The music can make it better,
+  but let's try to maximize the fun at
+  the start.
+- Focus on curved, general structures?
+  Nothing square / rigid like the
+  fireplace.

@@ -1,7 +1,7 @@
 #include "effects.h"
 
-#include <stdlib.h>
 #include <SDL2/SDL.h>
+#include <stdlib.h>
 
 #include "grid.h"
 #include "game.h"
@@ -99,8 +99,10 @@ void effect_draw(struct Effect *effect) {
             int py = (int)particle->y;
 
             // Confetti Mode:
-            /* SDL_SetRenderDrawColor(gs->renderer, my_rand(px), my_rand(py), my_rand(px*py), (Uint8) (255 * (length/max))); */
-            SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, (Uint8) (255 * (length/max)));
+            SDL_SetRenderDrawColor(gs->renderer, my_rand(px), my_rand(py), my_rand(px*py), (Uint8) (255 * (length/max)));
+
+            /* SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, (Uint8) (255 * (length/max))); */
+
             SDL_RenderDrawPoint(gs->renderer, px, py);
         }
         break;

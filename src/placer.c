@@ -1,7 +1,5 @@
 #include "placer.h"
 
-#include <stdlib.h>
-
 #include <SDL2/SDL_image.h>
 
 #include "grid.h"

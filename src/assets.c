@@ -3,7 +3,7 @@
 #include "shared.h"
 #include <SDL2/SDL_ttf.h>
 
-#define new_render_target(width, height) (SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height))
+#define CreateRenderTarget(width, height) (SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height))
 
 //
 // In this file, we load / unload every single asset from file,
@@ -66,7 +66,7 @@ internal void get_file_from_tool(int type, char *out) {
     case TOOL_CHISEL_MEDIUM: strcpy(out, "chisel_medium.png"); break;
     case TOOL_CHISEL_LARGE:  strcpy(out, "chisel_large.png"); break;
     case TOOL_KNIFE:         strcpy(out, "knife.png"); break;
-    case TOOL_POINT_KNIFE:   strcpy(out, "point_knife.png"); break;
+    case TOOL_DELETER:       strcpy(out, "deleter.png"); break;
     case TOOL_HAMMER:        strcpy(out, "hammer.png"); break;
     case TOOL_PLACER:        strcpy(out, "placer.png"); break;
     case TOOL_GRABBER:       strcpy(out, "pointer.png"); break;
@@ -79,7 +79,7 @@ internal void get_name_from_tool(int type, char *out) {
     case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel"); break;
     case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel"); break;
     case TOOL_KNIFE:         strcpy(out, "Knife"); break;
-    case TOOL_POINT_KNIFE:   strcpy(out, "Point Knife"); break;
+    case TOOL_DELETER:       strcpy(out, "Deleter"); break;
     case TOOL_HAMMER:        strcpy(out, "Hammer"); break;
     case TOOL_PLACER:        strcpy(out, "Placer"); break;
     case TOOL_GRABBER:       strcpy(out, "Grabber"); break;
@@ -95,12 +95,12 @@ void render_targets_init(SDL_Renderer *renderer,
         struct Level *l = &levels[lvl];
         for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
             if (i == 1) {
-                textures->render_targets[lvl][i] = new_render_target(width, GUI_H);
+                textures->render_targets[lvl][i] = CreateRenderTarget(width, GUI_H);
                 continue;
             }
 
             Assert(l->w != 0 && l->h != 0);
-            textures->render_targets[lvl][i] = new_render_target(l->w, l->h);
+            textures->render_targets[lvl][i] = CreateRenderTarget(l->w, l->h);
             Assert(textures->render_targets[lvl][i]);
         }
     }
@@ -128,7 +128,7 @@ void textures_init(SDL_Window *window,
         surf = NULL;
     }
 
-    textures->point_knife = load_texture(renderer, RES_DIR "/point_knife.png");
+    textures->deleter = load_texture(renderer, RES_DIR "/deleter.png");
     textures->placer = load_texture(renderer, RES_DIR "/placer.png");
     textures->knife = load_texture(renderer, RES_DIR "/knife.png");
     textures->popup = load_texture(renderer, RES_DIR "/popup.png");

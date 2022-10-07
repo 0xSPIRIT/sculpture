@@ -3,8 +3,8 @@ is laid out and such.
 
 == Building ==
 
-Ensure you have MSVC installed (I used MSVC 2022, unsure if
-it would be compatible with older versions). Install SDL2,
+Ensure you have MSVC installed (I used MSVC 2022, it will
+most likely work with previous versions). Install SDL2,
 SDL2_ttf, and SDL2_image from their website, add them to
 your include and lib directories for MSVC. Open the native
 developer console from the Start Menu, and navigate to this

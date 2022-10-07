@@ -31,7 +31,6 @@ struct Level {
 void levels_setup();
 void goto_level_string_hook(const char *string);
 void goto_level(int lvl);
-void levels_deinit();
 void level_tick();
 void level_draw();
 void level_draw_intro();
