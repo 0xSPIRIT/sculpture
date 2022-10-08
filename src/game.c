@@ -1,29 +1,24 @@
-#include <SDL2/SDL_image.h>
-#include <time.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
 #include "shared.h"
 
 // Include all files to compile in one translation unit for
 // compilation speed's sake. ("Unity Build")
+#include "util.c"
+#include "grid.c"
+#include "undo.c"
 #include "blob_hammer.c"
 #include "chisel_blocker.c"
 #include "blocker.c"
 #include "chisel.c"
+#include "tooltip.c"
+#include "placer.c"
 #include "converter.c"
+#include "gui.c"
 #include "effects.c"
 #include "grabber.c"
-#include "grid.c"
-#include "gui.c"
 #include "knife.c"
-#include "level.c"
-#include "placer.c"
 #include "deleter.c"
 #include "popup.c"
-#include "undo.c"
-#include "util.c"
+#include "level.c"
 
 export void game_init(struct Game_State *state, int level) {
     gs = state;
@@ -218,6 +213,7 @@ export void game_run(struct Game_State *state) {
 
     if (level->state != LEVEL_STATE_INTRO) {
         gui_tick();
+        all_converters_tick();
         gui_draw();
 
         SDL_Rect dst = {
@@ -229,6 +225,8 @@ export void game_run(struct Game_State *state) {
         SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
 
         gui_popup_draw();
+        all_converters_draw();
+
         tooltip_draw(&gs->gui.tooltip);
         text_field_draw();
     }

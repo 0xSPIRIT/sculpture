@@ -70,34 +70,23 @@ struct Converter_Checker {
     int current; // 1 or 2 [0 when first initialized]
 };
 
-void item_draw(struct Item *item, int x, int y, int w, int h);
-void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h);
-
-void all_converters_init();
-void all_converters_tick();
-void all_converters_draw();
-
-bool is_mouse_in_converter(struct Converter *converter);
-bool is_mouse_in_slot(struct Slot *slot);
-bool was_mouse_in_slot(struct Slot *slot);
-
-struct Converter *converter_init(int type);
-void converter_tick(struct Converter *converter);
-void converter_draw(struct Converter *converter);
-bool converter_is_layout_valid(struct Converter *converter);
-void converter_begin_converting(void *converter);
-void converter_set_state(struct Converter *converter, enum Converter_State state);
-bool converter_convert(struct Converter *converter);
-
-int get_number_unique_inputs(struct Item *input1, struct Item *input2);
-
-void slot_tick(struct Slot *slot);
-void slot_draw(struct Slot *slot);
-
-struct Placer *converter_get_current_placer();
-
-int get_cell_tier(int type);
-bool is_cell_fuel(int type);
-bool is_cell_stone(int type);
+/* struct Converter *converter_init(int type);
+ * void converter_tick(struct Converter *converter);
+ * void converter_draw(struct Converter *converter);
+ * bool converter_is_layout_valid(struct Converter *converter);
+ * void converter_begin_converting(void *converter);
+ * void converter_set_state(struct Converter *converter, enum Converter_State state);
+ * bool converter_convert(struct Converter *converter);
+ * 
+ * int get_number_unique_inputs(struct Item *input1, struct Item *input2);
+ * 
+ * void slot_tick(struct Slot *slot);
+ * void slot_draw(struct Slot *slot);
+ * 
+ * struct Placer *converter_get_current_placer();
+ * 
+ * int get_cell_tier(int type);
+ * bool is_cell_fuel(int type);
+ * bool is_cell_stone(int type); */
 
 #endif  /* CONVERTER_H */

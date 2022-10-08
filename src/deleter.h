@@ -23,9 +23,9 @@ struct Deleter {
     int cooldown;
 };
 
-void deleter_init();
-void deleter_tick();
-void deleter_draw();
-void deleter_stop(bool cancel);
+/* void deleter_init();
+ * void deleter_tick();
+ * void deleter_draw();
+ * void deleter_stop(bool cancel); */
 
 #endif  /* DELETER_H_ */

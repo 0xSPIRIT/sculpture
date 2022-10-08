@@ -53,23 +53,4 @@ struct Button {
     void (*on_pressed)(void*);
 };
 
-void gui_init();
-void gui_tick();
-void gui_draw();
-
-void tooltip_reset(struct Tooltip *tooltip);
-void tooltip_set_position_to_cursor(struct Tooltip *tooltip, int type);
-void tooltip_set_position(struct Tooltip *tooltip, int x, int y, int type);
-void tooltip_draw(struct Tooltip *tooltip);
-
-void tooltip_get_string(int type, int amt, char *out_str);
-
-struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *tooltip_text, void (*on_pressed)(void*));
-void button_tick(struct Button *b, void *data);
-void button_draw(struct Button *b);
-void gui_popup_draw();
-void button_deallocate(struct Button *b);
-
-void click_gui_tool_button(void *type_ptr);
-
 #endif  /* GUI_H_ */

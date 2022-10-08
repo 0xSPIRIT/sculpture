@@ -14,6 +14,44 @@ void blob_hammer_init() {
     blob_hammer->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
 }
 
+void blob_hammer_update_texture() {
+    struct Blob_Hammer *blob_hammer = &gs->blob_hammer;
+    
+    SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
+    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_BLOB_HAMMER), SDL_BLENDMODE_BLEND);
+    
+    Assert(RenderTarget(RENDER_TARGET_BLOB_HAMMER));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_BLOB_HAMMER));
+
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
+    SDL_RenderClear(gs->renderer);
+
+    // Actually render
+    SDL_Rect dst = {
+        (int)blob_hammer->x - blob_hammer->w/2,
+        (int)blob_hammer->y - blob_hammer->h,
+        blob_hammer->w, blob_hammer->h
+    };
+
+    SDL_Point center = { blob_hammer->w/2, blob_hammer->h };
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+    if (blob_hammer->swing_direction == -1) {
+        flip = SDL_FLIP_HORIZONTAL;
+    }
+
+    int angle = (int)blob_hammer->angle;
+    while (angle < 0)
+        angle += 360;
+
+    SDL_RenderCopyEx(gs->renderer, blob_hammer->texture, NULL, &dst, angle, &center, flip);
+
+    // Update pixels & reset render target.
+    SDL_RenderReadPixels(gs->renderer, NULL, 0, blob_hammer->pixels, 4*gs->gw);
+
+    SDL_SetRenderTarget(gs->renderer, prev_target);
+}
+
 void blob_hammer_tick() {
     struct Blob_Hammer *blob_hammer = &gs->blob_hammer;
     struct Input *input = &gs->input;
@@ -127,44 +165,6 @@ void blob_hammer_tick() {
         blob_hammer->angle += blob_hammer->swing_direction;
         break;
     }
-}
-
-void blob_hammer_update_texture() {
-    struct Blob_Hammer *blob_hammer = &gs->blob_hammer;
-    
-    SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
-    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_BLOB_HAMMER), SDL_BLENDMODE_BLEND);
-    
-    Assert(RenderTarget(RENDER_TARGET_BLOB_HAMMER));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_BLOB_HAMMER));
-
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
-    SDL_RenderClear(gs->renderer);
-
-    // Actually render
-    SDL_Rect dst = {
-        (int)blob_hammer->x - blob_hammer->w/2,
-        (int)blob_hammer->y - blob_hammer->h,
-        blob_hammer->w, blob_hammer->h
-    };
-
-    SDL_Point center = { blob_hammer->w/2, blob_hammer->h };
-    SDL_RendererFlip flip = SDL_FLIP_NONE;
-
-    if (blob_hammer->swing_direction == -1) {
-        flip = SDL_FLIP_HORIZONTAL;
-    }
-
-    int angle = (int)blob_hammer->angle;
-    while (angle < 0)
-        angle += 360;
-
-    SDL_RenderCopyEx(gs->renderer, blob_hammer->texture, NULL, &dst, angle, &center, flip);
-
-    // Update pixels & reset render target.
-    SDL_RenderReadPixels(gs->renderer, NULL, 0, blob_hammer->pixels, 4*gs->gw);
-
-    SDL_SetRenderTarget(gs->renderer, prev_target);
 }
 
 void blob_hammer_draw() {

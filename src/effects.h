@@ -18,8 +18,8 @@ struct Effect {
     int particle_count;
 };
 
-void effect_set(int type);
-void effect_tick(struct Effect *effect);
-void effect_draw(struct Effect *effect);
+/* void effect_set(int type);
+ * void effect_tick(struct Effect *effect);
+ * void effect_draw(struct Effect *effect); */
 
 #endif // EFFECTS_H_

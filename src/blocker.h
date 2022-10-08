@@ -11,7 +11,4 @@ struct Blocker {
     Uint32 *pixels;
 };
 
-void blocker_tick();
-void blocker_draw();
-
 #endif // BLOCKER_H_

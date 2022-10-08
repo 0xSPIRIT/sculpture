@@ -32,9 +32,4 @@ struct Blob_Hammer {
     int blobs_touched_count;
 };
 
-void blob_hammer_init();
-void blob_hammer_tick();
-void blob_hammer_update_texture();
-void blob_hammer_draw();
-
 #endif  /* HAMMER_H_ */

@@ -35,15 +35,4 @@ struct Chisel {
     int highlight_count;
 };
 
-void chisel_hammer_init();
-void chisel_hammer_tick();
-void chisel_hammer_draw();
-
-void chisel_init(struct Chisel *type);
-void chisel_tick();
-void chisel_draw();
-Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len);
-
-void chisel_update_texture();
-
 #endif /* CHISEL_H_ */

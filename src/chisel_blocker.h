@@ -27,8 +27,4 @@ struct Chisel_Blocker {
     int side;
 };
 
-void chisel_blocker_init();
-void chisel_blocker_tick();
-void chisel_blocker_draw();
-
 #endif // CHISEL_BLOCKER_H

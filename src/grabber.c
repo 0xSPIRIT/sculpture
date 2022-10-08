@@ -29,11 +29,3 @@ void grabber_tick() {
         /*     save_state(); */
     }
 }
-
-void grabber_draw() {
-    /* const SDL_Rect dst = { */
-    /*     (int)grabber->x, (int)grabber->y, */
-    /*     grabber->w, grabber->h */
-    /* }; */
-    /* SDL_RenderCopy(gs->renderer, grabber->texture, NULL, &dst); */
-}

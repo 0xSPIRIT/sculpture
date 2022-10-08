@@ -10,8 +10,8 @@ struct Grabber {
     int object_holding;
 };
 
-void grabber_init();
-void grabber_tick();
-void grabber_draw();
+/* void grabber_init();
+ * void grabber_tick();
+ * void grabber_draw(); */
 
 #endif  /* GRABBER_H_ */

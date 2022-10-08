@@ -1,3 +1,205 @@
+//// Chisel Hammer
+
+void chisel_hammer_init() {
+    struct Chisel_Hammer *hammer = &gs->chisel_hammer;
+    struct Chisel *chisel = gs->chisel;
+
+    hammer->x = chisel->x;
+    hammer->y = chisel->y;
+    hammer->normal_dist = (f32) (chisel->w+4);
+    hammer->dist = hammer->normal_dist;
+    hammer->time = 0;
+    hammer->angle = 0;
+
+    hammer->texture = gs->textures.chisel_hammer;
+    SDL_QueryTexture(hammer->texture, NULL, NULL, &hammer->w, &hammer->h);
+}
+
+void chisel_hammer_tick() {
+    struct Chisel_Hammer *hammer = &gs->chisel_hammer;
+    struct Input *input = &gs->input;
+    struct Chisel *chisel = gs->chisel;
+
+    hammer->angle = chisel->angle;
+
+    f32 rad = (hammer->angle) / 360.f;
+    rad *= 2 * (f32)M_PI;
+
+    const f32 off = 6;
+
+    int dir = 1;
+
+    if (hammer->angle > 90 && hammer->angle < 270) {
+        dir = -1;
+    }
+    
+    hammer->x = chisel->x + hammer->dist * cosf(rad) - dir * off * sinf(rad);
+    hammer->y = chisel->y + hammer->dist * sinf(rad) + dir * off * cosf(rad);
+
+    const int stop = 24;
+    
+    switch (hammer->state) {
+    case HAMMER_STATE_WINDUP:
+        hammer->time++;
+        if (hammer->time < 3) {
+            hammer->dist += hammer->time * 4;
+        } else {
+            hammer->time = 0;
+            hammer->state = HAMMER_STATE_SWING;
+        }
+        break;
+    case HAMMER_STATE_SWING:
+        hammer->dist -= 8;
+        if (hammer->dist < stop) {
+            hammer->dist = (f32) stop;
+            // Activate the chisel.
+            if (chisel->click_cooldown == 0) {
+                chisel->click_cooldown = CHISEL_COOLDOWN;
+                chisel->spd = 3.;
+            }
+            chisel->did_remove = false;
+            hammer->state = HAMMER_STATE_IDLE;
+        }
+        break;
+    case HAMMER_STATE_IDLE:
+        hammer->dist = hammer->normal_dist;
+        if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
+            hammer->state = HAMMER_STATE_WINDUP;
+            save_state_to_next();
+        }
+        break;
+    }
+}
+
+//// Chisel
+
+// if remove, delete the blob
+// else, highlight it and don't change anything about the chisel's state.
+// ux, uy = unit vector for the direction of chisel.
+// px, py = initial positions.
+// Returns the blob it reaches only if remove == 0.
+Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
+    struct Chisel *chisel = gs->chisel;
+    struct Object *objects = gs->objects;
+    Uint32 *curr_blobs = objects[gs->object_current].blob_data[chisel->size].blobs;
+
+    bool did_hit_blocker = false;
+    f32 px = chisel->x, py = chisel->y;
+
+    if (gs->object_current == -1) return 0;
+
+    f32 current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
+
+    while (current_length < len) {
+        // If we hit the chisel blocker, keep that in mind for later.
+
+        struct Chisel_Blocker *cb = &gs->chisel_blocker;
+        if (gs->current_tool == TOOL_CHISEL_MEDIUM &&
+            cb->state != CHISEL_BLOCKER_OFF &&
+            cb->pixels[(int)chisel->x + ((int)chisel->y)*gs->gw] != cb->side)
+            {
+                did_hit_blocker = true;
+            }
+
+        // If we come into contact with a cell, locate its blob
+        // then remove it. We only remove one blob per chisel,
+        // so we stop our speed right here.
+        Uint32 b = curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw];
+
+        if (b > 0 && !remove) {
+            if (gs->grid[(int)chisel->x + (int)chisel->y*gs->gw].type == 0) b = -1;
+            return b;
+        } else if (remove && b > 0 && !chisel->did_remove) {
+            // We want to attempt to destroy this blob now.
+            // Firstly, we want to do a diagonal check.
+            
+            //      /       
+            //   xx/    xxx/
+            //   xxx    xx/x
+            //   xxx    xxxxx
+
+            //  ^ This is what we want to prevent.
+
+            if (chisel->size != TOOL_CHISEL_SMALL || number_direct_neighbours(gs->grid, (int)chisel->x, (int)chisel->y) < 4) {
+                // We continue at our current direction until we reach
+                // another blob, then backtrack one.
+                while (curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw] == b) {
+                    chisel->x += ux;
+                    chisel->y += uy;
+                }
+
+                chisel->x -= ux;
+                chisel->y -= uy;
+
+                if (blob_can_destroy(gs->object_current, chisel->size, b)) {
+                    object_remove_blob(gs->object_current, b, chisel->size, true);
+
+                    move_mouse_to_grid_position(chisel->x, chisel->y);
+                    chisel->did_remove = true;
+                }
+
+                chisel->click_cooldown = CHISEL_COOLDOWN-CHISEL_TIME-1;
+            }
+
+            break;
+        }
+
+        chisel->x += ux;
+        chisel->y += uy;
+
+        current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
+    }
+
+    Uint32 b = curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw];
+    if (!remove) {
+        if (gs->grid[(int)chisel->x + (int)chisel->y*gs->gw].type == 0) b = -1;
+        return b;
+    }
+
+    // remove=true from here on out.
+
+    // Do a last-ditch effort if a blob is around a certain radius in order for the player
+    // not to feel frustrated if it's a small blob or it's one pixel away.
+    if (did_hit_blocker || (CHISEL_FORGIVING_AIM && !chisel->did_remove)) {
+        const int r = 1;
+        for (int y = -r; y <= r; y++) {
+            for (int x = -r; x <= r; x++) {
+                if (x*x + y*y > r*r) continue;
+                int xx = (int)chisel->x + x;
+                int yy = (int)chisel->y + y;
+                Uint32 blob = curr_blobs[xx+yy*gs->gw];
+
+                if (blob > 0) {
+                    object_remove_blob(gs->object_current, blob, chisel->size, true);
+                    chisel->did_remove = true;
+                    goto chisel_did_remove;
+                }
+            }
+        }
+    }
+
+ chisel_did_remove:
+    if (chisel->did_remove) {
+        objects_reevaluate();
+        // Here, we check for all the small objects that pop up from repeated
+        // chiseling that make chiseling an annoyance. We convert that to
+        // dust particles in order to get out of the player's way.
+        
+        bool did_remove = false;
+        for (int i = 0; i < gs->object_count; i++) {
+            if (objects[i].cell_count <= 4) {
+                convert_object_to_dust(i);
+                did_remove = true;
+            }
+        }
+        if (did_remove) {
+            objects_reevaluate();
+        }
+    }
+
+    return 0;
+}
+
 void chisel_init(struct Chisel *type) {
     struct Chisel *chisel = NULL;
     
@@ -40,6 +242,103 @@ void chisel_init(struct Chisel *type) {
     chisel->highlight_count = 0;
 
     chisel->spd = 3.;
+}
+
+void chisel_hammer_draw() {
+    struct Chisel_Hammer *hammer = &gs->chisel_hammer;
+
+    const SDL_Rect dst = {
+        (int)hammer->x, (int)(hammer->y - hammer->h/2),
+        hammer->w, hammer->h
+    };
+    const SDL_Point center = { 0, hammer->h/2 };
+
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+    if (hammer->angle > 90 && hammer->angle < 270) {
+        flip = SDL_FLIP_VERTICAL;
+    }
+
+    SDL_RenderCopyEx(gs->renderer, hammer->texture, NULL, &dst, hammer->angle, &center, flip);
+}
+void chisel_update_texture() {
+    struct Chisel *chisel = gs->chisel;
+
+    SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
+    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL), SDL_BLENDMODE_BLEND);
+    
+    Assert(RenderTarget(RENDER_TARGET_CHISEL));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_CHISEL));
+
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
+    SDL_RenderClear(gs->renderer);
+    
+    int x = (int)chisel->x;
+    int y = (int)chisel->y;
+
+    // Disgusting hardcoding to adjust the weird rotation SDL does.
+    // TODO: Clean this up.
+    if (!chisel->face_mode) {
+        if (chisel->size == 0 || chisel->size == 1) {
+            if (chisel->angle == 225) {
+                x++;
+                y += 2;
+            } else if (chisel->angle == 180) {
+                x++;
+                y++;
+            } else if (chisel->angle == 90 || chisel->angle == 45) {
+                x++;
+            } else if (chisel->angle == 135) {
+                x += 2;
+            }
+        } else {
+            if (chisel->angle == 0) {
+                y--;
+            } else if (chisel->angle == 270) {
+                y++;
+                x--;
+            } else if (chisel->angle == 225) {
+                y += 2;
+            } else if (chisel->angle == 180) {
+                x++;
+                y += 2;
+            } else if (chisel->angle == 90) {
+                x += 2;
+            } else if (chisel->angle == 45) {
+                y -= 2;
+            } else if (chisel->angle == 135) {
+                x += 2;
+                y++;
+            } else if (chisel->angle == 315) {
+                x--;
+            }
+        }
+    }
+
+    const SDL_Rect dst = {
+        x, y - chisel->h/2,
+        chisel->w, chisel->h
+    };
+    const SDL_Point center = { 0, chisel->h/2 };
+
+    SDL_RenderCopyEx(gs->renderer, chisel->texture, NULL, &dst, chisel->angle, &center, SDL_FLIP_NONE);
+
+    chisel_hammer_draw();
+
+    if (!chisel->face_mode) {
+        SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
+        SDL_RenderDrawPoint(gs->renderer, (int)chisel->x, (int)chisel->y);
+    }
+
+    // PROBLEM AREA!
+    int w, h;
+
+    SDL_QueryTexture(RenderTarget(RENDER_TARGET_CHISEL), NULL, NULL, &w, &h);
+    Assert(w == gs->gw && h == gs->gh);
+    
+    SDL_RenderReadPixels(gs->renderer, NULL, 0, chisel->pixels, 4*gs->gw);
+
+    SDL_SetRenderTarget(gs->renderer, prev_target);
 }
 
 void chisel_set_depth() {
@@ -200,87 +499,8 @@ void chisel_tick() {
             chisel->y = (f32) (index/gs->gw);
         }
     }
+
     chisel_hammer_tick();
-}
-
-void chisel_update_texture() {
-    struct Chisel *chisel = gs->chisel;
-
-    SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
-    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL), SDL_BLENDMODE_BLEND);
-    
-    Assert(RenderTarget(RENDER_TARGET_CHISEL));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_CHISEL));
-
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
-    SDL_RenderClear(gs->renderer);
-    
-    int x = (int)chisel->x;
-    int y = (int)chisel->y;
-
-    // Disgusting hardcoding to adjust the weird rotation SDL does.
-    // TODO: Clean this up.
-    if (!chisel->face_mode) {
-        if (chisel->size == 0 || chisel->size == 1) {
-            if (chisel->angle == 225) {
-                x++;
-                y += 2;
-            } else if (chisel->angle == 180) {
-                x++;
-                y++;
-            } else if (chisel->angle == 90 || chisel->angle == 45) {
-                x++;
-            } else if (chisel->angle == 135) {
-                x += 2;
-            }
-        } else {
-            if (chisel->angle == 0) {
-                y--;
-            } else if (chisel->angle == 270) {
-                y++;
-                x--;
-            } else if (chisel->angle == 225) {
-                y += 2;
-            } else if (chisel->angle == 180) {
-                x++;
-                y += 2;
-            } else if (chisel->angle == 90) {
-                x += 2;
-            } else if (chisel->angle == 45) {
-                y -= 2;
-            } else if (chisel->angle == 135) {
-                x += 2;
-                y++;
-            } else if (chisel->angle == 315) {
-                x--;
-            }
-        }
-    }
-
-    const SDL_Rect dst = {
-        x, y - chisel->h/2,
-        chisel->w, chisel->h
-    };
-    const SDL_Point center = { 0, chisel->h/2 };
-
-    SDL_RenderCopyEx(gs->renderer, chisel->texture, NULL, &dst, chisel->angle, &center, SDL_FLIP_NONE);
-
-    chisel_hammer_draw();
-
-    if (!chisel->face_mode) {
-        SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
-        SDL_RenderDrawPoint(gs->renderer, (int)chisel->x, (int)chisel->y);
-    }
-
-    // PROBLEM AREA!
-    int w, h;
-
-    SDL_QueryTexture(RenderTarget(RENDER_TARGET_CHISEL), NULL, NULL, &w, &h);
-    Assert(w == gs->gw && h == gs->gh);
-    
-    SDL_RenderReadPixels(gs->renderer, NULL, 0, chisel->pixels, 4*gs->gw);
-
-    SDL_SetRenderTarget(gs->renderer, prev_target);
 }
 
 void chisel_draw() {
@@ -298,218 +518,3 @@ void chisel_draw() {
     }
 }
 
-// if remove, delete the blob
-// else, highlight it and don't change anything about the chisel's state.
-// ux, uy = unit vector for the direction of chisel.
-// px, py = initial positions.
-// Returns the blob it reaches only if remove == 0.
-Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
-    struct Chisel *chisel = gs->chisel;
-    struct Object *objects = gs->objects;
-    Uint32 *curr_blobs = objects[gs->object_current].blob_data[chisel->size].blobs;
-
-    bool did_hit_blocker = false;
-    f32 px = chisel->x, py = chisel->y;
-
-    if (gs->object_current == -1) return 0;
-
-    f32 current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
-
-    while (current_length < len) {
-        // If we hit the chisel blocker, keep that in mind for later.
-
-        struct Chisel_Blocker *cb = &gs->chisel_blocker;
-        if (gs->current_tool == TOOL_CHISEL_MEDIUM &&
-            cb->state != CHISEL_BLOCKER_OFF &&
-            cb->pixels[(int)chisel->x + ((int)chisel->y)*gs->gw] != cb->side)
-            {
-                did_hit_blocker = true;
-            }
-
-        // If we come into contact with a cell, locate its blob
-        // then remove it. We only remove one blob per chisel,
-        // so we stop our speed right here.
-        Uint32 b = curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw];
-
-        if (b > 0 && !remove) {
-            if (gs->grid[(int)chisel->x + (int)chisel->y*gs->gw].type == 0) b = -1;
-            return b;
-        } else if (remove && b > 0 && !chisel->did_remove) {
-            // We want to attempt to destroy this blob now.
-            // Firstly, we want to do a diagonal check.
-            
-            //      /       
-            //   xx/    xxx/
-            //   xxx    xx/x
-            //   xxx    xxxxx
-
-            //  ^ This is what we want to prevent.
-
-            if (chisel->size != TOOL_CHISEL_SMALL || number_direct_neighbours(gs->grid, (int)chisel->x, (int)chisel->y) < 4) {
-                // We continue at our current direction until we reach
-                // another blob, then backtrack one.
-                while (curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw] == b) {
-                    chisel->x += ux;
-                    chisel->y += uy;
-                }
-
-                chisel->x -= ux;
-                chisel->y -= uy;
-
-                if (blob_can_destroy(gs->object_current, chisel->size, b)) {
-                    object_remove_blob(gs->object_current, b, chisel->size, true);
-
-                    move_mouse_to_grid_position(chisel->x, chisel->y);
-                    chisel->did_remove = true;
-                }
-
-                chisel->click_cooldown = CHISEL_COOLDOWN-CHISEL_TIME-1;
-            }
-
-            break;
-        }
-
-        chisel->x += ux;
-        chisel->y += uy;
-
-        current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
-    }
-
-    Uint32 b = curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw];
-    if (!remove) {
-        if (gs->grid[(int)chisel->x + (int)chisel->y*gs->gw].type == 0) b = -1;
-        return b;
-    }
-
-    // remove=true from here on out.
-
-    // Do a last-ditch effort if a blob is around a certain radius in order for the player
-    // not to feel frustrated if it's a small blob or it's one pixel away.
-    if (did_hit_blocker || (CHISEL_FORGIVING_AIM && !chisel->did_remove)) {
-        const int r = 1;
-        for (int y = -r; y <= r; y++) {
-            for (int x = -r; x <= r; x++) {
-                if (x*x + y*y > r*r) continue;
-                int xx = (int)chisel->x + x;
-                int yy = (int)chisel->y + y;
-                Uint32 blob = curr_blobs[xx+yy*gs->gw];
-
-                if (blob > 0) {
-                    object_remove_blob(gs->object_current, blob, chisel->size, true);
-                    chisel->did_remove = true;
-                    goto chisel_did_remove;
-                }
-            }
-        }
-    }
-
- chisel_did_remove:
-    if (chisel->did_remove) {
-        objects_reevaluate();
-        // Here, we check for all the small objects that pop up from repeated
-        // chiseling that make chiseling an annoyance. We convert that to
-        // dust particles in order to get out of the player's way.
-        
-        bool did_remove = false;
-        for (int i = 0; i < gs->object_count; i++) {
-            if (objects[i].cell_count <= 4) {
-                convert_object_to_dust(i);
-                did_remove = true;
-            }
-        }
-        if (did_remove) {
-            objects_reevaluate();
-        }
-    }
-
-    return 0;
-}
-
-void chisel_hammer_init() {
-    struct Chisel_Hammer *hammer = &gs->chisel_hammer;
-    struct Chisel *chisel = gs->chisel;
-
-    hammer->x = chisel->x;
-    hammer->y = chisel->y;
-    hammer->normal_dist = (f32) (chisel->w+4);
-    hammer->dist = hammer->normal_dist;
-    hammer->time = 0;
-    hammer->angle = 0;
-
-    hammer->texture = gs->textures.chisel_hammer;
-    SDL_QueryTexture(hammer->texture, NULL, NULL, &hammer->w, &hammer->h);
-}
-
-void chisel_hammer_tick() {
-    struct Chisel_Hammer *hammer = &gs->chisel_hammer;
-    struct Input *input = &gs->input;
-    struct Chisel *chisel = gs->chisel;
-
-    hammer->angle = chisel->angle;
-
-    f32 rad = (hammer->angle) / 360.f;
-    rad *= 2 * (f32)M_PI;
-
-    const f32 off = 6;
-
-    int dir = 1;
-
-    if (hammer->angle > 90 && hammer->angle < 270) {
-        dir = -1;
-    }
-    
-    hammer->x = chisel->x + hammer->dist * cosf(rad) - dir * off * sinf(rad);
-    hammer->y = chisel->y + hammer->dist * sinf(rad) + dir * off * cosf(rad);
-
-    const int stop = 24;
-    
-    switch (hammer->state) {
-    case HAMMER_STATE_WINDUP:
-        hammer->time++;
-        if (hammer->time < 3) {
-            hammer->dist += hammer->time * 4;
-        } else {
-            hammer->time = 0;
-            hammer->state = HAMMER_STATE_SWING;
-        }
-        break;
-    case HAMMER_STATE_SWING:
-        hammer->dist -= 8;
-        if (hammer->dist < stop) {
-            hammer->dist = (f32) stop;
-            // Activate the chisel.
-            if (chisel->click_cooldown == 0) {
-                chisel->click_cooldown = CHISEL_COOLDOWN;
-                chisel->spd = 3.;
-            }
-            chisel->did_remove = false;
-            hammer->state = HAMMER_STATE_IDLE;
-        }
-        break;
-    case HAMMER_STATE_IDLE:
-        hammer->dist = hammer->normal_dist;
-        if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
-            hammer->state = HAMMER_STATE_WINDUP;
-            save_state_to_next();
-        }
-        break;
-    }
-}
-
-void chisel_hammer_draw() {
-    struct Chisel_Hammer *hammer = &gs->chisel_hammer;
-
-    const SDL_Rect dst = {
-        (int)hammer->x, (int)(hammer->y - hammer->h/2),
-        hammer->w, hammer->h
-    };
-    const SDL_Point center = { 0, hammer->h/2 };
-
-    SDL_RendererFlip flip = SDL_FLIP_NONE;
-
-    if (hammer->angle > 90 && hammer->angle < 270) {
-        flip = SDL_FLIP_VERTICAL;
-    }
-
-    SDL_RenderCopyEx(gs->renderer, hammer->texture, NULL, &dst, hammer->angle, &center, flip);
-}

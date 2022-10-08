@@ -18,7 +18,9 @@
 #include <time.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "typedefs.h"
 #include "blob_hammer.h"
@@ -37,7 +39,6 @@
 #include "blocker.h"
 #include "assets.h"
 #include "undo.h"
-#include "util.h"
 #include "cursor.h"
 #include "converter.h"
 

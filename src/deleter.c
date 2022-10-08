@@ -11,7 +11,7 @@ void deleter_init() {
     SDL_QueryTexture(deleter->texture, NULL, NULL, &deleter->w, &deleter->h);
 }
 
-static void take_point() {
+void take_point() {
     struct Deleter *deleter = &gs->deleter;
 
     if (deleter->point_count == POINT_COUNT-1) {
@@ -24,36 +24,6 @@ static void take_point() {
     if (0 != memcmp(&mouse, &deleter->points[deleter->point_count-1], sizeof(SDL_Point))) {
         deleter->points[deleter->point_count++] = mouse;
     }
-}
-
-void deleter_tick() {
-    struct Deleter *deleter = &gs->deleter;
-    struct Input *input = &gs->input;
-
-    bool p_active = deleter->active;
-
-    deleter->x = (f32) input->mx;
-    deleter->y = (f32) input->my;
-
-    if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
-        deleter->active = true;
-    } else if (!(input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
-        deleter->active = false;
-    }
-
-    if (deleter->active) {
-        if (!gs->input.keys[SDL_SCANCODE_LSHIFT] && (!p_active || gs->frames % 2 == 0)) {
-            take_point();
-        } else if (gs->input.keys_pressed[SDL_SCANCODE_LSHIFT]) {
-            take_point();
-        } else if (gs->input.keys[SDL_SCANCODE_LSHIFT]) {
-            deleter->points[deleter->point_count-1].x = (int) deleter->x;
-        }
-    } else if (deleter->was_active) {
-        deleter_stop(false);
-    }
-
-    deleter->was_active = deleter->active;
 }
 
 // A special number marking a pixel as marked in deleter->pixels.
@@ -75,7 +45,6 @@ void deleter_fill_neighbours(int x, int y) {
     deleter_fill_neighbours(x, y+1);
     deleter_fill_neighbours(x, y-1);
 }
-
 
 void deleter_flood_fill() {
     struct Deleter *deleter = &gs->deleter;
@@ -126,6 +95,36 @@ void deleter_stop(bool cancel) {
 
     if (cancel)
         deleter->was_active = false; // To prevent deletion the second time around if you cancel.
+}
+
+void deleter_tick() {
+    struct Deleter *deleter = &gs->deleter;
+    struct Input *input = &gs->input;
+
+    bool p_active = deleter->active;
+
+    deleter->x = (f32) input->mx;
+    deleter->y = (f32) input->my;
+
+    if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
+        deleter->active = true;
+    } else if (!(input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
+        deleter->active = false;
+    }
+
+    if (deleter->active) {
+        if (!gs->input.keys[SDL_SCANCODE_LSHIFT] && (!p_active || gs->frames % 2 == 0)) {
+            take_point();
+        } else if (gs->input.keys_pressed[SDL_SCANCODE_LSHIFT]) {
+            take_point();
+        } else if (gs->input.keys[SDL_SCANCODE_LSHIFT]) {
+            deleter->points[deleter->point_count-1].x = (int) deleter->x;
+        }
+    } else if (deleter->was_active) {
+        deleter_stop(false);
+    }
+
+    deleter->was_active = deleter->active;
 }
 
 void deleter_draw() {

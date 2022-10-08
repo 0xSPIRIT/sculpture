@@ -11,9 +11,4 @@ struct Knife {
     Uint32 *pixels;
 };
 
-void knife_init();
-void knife_tick();
-void knife_update_texture();
-void knife_draw();
-
 #endif  /* KNIFE_H_ */

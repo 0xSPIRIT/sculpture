@@ -1,3 +1,98 @@
+Uint8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
+    // Type              R    G    B
+    CELL_NONE,            0,   0,   0,
+    CELL_DIRT,          200,   0,   0,
+    CELL_SAND,          255, 255,   0,
+
+    CELL_WATER,           0,   0, 255,
+    CELL_ICE,           188, 255, 255,
+    CELL_STEAM,         225, 225, 225,
+
+    CELL_WOOD_LOG,      128,  80,   0,
+    CELL_WOOD_PLANK,    200,  80,   0,
+
+    CELL_COBBLESTONE,   128, 128, 128,
+    CELL_MARBLE,        255, 255, 255,
+    CELL_SANDSTONE,     255, 128,   0,
+
+    CELL_CEMENT,        130, 130, 130,
+    CELL_CONCRETE,      140, 140, 140,
+
+    CELL_QUARTZ,        200, 200, 200,
+    CELL_GLASS,         180, 180, 180,
+
+    CELL_GRANITE,       132, 158, 183,
+    CELL_BASALT,         32,  32,  32,
+    CELL_DIAMOND,       150, 200, 200,
+
+    CELL_UNREFINED_COAL, 50,  50,  50,
+    CELL_REFINED_COAL,   70,  70,  70,
+    CELL_LAVA,          255,   0,   0,
+
+    CELL_SMOKE,         170, 170, 170,
+    CELL_DUST,          150, 150, 150
+};
+
+// Image must be formatted as Uint32 RGBA.
+// Gets cells based on pixels in the image.
+//
+// path - path to the image
+// out  - pointer to array of Cells (it's allocated in this function)
+// source_cells - pointer to a bunch of source cells (NULL if don't want). Must not be heap allocated.
+// out_source_cell_count - Pointer to the cell count. Updates in this func.
+// out_w & out_h - width and height of the image.
+void level_get_cells_from_image(const char *path, struct Cell **out, struct Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h) {
+    SDL_Surface *surface = IMG_Load(path);
+    Assert(surface);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surface);
+    Assert(texture);
+
+    int w = surface->w;
+    int h = surface->h;
+
+    *out_w = w;
+    *out_h = h;
+
+    *out = arena_alloc(gs->persistent_memory, w*h, sizeof(struct Cell));
+
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            Uint8 r, g, b;
+
+            Uint32 pixel = ((Uint32*)surface->pixels)[x+y*w];
+            SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+
+            int cell = 0;
+
+            if (r == 255 && g == 0 && b == 0) {
+                struct Source_Cell *s = &source_cells[(*out_source_cell_count)++];
+                s->x = x;
+                s->y = y;
+                s->type = CELL_STEAM;
+            } else {
+                for (int i = 0; i < CELL_TYPE_COUNT; i++) {
+                    SDL_Color c = {
+                        type_to_rgb_table[i*4 + 1],
+                        type_to_rgb_table[i*4 + 2],
+                        type_to_rgb_table[i*4 + 3],
+                        255
+                    };
+                        
+                    if (r == c.r && g == c.g && b == c.b) {
+                        cell = i;
+                        break;
+                    }
+                }
+            }
+
+            (*out)[x+y*w].type = cell;
+        }
+    }
+
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}
+
 int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
     struct Level *level = &gs->levels[gs->level_count++];
     level->index = gs->level_count-1;
@@ -75,15 +170,6 @@ void levels_setup() {
               EFFECT_NONE);
 }
 
-void goto_level_string_hook(const char *string) {
-    int lvl = atoi(string) - 1;
-
-    if (lvl < 0) return;
-    if (lvl >= LEVEL_COUNT) return;
-
-    goto_level(lvl);
-}
-
 void goto_level(int lvl) {
     gs->level_current = lvl;
 
@@ -114,6 +200,15 @@ void goto_level(int lvl) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         gs->grid[i].type = gs->levels[lvl].desired_grid[i].type;
     }
+}
+
+void goto_level_string_hook(const char *string) {
+    int lvl = atoi(string) - 1;
+
+    if (lvl < 0) return;
+    if (lvl >= LEVEL_COUNT) return;
+
+    goto_level(lvl);
 }
 
 void level_tick() {
@@ -220,6 +315,40 @@ void level_tick() {
     }
 }
 
+void level_draw_intro() {
+    struct Level *level = &gs->levels[gs->level_current];
+
+    Assert(RenderTarget(RENDER_TARGET_GLOBAL));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
+        
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+    SDL_RenderClear(gs->renderer);
+
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            if (level->desired_grid[x+y*gs->gw].type == 0) continue;
+            SDL_Color col = pixel_from_index(level->desired_grid, x+y*gs->gw);
+            SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, 255);
+            SDL_RenderDrawPoint(gs->renderer, x, y);
+        }
+    }
+
+    SDL_SetRenderTarget(gs->renderer, NULL);
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, NULL);
+
+    char name[256] = {0};
+    sprintf(name, "Level %d: %s", level->index+1, level->name);
+
+    SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_title, name, (SDL_Color){255,255,255,255});
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
+    SDL_Rect dst = {
+        gs->S*gs->gw/2 - surf->w/2, gs->S*gs->gh/2 - surf->h/2,
+        surf->w, surf->h
+    };
+    SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
+    SDL_FreeSurface(surf);
+}
+
 void level_draw() {
     struct Level *level = &gs->levels[gs->level_current];
 
@@ -256,9 +385,6 @@ void level_draw() {
         case TOOL_PLACER:
             if (!gs->gui.popup) // When gui.popup = true, we draw in converter.c
                 placer_draw(&gs->placers[gs->current_placer], false);
-            break;
-        case TOOL_GRABBER:
-            grabber_draw();
             break;
         }
 
@@ -349,135 +475,6 @@ void level_draw() {
                   NULL,
                   NULL);
     }
-}
-
-void level_draw_intro() {
-    struct Level *level = &gs->levels[gs->level_current];
-
-    Assert(RenderTarget(RENDER_TARGET_GLOBAL));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
-        
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-    SDL_RenderClear(gs->renderer);
-
-    for (int y = 0; y < gs->gh; y++) {
-        for (int x = 0; x < gs->gw; x++) {
-            if (level->desired_grid[x+y*gs->gw].type == 0) continue;
-            SDL_Color col = pixel_from_index(level->desired_grid, x+y*gs->gw);
-            SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, 255);
-            SDL_RenderDrawPoint(gs->renderer, x, y);
-        }
-    }
-
-    SDL_SetRenderTarget(gs->renderer, NULL);
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, NULL);
-
-    char name[256] = {0};
-    sprintf(name, "Level %d: %s", level->index+1, level->name);
-
-    SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_title, name, (SDL_Color){255,255,255,255});
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-    SDL_Rect dst = {
-        gs->S*gs->gw/2 - surf->w/2, gs->S*gs->gh/2 - surf->h/2,
-        surf->w, surf->h
-    };
-    SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
-    SDL_FreeSurface(surf);
-}
-
-Uint8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
-    // Type              R    G    B
-    CELL_NONE,            0,   0,   0,
-    CELL_DIRT,          200,   0,   0,
-    CELL_SAND,          255, 255,   0,
-
-    CELL_WATER,           0,   0, 255,
-    CELL_ICE,           188, 255, 255,
-    CELL_STEAM,         225, 225, 225,
-
-    CELL_WOOD_LOG,      128,  80,   0,
-    CELL_WOOD_PLANK,    200,  80,   0,
-
-    CELL_COBBLESTONE,   128, 128, 128,
-    CELL_MARBLE,        255, 255, 255,
-    CELL_SANDSTONE,     255, 128,   0,
-
-    CELL_CEMENT,        130, 130, 130,
-    CELL_CONCRETE,      140, 140, 140,
-
-    CELL_QUARTZ,        200, 200, 200,
-    CELL_GLASS,         180, 180, 180,
-
-    CELL_GRANITE,       132, 158, 183,
-    CELL_BASALT,         32,  32,  32,
-    CELL_DIAMOND,       150, 200, 200,
-
-    CELL_UNREFINED_COAL, 50,  50,  50,
-    CELL_REFINED_COAL,   70,  70,  70,
-    CELL_LAVA,          255,   0,   0,
-
-    CELL_SMOKE,         170, 170, 170,
-    CELL_DUST,          150, 150, 150
-};
-
-// Image must be formatted as Uint32 RGBA.
-// Gets cells based on pixels in the image.
-//
-// path - path to the image
-// out  - pointer to array of Cells (it's allocated in this function)
-// source_cells - pointer to a bunch of source cells (NULL if don't want). Must not be heap allocated.
-// out_source_cell_count - Pointer to the cell count. Updates in this func.
-// out_w & out_h - width and height of the image.
-void level_get_cells_from_image(const char *path, struct Cell **out, struct Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h) {
-    SDL_Surface *surface = IMG_Load(path);
-    Assert(surface);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surface);
-    Assert(texture);
-
-    int w = surface->w;
-    int h = surface->h;
-
-    *out_w = w;
-    *out_h = h;
-
-    *out = arena_alloc(gs->persistent_memory, w*h, sizeof(struct Cell));
-
-    for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            Uint8 r, g, b;
-
-            Uint32 pixel = ((Uint32*)surface->pixels)[x+y*w];
-            SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-
-            int cell = 0;
-
-            if (r == 255 && g == 0 && b == 0) {
-                struct Source_Cell *s = &source_cells[(*out_source_cell_count)++];
-                s->x = x;
-                s->y = y;
-                s->type = CELL_STEAM;
-            } else {
-                for (int i = 0; i < CELL_TYPE_COUNT; i++) {
-                    SDL_Color c = {
-                        type_to_rgb_table[i*4 + 1],
-                        type_to_rgb_table[i*4 + 2],
-                        type_to_rgb_table[i*4 + 3],
-                        255
-                    };
-                        
-                    if (r == c.r && g == c.g && b == c.b) {
-                        cell = i;
-                        break;
-                    }
-                }
-            }
-
-            (*out)[x+y*w].type = cell;
-        }
-    }
-
-    SDL_FreeSurface(surface);
-    SDL_DestroyTexture(texture);
 }
 
 SDL_Color type_to_rgb(int type) {

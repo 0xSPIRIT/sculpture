@@ -11,6 +11,38 @@ void knife_init() {
     knife->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
 }
 
+void knife_update_texture() {
+    struct Knife *knife = &gs->knife;
+
+    SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
+    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_KNIFE), SDL_BLENDMODE_BLEND);
+    
+    Assert(RenderTarget(RENDER_TARGET_KNIFE));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_KNIFE));
+
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
+    SDL_RenderClear(gs->renderer);
+    
+    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+    
+    const SDL_Rect dst = {
+        (int) knife->x, (int) (knife->y - knife->h/2),
+        knife->w, knife->h
+    };
+    const SDL_Point center = { 0, knife->h/2 };
+
+    SDL_RenderCopyEx(gs->renderer, knife->texture, NULL, &dst, knife->angle, &center, SDL_FLIP_NONE);
+
+    SDL_RenderReadPixels(gs->renderer, NULL, 0, knife->pixels, 4*gs->gw);
+
+    SDL_SetRenderTarget(gs->renderer, prev_target);
+}
+
+void knife_draw() {
+    knife_update_texture();
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_KNIFE), NULL, NULL);
+}
+
 void knife_tick() {
     struct Knife *knife = &gs->knife;
     struct Input *input = &gs->input;
@@ -59,36 +91,4 @@ void knife_tick() {
         knife->x = (f32)knife->x;
         knife->y = (f32)knife->y;
     }
-}
-
-void knife_update_texture() {
-    struct Knife *knife = &gs->knife;
-
-    SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
-    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_KNIFE), SDL_BLENDMODE_BLEND);
-    
-    Assert(RenderTarget(RENDER_TARGET_KNIFE));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_KNIFE));
-
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
-    SDL_RenderClear(gs->renderer);
-    
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
-    
-    const SDL_Rect dst = {
-        (int) knife->x, (int) (knife->y - knife->h/2),
-        knife->w, knife->h
-    };
-    const SDL_Point center = { 0, knife->h/2 };
-
-    SDL_RenderCopyEx(gs->renderer, knife->texture, NULL, &dst, knife->angle, &center, SDL_FLIP_NONE);
-
-    SDL_RenderReadPixels(gs->renderer, NULL, 0, knife->pixels, 4*gs->gw);
-
-    SDL_SetRenderTarget(gs->renderer, prev_target);
-}
-
-void knife_draw() {
-    knife_update_texture();
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_KNIFE), NULL, NULL);
 }
