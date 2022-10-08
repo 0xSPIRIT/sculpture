@@ -1,9 +1,6 @@
 #ifndef CHISEL_H_
 #define CHISEL_H_
 
-#include <stdbool.h>
-#include <SDL2/SDL.h>
-
 #define CHISEL_TIME 0 /* The amount of frames the chisel moves. 0 = instant */
 #define CHISEL_COOLDOWN 3
 #define CHISEL_FORGIVING_AIM false // Do we check for surrounding cells?

@@ -1,13 +1,3 @@
-#include "chisel_blocker.h"
-
-#include <math.h>
-
-#include "grid.h"
-
-#include "util.h"
-#include "cursor.h"
-#include "game.h"
-
 void chisel_blocker_init() {
     struct Chisel_Blocker *chisel_blocker = &gs->chisel_blocker;
 
@@ -25,7 +15,7 @@ void chisel_blocker_init() {
     chisel_blocker->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
 }
 
-internal void flood_fill(Uint32 *pixels, int x, int y, Uint32 value) {
+void flood_fill(Uint32 *pixels, int x, int y, Uint32 value) {
     if (x < 0 || y < 0 || x >= gs->gw || y >= gs->gh || pixels[x+y*gs->gw] != 0) {
         return;
     }
@@ -138,7 +128,7 @@ void chisel_blocker_tick() {
 
 // Finds tangent at point in cubic bezier curve.
 // abcd = P0, P1, P2, P3
-internal SDL_FPoint bezier_tangent(f32 t, SDL_Point a, SDL_Point b, SDL_Point c, SDL_Point d) {
+SDL_FPoint bezier_tangent(f32 t, SDL_Point a, SDL_Point b, SDL_Point c, SDL_Point d) {
     // To do this, we find the derivative.
 
     // Original bezier:

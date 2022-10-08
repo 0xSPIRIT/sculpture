@@ -12,11 +12,6 @@
 #define GRAV 0.5
 #define MAX_GRAV 4
 
-#include <stdbool.h>
-#include <SDL2/SDL.h>
-
-#include "typedefs.h"
-
 enum Tool_Type {
     TOOL_CHISEL_SMALL,
     TOOL_CHISEL_MEDIUM,

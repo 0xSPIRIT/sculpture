@@ -1,9 +1,3 @@
-#include "undo.h"
-
-#include <stdio.h>
-
-#include "game.h"
-
 void undo_system_init() {
     gs->start_state = arena_alloc(gs->persistent_memory, 1, sizeof(struct Save_State));
     gs->current_state = gs->start_state;

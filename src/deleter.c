@@ -1,8 +1,3 @@
-#include "deleter.h"
-
-#include "shared.h"
-#include <SDL2/SDL_render.h>
-
 void deleter_init() {
     struct Deleter *deleter = &gs->deleter;
     memset(deleter, 0, sizeof(struct Deleter));
@@ -62,11 +57,11 @@ void deleter_tick() {
 }
 
 // A special number marking a pixel as marked in deleter->pixels.
-internal const Uint32 marked = 1234567890;
+const Uint32 marked = 1234567890;
 // TODO: Account for different color formats, this assumes ARGB
-internal const Uint32 red = 0xFFFF0000;
+const Uint32 red = 0xFFFF0000;
 
-internal void deleter_fill_neighbours(int x, int y) {
+void deleter_fill_neighbours(int x, int y) {
     struct Deleter *deleter = &gs->deleter;
 
     if (!is_in_bounds(x, y))                   return;
@@ -82,7 +77,7 @@ internal void deleter_fill_neighbours(int x, int y) {
 }
 
 
-internal void deleter_flood_fill() {
+void deleter_flood_fill() {
     struct Deleter *deleter = &gs->deleter;
 
     deleter_fill_neighbours(0, 0);
@@ -101,7 +96,7 @@ internal void deleter_flood_fill() {
     objects_reevaluate();
 }
 
-internal void deleter_delete() {
+void deleter_delete() {
     deleter_flood_fill();
 
     bool did_remove = false;

@@ -12,6 +12,7 @@
 
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 
 #include <time.h>
@@ -19,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "typedefs.h"
 #include "blob_hammer.h"
 #include "grid.h"
 #include "chisel.h"
@@ -34,9 +36,10 @@
 #include "chisel_blocker.h"
 #include "blocker.h"
 #include "assets.h"
-
-#define internal static
-#define persist static // You shouldn't use this anywhere in the game layer.
+#include "undo.h"
+#include "util.h"
+#include "cursor.h"
+#include "converter.h"
 
 #define Kilobytes(x) ((Uint64)x*1024)
 #define Megabytes(x) ((Uint64)x*1024*1024)
@@ -47,6 +50,9 @@
 #define Assert(condition) (_assert((condition), gs->window, __func__, __FILE__, __LINE__))
 // Assert without the popup (no window); use only console instead.
 #define AssertNW(condition) (_assert((condition), NULL, __func__, __FILE__, __LINE__))
+#define arena_alloc(mem, num, size) (_arena_alloc(mem, num, size, __FILE__, __LINE__))
+// 'which' is an enum in assets.h
+#define RenderTarget(which) (gs->textures.render_targets[gs->level_current][which])
 
 //
 // To allocate permanent memory that will persist until
@@ -58,7 +64,6 @@
 // use transient allocation.
 //   [arena_alloc(gs->transient_memory, ...)]
 //
-
 struct Memory {
     Uint8 *data;
     Uint8 *cursor;
@@ -142,13 +147,37 @@ struct Game_State {
     struct Chisel_Hammer chisel_hammer;
 };
 
-// Defined in game.c and main.c
-extern struct Game_State *gs;
+struct Game_State *gs = NULL;
 
-#define arena_alloc(mem, num, size) (_arena_alloc(mem, num, size, __FILE__, __LINE__))
+inline void _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line) {
+    if (condition) return;
 
-// Forward declaration for _arena_alloc() function.
-void _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line);
+    char message[64] = {0};
+    char line_of_code[2048] = {0};
+
+    FILE *f = fopen(file, "r");
+    if (f) {
+        int iterator = 0;
+        while (fgets(line_of_code, 2048, f)) {
+            iterator++;
+            if (iterator == line) {
+                break;
+            }
+        }
+
+        sprintf(message, "%s :: at %s:%d\nLine:%s", func, file, line, line_of_code);
+        if (window) {
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, window);
+        }
+    } else {
+        __debugbreak();
+    }
+
+    fprintf(stderr, "\n:::: ASSERTION FAILED ::::\n%s", message);
+    fflush(stderr);
+
+    __debugbreak();
+}
 
 inline void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
@@ -186,38 +215,5 @@ inline void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 size_individ
 
     return output;
 }
-
-inline void _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line) {
-    if (condition) return;
-
-    char message[64] = {0};
-    char line_of_code[2048] = {0};
-
-    FILE *f = fopen(file, "r");
-    if (f) {
-        int iterator = 0;
-        while (fgets(line_of_code, 2048, f)) {
-            iterator++;
-            if (iterator == line) {
-                break;
-            }
-        }
-
-        sprintf(message, "%s :: at %s:%d\nLine:%s", func, file, line, line_of_code);
-        if (window) {
-            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, window);
-        }
-    } else {
-        __debugbreak();
-    }
-
-    fprintf(stderr, "\n:::: ASSERTION FAILED ::::\n%s", message);
-    fflush(stderr);
-
-    __debugbreak();
-}
-
-// 'which' is an enum in assets.h
-#define RenderTarget(which) (gs->textures.render_targets[gs->level_current][which])
 
 #endif // SHARED_H_

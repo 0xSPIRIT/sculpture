@@ -1,12 +1,3 @@
-#include "blocker.h"
-
-#include "shared.h"
-#include "util.h"
-
-#include <SDL2/SDL_render.h>
-#include <SDL2/SDL_scancode.h>
-#include <math.h>
-
 void blocker_init() {
     struct Blocker *blocker = &gs->blocker;
 

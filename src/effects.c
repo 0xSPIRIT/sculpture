@@ -1,12 +1,3 @@
-#include "effects.h"
-
-#include <SDL2/SDL.h>
-#include <stdlib.h>
-
-#include "grid.h"
-#include "game.h"
-#include "util.h"
-
 void effect_set(int type) {
     gs->current_effect.type = type;
 

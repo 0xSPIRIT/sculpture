@@ -1,10 +1,7 @@
 #ifndef DELETER_H_
 #define DELETER_H_
 
-#include <SDL2/SDL.h>
-
 #include "grid.h"
-#include "typedefs.h"
 
 #define POINT_COUNT 50
 

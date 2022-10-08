@@ -1,9 +1,10 @@
-#include "game.h"
-
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
 #include <time.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+#include "shared.h"
 
 // Include all files to compile in one translation unit for
 // compilation speed's sake. ("Unity Build")
@@ -24,16 +25,14 @@
 #include "undo.c"
 #include "util.c"
 
-struct Game_State *gs = NULL;
-
-void game_init(struct Game_State *state, int level) {
+export void game_init(struct Game_State *state, int level) {
     gs = state;
     levels_setup();
 
     goto_level(level);
 }
 
-bool game_tick_event(struct Game_State *state, SDL_Event *event) {
+export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     gs = state;
     gs->event = event;
 
@@ -209,7 +208,7 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     return is_running;
 }
 
-void game_run(struct Game_State *state) {
+export void game_run(struct Game_State *state) {
     gs = state;
 
     struct Level *level = &gs->levels[gs->level_current];

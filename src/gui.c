@@ -1,17 +1,3 @@
-#include "gui.h"
-
-#include "grid.h"
-
-#include "util.h"
-#include "placer.h"
-#include "chisel.h"
-#include "chisel_blocker.h"
-#include "cursor.h"
-#include "game.h"
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
 void gui_init() {
     struct GUI *gui = &gs->gui;
 
@@ -148,7 +134,7 @@ void gui_popup_draw() {
     all_converters_draw();
 }
 
-internal void tooltip_draw_box(struct Tooltip *tooltip, int w, int h) {
+void tooltip_draw_box(struct Tooltip *tooltip, int w, int h) {
     tooltip->w = w;
     tooltip->h = h;
 

@@ -1,16 +1,3 @@
-#include "util.h"
-
-#include <SDL2/SDL_render.h>
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "gui.h"
-#include "grid.h"
-#include "game.h"
-#include "assets.h"
-
 void start_timer() {
     gs->global_start = clock();
 }
@@ -149,9 +136,9 @@ Uint32 get_pixel_int(SDL_Surface *surf, int x, int y) {
     return pixels[x+y*surf->w];
 }
 
-internal int _a = 1103515245;
-internal int _c = 12345;
-internal int _m = 2000000;
+int _a = 1103515245;
+int _c = 12345;
+int _m = 2000000;
 
 int my_rand(int seed) {
     return (_a * seed + _c) % _m;
@@ -225,7 +212,7 @@ bool is_point_in_rect(SDL_Point p, SDL_Rect r) {
 }
 
 // Stolen from https://stackoverflow.com/a/2049593
-internal f32 sign(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
+f32 sign(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
     return (f32)(p1.x - p3.x) * (f32)(p2.y - p3.y) - (f32)(p2.x - p3.x) * (f32)(p1.y - p3.y);
 }
 

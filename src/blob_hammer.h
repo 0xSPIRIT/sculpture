@@ -1,9 +1,6 @@
 #ifndef HAMMER_H_
 #define HAMMER_H_
 
-#include <SDL2/SDL.h>
-#include <stdbool.h>
-
 #include "grid.h"
 
 #define MAX_BLOBS_TOUCHED 32

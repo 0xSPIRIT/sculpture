@@ -1,28 +1,4 @@
-#include "level.h"
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
-#include "chisel.h"
-#include "knife.h"
-#include "deleter.h"
-#include "blob_hammer.h"
-#include "placer.h"
-#include "grabber.h"
-#include "grid.h"
-#include "gui.h"
-#include "util.h"
-#include "chisel_blocker.h"
-#include "effects.h"
-#include "cursor.h"
-#include "undo.h"
-#include "game.h"
-
-internal int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
+int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
     struct Level *level = &gs->levels[gs->level_count++];
     level->index = gs->level_count-1;
     strcpy(level->name, name);

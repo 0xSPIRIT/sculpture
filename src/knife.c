@@ -1,14 +1,3 @@
-#include "knife.h"
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
-#include <stdio.h>
-
-#include "grid.h"
-#include "util.h"
-#include "game.h"
-
 void knife_init() {
     struct Knife *knife = &gs->knife;
 

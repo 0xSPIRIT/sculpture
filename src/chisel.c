@@ -1,16 +1,3 @@
-#include "chisel.h"
-
-#include <math.h>
-#include <SDL2/SDL_image.h>
-
-#include "grid.h"
-#include "util.h"
-#include "grid.h"
-#include "blob_hammer.h" // For hammer state enum
-#include "chisel_blocker.h"
-#include "undo.h"
-#include "game.h"
-
 void chisel_init(struct Chisel *type) {
     struct Chisel *chisel = NULL;
     
@@ -55,7 +42,7 @@ void chisel_init(struct Chisel *type) {
     chisel->spd = 3.;
 }
 
-internal void chisel_set_depth() {
+void chisel_set_depth() {
     struct Chisel *chisel = gs->chisel;
     struct Cell *grid = gs->grid;
 

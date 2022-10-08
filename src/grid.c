@@ -1,30 +1,11 @@
-#include "grid.h"
+int draw_lines = 1;
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
-#include <stdlib.h>
-
-#include <time.h>
-#include <signal.h>
-#include <stdio.h>
-
-#include "util.h"
-#include "chisel.h"
-#include "grabber.h"
-#include "level.h"
-#include "chisel_blocker.h"
-#include "placer.h"
-#include "game.h"
-
-internal int draw_lines = 1;
-
-internal f32 damp(int i) {
+f32 damp(int i) {
     srand(i);
     return 0.5f + ((f32)rand())/RAND_MAX * 0.4f;
 }
 
-internal f32 water_spread() {
+f32 water_spread() {
     return rand()%3 + ((f32)rand())/RAND_MAX;
 }
 
@@ -594,8 +575,8 @@ void simulation_tick() {
     grid_array_tick(gs->pickup_grid, 1, -1);
 }
 
-internal int outlines_total[256*256] = {0}; // 256x256 seems to be more than the max level size.
-internal int outlines_total_count = 0;
+int outlines_total[256*256] = {0}; // 256x256 seems to be more than the max level size.
+int outlines_total_count = 0;
 
 void grid_array_draw(struct Cell *array) {
     for (int i = 0; i < gs->gw*gs->gh; i++)
@@ -712,7 +693,7 @@ int number_direct_neighbours(struct Cell *array, int x, int y) {
     return count;
 }
 
-internal int is_any_neighbour_hard(int x, int y) {
+int is_any_neighbour_hard(int x, int y) {
     int r = 1;
     for (int xx = -r; xx <= r; xx++) {
         for (int yy = -r; yy <= r; yy++) {
@@ -833,7 +814,7 @@ void object_blobs_set_pressure(int obj, int chisel_size) {
     }
 }
 
-internal void random_set_blob(struct Object *obj, int x, int y, Uint32 blob, int chisel_size, int perc) {
+void random_set_blob(struct Object *obj, int x, int y, Uint32 blob, int chisel_size, int perc) {
     if (!is_cell_hard(gs->grid[x+y*gs->gw].type) ||
         (x+1 < gs->gw && !is_cell_hard(gs->grid[x+1 + y*gs->gw].type)) ||
         (x-1 >= 0 && !is_cell_hard(gs->grid[x-1 + y*gs->gw].type)) ||
@@ -850,7 +831,7 @@ internal void random_set_blob(struct Object *obj, int x, int y, Uint32 blob, int
 }
 
 // Find the amount of cells a blob has in a given object.
-internal int blob_find_count_from_position(int object, int chisel_size, int x, int y) {
+int blob_find_count_from_position(int object, int chisel_size, int x, int y) {
     int count = 0;
     const int max_size = 5;
     Uint32 *blobs = gs->objects[object].blob_data[chisel_size].blobs;
@@ -871,13 +852,13 @@ internal int blob_find_count_from_position(int object, int chisel_size, int x, i
     return count;
 }
 
-internal const char diamond3x3[] =
+const char diamond3x3[] =
     " x "
     "xxx"
     " x "
 ;
 
-internal const char diamond5x5[] =
+const char diamond5x5[] =
     "  x  "
     " xxx "
     "xxxxx"
@@ -885,7 +866,7 @@ internal const char diamond5x5[] =
     "  x  "
 ;
 
-internal void blit_blobs_from_char_array(Uint32 *blobs, Uint32 *blob_count, int object, int x, int y, const char *array, int w, int h) {
+void blit_blobs_from_char_array(Uint32 *blobs, Uint32 *blob_count, int object, int x, int y, const char *array, int w, int h) {
     bool did_set = false;
 
     x -= w/2;
@@ -915,7 +896,7 @@ internal void blit_blobs_from_char_array(Uint32 *blobs, Uint32 *blob_count, int 
     }
 }
 
-internal void diamond_fill(Uint32 *blobs, Uint32 *blob_count, int obj, int x, int y, const char *array, int w, int h) {
+void diamond_fill(Uint32 *blobs, Uint32 *blob_count, int obj, int x, int y, const char *array, int w, int h) {
     blit_blobs_from_char_array(blobs, blob_count, obj, x, y, array, w, h);
 
     const int xoff = 3;
@@ -924,7 +905,7 @@ internal void diamond_fill(Uint32 *blobs, Uint32 *blob_count, int obj, int x, in
     blit_blobs_from_char_array(blobs, blob_count, obj, x+xoff, y+yoff, array, w, h);
 }
 
-internal void blob_generate_diamonds(int obj, int chisel_size, Uint32 *blob_count) {
+void blob_generate_diamonds(int obj, int chisel_size, Uint32 *blob_count) {
     int x = -100, y = -100;
 
     struct Object *o = &gs->objects[obj];
@@ -960,7 +941,7 @@ internal void blob_generate_diamonds(int obj, int chisel_size, Uint32 *blob_coun
   *    } */
 }
 
-internal void blob_generate_old_smart(int obj, int chisel_size, int percentage, Uint32 *blob_count) {
+void blob_generate_old_smart(int obj, int chisel_size, int percentage, Uint32 *blob_count) {
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (gs->grid[x+y*gs->gw].object != obj) continue;
@@ -1030,7 +1011,7 @@ internal void blob_generate_old_smart(int obj, int chisel_size, int percentage, 
     }
 }
 
-internal void blob_generate_dumb(int obj, int chisel_size, Uint32 *blob_count) {
+void blob_generate_dumb(int obj, int chisel_size, Uint32 *blob_count) {
     Assert(obj >= 0);
     Assert(blob_count);
     
@@ -1073,7 +1054,7 @@ void object_generate_blobs(int object_index, int chisel_size) {
     object_blobs_set_pressure(object_index, chisel_size);
 }
 
-internal void dust_set_random_velocity(int x, int y) {
+void dust_set_random_velocity(int x, int y) {
     struct Cell *c = &gs->pickup_grid[x+y*gs->gw];
     c->vx = 3.f  * (f32)(rand()%100) / 100.f;
     c->vy = -2.f * (f32)(rand()%100) / 100.f;
@@ -1119,7 +1100,7 @@ void object_darken_blob(struct Object *obj, Uint32 blob, int amt, int chisel_siz
     }
 }
 
-internal void mark_neighbours(int x, int y, int obj, int pobj, int *cell_count) {
+void mark_neighbours(int x, int y, int obj, int pobj, int *cell_count) {
     if (x < 0 || y < 0 || x >= gs->gw || y >= gs->gh ||
         !gs->grid[x+y*gs->gw].type ||
         !is_cell_hard(gs->grid[x+y*gs->gw].type) ||
@@ -1196,7 +1177,7 @@ void objects_reevaluate() {
     /* } */
 }
 
-internal int condition(int a, int end, int dir) {
+int condition(int a, int end, int dir) {
     if (dir == 1) {
         return a <= end;
     }

@@ -1,14 +1,3 @@
-#include "placer.h"
-
-#include <SDL2/SDL_image.h>
-
-#include "grid.h"
-#include "converter.h"
-#include "gui.h"
-#include "util.h"
-#include "grid.h"
-#include "game.h"
-
 void placer_init(int num) {
     struct Placer *placer = &gs->placers[num];
 
@@ -40,7 +29,7 @@ void placer_init(int num) {
 }
 
 // Places a circle down.
-internal void placer_place_circle(struct Placer *placer) {
+void placer_place_circle(struct Placer *placer) {
     f32 dx = (f32) (placer->x - placer->px);
     f32 dy = (f32) (placer->y - placer->py);
     f32 len = sqrtf(dx*dx + dy*dy);
@@ -117,7 +106,7 @@ internal void placer_place_circle(struct Placer *placer) {
     placer->did_click = did_set_object;
 }
 
-internal void placer_set_and_resize_rect(struct Placer *placer) {
+void placer_set_and_resize_rect(struct Placer *placer) {
     struct Input *input = &gs->input;
 
     if (placer->rect.x == -1) {
@@ -144,7 +133,7 @@ internal void placer_set_and_resize_rect(struct Placer *placer) {
     }
 }
 
-internal void placer_place_rect(struct Placer *placer) {
+void placer_place_rect(struct Placer *placer) {
     if (placer->rect.x == -1) return;
 
     placer->rect.w--;

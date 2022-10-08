@@ -1,14 +1,3 @@
-#include "blob_hammer.h"
-
-#include <SDL2/SDL_image.h>
-#include <math.h>
-
-#include "chisel.h"
-#include "grid.h"
-#include "util.h"
-#include "undo.h"
-#include "game.h"
-
 void blob_hammer_init() {
     struct Blob_Hammer *blob_hammer = &gs->blob_hammer;
     

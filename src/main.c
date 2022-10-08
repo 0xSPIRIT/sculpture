@@ -28,9 +28,6 @@
 // anyways.
 //
 
-#define SDL_MAIN_HANDLED
-#include <SDL2/SDL.h>
-
 #include <windows.h>
 #include <stdbool.h>
 
@@ -39,7 +36,6 @@
 // Include all files to compile in one translation unit for
 // compilation speed's sake. ("Unity Build")
 #include "assets.c"
-#include "cursor.c"
 #include "input.c"
 
 #include "win32_SetProcessDpiAware.h"
@@ -51,8 +47,6 @@ typedef void (*GameInitProc)(struct Game_State *state, int start_level);
 typedef bool (*GameTickEventProc)(struct Game_State *state, SDL_Event *event);
 typedef void (*GameRunProc)(struct Game_State *state);
 
-struct Game_State *gs = NULL; // This is so that our macros can pick up "gs" instead of game_state.
-
 struct Game_Code {
     HMODULE dll;
     FILETIME last_write_time;
@@ -62,7 +56,7 @@ struct Game_Code {
     GameRunProc game_run;
 };
 
-internal void game_init_sdl(struct Game_State *state, const char *window_title, int w, int h) {
+void game_init_sdl(struct Game_State *state, const char *window_title, int w, int h) {
     SDL_Init(SDL_INIT_VIDEO);
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
@@ -82,7 +76,7 @@ internal void game_init_sdl(struct Game_State *state, const char *window_title, 
     Assert(state->renderer);
 }
 
-internal void make_memory(struct Memory *persistent_memory, struct Memory *transient_memory) {
+void make_memory(struct Memory *persistent_memory, struct Memory *transient_memory) {
     persistent_memory->size = Megabytes(512);
     transient_memory->size = Megabytes(32);
 
@@ -106,7 +100,7 @@ internal void make_memory(struct Memory *persistent_memory, struct Memory *trans
     transient_memory->cursor = transient_memory->data;
 }
 
-internal void game_init(struct Game_State *state) {
+void game_init(struct Game_State *state) {
     srand((unsigned int) time(0));
     
     state->S = 6;
@@ -133,7 +127,7 @@ internal void game_init(struct Game_State *state) {
     fonts_init(&state->fonts);
 }
 
-internal void game_deinit(struct Game_State *state) {
+void game_deinit(struct Game_State *state) {
     // Close the window first so it'll feel snappy.
     SDL_DestroyWindow(state->window);
 
@@ -162,7 +156,7 @@ inline FILETIME get_last_write_time(char *filename) {
     return write_time;
 }
 
-internal void load_game_code(struct Game_Code *code) {
+void load_game_code(struct Game_Code *code) {
     code->last_write_time = get_last_write_time(GAME_DLL_NAME);
     
     CopyFileA(GAME_DLL_NAME, TEMP_DLL_NAME, FALSE);
@@ -182,7 +176,7 @@ internal void load_game_code(struct Game_Code *code) {
     }
 }
 
-internal void unload_game_code(struct Game_Code *code) {
+void unload_game_code(struct Game_Code *code) {
     FreeLibrary(code->dll);
     code->game_init = 0;
     code->game_run = 0;

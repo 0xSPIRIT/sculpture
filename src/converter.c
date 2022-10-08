@@ -1,22 +1,10 @@
-#include "converter.h"
-
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <stdio.h>
-
-#include "grid.h"
-#include "gui.h"
-#include "placer.h"
-#include "util.h"
-#include "game.h"
-
 struct Placer *converter_get_current_placer() {
     struct Placer *placers = gs->placers;
     if (gs->current_placer == -1 || gs->current_tool != TOOL_PLACER) return NULL;
     return &placers[gs->current_placer];
 }
 
-internal bool can_place_item_in_slot(int type, int slot) {
+bool can_place_item_in_slot(int type, int slot) {
     bool can_put_fuel = false;
     
     if (slot == SLOT_FUEL) {
@@ -560,7 +548,7 @@ void converter_set_state(struct Converter *converter, enum Converter_State state
     }
 }
 
-internal struct Converter_Checker converter_checker(struct Item *input1, struct Item *input2) {
+struct Converter_Checker converter_checker(struct Item *input1, struct Item *input2) {
     Assert(input1);
     Assert(input2);
 
@@ -569,7 +557,7 @@ internal struct Converter_Checker converter_checker(struct Item *input1, struct 
     };
 }
 
-internal bool is_either_input_type(struct Converter_Checker *checker, int type, bool restart) {
+bool is_either_input_type(struct Converter_Checker *checker, int type, bool restart) {
     Assert(checker->input1);
     Assert(checker->input2);
 
@@ -595,7 +583,7 @@ internal bool is_either_input_type(struct Converter_Checker *checker, int type, 
     return true;
 }
 
-internal bool is_either_input_tier(struct Converter_Checker *checker, int tier, bool is_fuel, bool restart) {
+bool is_either_input_tier(struct Converter_Checker *checker, int tier, bool is_fuel, bool restart) {
     Assert(checker->input1);
     Assert(checker->input2);
 
@@ -622,7 +610,7 @@ internal bool is_either_input_tier(struct Converter_Checker *checker, int tier, 
     return true;
 }
 
-internal bool is_either_input_stone(struct Converter_Checker *checker, bool restart) {
+bool is_either_input_stone(struct Converter_Checker *checker, bool restart) {
     Assert(checker->input1);
     Assert(checker->input2);
 
@@ -646,7 +634,7 @@ internal bool is_either_input_stone(struct Converter_Checker *checker, bool rest
     return true;
 }
 
-internal int fuel_converter_convert(struct Item *input1, struct Item *input2) {
+int fuel_converter_convert(struct Item *input1, struct Item *input2) {
     int result_type = 0;
     int number_inputs = (input1->type != 0) + (input2->type != 0);
     int number_unique_inputs = 0;
@@ -694,7 +682,7 @@ internal int fuel_converter_convert(struct Item *input1, struct Item *input2) {
     return result_type;
 }
 
-internal int material_converter_convert(struct Item *input1, struct Item *input2, struct Item *fuel) {
+int material_converter_convert(struct Item *input1, struct Item *input2, struct Item *fuel) {
     Assert(input1);
     Assert(input2);
 
@@ -820,7 +808,7 @@ int get_number_unique_inputs(struct Item *input1, struct Item *input2) {
 }
 
 // Calculate the ratio of inputs -> output.
-internal f32 calculate_output_ratio(struct Item *input1, struct Item *input2) {
+f32 calculate_output_ratio(struct Item *input1, struct Item *input2) {
     f32 result = 0.f;
     int number_unique_inputs = get_number_unique_inputs(input1, input2);
 

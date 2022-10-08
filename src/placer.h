@@ -1,9 +1,6 @@
 #ifndef PLACER_H_
 #define PLACER_H_
 
-#include <SDL2/SDL.h>
-#include <stdbool.h>
-
 #include "converter.h"
 
 #define PLACER_COUNT 3

@@ -1,10 +1,7 @@
 #ifndef KNIFE_H_
 #define KNIFE_H_
 
-#include <SDL2/SDL.h>
-
 #include "grid.h"
-#include "typedefs.h"
 
 struct Knife {
     f32 x, y;

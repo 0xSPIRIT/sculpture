@@ -1,8 +1,6 @@
 #ifndef INPUT_H_
 #define INPUT_H_
 
-#include <SDL2/SDL.h>
-
 #define MOUSE_BUTTONS 16
 
 struct Input {

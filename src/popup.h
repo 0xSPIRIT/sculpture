@@ -1,9 +1,6 @@
 #ifndef POPUP_H
 #define POPUP_H
 
-#include <stdbool.h>
-#include <SDL2/SDL.h>
-
 struct Text_Field {
     char description[256];
     char text[256];

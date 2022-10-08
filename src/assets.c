@@ -1,8 +1,3 @@
-#include "assets.h"
-
-#include "shared.h"
-#include <SDL2/SDL_ttf.h>
-
 #define CreateRenderTarget(width, height) (SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height))
 
 //
@@ -24,7 +19,7 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
     return texture;
 }
 
-internal void get_filename_from_type(int type, char *out) {
+void get_filename_from_type(int type, char *out) {
     switch (type) {
     case CELL_NONE:        strcpy(out, "nothing"); break;
     case CELL_DIRT:        strcpy(out, RES_DIR "/items/dirt.png"); break;
@@ -60,7 +55,7 @@ internal void get_filename_from_type(int type, char *out) {
     }
 }
 
-internal void get_file_from_tool(int type, char *out) {
+void get_file_from_tool(int type, char *out) {
     switch (type) {
     case TOOL_CHISEL_SMALL:  strcpy(out, "chisel_small.png"); break;
     case TOOL_CHISEL_MEDIUM: strcpy(out, "chisel_medium.png"); break;
@@ -73,7 +68,7 @@ internal void get_file_from_tool(int type, char *out) {
     }
 }
 
-internal void get_name_from_tool(int type, char *out) {
+void get_name_from_tool(int type, char *out) {
     switch (type) {
     case TOOL_CHISEL_SMALL:  strcpy(out, "Small Chisel"); break;
     case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel"); break;

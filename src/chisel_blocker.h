@@ -1,8 +1,6 @@
 #ifndef CHISEL_BLOCKER_H
 #define CHISEL_BLOCKER_H
 
-#include <SDL2/SDL.h>
-
 enum Chisel_Blocker_State {
     CHISEL_BLOCKER_OFF,
     CHISEL_BLOCKER_LINE_MODE,

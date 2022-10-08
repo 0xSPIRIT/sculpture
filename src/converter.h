@@ -1,11 +1,6 @@
 #ifndef CONVERTER_H
 #define CONVERTER_H
 
-#include <SDL2/SDL.h>
-#include <stdbool.h>
-
-#include "typedefs.h"
-
 #define CONVERTER_NAME_LEN 32
 
 struct Item {

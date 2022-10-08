@@ -1,8 +1,6 @@
 #ifndef GRABBER_H_
 #define GRABBER_H_
 
-#include <SDL2/SDL.h>
-
 struct Grabber {
     f32 x, y;
     int w, h;
