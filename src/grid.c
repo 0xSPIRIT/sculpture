@@ -961,8 +961,6 @@ internal void blob_generate_diamonds(int obj, int chisel_size, Uint32 *blob_coun
 }
 
 internal void blob_generate_old_smart(int obj, int chisel_size, int percentage, Uint32 *blob_count) {
-    bool a = false;
-    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (gs->grid[x+y*gs->gw].object != obj) continue;
@@ -971,7 +969,7 @@ internal void blob_generate_old_smart(int obj, int chisel_size, int percentage, 
             struct Object *o = &gs->objects[obj];
             Uint32 *blobs = o->blob_data[chisel_size].blobs;
 
-            int size;
+            int size = 2;
 
             if (chisel_size == 2) {
                 size = 4;
@@ -1090,10 +1088,9 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_d
             if (obj->blob_data[chisel_size].blobs[x+y*gs->gw] != blob) continue;
             
             if (gs->current_tool == TOOL_CHISEL_MEDIUM &&
-                gs->chisel_blocker.state != CHISEL_BLOCKER_OFF &&
-                gs->chisel_blocker.pixels[x+y*gs->gw] != gs->chisel_blocker.side)
+                gs->blocker.pixels[x+y*gs->gw] != 0)
             {
-                return true;
+                continue;
             }
 
             if (replace_dust) {

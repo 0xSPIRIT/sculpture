@@ -1,3 +1,5 @@
+#include "game.h"
+
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <time.h>
@@ -7,6 +9,7 @@
 // compilation speed's sake. ("Unity Build")
 #include "blob_hammer.c"
 #include "chisel_blocker.c"
+#include "blocker.c"
 #include "chisel.c"
 #include "converter.c"
 #include "effects.c"
@@ -20,8 +23,6 @@
 #include "popup.c"
 #include "undo.c"
 #include "util.c"
-
-#include "game.h"
 
 struct Game_State *gs = NULL;
 
@@ -113,7 +114,6 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             struct Cell *c;
             if (input->keys[SDL_SCANCODE_LSHIFT]) {
                 c = &gs->fg_grid[input->mx+input->my*gs->gw];
-                printf("Happened!\n");
             } else {
                 c = &gs->grid[input->mx+input->my*gs->gw];
             }
@@ -212,12 +212,27 @@ bool game_tick_event(struct Game_State *state, SDL_Event *event) {
 void game_run(struct Game_State *state) {
     gs = state;
 
-    // What was the point of this again?
-
-    /* if (state->prev_tool != gs->current_tool) {
-     *     overlay_reset(&gs->gui.overlay);
-     * } */
+    struct Level *level = &gs->levels[gs->level_current];
 
     level_tick();
     level_draw();
+
+    if (level->state != LEVEL_STATE_INTRO) {
+        gui_tick();
+        gui_draw();
+
+        SDL_Rect dst = {
+            0, GUI_H,
+            gs->window_width, gs->window_height-GUI_H
+        };
+
+        SDL_SetRenderTarget(gs->renderer, NULL);
+        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
+
+        gui_popup_draw();
+        tooltip_draw(&gs->gui.tooltip);
+        text_field_draw();
+    }
+    
+    SDL_RenderPresent(gs->renderer);
 }

@@ -32,6 +32,7 @@
 #include "grabber.h"
 #include "effects.h"
 #include "chisel_blocker.h"
+#include "blocker.h"
 #include "assets.h"
 
 #define internal static
@@ -43,9 +44,9 @@
 #define Terabytes(x) ((Uint64)x*1024*1024*1024*1024)
 
 // Assert using an SDL MessageBox popup. Prints to the console too.
-#define Assert(condition) (_assert(condition, gs->window, __func__, __FILE__, __LINE__) ? __debugbreak() : 0 )
+#define Assert(condition) (_assert((condition), gs->window, __func__, __FILE__, __LINE__))
 // Assert without the popup (no window); use only console instead.
-#define AssertNW(condition) (_assert(condition, NULL, __func__, __FILE__, __LINE__) ? __debugbreak() : 0 )
+#define AssertNW(condition) (_assert((condition), NULL, __func__, __FILE__, __LINE__))
 
 //
 // To allocate permanent memory that will persist until
@@ -129,6 +130,8 @@ struct Game_State {
     struct Chisel_Blocker chisel_blocker;
     int chisel_blocker_mode; // Edit mode for the points.
 
+    struct Blocker blocker;
+
     struct Converter *material_converter, *fuel_converter;
 
     struct Item item_holding;
@@ -145,7 +148,7 @@ extern struct Game_State *gs;
 #define arena_alloc(mem, num, size) (_arena_alloc(mem, num, size, __FILE__, __LINE__))
 
 // Forward declaration for _arena_alloc() function.
-bool _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line);
+void _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line);
 
 inline void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
@@ -184,8 +187,8 @@ inline void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 size_individ
     return output;
 }
 
-inline bool _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line) {
-    if (condition) return false;
+inline void _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line) {
+    if (condition) return;
 
     char message[64] = {0};
     char line_of_code[2048] = {0};
@@ -211,7 +214,7 @@ inline bool _assert(bool condition, SDL_Window *window, const char *func, const 
     fprintf(stderr, "\n:::: ASSERTION FAILED ::::\n%s", message);
     fflush(stderr);
 
-    return !condition;
+    __debugbreak();
 }
 
 // 'which' is an enum in assets.h

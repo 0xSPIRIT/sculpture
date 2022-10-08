@@ -122,6 +122,7 @@ void goto_level(int lvl) {
     gs->chisel = &gs->chisel_small;
     
     chisel_blocker_init();
+    blocker_init();
     blob_hammer_init();
     chisel_hammer_init();
     knife_init();
@@ -144,10 +145,6 @@ void level_tick() {
     struct Input *input = &gs->input;
 
     if (gs->text_field.active) return;
-
-    if (level->state != LEVEL_STATE_INTRO) {
-        gui_tick();
-    }
     if (gs->gui.popup) return;
     
     switch (level->state) {
@@ -200,23 +197,26 @@ void level_tick() {
             gs->step_one = 0;
         }
 
-        if (input->my < 0) { // If the mouse is in the GUI gs->window...
-            /* SDL_ShowCursor(1); */
-            if (SDL_GetCursor() != gs->normal_cursor) {
-                /* SDL_SetCursor(gs->normal_cursor); */
-            }
-            break;
-        } else if (gs->current_tool == TOOL_GRABBER) {
-            if (SDL_GetCursor() != gs->grabber_cursor) {
-                /* SDL_ShowCursor(1); */
-                /* SDL_SetCursor(gs->grabber_cursor); */
-            }
-        } else if (SDL_GetCursor() != gs->normal_cursor) {
-            /* SDL_SetCursor(gs->normal_cursor); */
-        }
+        /* if (input->my < 0) { // If the mouse is in the GUI gs->window...
+         *     SDL_ShowCursor(1);
+         *     if (SDL_GetCursor() != gs->normal_cursor) {
+         *         SDL_SetCursor(gs->normal_cursor);
+         *     }
+         *     break;
+         * } else if (gs->current_tool == TOOL_GRABBER) {
+         *     if (SDL_GetCursor() != gs->grabber_cursor) {
+         *         SDL_ShowCursor(1);
+         *         SDL_SetCursor(gs->grabber_cursor);
+         *     }
+         * } else if (SDL_GetCursor() != gs->normal_cursor) {
+         *     SDL_SetCursor(gs->normal_cursor);
+         * } */
     
         chisel_blocker_tick();
+        blocker_tick();
+
         if (gs->chisel_blocker_mode) break;
+        if (gs->blocker.on) break;
         
         switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE:
@@ -287,22 +287,11 @@ void level_draw() {
         }
 
         chisel_blocker_draw();
+        blocker_draw();
 
         draw_blobs();
         draw_objects();
 
-        gui_draw();
-
-        SDL_Rect dst = {
-            0, GUI_H,
-            gs->window_width, gs->window_height-GUI_H
-        };
-
-        SDL_SetRenderTarget(gs->renderer, NULL);
-        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
-
-        gui_popup_draw();
-        
         break;
     }
 
@@ -384,12 +373,6 @@ void level_draw() {
                   NULL,
                   NULL);
     }
-    
-    overlay_draw(&gs->gui.overlay);
-
-    text_field_draw();
-    
-    SDL_RenderPresent(gs->renderer);
 }
 
 void level_draw_intro() {

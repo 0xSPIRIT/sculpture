@@ -46,7 +46,7 @@ void blob_hammer_tick() {
         f32 dx = input->mx - blob_hammer->x;
         f32 dy = input->my - blob_hammer->y;
         
-        f32 angle = (f32)atan2(dy, dx);
+        f32 angle = atan2f(dy, dx);
         angle /= 2 * (f32)M_PI;
         angle *= 360;
         angle += 270;

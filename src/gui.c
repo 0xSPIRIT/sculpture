@@ -18,7 +18,7 @@ void gui_init() {
     *gui = (struct GUI){ .popup_y = (f32) (gs->gh*gs->S), .popup_y_vel = 0, .popup_h = GUI_POPUP_H, .popup = 0 };
     gui->popup_texture = gs->textures.popup;
 
-    overlay_reset(&gui->overlay);
+    tooltip_reset(&gui->tooltip);
     gui->is_placer_active = false;
 
     int cum = 0;
@@ -44,7 +44,7 @@ void gui_tick() {
     if (input->keys_pressed[SDL_SCANCODE_TAB]) {
         gui->popup = !gui->popup;
         gui->popup_y_vel = 0;
-        overlay_reset(&gui->overlay);
+        tooltip_reset(&gui->tooltip);
 
         gs->current_tool = gs->previous_tool;
 
@@ -75,7 +75,7 @@ void gui_tick() {
         gui->is_placer_active = input->keys[SDL_SCANCODE_LCTRL];
 
         if (was_placer_active && !gui->is_placer_active) {
-            overlay_reset(&gui->overlay);
+            tooltip_reset(&gui->tooltip);
         } else if (!was_placer_active && gui->is_placer_active) {
             struct Placer *p = converter_get_current_placer();
             p->x = input->mx;
@@ -94,7 +94,7 @@ void gui_tick() {
             button_tick(gui->tool_buttons[i], &i);
         }
         if (input->real_my >= GUI_H) {
-            overlay_reset(&gui->overlay);
+            tooltip_reset(&gui->tooltip);
         }
     }
 
@@ -148,56 +148,58 @@ void gui_popup_draw() {
     all_converters_draw();
 }
 
-internal void overlay_draw_box(struct Overlay *overlay, int w, int h) {
-    overlay->w = w;
-    overlay->h = h;
+internal void tooltip_draw_box(struct Tooltip *tooltip, int w, int h) {
+    tooltip->w = w;
+    tooltip->h = h;
 
     SDL_Rect r = {
-        (int) (overlay->x * gs->S),
-        (int) (overlay->y * gs->S + GUI_H),
+        (int) (tooltip->x * gs->S),
+        (int) (tooltip->y * gs->S + GUI_H),
         w,
-        h };
+        h
+    };
+
     SDL_SetRenderDrawColor(gs->renderer, 12, 12, 12, 255);
     SDL_RenderFillRect(gs->renderer, &r);
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
     SDL_RenderDrawRect(gs->renderer, &r);
 }
 
-void overlay_reset(struct Overlay *overlay) {
-    memset(overlay, 0, sizeof(struct Overlay));
-    overlay->x = overlay->y = -1;
+void tooltip_reset(struct Tooltip *tooltip) {
+    memset(tooltip, 0, sizeof(struct Tooltip));
+    tooltip->x = tooltip->y = -1;
 }
 
-void overlay_set_position_to_cursor(struct Overlay *overlay, int type) {
+void tooltip_set_position_to_cursor(struct Tooltip *tooltip, int type) {
     struct Input *input = &gs->input;
-    overlay->x = (f32)input->real_mx/gs->S;
-    overlay->y = (f32)input->real_my/gs->S - GUI_H/gs->S;
-    overlay->type = type;
+    tooltip->x = (f32)input->real_mx/gs->S;
+    tooltip->y = (f32)input->real_my/gs->S - GUI_H/gs->S;
+    tooltip->type = type;
 }
 
-void overlay_set_position(struct Overlay *overlay, int x, int y, int type) {
-    overlay->x = (f32) x;
-    overlay->y = (f32) y;
-    overlay->type = type;
+void tooltip_set_position(struct Tooltip *tooltip, int x, int y, int type) {
+    tooltip->x = (f32) x;
+    tooltip->y = (f32) y;
+    tooltip->type = type;
 }
 
 // This happens outside of the pixel-art texture, so we must
 // multiply all values by scale.
-void overlay_draw(struct Overlay *overlay) {
-    if (overlay->x == -1 && overlay->y == -1) return;
+void tooltip_draw(struct Tooltip *tooltip) {
+    if (tooltip->x == -1 && tooltip->y == -1) return;
 
     const int margin = 8; // In real pixels.
 
-    SDL_Surface *surfaces[MAX_OVERLAY_LINE_LEN];
-    SDL_Texture *textures[MAX_OVERLAY_LINE_LEN];
-    SDL_Rect dsts[MAX_OVERLAY_LINE_LEN];
+    SDL_Surface *surfaces[MAX_TOOLTIP_LINE_LEN];
+    SDL_Texture *textures[MAX_TOOLTIP_LINE_LEN];
+    SDL_Rect dsts[MAX_TOOLTIP_LINE_LEN];
     int count = 0;
 
     int highest_w = 0;
     int height = 0;
 
-    for (int i = 0; i < MAX_OVERLAY_LINE_LEN; i++) {
-        if (!strlen(overlay->str[i])) continue;
+    for (int i = 0; i < MAX_TOOLTIP_LINE_LEN; i++) {
+        if (!strlen(tooltip->str[i])) continue;
         count++;
         
         SDL_Color color;
@@ -208,13 +210,13 @@ void overlay_draw(struct Overlay *overlay) {
             color = (SDL_Color){255,255,255,255};
 
         // @Performance
-        surfaces[i] = TTF_RenderText_Solid(gs->fonts.font, overlay->str[i], color);
+        surfaces[i] = TTF_RenderText_Solid(gs->fonts.font, tooltip->str[i], color);
         Assert(surfaces[i]);
         textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surfaces[i]);
         Assert(textures[i]);
         dsts[i] = (SDL_Rect){
-            (int) (gs->S * overlay->x + margin),
-            (int) (height + gs->S * overlay->y + margin),
+            (int) (gs->S * tooltip->x + margin),
+            (int) (height + gs->S * tooltip->y + margin),
             surfaces[i]->w,
             surfaces[i]->h };
         dsts[i].y += GUI_H;
@@ -226,18 +228,18 @@ void overlay_draw(struct Overlay *overlay) {
 
     bool clamped = false;
 
-    // Clamp the overlays if it goes outside the gs->window.
-    if (overlay->x*gs->S + highest_w >= gs->S*gs->gw) {
-        overlay->x -= highest_w/gs->S;
+    // Clamp the tooltips if it goes outside the gs->window.
+    if (tooltip->x*gs->S + highest_w >= gs->S*gs->gw) {
+        tooltip->x -= highest_w/gs->S;
         for (int i = 0; i < count; i++)
             dsts[i].x -= highest_w - margin/2;
         clamped = true;
     }
 
-    overlay_draw_box(overlay, highest_w + margin*2, height + margin*2);
+    tooltip_draw_box(tooltip, highest_w + margin*2, height + margin*2);
 
     if (clamped) {
-        overlay->x += highest_w;
+        tooltip->x += highest_w;
     }
 
     for (int i = 0; i < count; i++) {
@@ -250,7 +252,7 @@ void overlay_draw(struct Overlay *overlay) {
     }
 }
 
-void overlay_get_string(int type, int amt, char *out_str) {
+void tooltip_get_string(int type, int amt, char *out_str) {
     char name[256] = {0};
     if (amt == 0) {
         strcpy(out_str, "Contains nothing");
@@ -265,13 +267,13 @@ void overlay_get_string(int type, int amt, char *out_str) {
     }
 }
 
-struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *overlay_text, void (*on_pressed)(void*)) {
+struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
     struct Button *b = arena_alloc(gs->persistent_memory, 1, sizeof(struct Button));
     b->type = type;
     b->texture = texture;
     SDL_QueryTexture(texture, NULL, NULL, &b->w, &b->h);
 
-    strcpy(b->overlay_text, overlay_text);
+    strcpy(b->tooltip_text, tooltip_text);
     b->on_pressed = on_pressed;
     return b;
 }
@@ -297,19 +299,19 @@ void button_tick(struct Button *b, void *data) {
     if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
         gui_input_my >= b->y && gui_input_my < b->y+b->h) {
 
-        overlay_set_position_to_cursor(&gui->overlay, OVERLAY_TYPE_BUTTON);
-        b->just_had_overlay = true;
+        tooltip_set_position_to_cursor(&gui->tooltip, TOOLTIP_TYPE_BUTTON);
+        b->just_had_tooltip = true;
 
-        if (strlen(b->overlay_text))
-            strcpy(gui->overlay.str[0], b->overlay_text);
+        if (strlen(b->tooltip_text))
+            strcpy(gui->tooltip.str[0], b->tooltip_text);
 
         if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
             b->on_pressed(data);
             b->activated = true;
         }
-    } else if (b->just_had_overlay) {
-        b->just_had_overlay = false;
-        overlay_reset(&gui->overlay);
+    } else if (b->just_had_tooltip) {
+        b->just_had_tooltip = false;
+        tooltip_reset(&gui->tooltip);
     }
 
     if (!(input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
@@ -371,5 +373,5 @@ void click_gui_tool_button(void *type_ptr) {
     for (int i = 0; i < TOOL_COUNT; i++) {
         gui->tool_buttons[i]->activated = 0;
     }
-    overlay_reset(&gui->overlay);
+    tooltip_reset(&gui->tooltip);
 }

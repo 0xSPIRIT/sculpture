@@ -91,7 +91,7 @@ void chisel_blocker_tick() {
             SDL_Point p1 = chisel_blocker->control_points[1];
             if (p0.x == p1.x && p0.y == p1.y) {
                 int xx = input->mx, yy = input->my;
-                /* f32 angle = atan2(xx-p0.x, yy-p0.y); */
+                /* f32 angle = atan2f(xx-p0.x, yy-p0.y); */
                 /* f32 dx = xx-p0.x; */
                 /* f32 dy = yy-p0.y; */
                 /* f32 len = sqrt(dx*dx + dy*dy); */

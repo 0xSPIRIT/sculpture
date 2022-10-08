@@ -1,5 +1,6 @@
 #include "util.h"
 
+#include <SDL2/SDL_render.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
@@ -148,16 +149,16 @@ Uint32 get_pixel_int(SDL_Surface *surf, int x, int y) {
     return pixels[x+y*surf->w];
 }
 
-internal int a = 1103515245;
-internal int c = 12345;
-internal int m = 2000000;
+internal int _a = 1103515245;
+internal int _c = 12345;
+internal int _m = 2000000;
 
 int my_rand(int seed) {
-    return (a * seed + c) % m;
+    return (_a * seed + _c) % _m;
 }
 
 f32 my_rand_f32(int seed) {
-    return (f32)my_rand(seed)/(f32)m;
+    return (f32)my_rand(seed)/(f32)_m;
 }
 
 f32 randf(f32 size) {
@@ -183,6 +184,10 @@ f32 clampf(f32 a, f32 min, f32 max) {
     if (a < min) return min;
     if (a > max) return max;
     return a;
+}
+
+f64 distance64(f64 ax, f64 ay, f64 bx, f64 by) {
+    return sqrt((bx-ax)*(bx-ax) + (by-ay)*(by-ay));
 }
 
 f32 distance(f32 ax, f32 ay, f32 bx, f32 by) {
@@ -257,4 +262,15 @@ void draw_text(TTF_Font *font, const char *str, SDL_Color col, int align_left, i
 
     SDL_FreeSurface(surf);
     SDL_DestroyTexture(texture);
+}
+
+
+void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
+    for (int yy = -size; yy <= size; yy++) {
+        for (int xx = -size; xx <= size; xx++) {
+            if (xx*xx + yy*yy > size*size) continue;
+
+            SDL_RenderDrawPoint(renderer, x+xx, y+yy);
+        }
+    }
 }

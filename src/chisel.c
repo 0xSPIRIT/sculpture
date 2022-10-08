@@ -135,7 +135,7 @@ void chisel_tick() {
     if (chisel->is_changing_angle) {
         f32 rmx = (f32)input->real_mx / (f32)gs->S;
         f32 rmy = (f32)(input->real_my-GUI_H) / (f32)gs->S;
-        chisel->angle = 180 + 360 * (f32)(atan2(rmy - chisel->y, rmx - chisel->x)) / (f32)(2*M_PI);
+        chisel->angle = 180 + 360 * atan2f(rmy - chisel->y, rmx - chisel->x) / (f32)(2*M_PI);
 
         f32 step = 45.0;
         if (chisel->face_mode) {
@@ -319,7 +319,7 @@ void chisel_draw() {
 Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
     struct Chisel *chisel = gs->chisel;
     struct Object *objects = gs->objects;
-    int *curr_blobs = objects[gs->object_current].blob_data[chisel->size].blobs;
+    Uint32 *curr_blobs = objects[gs->object_current].blob_data[chisel->size].blobs;
 
     bool did_hit_blocker = false;
     f32 px = chisel->x, py = chisel->y;

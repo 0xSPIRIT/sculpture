@@ -61,21 +61,6 @@ void deleter_tick() {
     deleter->was_active = deleter->active;
 }
 
-void deleter_stop(bool cancel) {
-    struct Deleter *deleter = &gs->deleter;
-    
-    if (!cancel) {
-        deleter_delete();
-    }
-
-    memset(deleter->points, 0, sizeof(struct SDL_Point)*POINT_COUNT);
-    deleter->point_count = 0;
-    deleter->active = false;
-
-    if (cancel)
-        deleter->was_active = false; // To prevent deletion the second time around if you cancel.
-}
-
 // A special number marking a pixel as marked in deleter->pixels.
 internal const Uint32 marked = 1234567890;
 // TODO: Account for different color formats, this assumes ARGB
@@ -95,6 +80,7 @@ internal void deleter_fill_neighbours(int x, int y) {
     deleter_fill_neighbours(x, y+1);
     deleter_fill_neighbours(x, y-1);
 }
+
 
 internal void deleter_flood_fill() {
     struct Deleter *deleter = &gs->deleter;
@@ -116,8 +102,6 @@ internal void deleter_flood_fill() {
 }
 
 internal void deleter_delete() {
-    struct Deleter *deleter = &gs->deleter;
-
     deleter_flood_fill();
 
     bool did_remove = false;
@@ -132,6 +116,21 @@ internal void deleter_delete() {
     }
 
     save_state_to_next();
+}
+
+void deleter_stop(bool cancel) {
+    struct Deleter *deleter = &gs->deleter;
+    
+    if (!cancel) {
+        deleter_delete();
+    }
+
+    memset(deleter->points, 0, sizeof(struct SDL_Point)*POINT_COUNT);
+    deleter->point_count = 0;
+    deleter->active = false;
+
+    if (cancel)
+        deleter->was_active = false; // To prevent deletion the second time around if you cancel.
 }
 
 void deleter_draw() {

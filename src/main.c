@@ -72,7 +72,7 @@ internal void game_init_sdl(struct Game_State *state, const char *window_title, 
                                      SDL_WINDOWPOS_UNDEFINED,
                                      w,
                                      h,
-                                     SDL_WINDOW_ALWAYS_ON_TOP);
+                                     0);
     Assert(state->window);
     
     /* SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d11"); */
@@ -90,9 +90,13 @@ internal void make_memory(struct Memory *persistent_memory, struct Memory *trans
 
     LPVOID base_address = (LPVOID) Terabytes(2);
 
+    printf("Large Page Size: %llu\n", GetLargePageMinimum());
+
+    // TODO: Large Pages
+
     persistent_memory->data = VirtualAlloc(base_address,
                                            persistent_memory->size + transient_memory->size,
-                                           MEM_COMMIT | MEM_RESERVE,
+                                           MEM_COMMIT|MEM_RESERVE,
                                            PAGE_READWRITE);
     AssertNW(persistent_memory->data);
     persistent_memory->cursor = persistent_memory->data;
@@ -117,9 +121,7 @@ internal void game_init(struct Game_State *state) {
     // Load all assets... except for render targets.
     // We can't create render targets until levels
     // are initialized.
-    textures_init(state->window,
-                  state->renderer,
-                  &state->textures);
+    textures_init(state->renderer, &state->textures);
     surfaces_init(&state->surfaces);
     
     SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
@@ -212,9 +214,7 @@ int main(int argc, char **argv) {
     struct Game_Code game_code;
     load_game_code(&game_code);
 
-
     struct Memory persistent_memory, transient_memory;
-
     make_memory(&persistent_memory, &transient_memory);
 
     // *1.5 in case we add more values at runtime.
@@ -284,7 +284,6 @@ int main(int argc, char **argv) {
 
         // Zero out the transient memory for next frame!
         ZeroMemory(transient_memory.data, transient_memory.size);
-        // Reset its cursor as well.
         transient_memory.cursor = transient_memory.data;
 
         if (should_stop) {

@@ -110,7 +110,7 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
                 gs->item_holding.type = a.type;
                 gs->item_holding.amount = a.amount;
                 
-                overlay_reset(&gs->gui.overlay);
+                tooltip_reset(&gs->gui.tooltip);
             } 
             
         } else if (input->mouse_pressed[SDL_BUTTON_RIGHT] && item->type && gs->item_holding.type == 0) { // If holding nothing
@@ -124,7 +124,7 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
                 gs->item_holding.type = item->type;
                 gs->item_holding.amount += half;
                 
-                overlay_reset(&gs->gui.overlay);
+                tooltip_reset(&gs->gui.tooltip);
             }
         }
     } else if (gs->gui.is_placer_active) {
@@ -188,7 +188,7 @@ void all_converters_tick() {
     converter_tick(gs->fuel_converter);
     
     if (!gs->gui.is_placer_active) {
-        bool set_overlay_this_frame = false;
+        bool set_tooltip_this_frame = false;
         
         for (int i = 0; i < 2; i++) {
             struct Converter *c = i == 0 ? gs->material_converter : gs->fuel_converter;
@@ -197,7 +197,7 @@ void all_converters_tick() {
                 if (!c->slots[j].item.type) continue;
                 
                 if (is_mouse_in_slot(&c->slots[j])) {
-                    overlay_set_position_to_cursor(&gs->gui.overlay, OVERLAY_TYPE_ITEM);
+                    tooltip_set_position_to_cursor(&gs->gui.tooltip, TOOLTIP_TYPE_ITEM);
                     
                     char type[64] = {0};
                     char type_name[64] = {0};
@@ -207,12 +207,12 @@ void all_converters_tick() {
                     sprintf(type, "Type: %s", type_name);
                     sprintf(amount, "Amount: %d", c->slots[j].item.amount);
                     
-                    strcpy(gs->gui.overlay.str[0], type);
-                    strcpy(gs->gui.overlay.str[1], amount);
+                    strcpy(gs->gui.tooltip.str[0], type);
+                    strcpy(gs->gui.tooltip.str[1], amount);
                     
-                    set_overlay_this_frame = true;
-                } else if (!set_overlay_this_frame && gs->gui.overlay.type == OVERLAY_TYPE_ITEM) {
-                    overlay_reset(&gs->gui.overlay);
+                    set_tooltip_this_frame = true;
+                } else if (!set_tooltip_this_frame && gs->gui.tooltip.type == TOOLTIP_TYPE_ITEM) {
+                    tooltip_reset(&gs->gui.tooltip);
                 }
             }
         }

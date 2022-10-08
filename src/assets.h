@@ -77,9 +77,7 @@ struct Fonts {
 
 SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp);
 
-void textures_init(SDL_Window *window,
-                   SDL_Renderer *renderer,
-                   struct Textures *textures);
+void textures_init(SDL_Renderer *renderer, struct Textures *textures);
 void textures_deinit(struct Textures *textures);
 
 void render_targets_init(SDL_Renderer *renderer,

@@ -77,9 +77,9 @@ internal void placer_place_circle(struct Placer *placer) {
                 if (is_cell_hard(placer->contains_type) &&
                     (gs->grid[(int)(x+fx)+(int)(fy+y)*gs->gw].type == 0 ||
                      gs->grid[(int)(x+fx)+(int)(fy+y)*gs->gw].object == placer->object_index))
-                    {
-                        placer->did_set_new = 1;
-                    }
+                {
+                    placer->did_set_new = 1;
+                }
 
                 if (gs->grid[(int)(x+fx)+(int)(fy+y)*gs->gw].type) continue;
                 int object_index = placer->object_index;
@@ -243,12 +243,12 @@ void placer_suck(struct Placer *placer) {
             // Remove cells in a circle
             const int r = placer->radius;
 
-            for (int dy = -r; dy <= r; dy++) {
-                for (int dx = -r; dx <= r; dx++) {
-                    if (dx*dx + dy*dy > r*r)  continue;
+            for (int ky = -r; ky <= r; ky++) {
+                for (int kx = -r; kx <= r; kx++) {
+                    if (kx*kx + ky*ky > r*r)  continue;
 
-                    int xx = (int) (x+dx);
-                    int yy = (int) (y+dy);
+                    int xx = (int) (x+kx);
+                    int yy = (int) (y+ky);
                     if (!is_in_bounds(xx, yy)) continue;
 
                     int type = arr[xx+yy*gs->gw].type;
@@ -309,12 +309,13 @@ void placer_tick(struct Placer *placer) {
             is_cell_hard(placer->contains_type) &&
             placer->contains_amount > 0 &&
             !gs->gui.popup && gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT))
-            {
-                placer->object_index = gs->object_count++;
-            }
-    
+        {
+            placer->object_index = gs->object_count++;
+        }
+
         if (placer->contains_amount > 0 && !gs->gui.popup && (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
             placer_place_circle(placer);
+            printf("A!\n");
         } else if (placer->did_click) {
             if (placer->object_index != -1) {
                 object_generate_blobs(placer->object_index, 0);
@@ -339,24 +340,24 @@ void placer_tick(struct Placer *placer) {
         break;
     }
 
-    // Set up the overlay.
-    overlay_set_position(&gs->gui.overlay, placer->x + placer->w/2 + 3, placer->y - placer->h, OVERLAY_TYPE_PLACER);
+    // Set up the tooltip.
+    tooltip_set_position(&gs->gui.tooltip, placer->x + placer->w/2 + 3, placer->y - placer->h, TOOLTIP_TYPE_PLACER);
 
-    strcpy(gs->gui.overlay.str[0], "Placer");
+    strcpy(gs->gui.tooltip.str[0], "Placer");
 
     // Get name from type.
     char string[256] = {0};
-    overlay_get_string(placer->contains_type, placer->contains_amount, string);
+    tooltip_get_string(placer->contains_type, placer->contains_amount, string);
 
     if (!gs->gui.popup) {
         if (placer->state == PLACER_PLACE_CIRCLE_MODE || placer->state == PLACER_PLACE_RECT_MODE) {
-            strcpy(gs->gui.overlay.str[1], "Mode: [PLACE]");
+            strcpy(gs->gui.tooltip.str[1], "Mode: [PLACE]");
         } if (placer->state == PLACER_SUCK_MODE) {
-            strcpy(gs->gui.overlay.str[1], "Mode: [TAKE]");
+            strcpy(gs->gui.tooltip.str[1], "Mode: [TAKE]");
         } 
-        strcpy(gs->gui.overlay.str[2], string);
+        strcpy(gs->gui.tooltip.str[2], string);
     } else {
-        strcpy(gs->gui.overlay.str[1], string);
+        strcpy(gs->gui.tooltip.str[1], string);
     }
 }
 
@@ -364,13 +365,13 @@ void placer_draw(struct Placer *placer, bool full_size) {
     const int scale = full_size ? gs->S : 1;
     int y_off = full_size ? GUI_H : 0;
 
-    if (gs->gui.popup) {
-        if (SDL_GetCursor() != gs->placer_cursor) {
-            /* SDL_SetCursor(gs->placer_cursor); */
-        }
-    } else if (SDL_GetCursor() == gs->placer_cursor) {
-        /* SDL_SetCursor(gs->normal_cursor); */
-    }
+    /* if (gs->gui.popup) {
+     *     if (SDL_GetCursor() != gs->placer_cursor) {
+     *         SDL_SetCursor(gs->placer_cursor);
+     *     }
+     * } else if (SDL_GetCursor() == gs->placer_cursor) {
+     *     SDL_SetCursor(gs->normal_cursor);
+     * } */
     
     if (placer->state == PLACER_SUCK_MODE || placer->state == PLACER_PLACE_CIRCLE_MODE) {
         int radius = placer->radius;

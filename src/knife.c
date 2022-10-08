@@ -30,7 +30,7 @@ void knife_tick() {
     f32 py = knife->y;
     
     if (input->keys[SDL_SCANCODE_LCTRL]) {
-        knife->angle = 180.f + 360.f * (f32)(atan2(input->my - knife->y, input->mx - knife->x)) / (2.f*(f32)M_PI);
+        knife->angle = 180.f + 360.f * atan2f(input->my - knife->y, input->mx - knife->x) / (2.f*(f32)M_PI);
         /* SDL_ShowCursor(1); */
     } else if (input->keys_released[SDL_SCANCODE_LCTRL]) {
         move_mouse_to_grid_position(knife->x, knife->y);

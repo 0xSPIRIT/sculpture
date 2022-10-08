@@ -106,9 +106,7 @@ void render_targets_init(SDL_Renderer *renderer,
     }
 }
 
-void textures_init(SDL_Window *window,
-                   SDL_Renderer *renderer,
-                   struct Textures *textures) {
+void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
     SDL_Surface *surf = NULL;
 
     // Converter Item Textures || previously item_init()
