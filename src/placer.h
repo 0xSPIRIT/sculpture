@@ -1,8 +1,3 @@
-#ifndef PLACER_H_
-#define PLACER_H_
-
-#include "converter.h"
-
 #define PLACER_COUNT 3
 
 #define MAX_PLACE_SOLID_TIME 45 // Frames until cut off for solids.
@@ -34,12 +29,3 @@ struct Placer {
 
     int placing_solid_time;
 };
-
-/* void placer_init(int num);
- * void placer_tick(struct Placer *placer);
- * void placer_draw(struct Placer *placer, bool full_size);
- * 
- * bool is_mouse_in_placer(struct Placer *placer); */
-/* SDL_RendererFlip get_placer_flip(struct Converter *converter, int placer_socket); */
-
-#endif  /* PLACER_H_ */

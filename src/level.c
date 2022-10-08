@@ -303,7 +303,7 @@ void level_tick() {
             blob_hammer_tick();
             break;
         case TOOL_PLACER:
-            if (!gs->gui.popup) // We'll handle updating it in the converter.c
+            if (!gs->gui.popup) // We'll handle updating it in the converter
                 placer_tick(&gs->placers[gs->current_placer]);
             break;
         case TOOL_GRABBER:
@@ -383,7 +383,7 @@ void level_draw() {
             blob_hammer_draw();
             break;
         case TOOL_PLACER:
-            if (!gs->gui.popup) // When gui.popup = true, we draw in converter.c
+            if (!gs->gui.popup) // When gui.popup = true, we draw in converter
                 placer_draw(&gs->placers[gs->current_placer], false);
             break;
         }

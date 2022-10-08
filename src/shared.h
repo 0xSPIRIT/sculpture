@@ -7,9 +7,6 @@
 // information, assert macros etc. are all here.
 //
 
-#ifndef SHARED_H_
-#define SHARED_H_
-
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -40,7 +37,6 @@
 #include "assets.h"
 #include "undo.h"
 #include "cursor.h"
-#include "converter.h"
 
 #define Kilobytes(x) ((Uint64)x*1024)
 #define Megabytes(x) ((Uint64)x*1024*1024)
@@ -216,5 +212,3 @@ inline void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 size_individ
 
     return output;
 }
-
-#endif // SHARED_H_

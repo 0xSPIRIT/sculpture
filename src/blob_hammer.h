@@ -1,8 +1,3 @@
-#ifndef HAMMER_H_
-#define HAMMER_H_
-
-#include "grid.h"
-
 #define MAX_BLOBS_TOUCHED 32
 
 // Used in chisel.c as well for the chisel's hammer state.
@@ -31,5 +26,3 @@ struct Blob_Hammer {
     Uint32 blobs_touched[MAX_BLOBS_TOUCHED];
     int blobs_touched_count;
 };
-
-#endif  /* HAMMER_H_ */

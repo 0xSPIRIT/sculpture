@@ -3,17 +3,12 @@
 // Created by kumar on 2016/03/29.
 //
 
-#include <stdbool.h>
-#include <Windows.h>
-
-#ifndef DPI_ENUMS_DECLARED
 typedef enum PROCESS_DPI_AWARENESS
 {
     PROCESS_DPI_UNAWARE = 0,
     PROCESS_SYSTEM_DPI_AWARE = 1,
     PROCESS_PER_MONITOR_DPI_AWARE = 2
 } PROCESS_DPI_AWARENESS;
-#endif
 
 typedef BOOL (WINAPI * SETPROCESSDPIAWARE_T)(void);
 typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);

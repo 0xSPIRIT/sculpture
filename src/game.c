@@ -11,7 +11,6 @@
 #include "chisel.c"
 #include "tooltip.c"
 #include "placer.c"
-#include "converter.c"
 #include "gui.c"
 #include "effects.c"
 #include "grabber.c"

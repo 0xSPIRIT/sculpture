@@ -1,6 +1,3 @@
-#ifndef BLOCKER_H_
-#define BLOCKER_H_
-
 #define BLOCKER_MAX_POINTS 512
 
 struct Blocker {
@@ -10,5 +7,3 @@ struct Blocker {
 
     Uint32 *pixels;
 };
-
-#endif // BLOCKER_H_

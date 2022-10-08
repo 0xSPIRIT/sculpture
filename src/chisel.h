@@ -1,6 +1,3 @@
-#ifndef CHISEL_H_
-#define CHISEL_H_
-
 #define CHISEL_TIME 0 /* The amount of frames the chisel moves. 0 = instant */
 #define CHISEL_COOLDOWN 3
 #define CHISEL_FORGIVING_AIM false // Do we check for surrounding cells?
@@ -34,5 +31,3 @@ struct Chisel {
     int *highlights; // List of indices into grid for highlighting the blobs.
     int highlight_count;
 };
-
-#endif /* CHISEL_H_ */

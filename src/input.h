@@ -1,6 +1,3 @@
-#ifndef INPUT_H_
-#define INPUT_H_
-
 #define MOUSE_BUTTONS 16
 
 struct Input {
@@ -17,5 +14,3 @@ struct Input {
     Uint8 mouse_pressed[MOUSE_BUTTONS];
     Uint8 mouse_released[MOUSE_BUTTONS];
 };
-
-#endif  /* INPUT_H_ */

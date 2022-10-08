@@ -1,11 +1,4 @@
-#ifndef ASSETS_H_
-#define ASSETS_H_
-
 #define RES_DIR "../res" 
-
-#include "grid.h"
-#include "level.h"
-#include "converter.h" // for CONVERTER_COUNT
 
 // Index into textures.render_targets[]
 enum {
@@ -70,5 +63,3 @@ struct Fonts {
         *font_bold_small,
         *font_title;
 };
-
-#endif

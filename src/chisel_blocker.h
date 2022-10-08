@@ -1,6 +1,3 @@
-#ifndef CHISEL_BLOCKER_H
-#define CHISEL_BLOCKER_H
-
 enum Chisel_Blocker_State {
     CHISEL_BLOCKER_OFF,
     CHISEL_BLOCKER_LINE_MODE,
@@ -26,5 +23,3 @@ struct Chisel_Blocker {
 
     int side;
 };
-
-#endif // CHISEL_BLOCKER_H

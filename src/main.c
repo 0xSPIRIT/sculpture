@@ -29,7 +29,6 @@
 //
 
 #include <windows.h>
-#include <stdbool.h>
 
 #include "shared.h"
 

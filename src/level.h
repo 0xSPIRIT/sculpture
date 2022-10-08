@@ -1,6 +1,3 @@
-#ifndef LEVEL_H_
-#define LEVEL_H_
-
 #define LEVEL_COUNT 10
 #define POPUP_TIME 45
 
@@ -27,14 +24,3 @@ struct Level {
     int w, h;
     int popup_time_current, popup_time_max;
 };
-
-/* void levels_setup();
- * void goto_level_string_hook(const char *string);
- * void goto_level(int lvl);
- * void level_tick();
- * void level_draw();
- * void level_draw_intro();
- * void level_get_cells_from_image(const char *path, struct Cell **out, struct Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h);
- * void level_output_to_png(const char *output_file); */
-
-#endif

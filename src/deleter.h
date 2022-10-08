@@ -1,8 +1,3 @@
-#ifndef DELETER_H_
-#define DELETER_H_
-
-#include "grid.h"
-
 #define POINT_COUNT 50
 
 struct Deleter {
@@ -22,10 +17,3 @@ struct Deleter {
 
     int cooldown;
 };
-
-/* void deleter_init();
- * void deleter_tick();
- * void deleter_draw();
- * void deleter_stop(bool cancel); */
-
-#endif  /* DELETER_H_ */
