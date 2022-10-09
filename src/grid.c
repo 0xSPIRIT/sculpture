@@ -1,5 +1,3 @@
-int draw_lines = 1;
-
 bool is_in_bounds(int x, int y) {
     return x >= 0 && y >= 0 && x < gs->gw && y < gs->gh;
 }
@@ -37,6 +35,41 @@ int is_cell_gas(int type) {
     return
         type == CELL_SMOKE ||
         type == CELL_STEAM;
+}
+
+int number_neighbours(struct Cell *array, int x, int y, int r) {
+    int c = 0;
+    for (int xx = -r; xx <= r; xx++) {
+        for (int yy = -r; yy <= r; yy++) {
+            if (xx == 0 && yy == 0) continue;
+            if (!is_in_bounds(x+xx, y+yy)) continue;
+            if (array[x+xx+(y+yy)*gs->gw].type) c++;
+        }
+    }
+    return c;
+}
+
+int number_direct_neighbours(struct Cell *array, int x, int y) {
+    int count = 0;
+
+    if (array[x-1 + (y  ) * gs->gw].type) count++;
+    if (array[x+1 + (y  ) * gs->gw].type) count++;
+    if (array[x   + (y-1) * gs->gw].type) count++;
+    if (array[x   + (y+1) * gs->gw].type) count++;
+
+    return count;
+}
+
+int is_any_neighbour_hard(int x, int y) {
+    int r = 1;
+    for (int xx = -r; xx <= r; xx++) {
+        for (int yy = -r; yy <= r; yy++) {
+            if (xx == 0 && yy == 0) continue;
+            if (!is_in_bounds(x+xx, y+yy)) continue;
+            if (is_cell_hard(gs->grid[x+xx+(y+yy)*gs->gw].type)) return 1;
+        }
+    }
+    return 0;
 }
 
 int number_neighbours_of_object(int x, int y, int r, int obj) {
@@ -217,11 +250,6 @@ void blob_generate_old_smart(int obj, int chisel_size, int percentage, Uint32 *b
             }
 
             int perc = percentage;
-            if (size == 2) {
-                perc = 0; // 2x2 squares will still have swapped neighbours because of other blobs next to it swapping theirs.
-            } else if (size == 4) {
-                perc *= 3;
-            }
 
             if (blob_find_count_from_position(obj, chisel_size, x, y)) {
                 for (int yy = -1; yy < -1+(size+1)*2; yy += size+1) {
@@ -257,6 +285,59 @@ void blob_generate_old_smart(int obj, int chisel_size, int percentage, Uint32 *b
     }
 }
 
+void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
+    int interval = 1;
+
+    Uint32 *blobs = gs->objects[obj].blob_data[size].blobs;
+    
+    for (int y = 0; y < gs->gh; y += interval) {
+        for (int x = 0; x < gs->gw; x += interval) {
+
+            if (gs->grid[x+y*gs->gw].object != obj) continue;
+            if (blobs[x+y*gs->gw]) continue;
+
+            if (number_neighbours(gs->grid, x, y, 1) < 8) {
+                const int r = size;
+                bool added = false;
+
+                bool dont_add = false;
+                
+                for (int yy = -r; yy <= r; yy++) {
+                    for (int xx = -r; xx <= r; xx++) {
+                        if (xx*xx + yy*yy > r*r) continue;
+                        if (blobs[x+xx+(y+yy)*gs->gw]) {
+                            dont_add = true;
+                            break;
+                        }
+                        if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
+
+                        blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
+                        added = true;
+                    }
+
+                    if (dont_add) break;
+                }
+
+                if (!dont_add) {
+                    for (int yy = -r; yy <= r; yy++) {
+                        for (int xx = -r; xx <= r; xx++) {
+                            if (xx*xx + yy*yy > r*r) continue;
+                            if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
+
+                            blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
+                            added = true;
+                        }
+                    }
+                }
+
+                if (added)
+                    (*blob_count)++;
+            }
+
+        }
+    }
+}
+
 // Sets up all blobs whose cells belongs to our obj.
 void object_generate_blobs(int object_index, int chisel_size) {
     if (object_index >= MAX_OBJECTS) return;
@@ -276,8 +357,8 @@ void object_generate_blobs(int object_index, int chisel_size) {
     if (chisel_size == 0) {
         blob_generate_dumb(object_index, chisel_size, &count);
     } else {
-        /* blob_generate_diamonds(object_index, chisel_size, &count); */
-        blob_generate_old_smart(object_index, chisel_size, percentage, &count);
+        /* blob_generate_old_smart(object_index, chisel_size, percentage, &count); */
+        blob_generate_circles(object_index, chisel_size, &count);
     }
 
     obj->blob_data[chisel_size].blob_count = count;
@@ -408,8 +489,6 @@ void grid_init(int w, int h) {
     gs->fg_grid = gs->grid_layers[1];
     gs->gas_grid = gs->grid_layers[2];
     gs->pickup_grid = gs->grid_layers[3];
-
-    printf("grid[%d].id = %d\n", 50, gs->grid[50].id);
 }
 
 SDL_Color pixel_from_index(struct Cell *cells, int i) {
@@ -878,6 +957,8 @@ void grid_array_draw(struct Cell *array) {
             } else {
                 SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, col.a);
             }
+
+            const bool draw_lines = false;
             if (draw_lines) {
                 struct Line l = {x, y, array[x+y*gs->gw].px, array[x+y*gs->gw].py};
                 if (array[x+y*gs->gw].px != 0 && array[x+y*gs->gw].py != 0 && array[x+y*gs->gw].type == CELL_WATER) {
@@ -924,41 +1005,6 @@ void grid_draw(void) {
             }
         }
     }
-}
-
-int number_neighbours(struct Cell *array, int x, int y, int r) {
-    int c = 0;
-    for (int xx = -r; xx <= r; xx++) {
-        for (int yy = -r; yy <= r; yy++) {
-            if (xx == 0 && yy == 0) continue;
-            if (!is_in_bounds(x+xx, y+yy)) continue;
-            if (array[x+xx+(y+yy)*gs->gw].type) c++;
-        }
-    }
-    return c;
-}
-
-int number_direct_neighbours(struct Cell *array, int x, int y) {
-    int count = 0;
-
-    if (array[x-1 + (y  ) * gs->gw].type) count++;
-    if (array[x+1 + (y  ) * gs->gw].type) count++;
-    if (array[x   + (y-1) * gs->gw].type) count++;
-    if (array[x   + (y+1) * gs->gw].type) count++;
-
-    return count;
-}
-
-int is_any_neighbour_hard(int x, int y) {
-    int r = 1;
-    for (int xx = -r; xx <= r; xx++) {
-        for (int yy = -r; yy <= r; yy++) {
-            if (xx == 0 && yy == 0) continue;
-            if (!is_in_bounds(x+xx, y+yy)) continue;
-            if (is_cell_hard(gs->grid[x+xx+(y+yy)*gs->gw].type)) return 1;
-        }
-    }
-    return 0;
 }
 
 // Try to move us down 1 cell.

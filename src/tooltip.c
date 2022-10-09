@@ -49,7 +49,7 @@ void tooltip_get_string(int type, int amt, char *out_str) {
 }
 
 // This happens outside of the pixel-art texture, so we must
-// multiply all values by scale.
+// multiply all positions by scale.
 void tooltip_draw(struct Tooltip *tooltip) {
     if (tooltip->x == -1 && tooltip->y == -1) return;
 

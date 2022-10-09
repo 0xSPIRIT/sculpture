@@ -7,37 +7,6 @@
 // information, assert macros etc. are all here.
 //
 
-#define SDL_MAIN_HANDLED
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-
-#include <time.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-
-#include "typedefs.h"
-#include "blob_hammer.h"
-#include "grid.h"
-#include "chisel.h"
-#include "knife.h"
-#include "deleter.h"
-#include "popup.h"
-#include "placer.h"
-#include "level.h"
-#include "gui.h"
-#include "input.h"
-#include "grabber.h"
-#include "effects.h"
-#include "chisel_blocker.h"
-#include "blocker.h"
-#include "assets.h"
-#include "undo.h"
-#include "cursor.h"
-
 #define Kilobytes(x) ((Uint64)x*1024)
 #define Megabytes(x) ((Uint64)x*1024*1024)
 #define Gigabytes(x) ((Uint64)x*1024*1024*1024)
@@ -50,6 +19,8 @@
 #define arena_alloc(mem, num, size) (_arena_alloc(mem, num, size, __FILE__, __LINE__))
 // 'which' is an enum in assets.h
 #define RenderTarget(which) (gs->textures.render_targets[gs->level_current][which])
+
+#include "all.h"
 
 //
 // To allocate permanent memory that will persist until

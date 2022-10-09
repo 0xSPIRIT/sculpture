@@ -1,5 +1,3 @@
-//// Chisel Hammer
-
 void chisel_hammer_init() {
     struct Chisel_Hammer *hammer = &gs->chisel_hammer;
     struct Chisel *chisel = gs->chisel;

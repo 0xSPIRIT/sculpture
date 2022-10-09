@@ -226,7 +226,7 @@ void gui_tick() {
             button_tick(gui->tool_buttons[i], &i);
         }
         if (input->real_my >= GUI_H) {
-            tooltip_reset(&gui->tooltip);
+            // tooltip_reset(&gui->tooltip);
         }
     }
 

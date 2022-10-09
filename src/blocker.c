@@ -1,3 +1,11 @@
+bool is_angle_225(f64 deg_angle) {
+    f64 f = fabs(deg_angle);
+    if (f == 22.5 || f == 157.5 || f == 112.5 || f == 67.5) {
+        return true;
+    }
+    return false;
+}
+
 void blocker_init() {
     struct Blocker *blocker = &gs->blocker;
 
@@ -13,6 +21,7 @@ void blocker_tick() {
     }
 
     if (!blocker->on) return;
+    if (input->real_my < GUI_H) return;
 
     if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
         memset(blocker->points, 0, BLOCKER_MAX_POINTS * sizeof(SDL_Point));
@@ -28,29 +37,28 @@ void blocker_tick() {
         blocker->points[1].y = input->my;
         blocker->point_count = 2;
 
-        if (input->keys[SDL_SCANCODE_LSHIFT]) {
-            f64 dx = blocker->points[1].x - blocker->points[0].x;
-            f64 dy = blocker->points[1].y - blocker->points[0].y;
+        f64 dx = blocker->points[1].x - blocker->points[0].x;
+        f64 dy = blocker->points[1].y - blocker->points[0].y;
 
-            f64 length = distance64(blocker->points[0].x, blocker->points[0].y,
-                                    blocker->points[1].x, blocker->points[1].y);
+        f64 length = distance64(blocker->points[0].x, blocker->points[0].y,
+                                blocker->points[1].x, blocker->points[1].y);
                         
-            const f64 clamp = 22.5;
+        const f64 clamp = 22.5;
 
-            f64 angle = atan2f(dy, dx);
-            angle /= 2 * M_PI;
-            angle *= 360;
-            angle = ((int)angle) % 360;
-            angle = angle / clamp;
-            angle = clamp * round(angle);
+        blocker->angle = atan2f(dy, dx);
 
-            angle /= 360.f;
-            angle *= 2 * M_PI;
+        if (input->keys[SDL_SCANCODE_LSHIFT]) {
+            blocker->angle /= 2 * M_PI;
+            blocker->angle *= 360;
+            blocker->angle = ((int)blocker->angle) % 360;
+            blocker->angle = blocker->angle / clamp;
+            blocker->angle = clamp * round(blocker->angle);
 
-            f64 ux = cos(angle);
-            f64 uy = sin(angle);
+            blocker->angle /= 360.f;
+            blocker->angle *= 2 * M_PI;
 
-            printf("%lf, %lf\n", ux, uy);
+            f64 ux = cos(blocker->angle);
+            f64 uy = sin(blocker->angle);
 
             blocker->points[1].x = round(blocker->points[0].x + ux*length);
             blocker->points[1].y = round(blocker->points[0].y + uy*length);
@@ -77,38 +85,90 @@ void blocker_draw() {
     SDL_RenderClear(gs->renderer);
 
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 0, 255);
-    /* SDL_RenderDrawLine(gs->renderer, blocker->points[0].x, blocker->points[0].y, blocker->points[1].x, blocker->points[1].y); */
 
-    SDL_Point prev = {-1, -1};
+    f64 deg_angle = Degrees(blocker->angle);
 
-    for (int i = 0; i < blocker->point_count; i++) {
-        if (prev.x != -1) {
-            SDL_Point curr = blocker->points[i];
+    const int circle_size = 1;
+            
+    // For one line:
+    if (is_angle_225(deg_angle)) {
+        int dir_x = sign(blocker->points[1].x - blocker->points[0].x);
+        int dir_y = sign(blocker->points[1].y - blocker->points[0].y);
+        
+        int a = 0;
+        int x = blocker->points[0].x;
+        int y = blocker->points[0].y;
 
-            f32 len = distancei(curr.x, curr.y, prev.x, prev.y);
-            f32 dx = (f32) (curr.x - prev.x);
-            f32 dy = (f32) (curr.y - prev.y);
+        f64 length = distance64((f64)blocker->points[0].x, (f64)blocker->points[1].y, (f64)x, (f64)y);
+        f64 total_length = distance64_point(blocker->points[0], blocker->points[1]);
 
-            f32 ux, uy;
+        f64 prev_length = 0;
 
-            ux = dx/len;
-            uy = dy/len;
+        while (length < total_length) {
+            bool break_out = false;
+            
+            a = 0;
+            while (a < 2) {
+                // SDL_RenderDrawPoint(gs->renderer, x, y);
+                fill_circle(gs->renderer, x, y, circle_size);
+                
+                f64 f = fabs(deg_angle);
 
-            const int circle_size = 2;
+                if (f == 22.5 || f == 157.5) {
+                    x += dir_x;
+                } else {
+                    y += dir_y;
+                }
+                
+                ++a;
+                length = distance64((f64)blocker->points[0].x, (f64)blocker->points[0].y, (f64)x, (f64)y);
+                prev_length = length;
+                
+                if (length > total_length) {
+                    break_out = true;
+                    break;
+                }
+            }
 
-            SDL_FPoint c = {(f32)prev.x, (f32)prev.y};
+            if (break_out) break;
 
-            f32 curr_dist = 0;
-            while (curr_dist < len) {
-                fill_circle(gs->renderer, (int)c.x, (int)c.y, circle_size);
-                c.x += ux;
-                c.y += uy;
+            f64 f = fabs(deg_angle);
 
-                curr_dist = distance(c.x, c.y, (f32)prev.x, (f32)prev.y);
+            if (f == 22.5 || f == 157.5) {
+                y += dir_y;
+            } else {
+                x += dir_x;
             }
         }
+    } else {
+        SDL_Point prev = {-1, -1};
+        for (int i = 0; i < blocker->point_count; i++) {
+            if (prev.x != -1) {
+                SDL_Point curr = blocker->points[i];
+            
+                f32 len = distancei(curr.x, curr.y, prev.x, prev.y);
+                f32 dx = (f32) (curr.x - prev.x);
+                f32 dy = (f32) (curr.y - prev.y);
+            
+                f32 ux, uy;
+            
+                ux = dx/len;
+                uy = dy/len;
+            
+                SDL_FPoint c = {(f32)prev.x, (f32)prev.y};
+
+                f32 curr_dist = 0;
+                while (curr_dist < len) {
+                    fill_circle(gs->renderer, (int)c.x, (int)c.y, circle_size);
+                    c.x += ux;
+                    c.y += uy;
+            
+                    curr_dist = distance(c.x, c.y, (f32)prev.x, (f32)prev.y);
+                }
+            }
         
-        prev = blocker->points[i];
+            prev = blocker->points[i];
+        }
     }
 
     SDL_RenderReadPixels(gs->renderer, NULL, 0, blocker->pixels, 4*gs->gw);

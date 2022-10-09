@@ -1,3 +1,6 @@
+#define Radians(x) ((x) * (M_PI / 180.0))
+#define Degrees(x) ((x) * (180.0 / M_PI))
+
 void start_timer() {
     gs->global_start = clock();
 }
@@ -177,6 +180,10 @@ f64 distance64(f64 ax, f64 ay, f64 bx, f64 by) {
     return sqrt((bx-ax)*(bx-ax) + (by-ay)*(by-ay));
 }
 
+f64 distance64_point(SDL_Point a, SDL_Point b) {
+    return distance64((f64) a.x, (f64) a.y, (f64) b.x, (f64) b.y);
+}
+
 f32 distance(f32 ax, f32 ay, f32 bx, f32 by) {
     return sqrtf((bx-ax)*(bx-ax) + (by-ay)*(by-ay));
 }
@@ -211,8 +218,12 @@ bool is_point_in_rect(SDL_Point p, SDL_Rect r) {
     return p.x >= r.x && p.x <= r.x+r.w && p.y >= r.y && p.y <= r.y+r.h;
 }
 
+int sign(int a) {
+    return (a > 0) ? 1 : ((a == 0) ? 0 : -1);
+}
+
 // Stolen from https://stackoverflow.com/a/2049593
-f32 sign(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
+f32 sign_triangle(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
     return (f32)(p1.x - p3.x) * (f32)(p2.y - p3.y) - (f32)(p2.x - p3.x) * (f32)(p1.y - p3.y);
 }
 
@@ -220,9 +231,9 @@ bool is_point_in_triangle(SDL_Point pt, SDL_Point v1, SDL_Point v2, SDL_Point v3
     f32 d1, d2, d3;
     int has_neg, has_pos;
 
-    d1 = sign(pt, v1, v2);
-    d2 = sign(pt, v2, v3);
-    d3 = sign(pt, v3, v1);
+    d1 = sign_triangle(pt, v1, v2);
+    d2 = sign_triangle(pt, v2, v3);
+    d3 = sign_triangle(pt, v3, v1);
 
     has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
     has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);

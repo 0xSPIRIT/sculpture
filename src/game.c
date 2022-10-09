@@ -213,6 +213,7 @@ export void game_run(struct Game_State *state) {
     if (level->state != LEVEL_STATE_INTRO) {
         gui_tick();
         all_converters_tick();
+
         gui_draw();
 
         SDL_Rect dst = {

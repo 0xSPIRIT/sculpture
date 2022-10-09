@@ -285,12 +285,14 @@ void placer_tick(struct Placer *placer) {
 
     // If the cell type is hard, use rectangle placing, otherwise use circle placing.
     if (placer->state != PLACER_SUCK_MODE) {
-        /* if (is_cell_hard(placer->contains_type)) { */
-        /*     placer->state = PLACER_PLACE_RECT_MODE; */
-        /* } else { */
+        /* if (is_cell_hard(placer->contains_type)) {
+         *     placer->state = PLACER_PLACE_RECT_MODE;
+         * } else { */
             placer->state = PLACER_PLACE_CIRCLE_MODE;
         /* } */
     }
+
+    if (input->real_my < GUI_H) return;
 
     switch (placer->state) {
     case PLACER_PLACE_CIRCLE_MODE:
@@ -304,7 +306,6 @@ void placer_tick(struct Placer *placer) {
 
         if (placer->contains_amount > 0 && !gs->gui.popup && (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
             placer_place_circle(placer);
-            printf("A!\n");
         } else if (placer->did_click) {
             if (placer->object_index != -1) {
                 object_generate_blobs(placer->object_index, 0);
@@ -348,6 +349,8 @@ void placer_tick(struct Placer *placer) {
     } else {
         strcpy(gs->gui.tooltip.str[1], string);
     }
+
+    printf("Tooltip set!\n");
 }
 
 void placer_draw(struct Placer *placer, bool full_size) {

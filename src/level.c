@@ -33,14 +33,13 @@ Uint8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
     CELL_DUST,          150, 150, 150
 };
 
-// Image must be formatted as Uint32 RGBA.
 // Gets cells based on pixels in the image.
 //
-// path - path to the image
-// out  - pointer to array of Cells (it's allocated in this function)
-// source_cells - pointer to a bunch of source cells (NULL if don't want). Must not be heap allocated.
+// path                  - path to the image
+// out                   - pointer to array of Cells (it's allocated in this function)
+// source_cells          - pointer to a bunch of source cells (NULL if don't want). Must not be heap allocated.
 // out_source_cell_count - Pointer to the cell count. Updates in this func.
-// out_w & out_h - width and height of the image.
+// out_w & out_h         - width and height of the image.
 void level_get_cells_from_image(const char *path, struct Cell **out, struct Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h) {
     SDL_Surface *surface = IMG_Load(path);
     Assert(surface);

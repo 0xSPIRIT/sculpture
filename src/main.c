@@ -23,21 +23,27 @@
 //
 // This method also means you can't store "local persistant"
 // (static) variables inside functions nor global variables
-// because they reset every time you reload the DLL.
-// They're probably not very good practice in a lot of uses
-// anyways.
+// because they reset every time you reload the DLL. The only
+// global variable I have is "gs", which is the GameState.
+// It's value gets reset every frame in case the dll reloads.
+// Globals are probably not very good practice in a lot of
+// uses anyways.
+//
+// This game uses a jumbo/unity build, so we don't need
+// function prototypes or includes anywhere except all.h,
+// shared.h, main.c and game.c. That way, headers are all
+// just struct definitions or #defines!
 //
 
 #include <windows.h>
 
 #include "shared.h"
+#include "win32_SetProcessDpiAware.h"
 
 // Include all files to compile in one translation unit for
 // compilation speed's sake. ("Unity Build")
 #include "assets.c"
 #include "input.c"
-
-#include "win32_SetProcessDpiAware.h"
 
 #define GAME_DLL_NAME "sculpture.dll"
 #define TEMP_DLL_NAME "sculpture_temp.dll"
@@ -68,15 +74,12 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
                                      0);
     Assert(state->window);
     
-    /* SDL_SetHint(SDL_HINT_RENDER_DRIVER, "direct3d11"); */
-    state->renderer = SDL_CreateRenderer(state->window,
-                                         -1,
-                                         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    state->renderer = SDL_CreateRenderer(state->window, -1, SDL_RENDERER_SOFTWARE);
     Assert(state->renderer);
 }
 
 void make_memory(struct Memory *persistent_memory, struct Memory *transient_memory) {
-    persistent_memory->size = Megabytes(512);
+    persistent_memory->size = Gigabytes(1);
     transient_memory->size = Megabytes(32);
 
     AssertNW(persistent_memory->size >= sizeof(struct Game_State));
@@ -232,7 +235,18 @@ int main(int argc, char **argv) {
 
     bool running = true;
     
+    LARGE_INTEGER time_start, time_elapsed;
+
+    LARGE_INTEGER frequency;
+    QueryPerformanceFrequency(&frequency);
+    QueryPerformanceCounter(&time_start);
+
+    const f64 target_seconds_per_frame = 1.0/60.0;
+
     while (running) {
+        LARGE_INTEGER time_elapsed_for_frame;
+        QueryPerformanceCounter(&time_elapsed_for_frame);
+        
         // We push the DLL reload to a delay because if we lock the file too fast
         // the compiler doesn't have enough time to write to it... or something.
         // It's only a 5-frame delay so it doesn't matter compared to compilation
@@ -249,19 +263,6 @@ int main(int argc, char **argv) {
         }
         
         input_tick(game_state);
-
-        // Memory usage statistics.
-        {
-            Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
-            Uint64 size_max = persistent_memory.size;
-            f32 percentage = (f32)size_current / (f32)size_max;
-            percentage *= 100.f;
-
-            char title[128] = {0};
-            sprintf(title, "Alaska | Memory Used: %.2f%%", percentage);
-
-            SDL_SetWindowTitle(game_state->window, title);
-        }
 
         SDL_Event event;
 
@@ -281,6 +282,31 @@ int main(int argc, char **argv) {
 
         if (should_stop) {
             running = false;
+        }
+
+        QueryPerformanceCounter(&time_elapsed);
+
+        Uint64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
+        f64 d = (f64)delta / (f64)frequency.QuadPart;
+
+        // Sleep until 16.6ms has passed.
+        while (d < target_seconds_per_frame) {
+            LARGE_INTEGER end;
+            QueryPerformanceCounter(&end);
+            d = (f64)(end.QuadPart - time_elapsed_for_frame.QuadPart) / (f64)frequency.QuadPart;
+        }
+
+        // Memory usage statistics.
+        {
+            Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
+            Uint64 size_max = persistent_memory.size;
+            f32 percentage = (f32)size_current / (f32)size_max;
+            percentage *= 100.f;
+
+            char title[128] = {0};
+            sprintf(title, "Alaska | Memory Used: %.2f%% | FPS: %.2f", percentage, 1.0/d);
+
+            SDL_SetWindowTitle(game_state->window, title);
         }
     }
     
