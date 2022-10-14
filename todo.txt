@@ -1,14 +1,22 @@
       --------------------------TODO----------------------------
 
-3 Things
-   - Wood chisel blocker.
-   - Small radius for deleter points. This is as to avoid using it
-     for minute changes.
-   - For the deleter, incinerate. Don't dustize the things removed
-     via the deleter.
+Start of Session: 5:51 pm
 
-- Play around with the converter.
-- Finally, create levels.
+- Create levels 1-4, and experiment with them & the converter.
+  Get them on the right track first.
+    - Level 1 "Alaska"
+    - Level 2 "Elementary"
+    - Level 3 "Clock's Ticking"
+    - Level 4 "The Process"
+  When doing these levels, try having a large screen resolution.
+  Modify blob generators as well? Larger circles?
+
+
+
+- Grid (improve the circle generator. it's very good so far,
+        go far the last time.)
+- Replace undo system data structure with a simple array, not a linked list,
+  which allocates too much memory.
 
 - Some kind of crash when closing the game, and sometimes when using
   the material converter... but only when in release mode... sigh.
@@ -19,57 +27,9 @@
 - In goto_level, most of those init functions don't need to reallocate
   memory. What they really want is zeroing out the memory.
 
-     ---------------------------Ideas----------------------------
 
-- Make diamond completely brittle unless you use the small chisel.
-- Inner monologue, Inscryption-style text between each level. Judging
-  yourself or praising yourself. Gets you amped up for the final
-  level, setting up the "failure".
-- Instead of ending on Glass Body falling down, add some dialogue
-  afterward then end on the first level "Alaska". End on happy note?
-- Find a way to get the pretension point across better (more than the
-  zero-depth glass body). Push that to the dialogue!
-- You gain more tools as you go along.
-
-- Orb imagery! Use it in Diamond & Quartz!
-  Figures reaching for something that is offscreen
-  then we finally see it's the orb
-- On the dust layer, check collisions on main grid.
-- Put toolbar on left instead of top? Leave space for metadata?
-
-For Level 3 (Conversion), we still need to get a shape.
-It must be simple enough to be the second level (you're still getting
-used to the chiseling etc.) but also complex enough to be thematically
-relevent. I don't want any level to not be thematically tied because
-there's just so little of them and the game must be as polished as
-possible. However, if we can't figure out a good shape we could leave
-it as something simple for now, and iterate on it later.
-
-I think chiseling shapes is sort of too complex, but we'll need
-playtesting to make sure that is the case. If it is too complex, then
-we can change the chisel blocker to have more nodes, or have a line
-mode where it's a bunch of points you can move around with only
-straight lines. You can then switch between this mode (default) and
-the smooth mode (we'll do a pixelizer pass on this like Aseprite).
-
-Update: Pretty sure the solution is just to have the player draw
-lines that convert into a bezier curve, then using that as a base
-to do an automated chisel, chiseling everything in that segment
-the player just drew on. The option will still be there to chisel
-manually for simple modifications, though, such as very fine-tuned
-edging, bevels, details, etc.
-
-Progress - Use chisels first, then deleter comes in after a while.
-
--------------------------------------------------------------------
-
-Notes
-
-- Chiseling small portions menially
-  is not very fun, especially at the
-  start. The music can make it better,
-  but let's try to maximize the fun at
-  the start.
-- Focus on curved, general structures?
-  Nothing square / rigid like the
-  fireplace.
+If deleter is still an option:
+   - Only use it for large changes. Denounce any points that are in
+     any way close together.
+   - For the deleter, incinerate. Don't dustize the things removed
+     via the deleter.

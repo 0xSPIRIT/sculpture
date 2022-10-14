@@ -230,13 +230,18 @@ void chisel_init(struct Chisel *type) {
     chisel->line = NULL;
     chisel->face_mode = false;
 
-    chisel->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+    if (chisel->pixels == NULL) {
+        chisel->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+    }
 
     chisel->texture = chisel->outside_texture;
     chisel->w = chisel->outside_w;
     chisel->h = chisel->outside_h;
 
-    chisel->highlights = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
+    if (chisel->highlights == NULL) {
+        chisel->highlights = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
+    }
+
     chisel->highlight_count = 0;
 
     chisel->spd = 3.;
@@ -274,42 +279,50 @@ void chisel_update_texture() {
     int x = (int)chisel->x;
     int y = (int)chisel->y;
 
+    if (gs->input.keys[SDL_SCANCODE_J]) {
+        printf("%f\n", chisel->angle);
+    }
+
     // Disgusting hardcoding to adjust the weird rotation SDL does.
     // TODO: Clean this up.
     if (!chisel->face_mode) {
         if (chisel->size == 0 || chisel->size == 1) {
             if (chisel->angle == 225) {
-                x++;
                 y += 2;
             } else if (chisel->angle == 180) {
                 x++;
                 y++;
-            } else if (chisel->angle == 90 || chisel->angle == 45) {
-                x++;
-            } else if (chisel->angle == 135) {
-                x += 2;
-            }
-        } else {
-            if (chisel->angle == 0) {
-                y--;
-            } else if (chisel->angle == 270) {
-                y++;
-                x--;
-            } else if (chisel->angle == 225) {
-                y += 2;
-            } else if (chisel->angle == 180) {
-                x++;
-                y += 2;
             } else if (chisel->angle == 90) {
-                x += 2;
+                x++;
             } else if (chisel->angle == 45) {
-                y -= 2;
+                y--;
             } else if (chisel->angle == 135) {
                 x += 2;
                 y++;
             } else if (chisel->angle == 315) {
                 x--;
             }
+        } else {
+            /* if (chisel->angle == 0) {
+             *     y--;
+             * } else if (chisel->angle == 270) {
+             *     y++;
+             *     x--;
+             * } else if (chisel->angle == 225) {
+             *     y += 2;
+             * } else if (chisel->angle == 180) {
+             *     x++;
+             *     y += 2;
+             * } else if (chisel->angle == 90) {
+             *     x += 2;
+             * } else if (chisel->angle == 45) {
+             *     y -= 2;
+             * } else if (chisel->angle == 135) {
+             *     x += 2;
+             *     y++;
+             * } else if (chisel->angle == 315) {
+             *     x--;
+             * } */
         }
     }
 
@@ -386,8 +399,8 @@ void chisel_tick() {
 
             // Highlight the current blob.
             // This is a fake chiseling- we're resetting position afterwards.
-            f32 chisel_dx = (f32) cosf(2.f*(f32)M_PI * ((chisel->angle+180) / 360.f));
-            f32 chisel_dy = (f32) sinf(2.f*(f32)M_PI * ((chisel->angle+180) / 360.f));
+            f32 chisel_dx = cosf(2.f*(f32)M_PI * ((chisel->angle+180) / 360.f));
+            f32 chisel_dy = sinf(2.f*(f32)M_PI * ((chisel->angle+180) / 360.f));
             f32 dx = chisel->spd * chisel_dx;
             f32 dy = chisel->spd * chisel_dy;
             f32 len = sqrtf(dx*dx + dy*dy);

@@ -232,7 +232,11 @@ void level_tick() {
             }
             objects_reevaluate();
 
-            undo_system_init();
+            if (!gs->undo_initialized) {
+                undo_system_init();
+            } else {
+                undo_system_reset();
+            }
         }
         break;
     case LEVEL_STATE_OUTRO:
@@ -286,7 +290,7 @@ void level_tick() {
         blocker_tick();
 
         if (gs->chisel_blocker_mode) break;
-        if (gs->blocker.on) break;
+        if (gs->blocker.state) break;
         
         switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE:
@@ -359,6 +363,8 @@ void level_draw() {
         level_draw_intro();
         break;
     case LEVEL_STATE_OUTRO: case LEVEL_STATE_PLAY:
+        SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
+
         SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
         
         SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
@@ -393,86 +399,8 @@ void level_draw() {
         draw_blobs();
         draw_objects();
 
+        SDL_SetRenderTarget(gs->renderer, prev);
         break;
-    }
-
-    if (level->state == LEVEL_STATE_OUTRO) {
-        SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
-        SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
-        SDL_RenderFillRect(gs->renderer, &rect);
-
-        const int margin = 36;
-
-        { // Level name
-            char string[256] = {0};
-            sprintf(string, "Level %d - \"%s\"", gs->level_current+1, level->name);
-
-            int x = rect.x + margin;
-            int y = rect.y + margin;
-
-            draw_text(gs->fonts.font, string, (SDL_Color){0,0,0,255}, 0, 0, x, y, NULL, NULL);
-        }
-
-        // Desired and Your grid.
-        for (int i = 0; i < 2; i++) {
-            char string[256] = {0};
-            if (!i) {
-                strcpy(string, "What you intended");
-            } else {
-                strcpy(string, "The result");
-            }
-
-            int dx = rect.x + margin;
-            int dy = rect.y + 100;
-            if (i) { // If your grid, put it on the right
-                dx += rect.w - margin - 2*level->w - margin;
-            }
-
-            draw_text(gs->fonts.font, string, (SDL_Color){0, 0, 0, 255}, 0, 0, dx, dy, NULL, NULL);
-
-            for (int y = 0; y < gs->gh; y++) {
-                for (int x = 0; x < gs->gw; x++) {
-                    SDL_Rect r;
-                    switch (i) {
-                    case 0: // Desired
-                        if (!level->desired_grid[x+y*gs->gw].type) {
-                            SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-                        }  else {
-                            SDL_Color col = pixel_from_index(level->desired_grid, x+y*gs->gw);
-                            SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
-                        }
-                        break;
-                    case 1: // Yours
-                        if (!gs->grid[x+y*gs->gw].type) {
-                            SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-                        }  else {
-                            SDL_Color col = pixel_from_index(gs->grid, x+y*gs->gw);
-                            SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, col.a);
-                        }
-                        break;
-                    }
-                    r = (SDL_Rect){ 2*x + dx, 2*y + dy + 32, 2, 2 };
-                    SDL_RenderFillRect(gs->renderer, &r);
-                }
-            }
-        }
-
-        draw_text(gs->fonts.font,
-                  "Next Level [n]",
-                  (SDL_Color){0, 91, 0, 255},
-                  1, 1,
-                  rect.x + rect.w - margin,
-                  rect.y + rect.h - margin,
-                  NULL,
-                  NULL);
-        draw_text(gs->fonts.font,
-                  "Close [f]",
-                  (SDL_Color){0, 91, 0, 255},
-                  0, 1,
-                  rect.x + margin,
-                  rect.y + rect.h - margin,
-                  NULL,
-                  NULL);
     }
 }
 

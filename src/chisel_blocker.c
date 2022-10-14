@@ -12,7 +12,10 @@ void chisel_blocker_init() {
     chisel_blocker->side = 1;
 
     SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
-    chisel_blocker->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+
+    if (chisel_blocker->pixels == NULL) {
+        chisel_blocker->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+    }
 }
 
 void flood_fill(Uint32 *pixels, int x, int y, Uint32 value) {

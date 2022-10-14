@@ -1,4 +1,13 @@
+void undo_system_reset() {
+    for (int i = 0; i < NUM_GRID_LAYERS; i++) {
+        memset(gs->start_state->grid_layers[i], 0, gs->gw*gs->gh*sizeof(struct Cell));
+    }
+    gs->start_state->next = NULL;
+    gs->start_state->prev = NULL;
+}
+
 void undo_system_init() {
+    gs->undo_initialized = true;
     gs->start_state = arena_alloc(gs->persistent_memory, 1, sizeof(struct Save_State));
     gs->current_state = gs->start_state;
 

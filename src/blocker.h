@@ -1,10 +1,16 @@
-#define BLOCKER_MAX_POINTS 512
+#define BLOCKER_MAX_POINTS 256
+
+enum Blocker_State {
+    BLOCKER_STATE_OFF,
+    BLOCKER_STATE_LINE,
+    BLOCKER_STATE_CURVE,
+};
 
 struct Blocker {
-    bool on;
+    enum Blocker_State state, prev_state;
     struct SDL_Point points[BLOCKER_MAX_POINTS];
-    f64 angle;
     int point_count;
 
+    f64 angle;
     Uint32 *pixels;
 };

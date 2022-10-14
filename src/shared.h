@@ -54,7 +54,7 @@ struct Game_State {
     struct Surfaces surfaces;
     struct Fonts fonts;
 
-    int S; // scale
+    int S;
     int window_width, window_height;
     f32 delta_time;
 
@@ -81,6 +81,7 @@ struct Game_State {
     struct Deleter deleter;
     clock_t global_start, global_end;
 
+    bool undo_initialized;
     struct Save_State *current_state, *start_state;
     int state_count; // Number of states saved.
 

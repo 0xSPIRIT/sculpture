@@ -1,11 +1,15 @@
 void deleter_init() {
     struct Deleter *deleter = &gs->deleter;
-    memset(deleter, 0, sizeof(struct Deleter));
 
     deleter->highlight_count = 0;
-    deleter->highlights = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
 
-    deleter->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+    if (deleter->highlights == NULL) {
+        deleter->highlights = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
+    }
+
+    if (deleter->pixels == NULL) {
+        deleter->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+    }
 
     deleter->texture = gs->textures.deleter;
     SDL_QueryTexture(deleter->texture, NULL, NULL, &deleter->w, &deleter->h);

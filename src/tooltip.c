@@ -69,16 +69,18 @@ void tooltip_draw(struct Tooltip *tooltip) {
         
         SDL_Color color;
 
-        if (i == 0)
+        if (i == 0) {
             color = (SDL_Color){200,200,200,255};
-        else
+        } else {
             color = (SDL_Color){255,255,255,255};
+        }
 
         // @Performance
         surfaces[i] = TTF_RenderText_Solid(gs->fonts.font, tooltip->str[i], color);
         Assert(surfaces[i]);
         textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surfaces[i]);
         Assert(textures[i]);
+
         dsts[i] = (SDL_Rect){
             (int) (gs->S * tooltip->x + margin),
             (int) (height + gs->S * tooltip->y + margin),

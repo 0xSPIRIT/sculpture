@@ -1,6 +1,3 @@
-TODO:
-    - Hourglass! (early level)
-
 Level 1 - "Alaska"
   You make a house from stone and wood, while snowing.
 
@@ -44,17 +41,17 @@ Level 7 - "Procedure Lullaby"
 Level 8 - "Polished Turd"
   (Low resolution)
 
-  The same well-made sculpture from level 5 is back, but you now have
-  more tools. You have a bunch of dirt in a little scene, and you
-  smelt it to get coal. You then smelt this at very high heat (the
-  furnace has a hard fucking time) then you get your diamond. You
-  place it using the placer (shaving cream) and chisel out the
-  excess. The shape itself is relatively complex, but not fucking
-  crazy (it's in low res to make it easier on the player). You do your
-  best, but make it impossible to get right [also the diamond is not
-  as good as the other one] The title can be interpreted as a cynical
-  attitute towards the piece you made since, yeah, it's not that good,
-  but you think it's horrible. Or, it can be interpreted as converting
+  The same well-made sculpture from level 5 is back, but you now
+  have more tools. You have a bunch of dirt in a little scene, and
+  you smelt it to get coal. You then smelt this at very high heat
+  (the furnace has a hard time) then you get your diamond. You place
+  it using the placer (shaving cream) and chisel out the excess. The
+  shape itself is relatively complex, but not crazy (it's in low res
+  to make it easier on the player). You do your best, but make it
+  impossible to get right [also the diamond is not as good as the
+  other one] The title can be interpreted as a cynical attitute
+  towards the piece you made since, yeah, it's not that good, but
+  you think it's horrible. Or, it can be interpreted as converting
   literal dirt into diamond.
 
 Level 9 - "Showpiece"
@@ -63,8 +60,10 @@ Level 9 - "Showpiece"
   is destroyed. You make this into a shape of an orb, with hands
   holding it. All the materials are used- diamond & quartz for the
   orb and wood for the hands. [Maybe lose the hands? Complex enough.]
+  In the center, there is a core of dirt or whatever the most
+  disgusting material is.
 
-Level 10 - "Glass Body"
+Level 10 - "Glass Body" / "Brittle Body"
   You are shown a very nice sculpture of complete glass, of a body
   with lots of curves-- lots of work. Multiple materials in layers,
   symbolising how "deep" the work would be. You start with a whole
@@ -77,14 +76,11 @@ Level 10 - "Glass Body"
   the sculpture half-finished, and the camera pans in 3D space,
   showing how flat the sculpture is in space, until it completely
   disappears.
-  Note: the furnace overheating and stopping work is shown to have
-        happened in previous levels, but it wasn't an issue since
-        there wasn't much else material to use after it broke.
-  Note2: The name "Glass Body" represents the innate nature of this
+  Note1: The name "Glass Body" represents the innate nature of this
          project, that it *will* fail, and it is brittle, due to my
          unskillfulness and too much ambition.
-  Note3: Maybe "Brittle Body" would be a better name.
-  Note4: The furnace overheating is a dumb idea and instead the way
+  Note2: Maybe "Brittle Body" would be a better name.
+  Note3: The furnace overheating is a dumb idea and instead the way
          the level gets you to stop working is just by making sure
          there isn't enough material in the level to finish it.
 

@@ -8,7 +8,10 @@ void knife_init() {
     SDL_QueryTexture(knife->texture, NULL, NULL, &knife->w, &knife->h);
     
     knife->angle = 0;
-    knife->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+
+    if (knife->pixels == NULL) {
+        knife->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+    }
 }
 
 void knife_update_texture() {

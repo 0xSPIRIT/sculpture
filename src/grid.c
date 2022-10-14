@@ -37,6 +37,18 @@ int is_cell_gas(int type) {
         type == CELL_STEAM;
 }
 
+bool any_neighbours_free(struct Cell *array, int x, int y) {
+    for (int xx = -1; xx <= 1; xx++) {
+        for (int yy = -1; yy <= 1; yy++) {
+            if (xx == 0 && yy == 0) continue;
+            if (!is_in_bounds(x+xx, y+yy)) continue;
+            if (array[x+xx+(y+yy)*gs->gw].type == CELL_NONE)
+                return true;
+        }
+    }
+    return false;
+}
+
 int number_neighbours(struct Cell *array, int x, int y, int r) {
     int c = 0;
     for (int xx = -r; xx <= r; xx++) {
@@ -154,21 +166,6 @@ int blob_find_count_from_position(int object, int chisel_size, int x, int y) {
     return count;
 }
 
-void blob_generate_dumb(int obj, int chisel_size, Uint32 *blob_count) {
-    Assert(obj >= 0);
-    Assert(blob_count);
-    
-    for (int y = 0; y < gs->gh; y++) {
-        for (int x = 0; x < gs->gw; x++) {
-            if (gs->grid[x+y*gs->gw].object != obj) continue;
-            struct Object *o = &gs->objects[obj];
-
-            o->blob_data[chisel_size].blobs[x+y*gs->gw] = *blob_count;
-            (*blob_count)++;
-        }
-    }
-}
-
 void random_set_blob(struct Object *obj, int x, int y, Uint32 blob, int chisel_size, int perc) {
     if (!is_cell_hard(gs->grid[x+y*gs->gw].type) ||
         (x+1 < gs->gw && !is_cell_hard(gs->grid[x+1 + y*gs->gw].type)) ||
@@ -220,67 +217,17 @@ void object_blobs_set_pressure(int obj, int chisel_size) {
     }
 }
 
-void blob_generate_old_smart(int obj, int chisel_size, int percentage, Uint32 *blob_count) {
+void blob_generate_dumb(int obj, int chisel_size, Uint32 *blob_count) {
+    Assert(obj >= 0);
+    Assert(blob_count);
+    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (gs->grid[x+y*gs->gw].object != obj) continue;
-            if (gs->objects[obj].blob_data[chisel_size].blobs[x+y*gs->gw] > 0) continue;
-
             struct Object *o = &gs->objects[obj];
-            Uint32 *blobs = o->blob_data[chisel_size].blobs;
 
-            int size = 2;
-
-            if (chisel_size == 2) {
-                size = 4;
-            } else if (chisel_size == 1) {
-                size = 2;
-            }
-
-            int did_fill = 0;
-
-            for (int yy = 0; yy < size; yy++) {
-                for (int xx = 0; xx < size; xx++) {
-                    if (x+xx >= gs->gw || y+yy >= gs->gh) continue;
-                    if (is_cell_hard(gs->grid[x+xx + (y+yy)*gs->gw].type)) {
-                        blobs[x+xx + (y+yy)*gs->gw] = *blob_count;
-                        did_fill = 1;
-                    }
-                }
-            }
-
-            int perc = percentage;
-
-            if (blob_find_count_from_position(obj, chisel_size, x, y)) {
-                for (int yy = -1; yy < -1+(size+1)*2; yy += size+1) {
-                    for (int xx = -1; xx <= size; xx++) {
-                        // Not diagonals
-                        if (xx == -1 && yy == -1) continue;
-                        if (xx == size && yy == -1)  continue;
-                        if (xx == size && yy == -2+(size+1)*2) continue;
-                        if (xx == -1 && yy == -2+(size+1)*2)  continue;
-                        if (!is_in_bounds(x+xx, y+yy)) continue;
-                        if (blob_find_count_from_position(obj, chisel_size, x+xx, y+yy) <= 4) continue;
-                        random_set_blob(o, x+xx, y+yy, *blob_count, chisel_size, perc);
-                    }
-                }
-                for (int yy = -1; yy <= size; yy++) {
-                    for (int xx = -1; xx < -1+(size+1)*2; xx += size+1) {
-                        // Not diagonals
-                        if (xx == -1 && yy == -1) continue;
-                        if (xx == size && yy == -1)  continue;
-                        if (xx == size && yy == -2+(size+1)*2) continue;
-                        if (xx == -1 && yy == -2+(size+1)*2)  continue;
-                        if (!is_in_bounds(x+xx, y+yy)) continue;
-                        if (blob_find_count_from_position(obj, chisel_size, x+xx, y+yy) <= 4) continue;
-                        random_set_blob(o, x+xx, y+yy, *blob_count, chisel_size, perc);
-                    }
-                }
-            }
-
-            if (did_fill) {
-                (*blob_count)++;
-            }
+            o->blob_data[chisel_size].blobs[x+y*gs->gw] = *blob_count;
+            (*blob_count)++;
         }
     }
 }
@@ -296,9 +243,8 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
             if (gs->grid[x+y*gs->gw].object != obj) continue;
             if (blobs[x+y*gs->gw]) continue;
 
-            if (number_neighbours(gs->grid, x, y, 1) < 8) {
+            if (any_neighbours_free(gs->grid, x, y)) {
                 const int r = size;
-                bool added = false;
 
                 bool dont_add = false;
                 
@@ -310,18 +256,17 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
                             break;
                         }
                         if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
-
-                        blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
-                        added = true;
                     }
-
+                
                     if (dont_add) break;
                 }
 
+                bool added = false;
                 if (!dont_add) {
                     for (int yy = -r; yy <= r; yy++) {
                         for (int xx = -r; xx <= r; xx++) {
                             if (xx*xx + yy*yy > r*r) continue;
+                            if (gs->grid[x+xx+(y+yy)*gs->gw].type == 0) continue;
                             if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
 
                             blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
@@ -463,15 +408,18 @@ void grid_init(int w, int h) {
     gs->gw = w;
     gs->gh = h;
 
-    for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        gs->grid_layers[i] = arena_alloc(gs->persistent_memory, w*h, sizeof(struct Cell));
+    if (gs->grid_layers[0] == NULL) {
+        for (int i = 0; i < NUM_GRID_LAYERS; i++) {
+            gs->grid_layers[i] = arena_alloc(gs->persistent_memory, w*h, sizeof(struct Cell));
+        }
     }
 
-    memset(gs->objects, 0, sizeof(struct Object)*MAX_OBJECTS);
-    for (int i = 0; i < MAX_OBJECTS; i++) {
-        for (int j = 0; j < 3; j++) {
-            gs->objects[i].blob_data[j].blobs = arena_alloc(gs->persistent_memory, w*h, sizeof(Uint32));
-            gs->objects[i].blob_data[j].blob_pressures = arena_alloc(gs->persistent_memory, w*h, sizeof(int));
+    if (gs->objects[0].blob_data[0].blobs == NULL) {
+        for (int i = 0; i < MAX_OBJECTS; i++) {
+            for (int j = 0; j < 3; j++) {
+                gs->objects[i].blob_data[j].blobs = arena_alloc(gs->persistent_memory, w*h, sizeof(Uint32));
+                gs->objects[i].blob_data[j].blob_pressures = arena_alloc(gs->persistent_memory, w*h, sizeof(int));
+            }
         }
     }
 
@@ -923,6 +871,7 @@ void simulation_tick() {
     grid_array_tick(gs->pickup_grid, 1, -1);
 }
 
+// ?!?! Global Variables???
 int outlines_total[256*256] = {0}; // 256x256 seems to be more than the max level size.
 int outlines_total_count = 0;
 
@@ -943,8 +892,6 @@ void grid_array_draw(struct Cell *array) {
             }
 
             if (DRAW_PRESSURE && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]) {
-                // Uint8 c = (Uint8)(255 * ((f32)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]] / MAX_PRESSURE)); // ??? Holy fuck.
-
                 int blob_pressure = (int)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]];
                 f32 normalized_pressure = (f32) (blob_pressure / MAX_PRESSURE);
 
@@ -992,6 +939,14 @@ void grid_draw(void) {
             for (int x = 0; x < gs->gw; x++) {
                 if (!gs->levels[gs->level_current].desired_grid[x+y*gs->gw].type) continue;
 
+                const float strobe_speed = 3.5f;
+
+                float alpha;
+                alpha = 1 + sinf(strobe_speed * SDL_GetTicks()/1000.0);
+                alpha /= 2;
+                alpha *= 16;
+                alpha += 180;
+
                 SDL_Color col = pixel_from_index(gs->levels[gs->level_current].desired_grid, x+y*gs->gw);
                 f32 b = (f32) (col.r + col.g + col.b);
                 b /= 3.;
@@ -1000,7 +955,7 @@ void grid_draw(void) {
                                        (Uint8) (b/2),
                                        (Uint8) (b/4),
                                        (Uint8) (b),
-                                       (Uint8) (255));
+                                       (Uint8) (alpha));
                 SDL_RenderDrawPoint(gs->renderer, x, y);
             }
         }
@@ -1042,95 +997,6 @@ void object_tick(int obj) {
     object_generate_blobs(obj, 0);
     object_generate_blobs(obj, 1);
     object_generate_blobs(obj, 2);
-}
-
-const char diamond3x3[] =
-    " x "
-    "xxx"
-    " x "
-;
-
-const char diamond5x5[] =
-    "  x  "
-    " xxx "
-    "xxxxx"
-    " xxx "
-    "  x  "
-;
-
-void blit_blobs_from_char_array(Uint32 *blobs, Uint32 *blob_count, int object, int x, int y, const char *array, int w, int h) {
-    bool did_set = false;
-
-    x -= w/2;
-    y -= h/2;
-
-    for (int dy = 0; dy < h; dy++) {
-        for (int dx = 0; dx < w; dx++) {
-            if (!is_in_bounds(x+dx, y+dy)) {
-                continue;
-            }
-            if (gs->grid[x+dx+(y+dy)*gs->gw].object != object) {
-                continue;
-            }
-            if (blobs[x+dx+(y+dy)*gs->gw]) {
-                continue;
-            }
-
-            if (array[dx+dy*w] == 'x') {
-                blobs[x+dx+(y+dy)*gs->gw] = *blob_count;
-                did_set = true;
-            }
-        }
-    }
-
-    if (did_set) {
-        (*blob_count)++;
-    }
-}
-
-void diamond_fill(Uint32 *blobs, Uint32 *blob_count, int obj, int x, int y, const char *array, int w, int h) {
-    blit_blobs_from_char_array(blobs, blob_count, obj, x, y, array, w, h);
-
-    const int xoff = 3;
-    const int yoff = 1;
-
-    blit_blobs_from_char_array(blobs, blob_count, obj, x+xoff, y+yoff, array, w, h);
-}
-
-void blob_generate_diamonds(int obj, int chisel_size, Uint32 *blob_count) {
-    int x = -100, y = -100;
-
-    struct Object *o = &gs->objects[obj];
-    Uint32 *blobs = o->blob_data[chisel_size].blobs;
-
- next_row:
-
-    if (x >= gs->gw || y >= gs->gh) {
-        /* goto cleanup; */
-        return;
-    }
-
-    // Find an appropriate starting blob, then loop until finished.
-    /* if (gs->grid[x+y*gs->gw].object == obj) { */
-    int yy = y;
-    for (int xx = x; xx < gs->gw; xx++) {
-        blit_blobs_from_char_array(blobs, blob_count, obj, xx, yy, diamond3x3, 3, 3);
-        yy += 1;
-        xx += 2;
-    }
-
-    x++;
-    y += 2;
-    goto next_row;
-
- /* cleanup:
-  *    for (int y = 0; y < gs->gh; y++) {
-  *        for (int x = 0; x < gs->gw; x++) {
-  *            if (gs->grid[x+y*gs->gw].object != obj) {
-  *                blobs[x+y*gs->gw] = 0;
-  *            }
-  *        }
-  *    } */
 }
 
 void dust_set_random_velocity(int x, int y) {

@@ -79,7 +79,7 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
 }
 
 void make_memory(struct Memory *persistent_memory, struct Memory *transient_memory) {
-    persistent_memory->size = Gigabytes(1);
+    persistent_memory->size = Megabytes(512);
     transient_memory->size = Megabytes(32);
 
     AssertNW(persistent_memory->size >= sizeof(struct Game_State));
@@ -242,6 +242,8 @@ int main(int argc, char **argv) {
     QueryPerformanceCounter(&time_start);
 
     const f64 target_seconds_per_frame = 1.0/60.0;
+    f64 time_passed = 0.0;
+    f32 fps = 0.f;
 
     while (running) {
         LARGE_INTEGER time_elapsed_for_frame;
@@ -296,7 +298,15 @@ int main(int argc, char **argv) {
             d = (f64)(end.QuadPart - time_elapsed_for_frame.QuadPart) / (f64)frequency.QuadPart;
         }
 
-        // Memory usage statistics.
+        time_passed += d;
+
+        // Only update FPS counter every 0.25s.
+        if (time_passed > 0.25) {
+            fps = 1.0/d;
+            time_passed = 0;
+        }
+
+
         {
             Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
             Uint64 size_max = persistent_memory.size;
@@ -304,7 +314,7 @@ int main(int argc, char **argv) {
             percentage *= 100.f;
 
             char title[128] = {0};
-            sprintf(title, "Alaska | Memory Used: %.2f%% | FPS: %.2f", percentage, 1.0/d);
+            sprintf(title, "Alaska | Memory Used: %.2f%% | FPS: %.2f", percentage, fps);
 
             SDL_SetWindowTitle(game_state->window, title);
         }

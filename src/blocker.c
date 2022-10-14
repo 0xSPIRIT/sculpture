@@ -9,88 +9,110 @@ bool is_angle_225(f64 deg_angle) {
 void blocker_init() {
     struct Blocker *blocker = &gs->blocker;
 
-    blocker->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+    blocker->state = BLOCKER_STATE_OFF;
+    blocker->point_count = 0;
+    memset(blocker->points, 0, BLOCKER_MAX_POINTS * sizeof(struct SDL_Point));
+
+    blocker->angle = 0;
+
+    if (blocker->pixels == NULL) {
+        blocker->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+    }
 }
 
 void blocker_tick() {
     struct Blocker *blocker = &gs->blocker;
     struct Input *input = &gs->input;
     
+    if (input->keys_pressed[SDL_SCANCODE_F6]) {
+        blocker->state = BLOCKER_STATE_OFF;
+    }
+    if (input->keys_pressed[SDL_SCANCODE_F7]) {
+        blocker->state = BLOCKER_STATE_LINE;
+    }
     if (input->keys_pressed[SDL_SCANCODE_F8]) {
-        blocker->on = !blocker->on;
+        blocker->state = BLOCKER_STATE_CURVE;
     }
 
-    if (!blocker->on) return;
+    if (blocker->state == BLOCKER_STATE_OFF) return;
     if (input->real_my < GUI_H) return;
 
-    if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
-        memset(blocker->points, 0, BLOCKER_MAX_POINTS * sizeof(SDL_Point));
-        blocker->point_count = 0;
+    switch (blocker->state) {
+    case BLOCKER_STATE_LINE:
+        if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
+            memset(blocker->points, 0, BLOCKER_MAX_POINTS * sizeof(SDL_Point));
+            blocker->point_count = 0;
 
-        blocker->points[0].x = input->mx;
-        blocker->points[0].y = input->my;
-        blocker->points[1].x = input->mx;
-        blocker->points[1].y = input->my;
-        blocker->point_count = 2;
-    } else if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-        blocker->points[1].x = input->mx;
-        blocker->points[1].y = input->my;
-        blocker->point_count = 2;
+            blocker->points[0].x = input->mx;
+            blocker->points[0].y = input->my;
+            blocker->points[1].x = input->mx;
+            blocker->points[1].y = input->my;
+            blocker->point_count = 2;
+        } else if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+            blocker->points[1].x = input->mx;
+            blocker->points[1].y = input->my;
+            blocker->point_count = 2;
 
-        f64 dx = blocker->points[1].x - blocker->points[0].x;
-        f64 dy = blocker->points[1].y - blocker->points[0].y;
+            f64 dx = blocker->points[1].x - blocker->points[0].x;
+            f64 dy = blocker->points[1].y - blocker->points[0].y;
 
-        f64 length = distance64(blocker->points[0].x, blocker->points[0].y,
-                                blocker->points[1].x, blocker->points[1].y);
+            f64 length = distance64(blocker->points[0].x, blocker->points[0].y,
+                                    blocker->points[1].x, blocker->points[1].y);
                         
-        const f64 clamp = 22.5;
+            const f64 clamp = 22.5;
 
-        blocker->angle = atan2f(dy, dx);
+            blocker->angle = atan2f(dy, dx);
 
-        if (input->keys[SDL_SCANCODE_LSHIFT]) {
-            blocker->angle /= 2 * M_PI;
-            blocker->angle *= 360;
-            blocker->angle = ((int)blocker->angle) % 360;
-            blocker->angle = blocker->angle / clamp;
-            blocker->angle = clamp * round(blocker->angle);
+            if (input->keys[SDL_SCANCODE_LSHIFT]) {
+                blocker->angle /= 2 * M_PI;
+                blocker->angle *= 360;
+                blocker->angle = ((int)blocker->angle) % 360;
+                blocker->angle = blocker->angle / clamp;
+                blocker->angle = clamp * round(blocker->angle);
 
-            blocker->angle /= 360.f;
-            blocker->angle *= 2 * M_PI;
+                blocker->angle /= 360.f;
+                blocker->angle *= 2 * M_PI;
 
-            f64 ux = cos(blocker->angle);
-            f64 uy = sin(blocker->angle);
+                f64 ux = cos(blocker->angle);
+                f64 uy = sin(blocker->angle);
 
-            blocker->points[1].x = round(blocker->points[0].x + ux*length);
-            blocker->points[1].y = round(blocker->points[0].y + uy*length);
+                blocker->points[1].x = round(blocker->points[0].x + ux*length);
+                blocker->points[1].y = round(blocker->points[0].y + uy*length);
+            }
         }
-    } else {
-        /* memset(blocker->points, 0, BLOCKER_MAX_POINTS * sizeof(SDL_Point));
-         * blocker->point_count = 0; */
+
+        blocker->prev_state = blocker->state;
+        break;
+    case BLOCKER_STATE_CURVE:
+        if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
+            memset(blocker->points, 0, BLOCKER_MAX_POINTS * sizeof(SDL_Point));
+            blocker->point_count = 0;
+
+            blocker->points[0].x = input->mx;
+            blocker->points[0].y = input->my;
+            blocker->points[1].x = input->mx;
+            blocker->points[1].y = input->my;
+            blocker->point_count = 2;
+        } else if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT) &&
+                   gs->frames % 3 == 0)
+        {
+            if (blocker->point_count < BLOCKER_MAX_POINTS) {
+                blocker->points[blocker->point_count].x = input->mx;
+                blocker->points[blocker->point_count].y = input->my;
+                blocker->point_count++;
+            }
+        }
+
+        blocker->prev_state = blocker->state;
+        break;
     }
 }
 
-void blocker_draw() {
+void blocker_draw_line(f64 deg_angle) {
     struct Blocker *blocker = &gs->blocker;
-
-    if (!blocker->point_count) return;
-
-    SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
-    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
-
-    Assert(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER));
-
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_CHISEL_BLOCKER));
-
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
-    SDL_RenderClear(gs->renderer);
-
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 0, 255);
-
-    f64 deg_angle = Degrees(blocker->angle);
-
+    
     const int circle_size = 1;
-            
-    // For one line:
+    
     if (is_angle_225(deg_angle)) {
         int dir_x = sign(blocker->points[1].x - blocker->points[0].x);
         int dir_y = sign(blocker->points[1].y - blocker->points[0].y);
@@ -169,6 +191,55 @@ void blocker_draw() {
         
             prev = blocker->points[i];
         }
+    }
+}
+
+void blocker_draw_curve() {
+    struct Blocker *blocker = &gs->blocker;
+    if (!blocker->point_count) return;
+
+    SDL_Point p = get_spline_point(blocker->points, 0);
+
+    for (float t = 0.0f; t < blocker->point_count-3.f; t += 0.005f) {
+        p = get_spline_point(blocker->points, t);
+
+        p.x /= 2;
+        p.y /= 2;
+
+        SDL_RenderDrawPoint(gs->renderer, p.x-1, p.y);
+        SDL_RenderDrawPoint(gs->renderer, p.x+1, p.y);
+        SDL_RenderDrawPoint(gs->renderer, p.x, p.y-1);
+        SDL_RenderDrawPoint(gs->renderer, p.x, p.y+1);
+        SDL_RenderDrawPoint(gs->renderer, p.x, p.y);
+    }
+}
+
+void blocker_draw() {
+    struct Blocker *blocker = &gs->blocker;
+
+    if (!blocker->point_count) return;
+
+    SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
+    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
+
+    Assert(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER));
+
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_CHISEL_BLOCKER));
+
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
+    SDL_RenderClear(gs->renderer);
+
+    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 0, 255);
+
+    f64 deg_angle = Degrees(blocker->angle);
+
+    switch (blocker->prev_state) {
+    case BLOCKER_STATE_LINE:
+        blocker_draw_line(deg_angle);
+        break;
+    case BLOCKER_STATE_CURVE:
+        blocker_draw_curve();
+        break;
     }
 
     SDL_RenderReadPixels(gs->renderer, NULL, 0, blocker->pixels, 4*gs->gw);

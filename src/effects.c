@@ -13,7 +13,9 @@ void effect_set(int type) {
         break;
     }
 
-    gs->current_effect.particles = arena_alloc(gs->persistent_memory, gs->current_effect.particle_count, sizeof(struct Effect_Particle));
+    if (gs->current_effect.particles == NULL) {
+        gs->current_effect.particles = arena_alloc(gs->persistent_memory, gs->current_effect.particle_count, sizeof(struct Effect_Particle));
+    }
 
     switch (type) {
     case EFFECT_SNOW:

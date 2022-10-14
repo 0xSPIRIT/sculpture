@@ -8,7 +8,7 @@ void placer_init(int num) {
 
     placer->texture = gs->textures.placer;
     SDL_QueryTexture(placer->texture, NULL, NULL, &placer->w, &placer->h);
-    
+
     placer->object_index = -1;
     placer->did_click = 0;
     placer->contains_type = 0;
@@ -285,11 +285,11 @@ void placer_tick(struct Placer *placer) {
 
     // If the cell type is hard, use rectangle placing, otherwise use circle placing.
     if (placer->state != PLACER_SUCK_MODE) {
-        /* if (is_cell_hard(placer->contains_type)) {
-         *     placer->state = PLACER_PLACE_RECT_MODE;
-         * } else { */
-            placer->state = PLACER_PLACE_CIRCLE_MODE;
-        /* } */
+        /* if (is_cell_hard(placer->contains_type)) { */
+            placer->state = PLACER_PLACE_RECT_MODE;
+        /* } else {
+         *     placer->state = PLACER_PLACE_CIRCLE_MODE;
+         * } */
     }
 
     if (input->real_my < GUI_H) return;

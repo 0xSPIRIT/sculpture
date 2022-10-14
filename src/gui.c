@@ -149,7 +149,10 @@ void button_draw(struct Button *b) {
 void gui_init() {
     struct GUI *gui = &gs->gui;
 
-    *gui = (struct GUI){ .popup_y = (f32) (gs->gh*gs->S), .popup_y_vel = 0, .popup_h = GUI_POPUP_H, .popup = 0 };
+    gui->popup_y = (f32) (gs->gh*gs->S);
+    gui->popup_y_vel = 0;
+    gui->popup_h = GUI_POPUP_H;
+    gui->popup = 0;
     gui->popup_texture = gs->textures.popup;
 
     tooltip_reset(&gui->tooltip);
@@ -161,7 +164,9 @@ void gui_init() {
         char name[128] = {0};
         get_name_from_tool(i, name);
 
-        gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR, gs->textures.tool_buttons[i], name, click_gui_tool_button);
+        if (gui->tool_buttons[i] == NULL) {
+            gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR, gs->textures.tool_buttons[i], name, click_gui_tool_button);
+        }
         gui->tool_buttons[i]->x = cum;
         gui->tool_buttons[i]->y = 0;
         gui->tool_buttons[i]->index = i;
@@ -499,7 +504,7 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
     
     SDL_Rect r = {
         x, y,
-        w, h
+        w, h
     };
     SDL_RenderCopy(gs->renderer, gs->textures.items[item->type], NULL, &r);
     
@@ -581,8 +586,22 @@ void slot_draw(struct Slot *slot) {
 
 //////////////////////////////////////////
 
-struct Converter *converter_init(int type) {
-    struct Converter *converter = arena_alloc(gs->persistent_memory, 1, sizeof(struct Converter));
+struct Converter *converter_init(int type, bool allocated) {
+    struct Converter *converter = NULL;
+
+    if (!allocated) {
+        converter = arena_alloc(gs->persistent_memory, 1, sizeof(struct Converter));
+    } else {
+        switch (type) {
+        case CONVERTER_FUEL:
+            converter = gs->fuel_converter;
+            break;
+        case CONVERTER_MATERIAL:
+            converter = gs->material_converter;
+            break;
+        }
+    }
+    
     converter->type = type;
     converter->w = (f32) (gs->window_width/2);
     converter->h = GUI_POPUP_H;
@@ -593,7 +612,10 @@ struct Converter *converter_init(int type) {
     switch (type) {
     case CONVERTER_MATERIAL:
         converter->slot_count = 4;
-        converter->slots = arena_alloc(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
+
+        if (!allocated) {
+            converter->slots = arena_alloc(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
+        }
         
         converter->slots[SLOT_INPUT1].x = converter->w/3.f;
         converter->slots[SLOT_INPUT1].y = converter->h/4.f;
@@ -615,7 +637,10 @@ struct Converter *converter_init(int type) {
         break;
     case CONVERTER_FUEL:
         converter->slot_count = 3;
-        converter->slots = arena_alloc(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
+
+        if (!allocated) {
+            converter->slots = arena_alloc(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
+        }
         
         converter->slots[SLOT_INPUT1].x = converter->w/3.f;
         converter->slots[SLOT_INPUT1].y = converter->h/4.f;
@@ -650,19 +675,19 @@ struct Converter *converter_init(int type) {
     converter->speed = 8;
     
     // Both X and Y-coordinates are updated in converter_tick.
-    struct Button *b;
-    b = button_allocate(BUTTON_TYPE_CONVERTER, gs->textures.convert_button, "Convert", converter_begin_converting);
-    b->w = 48;
-    b->h = 48;
-    
-    converter->go_button = b;
+    if (converter->go_button == NULL) {
+        converter->go_button = button_allocate(BUTTON_TYPE_CONVERTER, gs->textures.convert_button, "Convert", converter_begin_converting);
+    }
+    converter->go_button->w = 48;
+    converter->go_button->h = 48;
     
     return converter;
 }
 
 void all_converters_init() {
-    gs->material_converter = converter_init(CONVERTER_MATERIAL);
-    gs->fuel_converter = converter_init(CONVERTER_FUEL);
+    bool allocated = gs->material_converter != NULL || gs->fuel_converter != NULL;
+    gs->material_converter = converter_init(CONVERTER_MATERIAL, allocated);
+    gs->fuel_converter = converter_init(CONVERTER_FUEL, allocated);
 }
 
 int get_number_unique_inputs(struct Item *input1, struct Item *input2) {
