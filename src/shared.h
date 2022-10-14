@@ -82,8 +82,9 @@ struct Game_State {
     clock_t global_start, global_end;
 
     bool undo_initialized;
-    struct Save_State *current_state, *start_state;
-    int state_count; // Number of states saved.
+    // struct Save_State *current_state, *start_state;
+    struct Save_State save_states[MAX_UNDO];
+    int save_state_count; // Number of states saved.
 
     struct Text_Field text_field;
 

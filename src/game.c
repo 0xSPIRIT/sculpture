@@ -86,9 +86,6 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 gs->do_draw_objects = !gs->do_draw_objects;
             }
             break;
-        case SDLK_F5:
-            view_save_state_linked_list();
-            break;
         case SDLK_u:
             objects_reevaluate();
             break;

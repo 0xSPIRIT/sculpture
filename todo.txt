@@ -2,6 +2,9 @@
 
 Start of Session: 5:51 pm
 
+- Replace undo system data structure with a simple array, not a linked list,
+  which allocates too much memory.
+
 - Create levels 1-4, and experiment with them & the converter.
   Get them on the right track first.
     - Level 1 "Alaska"
@@ -12,17 +15,18 @@ Start of Session: 5:51 pm
   Modify blob generators as well? Larger circles?
 
 
-
 - Grid (improve the circle generator. it's very good so far,
         go far the last time.)
-- Replace undo system data structure with a simple array, not a linked list,
-  which allocates too much memory.
 
 - Some kind of crash when closing the game, and sometimes when using
   the material converter... but only when in release mode... sigh.
   Why do these happen so often to me?
 
 - Add ability to join two objects together (Future. Don't care)
+
+- There's a memory leak which adds slowly over time. There's probably
+  a missing SDL_FreeTexture or SDL_FreeSurface somewhere because it
+  still allocates when the game is paused.
 
 - In goto_level, most of those init functions don't need to reallocate
   memory. What they really want is zeroing out the memory.

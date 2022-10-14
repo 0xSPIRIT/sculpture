@@ -6,5 +6,4 @@
 
 struct Save_State {
     struct Cell *grid_layers[NUM_GRID_LAYERS];
-    struct Save_State *prev, *next;
 };

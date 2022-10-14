@@ -344,12 +344,15 @@ void level_draw_intro() {
 
     SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_title, name, (SDL_Color){255,255,255,255});
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
+
     SDL_Rect dst = {
         gs->S*gs->gw/2 - surf->w/2, gs->S*gs->gh/2 - surf->h/2,
         surf->w, surf->h
     };
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
+
     SDL_FreeSurface(surf);
+    SDL_DestroyTexture(texture);
 }
 
 void level_draw() {

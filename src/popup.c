@@ -102,5 +102,8 @@ void text_field_draw() {
         SDL_RenderFillRect(gs->renderer, &description_rect);
         SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
         SDL_RenderCopy(gs->renderer, description_texture, NULL, &description_rect);
+
+        SDL_DestroyTexture(description_texture);
+        SDL_FreeSurface(description_surf);
     }
 }

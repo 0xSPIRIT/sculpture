@@ -527,6 +527,9 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
     SDL_RenderFillRect(gs->renderer, &dst);
     
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
+
+    SDL_FreeSurface(surf);
+    SDL_DestroyTexture(texture);
 }
 
 void slot_draw(struct Slot *slot) {
