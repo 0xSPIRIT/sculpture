@@ -244,8 +244,8 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
             if (blobs[x+y*gs->gw]) continue;
 
             if (any_neighbours_free(gs->grid, x, y)) {
-                const int r = size;
-
+                const int r = size == 1 ? 1 : 3;
+                
                 bool dont_add = false;
                 
                 for (int yy = -r; yy <= r; yy++) {
@@ -270,6 +270,7 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
                             if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
 
                             blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
+                            /* blobs[x+y*gs->gw] = *blob_count; */
                             added = true;
                         }
                     }
@@ -871,10 +872,6 @@ void simulation_tick() {
     grid_array_tick(gs->pickup_grid, 1, -1);
 }
 
-// ?!?! Global Variables???
-int outlines_total[256*256] = {0}; // 256x256 seems to be more than the max level size.
-int outlines_total_count = 0;
-
 void grid_array_draw(struct Cell *array) {
     for (int i = 0; i < gs->gw*gs->gh; i++)
         array[i].updated = 0;
@@ -885,7 +882,8 @@ void grid_array_draw(struct Cell *array) {
 
             SDL_Color col = pixel_from_index(array, x+y*gs->gw);
             if (array == gs->pickup_grid) {
-                col.a = (Uint8) (128 + (col.a * 0.1f*(1+sinf(SDL_GetTicks()/300.f))));
+                /* col.a = (Uint8) (128 + (col.a * 0.1f*(1+sinf(SDL_GetTicks()/300.f)))); */
+                col.a = 0;
                 col.r /= 2;
                 col.g /= 2;
                 col.b /= 2;
@@ -927,21 +925,15 @@ void grid_draw(void) {
     grid_array_draw(gs->fg_grid);
     grid_array_draw(gs->pickup_grid);
     
-    for (int i = 0; i < outlines_total_count; i++) {
-        int o = outlines_total[i];
-        SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
-        SDL_RenderDrawPoint(gs->renderer, o%gs->gw, o/gs->gw);
-    }
-
     // Draw inspiration ghost
     if (gs->grid_show_ghost) {
         for (int y = 0; y < gs->gh; y++) {
             for (int x = 0; x < gs->gw; x++) {
                 if (!gs->levels[gs->level_current].desired_grid[x+y*gs->gw].type) continue;
 
-                const float strobe_speed = 3.5f;
+                const f32 strobe_speed = 3.5f;
 
-                float alpha;
+                f32 alpha;
                 alpha = 1 + sinf(strobe_speed * SDL_GetTicks()/1000.0);
                 alpha /= 2;
                 alpha *= 16;
@@ -1012,12 +1004,7 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_d
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (obj->blob_data[chisel_size].blobs[x+y*gs->gw] != blob) continue;
-            
-            if (gs->current_tool == TOOL_CHISEL_MEDIUM &&
-                gs->blocker.pixels[x+y*gs->gw] != 0)
-            {
-                continue;
-            }
+            if (gs->blocker.pixels[x+y*gs->gw] != 0) continue;
 
             if (replace_dust) {
                 set_array(gs->pickup_grid, x, y, gs->grid[x+y*gs->gw].type, -2);

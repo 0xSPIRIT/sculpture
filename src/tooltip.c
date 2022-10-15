@@ -55,8 +55,8 @@ void tooltip_draw(struct Tooltip *tooltip) {
 
     const int margin = 8; // In real pixels.
 
-    SDL_Surface *surfaces[MAX_TOOLTIP_LINE_LEN];
-    SDL_Texture *textures[MAX_TOOLTIP_LINE_LEN];
+    SDL_Surface *surfaces[MAX_TOOLTIP_LINE_LEN] = {0};
+    SDL_Texture *textures[MAX_TOOLTIP_LINE_LEN] = {0};
     SDL_Rect dsts[MAX_TOOLTIP_LINE_LEN];
     int count = 0;
 
@@ -113,8 +113,12 @@ void tooltip_draw(struct Tooltip *tooltip) {
         SDL_RenderCopy(gs->renderer, textures[i], NULL, &dsts[i]);
     }
 
-    for (int i = 0; i < count; i++) {
-        SDL_FreeSurface(surfaces[i]);
-        SDL_DestroyTexture(textures[i]);
+    for (int i = 0; i < MAX_TOOLTIP_LINE_LEN; i++) {
+        if (surfaces[i]) {
+            SDL_FreeSurface(surfaces[i]);
+        }
+        if (textures[i]) {
+            SDL_DestroyTexture(textures[i]);
+        }
     }
 }

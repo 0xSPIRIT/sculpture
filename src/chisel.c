@@ -95,9 +95,9 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
         if (gs->current_tool == TOOL_CHISEL_MEDIUM &&
             cb->state != CHISEL_BLOCKER_OFF &&
             cb->pixels[(int)chisel->x + ((int)chisel->y)*gs->gw] != cb->side)
-            {
-                did_hit_blocker = true;
-            }
+        {
+            did_hit_blocker = true;
+        }
 
         // If we come into contact with a cell, locate its blob
         // then remove it. We only remove one blob per chisel,
@@ -107,7 +107,7 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
         if (b > 0 && !remove) {
             if (gs->grid[(int)chisel->x + (int)chisel->y*gs->gw].type == 0) b = -1;
             return b;
-        } else if (remove && b > 0 && !chisel->did_remove) {
+        } else if (b > 0 && !chisel->did_remove) {
             // We want to attempt to destroy this blob now.
             // Firstly, we want to do a diagonal check.
             
@@ -302,27 +302,15 @@ void chisel_update_texture() {
             } else if (chisel->angle == 315) {
                 x--;
             }
-        } else {
-            /* if (chisel->angle == 0) {
-             *     y--;
-             * } else if (chisel->angle == 270) {
-             *     y++;
-             *     x--;
-             * } else if (chisel->angle == 225) {
-             *     y += 2;
-             * } else if (chisel->angle == 180) {
-             *     x++;
-             *     y += 2;
-             * } else if (chisel->angle == 90) {
-             *     x += 2;
-             * } else if (chisel->angle == 45) {
-             *     y -= 2;
-             * } else if (chisel->angle == 135) {
-             *     x += 2;
-             *     y++;
-             * } else if (chisel->angle == 315) {
-             *     x--;
-             * } */
+        } else if (chisel->size == 2) {
+            if (chisel->angle == 225) {
+                y++;
+            } else if (chisel->angle == 45) {
+                x++;
+            } else if (chisel->angle == 135) {
+                x++;
+                y++;
+            }
         }
     }
 

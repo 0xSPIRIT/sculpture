@@ -1,4 +1,4 @@
-#define POINT_COUNT 50
+#define DELETER_POINT_COUNT 50
 
 struct Deleter {
     f32 x, y;
@@ -12,7 +12,7 @@ struct Deleter {
     int *highlights;
     int highlight_count;
 
-    SDL_Point points[POINT_COUNT];
+    SDL_Point points[DELETER_POINT_COUNT];
     int point_count;
 
     int cooldown;

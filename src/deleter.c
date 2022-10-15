@@ -18,7 +18,7 @@ void deleter_init() {
 void take_point() {
     struct Deleter *deleter = &gs->deleter;
 
-    if (deleter->point_count == POINT_COUNT-1) {
+    if (deleter->point_count == DELETER_POINT_COUNT-1) {
         return;
     }
 
@@ -50,7 +50,7 @@ void deleter_fill_neighbours(int x, int y) {
     deleter_fill_neighbours(x, y-1);
 }
 
-void deleter_flood_fill() {
+void deleter_delete() {
     struct Deleter *deleter = &gs->deleter;
 
     deleter_fill_neighbours(0, 0);
@@ -67,22 +67,6 @@ void deleter_flood_fill() {
     }
 
     objects_reevaluate();
-}
-
-void deleter_delete() {
-    deleter_flood_fill();
-
-    bool did_remove = false;
-    for (int i = 0; i < gs->object_count; i++) {
-        if (gs->objects[i].cell_count <= 4) {
-            convert_object_to_dust(i);
-            did_remove = true;
-        }
-    }
-    if (did_remove) {
-        objects_reevaluate();
-    }
-
     save_state_to_next();
 }
 
@@ -93,7 +77,7 @@ void deleter_stop(bool cancel) {
         deleter_delete();
     }
 
-    memset(deleter->points, 0, sizeof(struct SDL_Point)*POINT_COUNT);
+    memset(deleter->points, 0, sizeof(struct SDL_Point)*DELETER_POINT_COUNT);
     deleter->point_count = 0;
     deleter->active = false;
 
@@ -161,7 +145,7 @@ void deleter_draw() {
 
         SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
 
-        for (int i = 0; i < POINT_COUNT; i++) {
+        for (int i = 0; i < DELETER_POINT_COUNT; i++) {
             if (deleter->points[i].x == 0 && deleter->points[i].y == 0) continue;
         
             if (prev.x != -1) {

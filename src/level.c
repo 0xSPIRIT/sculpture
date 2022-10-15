@@ -142,7 +142,7 @@ void levels_setup() {
     level_add("Remainder",
               RES_DIR "/lvl/desired/level 4.png",
               RES_DIR "/lvl/initial/level 4.png",
-              EFFECT_RAIN);
+              EFFECT_NONE);
     level_add("Carbon Copy",
               RES_DIR "/lvl/desired/level 5.png",
               RES_DIR "/lvl/initial/level 5.png",
@@ -171,6 +171,7 @@ void levels_setup() {
 
 void goto_level(int lvl) {
     gs->level_current = lvl;
+    gs->levels[lvl].state = LEVEL_STATE_INTRO;
 
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
 

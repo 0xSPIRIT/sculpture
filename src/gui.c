@@ -6,6 +6,7 @@ void converter_set_state(struct Converter *converter, enum Converter_State state
     }
 }
 
+
 bool converter_is_layout_valid(struct Converter *converter) {
     bool is_empty = true;
     for (int i = 0; i < converter->slot_count; i++) {

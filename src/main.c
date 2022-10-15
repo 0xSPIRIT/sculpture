@@ -88,8 +88,6 @@ void make_memory(struct Memory *persistent_memory, struct Memory *transient_memo
 
     printf("Large Page Size: %llu\n", GetLargePageMinimum());
 
-    // TODO: Large Pages
-
     persistent_memory->data = VirtualAlloc(base_address,
                                            persistent_memory->size + transient_memory->size,
                                            MEM_COMMIT|MEM_RESERVE,

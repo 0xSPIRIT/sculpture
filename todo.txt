@@ -1,19 +1,33 @@
       --------------------------TODO----------------------------
 
-Start of Session: 5:51 pm
+- Create drawable highlight to overlay. Purely aesthetic,
+  but helps the player with creating shapes. Perhaps add
+  a red highlight whenever your chisel is in a space where,
+  if you click, it will delete some cells that are a part
+  of the highlight.
+     - Brush tool
+     - Line tool
+     - Rectangle tool
+     - Circle tool
+     - Eraser tool (circle & rectangle)
 
-- Replace undo system data structure with a simple array, not a linked list,
-  which allocates too much memory.
+     Essentially, your workflow would consist of getting
+     the material in place, then drawing the shape of 
+     what you want with the highlight, then just being
+     careful about how you're chiseling. No chisel
+     blocker nonsense.
+
+- Stage play themed. (Gives reason for narrator, and shows
+  that it's telling a story in the first place.)
 
 - Create levels 1-4, and experiment with them & the converter.
   Get them on the right track first.
-    - Level 1 "Alaska"
-    - Level 2 "Elementary"
+    - Level 1 "Now Entering..."
+    - Level 2 "Alaska"
     - Level 3 "Clock's Ticking"
     - Level 4 "The Process"
   When doing these levels, try having a large screen resolution.
   Modify blob generators as well? Larger circles?
-
 
 - Grid (improve the circle generator. it's very good so far,
         go far the last time.)

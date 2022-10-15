@@ -16,6 +16,7 @@
 #define Assert(condition) (_assert((condition), gs->window, __func__, __FILE__, __LINE__))
 // Assert without the popup (no window); use only console instead.
 #define AssertNW(condition) (_assert((condition), NULL, __func__, __FILE__, __LINE__))
+
 #define arena_alloc(mem, num, size) (_arena_alloc(mem, num, size, __FILE__, __LINE__))
 // 'which' is an enum in assets.h
 #define RenderTarget(which) (gs->textures.render_targets[gs->level_current][which])

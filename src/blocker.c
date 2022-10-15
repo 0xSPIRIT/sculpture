@@ -6,6 +6,13 @@ bool is_angle_225(f64 deg_angle) {
     return false;
 }
 
+void blocker_add_point(int x, int y) {
+    struct Blocker *blocker = &gs->blocker;
+    blocker->points[blocker->point_count].x = x;
+    blocker->points[blocker->point_count].y = y;
+    blocker->point_count++;
+}
+
 void blocker_init() {
     struct Blocker *blocker = &gs->blocker;
 
@@ -84,23 +91,16 @@ void blocker_tick() {
         blocker->prev_state = blocker->state;
         break;
     case BLOCKER_STATE_CURVE:
-        if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
+        if (input->mouse_pressed[SDL_BUTTON_RIGHT]) {
             memset(blocker->points, 0, BLOCKER_MAX_POINTS * sizeof(SDL_Point));
             blocker->point_count = 0;
 
-            blocker->points[0].x = input->mx;
-            blocker->points[0].y = input->my;
-            blocker->points[1].x = input->mx;
-            blocker->points[1].y = input->my;
-            blocker->point_count = 2;
-        } else if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT) &&
-                   gs->frames % 3 == 0)
-        {
-            if (blocker->point_count < BLOCKER_MAX_POINTS) {
-                blocker->points[blocker->point_count].x = input->mx;
-                blocker->points[blocker->point_count].y = input->my;
-                blocker->point_count++;
-            }
+            blocker_add_point(input->mx, input->my);
+            blocker_add_point(input->mx, input->my);
+        }
+
+        if (input->mouse_pressed[SDL_BUTTON_LEFT] && blocker->point_count < BLOCKER_MAX_POINTS) {
+            blocker_add_point(input->mx, input->my);
         }
 
         blocker->prev_state = blocker->state;
@@ -200,7 +200,7 @@ void blocker_draw_curve() {
 
     SDL_Point p = get_spline_point(blocker->points, 0);
 
-    for (float t = 0.0f; t < blocker->point_count-3.f; t += 0.005f) {
+    for (f32 t = 0.0f; t < blocker->point_count-3.f; t += 0.005f) {
         p = get_spline_point(blocker->points, t);
 
         p.x /= 2;
@@ -218,6 +218,15 @@ void blocker_draw() {
     struct Blocker *blocker = &gs->blocker;
 
     if (!blocker->point_count) return;
+
+    if (blocker->state != BLOCKER_STATE_OFF) {
+        for (int i = 0; i < blocker->point_count; i++) {
+            SDL_Point p = blocker->points[i];
+            SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 255);
+
+            SDL_RenderDrawPoint(gs->renderer, p.x, p.y);
+        }
+    }
 
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
     SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
@@ -241,6 +250,26 @@ void blocker_draw() {
         blocker_draw_curve();
         break;
     }
+
+    // Do the lines at the two ends.
+
+    /* // Starting line
+     * if (blocker->point_count >= 2) {
+     *     f32 dx = blocker->points[1].x - blocker->points[0].x;
+     *     f32 dy = blocker->points[1].y - blocker->points[0].y;
+     *     f32 dist = sqrtf(dx*dx* + dy*dy);
+     *     f32 ux = dx/dist;
+     *     f32 uy = dy/dist;
+     * 
+     *     struct Line a = {
+     *         blocker->points[0].x,
+     *         blocker->points[0].y,
+     *         blocker->points[0].x - 1000*ux,
+     *         blocker->points[0].y - 1000*uy
+     *     };
+     * 
+     *     SDL_RenderDrawLine(gs->renderer, a.x1, a.y1, a.x2, a.y2);
+     * } */
 
     SDL_RenderReadPixels(gs->renderer, NULL, 0, blocker->pixels, 4*gs->gw);
 

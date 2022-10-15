@@ -71,6 +71,11 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         case SDLK_n:
             gs->step_one = 1;
             break;
+        case SDLK_r:
+            if (gs->input.keys[SDL_SCANCODE_LCTRL]) {
+                goto_level(gs->level_current);
+            }
+            break;
         case SDLK_b:
             gs->do_draw_blobs = !gs->do_draw_blobs;
             break;

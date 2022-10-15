@@ -349,8 +349,6 @@ void placer_tick(struct Placer *placer) {
     } else {
         strcpy(gs->gui.tooltip.str[1], string);
     }
-
-    printf("Tooltip set!\n");
 }
 
 void placer_draw(struct Placer *placer, bool full_size) {
