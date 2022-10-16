@@ -75,7 +75,7 @@ void chisel_hammer_tick() {
 // else, highlight it and don't change anything about the chisel's state.
 // ux, uy = unit vector for the direction of chisel.
 // px, py = initial positions.
-// Returns the blob it reaches only if remove == 0.
+// Returns the blob it reaches only if remove == false.
 Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
     struct Chisel *chisel = gs->chisel;
     struct Object *objects = gs->objects;
@@ -88,6 +88,7 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
 
     f32 current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
 
+    int iterations = 0;
     while (current_length < len) {
         // If we hit the chisel blocker, keep that in mind for later.
 
@@ -102,12 +103,11 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
         // If we come into contact with a cell, locate its blob
         // then remove it. We only remove one blob per chisel,
         // so we stop our speed right here.
-        Uint32 b = curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw];
+        Uint32 b = curr_blobs[(int)chisel->x + ((int)chisel->y)*gs->gw];
 
-        if (b > 0 && !remove) {
-            if (gs->grid[(int)chisel->x + (int)chisel->y*gs->gw].type == 0) b = -1;
-            return b;
-        } else if (b > 0 && !chisel->did_remove) {
+        /* printf("Iterations: %d\n", iterations); */
+
+        if (b > 0 && ((remove && !chisel->did_remove) || !remove)) {
             // We want to attempt to destroy this blob now.
             // Firstly, we want to do a diagonal check.
             
@@ -130,10 +130,21 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
                 chisel->y -= uy;
 
                 if (blob_can_destroy(gs->object_current, chisel->size, b)) {
+                    if (!remove) {
+                        chisel->x = px;
+                        chisel->y = py;
+                        return b;
+                    }
+
                     object_remove_blob(gs->object_current, b, chisel->size, true);
 
                     move_mouse_to_grid_position(chisel->x, chisel->y);
                     chisel->did_remove = true;
+                } else if (!remove) {
+                    b = 0;
+                    chisel->x = px;
+                    chisel->y = py;
+                    return b;
                 }
 
                 chisel->click_cooldown = CHISEL_COOLDOWN-CHISEL_TIME-1;
@@ -146,11 +157,14 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
         chisel->y += uy;
 
         current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
+        iterations++;
     }
 
     Uint32 b = curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw];
     if (!remove) {
-        if (gs->grid[(int)chisel->x + (int)chisel->y*gs->gw].type == 0) b = -1;
+        b = 0;
+        chisel->x = px;
+        chisel->y = py;
         return b;
     }
 
@@ -296,11 +310,11 @@ void chisel_update_texture() {
                 x++;
             } else if (chisel->angle == 45) {
                 y--;
+                x++;
             } else if (chisel->angle == 135) {
                 x += 2;
                 y++;
             } else if (chisel->angle == 315) {
-                x--;
             }
         } else if (chisel->size == 2) {
             if (chisel->angle == 225) {
@@ -395,16 +409,35 @@ void chisel_tick() {
             f32 ux = dx/len;
             f32 uy = dy/len;
 
+            switch ((int)chisel->angle) {
+            case 135:
+                ux = 1;
+                uy = -1;
+                break;
+            case 225:
+                ux = 1;
+                uy = 1;
+                break;
+            case 270:
+                ux = 0;
+                uy = 1;
+                break;
+            case 315:
+                ux = -1;
+                uy = 1;
+                break;
+            }
+
             struct Chisel copy = *chisel;
 
             Uint32 blob_highlight = chisel_goto_blob(false, ux, uy, len);
 
             *chisel = copy;
 
+            memset(chisel->highlights, 0, chisel->highlight_count);
+            chisel->highlight_count = 0;
+            
             if (blob_highlight > 0) {
-                memset(chisel->highlights, 0, chisel->highlight_count);
-                chisel->highlight_count = 0;
-
                 if (blob_can_destroy(gs->object_current, chisel->size, blob_highlight)) {
                     for (int i = 0; i < gs->gw*gs->gh; i++) {
                         Uint32 b = objects[gs->object_current].blob_data[chisel->size].blobs[i];
@@ -508,11 +541,53 @@ void chisel_draw() {
     chisel_update_texture();
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_CHISEL), NULL, NULL);
 
+    bool close = false;
+    bool hit = false;
+
+    for (int i = 0; i < chisel->highlight_count; i++) {
+        int x = chisel->highlights[i]%gs->gw;
+        int y = chisel->highlights[i]/gs->gh;
+
+        if (gs->overlay.grid[x+y*gs->gw]) {
+            hit = true;
+            break;
+        }
+
+        // We don't need to loop if we already know at least
+        // one of them is close.
+        if (!close) {
+            int r = 2;
+            for (int yy = -r; yy <= r; yy++) {
+                for (int xx = -r; xx <= r; xx++) {
+                    if (xx == 0 && yy == 0) continue;
+                    if (gs->overlay.grid[x+xx+(y+yy)*gs->gw]) {
+                        close = true;
+                        goto next_highlight_loop;
+                    }
+                }
+            }
+        }
+
+    next_highlight_loop:;
+    }
+
     // Draw the highlights for blobs now.
-    if (DRAW_CHISEL_HIGHLIGHTS) {
+    if (DRAW_CHISEL_HIGHLIGHTS && (close || hit)) {
         for (int i = 0; i < chisel->highlight_count; i++) {
-            SDL_SetRenderDrawColor(gs->renderer, 255, 103, 93, 200);
-            SDL_RenderDrawPoint(gs->renderer, chisel->highlights[i]%gs->gw, chisel->highlights[i]/gs->gw);
+            int x = chisel->highlights[i]%gs->gw;
+            int y = chisel->highlights[i]/gs->gw;
+            
+            if (hit) {
+                if (gs->overlay.grid[x+y*gs->gw]) {
+                    SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
+                } else {
+                    SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 60);
+                }
+            } else {
+                SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 200);
+            }
+
+            SDL_RenderDrawPoint(gs->renderer, x, y);
         }
     }
 }

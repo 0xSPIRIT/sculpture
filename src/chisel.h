@@ -1,7 +1,7 @@
 #define CHISEL_TIME 0 /* The amount of frames the chisel moves. 0 = instant */
 #define CHISEL_COOLDOWN 3
 #define CHISEL_FORGIVING_AIM false // Do we check for surrounding cells?
-#define DRAW_CHISEL_HIGHLIGHTS false
+#define DRAW_CHISEL_HIGHLIGHTS true
 
 struct Chisel_Hammer {
 	int state;

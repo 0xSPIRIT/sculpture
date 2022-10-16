@@ -882,8 +882,7 @@ void grid_array_draw(struct Cell *array) {
 
             SDL_Color col = pixel_from_index(array, x+y*gs->gw);
             if (array == gs->pickup_grid) {
-                /* col.a = (Uint8) (128 + (col.a * 0.1f*(1+sinf(SDL_GetTicks()/300.f)))); */
-                col.a = 0;
+                col.a = (Uint8) (128 + (col.a * 0.1f*(1+sinf(SDL_GetTicks()/300.f))));
                 col.r /= 2;
                 col.g /= 2;
                 col.b /= 2;
@@ -924,6 +923,8 @@ void grid_draw(void) {
     grid_array_draw(gs->grid);
     grid_array_draw(gs->fg_grid);
     grid_array_draw(gs->pickup_grid);
+
+    overlay_draw();
     
     // Draw inspiration ghost
     if (gs->grid_show_ghost) {

@@ -80,6 +80,8 @@ struct Game_State {
     struct Blob_Hammer blob_hammer;
     struct Knife knife;
     struct Deleter deleter;
+    struct Overlay overlay;
+    
     clock_t global_start, global_end;
 
     bool undo_initialized;
@@ -150,6 +152,7 @@ inline void _assert(bool condition, SDL_Window *window, const char *func, const 
     __debugbreak();
 }
 
+// Gives pointer to zeroed memory.
 inline void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
     void *output = NULL;

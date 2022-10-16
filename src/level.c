@@ -194,6 +194,7 @@ void goto_level(int lvl) {
     grabber_init();
     gui_init();
     all_converters_init();
+    overlay_init();
 
     effect_set(gs->levels[lvl].effect_type);
 
@@ -287,11 +288,13 @@ void level_tick() {
          *     SDL_SetCursor(gs->normal_cursor);
          * } */
     
+        overlay_tick();
         chisel_blocker_tick();
         blocker_tick();
 
         if (gs->chisel_blocker_mode) break;
         if (gs->blocker.state) break;
+        if (gs->overlay.tool) break;
         
         switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE:

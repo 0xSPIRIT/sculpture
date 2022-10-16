@@ -3,6 +3,7 @@
 // Include all files to compile in one translation unit for
 // compilation speed's sake. ("Unity Build")
 #include "util.c"
+#include "overlay.c"
 #include "grid.c"
 #include "undo.c"
 #include "blob_hammer.c"
