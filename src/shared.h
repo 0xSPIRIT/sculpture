@@ -77,8 +77,6 @@ struct Game_State {
     int frames;
     bool step_one;
     
-    struct Blob_Hammer blob_hammer;
-    struct Knife knife;
     struct Deleter deleter;
     struct Overlay overlay;
     
@@ -153,7 +151,7 @@ inline void _assert(bool condition, SDL_Window *window, const char *func, const 
 }
 
 // Gives pointer to zeroed memory.
-inline void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
+inline allocator void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
     void *output = NULL;
 

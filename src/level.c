@@ -185,9 +185,7 @@ void goto_level(int lvl) {
     
     chisel_blocker_init();
     blocker_init();
-    blob_hammer_init();
     chisel_hammer_init();
-    knife_init();
     deleter_init();
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_init(i);
@@ -288,26 +286,21 @@ void level_tick() {
          *     SDL_SetCursor(gs->normal_cursor);
          * } */
     
-        overlay_tick();
         chisel_blocker_tick();
         blocker_tick();
 
         if (gs->chisel_blocker_mode) break;
         if (gs->blocker.state) break;
-        if (gs->overlay.tool) break;
         
         switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE:
             chisel_tick();
             break;
-        case TOOL_KNIFE:
-            knife_tick();
+        case TOOL_OVERLAY:
+            overlay_tick();
             break;
         case TOOL_DELETER:
             deleter_tick();
-            break;
-        case TOOL_HAMMER:
-            blob_hammer_tick();
             break;
         case TOOL_PLACER:
             if (!gs->gui.popup) // We'll handle updating it in the converter
@@ -385,14 +378,8 @@ void level_draw() {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE:
             chisel_draw();
             break;
-        case TOOL_KNIFE:
-            knife_draw();
-            break;
         case TOOL_DELETER:
             deleter_draw();
-            break;
-        case TOOL_HAMMER:
-            blob_hammer_draw();
             break;
         case TOOL_PLACER:
             if (!gs->gui.popup) // When gui.popup = true, we draw in converter

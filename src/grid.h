@@ -3,8 +3,6 @@
 #define MAX_OBJECTS 32
 #define NUM_GRID_LAYERS 4
 
-#define DRAW_PRESSURE false
-
 #define GRAV 0.5
 #define MAX_GRAV 4
 
@@ -12,9 +10,8 @@ enum Tool_Type {
     TOOL_CHISEL_SMALL,
     TOOL_CHISEL_MEDIUM,
     TOOL_CHISEL_LARGE,
-    TOOL_KNIFE,
+    TOOL_OVERLAY,
     TOOL_DELETER,
-    TOOL_HAMMER,
     TOOL_PLACER,
     TOOL_GRABBER,
     TOOL_COUNT

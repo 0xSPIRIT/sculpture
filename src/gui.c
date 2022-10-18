@@ -136,6 +136,7 @@ void button_draw(struct Button *b) {
     SDL_Rect dst = {
         b->x, b->y, b->w, b->h
     };
+
     if (b->activated) {
         SDL_SetTextureColorMod(b->texture, 200, 200, 200);
     } else if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
@@ -145,6 +146,44 @@ void button_draw(struct Button *b) {
         SDL_SetTextureColorMod(b->texture, 255, 255, 255);
     }
     SDL_RenderCopy(gs->renderer, b->texture, NULL, &dst);
+}
+
+void gui_message_stack_push(const char *str) {
+    struct GUI *gui = &gs->gui;
+
+    Assert(strlen(str) <= 100);
+    Assert(gui->message_count <= 32);
+
+    if (gui->message_count) {
+        for (int i = 0; i < gui->message_count; i++) {
+            gui->message_stack[i+1] = gui->message_stack[i];
+        }
+    }
+    gui->message_count++;
+    struct Message *msg = &gui->message_stack[0];
+
+    strcpy(msg->str, str);
+    msg->alpha = 255;
+}
+
+void gui_message_stack_tick_and_draw() {
+    struct GUI *gui = &gs->gui;
+
+    for (int i = 0; i < gui->message_count; i++) {
+        struct Message *msg = &gui->message_stack[i];
+    
+        SDL_Color col = { 255, 255, 255, msg->alpha };
+        draw_text(gs->fonts.font_consolas, msg->str, col, true, true, 0, GUI_H+gs->S*gs->gh - i*32, NULL, NULL);
+    
+        msg->alpha--;
+        if (msg->alpha == 127) {
+            gui->message_count--;
+            for (int j = i; j < gui->message_count; j++) {
+                gui->message_stack[j] = gui->message_stack[j+1];
+            }
+            i--;
+        }
+    }
 }
 
 void gui_init() {
@@ -168,6 +207,7 @@ void gui_init() {
         if (gui->tool_buttons[i] == NULL) {
             gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR, gs->textures.tool_buttons[i], name, click_gui_tool_button);
         }
+
         gui->tool_buttons[i]->x = cum;
         gui->tool_buttons[i]->y = 0;
         gui->tool_buttons[i]->index = i;
@@ -356,7 +396,7 @@ bool is_mouse_in_slot(struct Slot *slot) {
 
 bool was_mouse_in_slot(struct Slot *slot) {
     struct Input *input = &gs->input;
-    
+
     return is_point_in_rect((SDL_Point){input->real_pmx,input->real_pmy-GUI_H},
                             (SDL_Rect){
                                 (int) (slot->converter->x + slot->x - slot->w/2),
@@ -505,7 +545,8 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
     
     SDL_Rect r = {
         x, y,
-        w, h
+        w, h
+
     };
     SDL_RenderCopy(gs->renderer, gs->textures.items[item->type], NULL, &r);
     

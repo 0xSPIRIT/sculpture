@@ -1,6 +1,6 @@
 @echo off
 
-set Compiler_Flags=/nologo /diagnostics:caret /W4 /WX /wd4189 /wd4389 /wd4244 /wd4127 /wd4245 /Zi /GR- /EHa- /Odi /MTd /FC /Fo:"obj\\" /D_CRT_SECURE_NO_WARNINGS
+set Compiler_Flags=/nologo /diagnostics:caret /W4 /WX /wd4389 /wd4244 /Zi /GR- /EHa- /Odi /MTd /FC /Fo:"obj\\" /D_CRT_SECURE_NO_WARNINGS
 set Linker_Flags=user32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib
 
 rem gcc main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -g -o ..\bin\win32_sculpture.exe

@@ -1,11 +1,3 @@
-bool is_in_bounds(int x, int y) {
-    return x >= 0 && y >= 0 && x < gs->gw && y < gs->gh;
-}
-
-bool is_in_boundsf(f32 x, f32 y) {
-    return is_in_bounds((int)x, (int)y);
-}
-
 int is_cell_hard(int type) {
     return
         type == CELL_ICE         ||
@@ -888,7 +880,9 @@ void grid_array_draw(struct Cell *array) {
                 col.b /= 2;
             }
 
-            if (DRAW_PRESSURE && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]) {
+            const bool draw_pressure = true;
+
+            if (draw_pressure && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]) {
                 int blob_pressure = (int)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]];
                 f32 normalized_pressure = (f32) (blob_pressure / MAX_PRESSURE);
 
@@ -897,7 +891,6 @@ void grid_array_draw(struct Cell *array) {
                 } else {
                     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
                 }
-
             } else {
                 SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, col.a);
             }

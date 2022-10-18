@@ -1,3 +1,5 @@
+#pragma once
+
 #define MAX_TOOLTIP_LEN 128
 #define MAX_TOOLTIP_LINE_LEN 128
 #define CONVERTER_NAME_LEN 32
@@ -27,6 +29,11 @@ struct Tooltip {
     int w, h;
 };
 
+struct Message {
+    char str[100];
+    Uint8 alpha;
+};
+
 struct GUI {
     int popup;
     bool is_placer_active;
@@ -35,6 +42,9 @@ struct GUI {
     struct Tooltip tooltip;
 
     struct Button *tool_buttons[TOOL_COUNT];
+
+    struct Message message_stack[32];
+    int message_count;
 };
 
 struct Button {
@@ -72,7 +82,7 @@ struct Slot {
     char name[32];
     int dx, dy;                  // Orientation of the name string.
 
-    f32 x, y, w, h;            // Relative to the converter it's in.
+    f32 x, y, w, h;              // Relative to the converter it's in.
 };
 
 enum Converter_Type {

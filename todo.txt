@@ -1,15 +1,19 @@
       --------------------------TODO----------------------------
 
-- Create drawable highlight to overlay. Purely aesthetic,
+x Create drawable highlight to overlay. Purely aesthetic,
   but helps the player with creating shapes. Perhaps add
   a red highlight whenever your chisel is in a space where,
   if you click, it will delete some cells that are a part
   of the highlight.
-     - Brush tool
-     - Line tool
-     - Rectangle tool
-     - Circle tool
-     - Eraser tool (circle & rectangle)
+     x Brush tool
+     x Line tool
+     x Rectangle tool
+     x Fill tool
+     x Circle tool
+     x Eraser tool (circle & rectangle)
+        x Circle
+        x Rectangle
+     x Modifying sizes
 
      Essentially, your workflow would consist of getting
      the material in place, then drawing the shape of 

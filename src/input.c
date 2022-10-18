@@ -7,8 +7,8 @@ void input_tick(struct Game_State *state) {
     in->real_pmx = in->real_mx;
     in->real_pmy = in->real_my;
 
-    persist Uint8 keys_previous[SDL_NUM_SCANCODES] = {0};
-    persist Uint32 mouse_previous = {0};
+    static Uint8 keys_previous[SDL_NUM_SCANCODES] = {0};
+    static Uint32 mouse_previous = {0};
 
     in->mouse = (Uint32) SDL_GetMouseState(&in->real_mx, &in->real_my);
     in->keys = (Uint8*) SDL_GetKeyboardState(NULL);

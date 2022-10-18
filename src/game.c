@@ -6,7 +6,6 @@
 #include "overlay.c"
 #include "grid.c"
 #include "undo.c"
-#include "blob_hammer.c"
 #include "chisel_blocker.c"
 #include "spline.c"
 #include "blocker.c"
@@ -16,7 +15,6 @@
 #include "gui.c"
 #include "effects.c"
 #include "grabber.c"
-#include "knife.c"
 #include "deleter.c"
 #include "popup.c"
 #include "level.c"
@@ -68,6 +66,9 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             break;
         case SDLK_SPACE:
             gs->paused = !gs->paused;
+            break;
+        case SDLK_SEMICOLON:
+            gui_message_stack_push("Test");
             break;
         case SDLK_n:
             gs->step_one = 1;
@@ -165,22 +166,14 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             selected_tool = 1;
             break;
         case SDLK_4:
-            gs->current_tool = TOOL_KNIFE;
-            selected_tool = 1;
-            break;
-        case SDLK_5:
             gs->current_tool = TOOL_DELETER;
             selected_tool = 1;
             break;
-        case SDLK_6:
-            gs->current_tool = TOOL_HAMMER;
-            selected_tool = 1;
-            break;
-        case SDLK_7:
+        case SDLK_5:
             gs->current_tool = TOOL_PLACER;
             selected_tool = 1;
             break;
-        case SDLK_8:
+        case SDLK_6:
             gs->current_tool = TOOL_GRABBER;
             selected_tool = 1;
             break;
@@ -224,6 +217,9 @@ void draw_intro() {
     all_converters_draw();
 
     tooltip_draw(&gs->gui.tooltip);
+
+    gui_message_stack_tick_and_draw();
+
     text_field_draw();
 }
 

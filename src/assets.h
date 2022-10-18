@@ -4,8 +4,6 @@
 enum {
     RENDER_TARGET_GLOBAL, // The main render target
     RENDER_TARGET_GUI_TOOLBAR, // The render target showing the tool buttons
-    RENDER_TARGET_KNIFE,
-    RENDER_TARGET_BLOB_HAMMER,
     RENDER_TARGET_CHISEL_BLOCKER,
     RENDER_TARGET_CHISEL, // Use the same render target for each chisel.
     RENDER_TARGET_DELETER,

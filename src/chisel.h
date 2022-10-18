@@ -3,6 +3,13 @@
 #define CHISEL_FORGIVING_AIM false // Do we check for surrounding cells?
 #define DRAW_CHISEL_HIGHLIGHTS true
 
+enum Hammer_State {
+    HAMMER_STATE_IDLE,
+    HAMMER_STATE_WINDUP,
+    HAMMER_STATE_SWING,
+    HAMMER_STATE_AFTERSWING // Unused for chisel hammer
+};
+
 struct Chisel_Hammer {
 	int state;
     f32 x, y;

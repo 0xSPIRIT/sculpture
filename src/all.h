@@ -12,11 +12,9 @@
 
 #include "typedefs.h"
 #include "cursor.h"
-#include "blob_hammer.h"
 #include "overlay.h"
 #include "grid.h"
 #include "chisel.h"
-#include "knife.h"
 #include "deleter.h"
 #include "popup.h"
 #include "placer.h"

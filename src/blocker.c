@@ -1,11 +1,3 @@
-bool is_angle_225(f64 deg_angle) {
-    f64 f = fabs(deg_angle);
-    if (f == 22.5 || f == 157.5 || f == 112.5 || f == 67.5) {
-        return true;
-    }
-    return false;
-}
-
 void blocker_add_point(int x, int y) {
     struct Blocker *blocker = &gs->blocker;
     blocker->points[blocker->point_count].x = x;
@@ -31,16 +23,16 @@ void blocker_tick() {
     struct Blocker *blocker = &gs->blocker;
     struct Input *input = &gs->input;
     
-    if (input->keys_pressed[SDL_SCANCODE_F6]) {
-        blocker->state = BLOCKER_STATE_OFF;
-    }
-    if (input->keys_pressed[SDL_SCANCODE_F7]) {
-        blocker->state = BLOCKER_STATE_LINE;
-    }
-    if (input->keys_pressed[SDL_SCANCODE_F8]) {
-        blocker->state = BLOCKER_STATE_CURVE;
-    }
-
+    // if (input->keys_pressed[SDL_SCANCODE_F6]) {
+    // blocker->state = BLOCKER_STATE_OFF;
+    // }
+    // if (input->keys_pressed[SDL_SCANCODE_F7]) {
+    // blocker->state = BLOCKER_STATE_LINE;
+    // }
+    // if (input->keys_pressed[SDL_SCANCODE_F8]) {
+    // blocker->state = BLOCKER_STATE_CURVE;
+    // }
+    
     if (blocker->state == BLOCKER_STATE_OFF) return;
     if (input->real_my < GUI_H) return;
 
