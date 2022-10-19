@@ -1,5 +1,6 @@
 version(2);
 project_name = "win32_sculpture.exe";
+
 patterns = {
 "*.c",
 "*.cpp",
@@ -12,22 +13,37 @@ patterns = {
 blacklist_patterns = {
 ".*",
 };
-load_paths_base = {
- { ".", .relative = true, .recursive = true, },
-};
+
 load_paths = {
- .win = load_paths_base,
- .linux = load_paths_base,
- .mac = load_paths_base,
+.win = {
+{ .path = "", .recursive = true, .relative = true, },
+},
+.linux = {
+{ .path = "", .recursive = true, .relative = true, },
+},
+.mac = {
+{ .path = "", .recursive = true, .relative = true, },
+},
 };
 
 commands = {
- .build = { .out = "*compilation*", .footer_panel = true, .save_dirty_files = true,
-   .win = "build.bat",
-   .linux = "./build.sh",
-   .mac = "./build.sh", },
- .run = { .out = "*run*", .footer_panel = false, .save_dirty_files = false,
-   .win = "bin\\win32_sculpture.exe",
-   .linux = "bin/win32_sculpture.exe",
-   .mac = "bin/win32_sculpture.exe", },
+.build = {
+.win = "build.bat",
+.linux = "./build.sh",
+.mac = "./build.sh",
+.out = "*compilation*",
+.footer_panel = true,
+.save_dirty_files = true,
+.cursor_at_end = false,
+},
+.run = {
+.win = "bin\win32_sculpture.exe",
+.linux = "bin/win32_sculpture.exe",
+.mac = "bin/win32_sculpture.exe",
+.out = "*run*",
+.footer_panel = false,
+.save_dirty_files = false,
+.cursor_at_end = false,
+},
 };
+

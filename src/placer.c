@@ -292,7 +292,7 @@ void placer_tick(struct Placer *placer) {
          * } */
     }
 
-    if (input->real_my < GUI_H) return;
+    if (gs->is_mouse_over_any_button) return;
 
     switch (placer->state) {
     case PLACER_PLACE_CIRCLE_MODE:

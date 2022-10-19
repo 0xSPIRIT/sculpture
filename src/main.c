@@ -30,7 +30,7 @@
 // uses anyways.
 //
 // This game uses a jumbo/unity build, so we don't need
-// function prototypes or includes anywhere except all.h,
+// function prototypes or includes anywhere except headers.h,
 // shared.h, main.c and game.c. That way, headers are all
 // just struct definitions or #defines!
 //

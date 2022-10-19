@@ -91,6 +91,8 @@ void deleter_tick() {
 
     bool p_active = deleter->active;
 
+    if (gs->is_mouse_over_any_button) return;
+
     deleter->x = (f32) input->mx;
     deleter->y = (f32) input->my;
 

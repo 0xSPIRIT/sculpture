@@ -34,7 +34,7 @@ void blocker_tick() {
     // }
     
     if (blocker->state == BLOCKER_STATE_OFF) return;
-    if (input->real_my < GUI_H) return;
+    if (gs->is_mouse_over_any_button) return;
 
     switch (blocker->state) {
     case BLOCKER_STATE_LINE:

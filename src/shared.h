@@ -21,7 +21,7 @@
 // 'which' is an enum in assets.h
 #define RenderTarget(which) (gs->textures.render_targets[gs->level_current][which])
 
-#include "all.h"
+#include "headers.h"
 
 //
 // To allocate permanent memory that will persist until
@@ -54,6 +54,8 @@ struct Game_State {
     struct Textures textures; // Contains pointers to SDL textures.
     struct Surfaces surfaces;
     struct Fonts fonts;
+
+    bool is_mouse_over_any_button;
 
     int S;
     int window_width, window_height;

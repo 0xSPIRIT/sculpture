@@ -86,6 +86,7 @@ int number_neighbours_of_object(int x, int y, int r, int obj) {
             if (gs->grid[x+xx+(y+yy)*gs->gw].type && gs->grid[x+xx+(y+yy)*gs->gw].object == obj) c++;
         }
     }
+
     return c;
 }
 
@@ -880,7 +881,7 @@ void grid_array_draw(struct Cell *array) {
                 col.b /= 2;
             }
 
-            const bool draw_pressure = true;
+            const bool draw_pressure = false;
 
             if (draw_pressure && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]) {
                 int blob_pressure = (int)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]];
@@ -1296,6 +1297,7 @@ int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_o
 
 int clamp_to_grid_angle(int x, int y, f32 rad_angle, bool set_current_object) {
     int l = gs->gw;
+
     f32 x1 = (f32) x;
     f32 y1 = (f32) y;
     f32 y2 = y1 + l * sinf(rad_angle);

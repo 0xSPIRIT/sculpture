@@ -12,7 +12,8 @@ void grabber_tick() {
     grabber->y = (f32) gs->input.my;
 
     if (!is_in_bounds((int)grabber->x, (int)grabber->y)) return;
-
+    if (gs->is_mouse_over_any_button) return;
+    
     if (grabber->object_holding != -1) {
         int dx = (int) (grabber->x-px);
         int dy = (int) (grabber->y-py);

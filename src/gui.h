@@ -7,6 +7,8 @@
 #define GUI_POPUP_H 336 // window_height/2
 #define GUI_H 96
 
+#define MAX_MESSAGE_STACK 256
+
 #define ITEM_SIZE 48
 
 enum Tooltip_Type {
@@ -18,7 +20,8 @@ enum Tooltip_Type {
 
 enum Button_Type {
     BUTTON_TYPE_TOOL_BAR,
-    BUTTON_TYPE_CONVERTER
+    BUTTON_TYPE_CONVERTER,
+    BUTTON_TYPE_OVERLAY_INTERFACE
 };
 
 struct Tooltip {
@@ -41,9 +44,11 @@ struct GUI {
     SDL_Texture *popup_texture;
     struct Tooltip tooltip;
 
+    struct Overlay_Interface overlay_interface;
+
     struct Button *tool_buttons[TOOL_COUNT];
 
-    struct Message message_stack[32];
+    struct Message message_stack[MAX_MESSAGE_STACK];
     int message_count;
 };
 

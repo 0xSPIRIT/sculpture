@@ -35,6 +35,8 @@ void chisel_blocker_tick() {
     struct Chisel_Blocker *chisel_blocker = &gs->chisel_blocker;
     struct Input *input = &gs->input;
 
+    if (gs->is_mouse_over_any_button) return;
+
     if (chisel_blocker->state != CHISEL_BLOCKER_OFF && input->keys_pressed[SDL_SCANCODE_C]) {
         gs->chisel_blocker_mode = !gs->chisel_blocker_mode;
     }

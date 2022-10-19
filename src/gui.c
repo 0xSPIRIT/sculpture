@@ -58,6 +58,7 @@ void click_gui_tool_button(void *type_ptr) {
 
     gs->current_tool = type;
     gs->chisel_blocker_mode = 0;
+
     switch (gs->current_tool) {
     case TOOL_CHISEL_SMALL:
         gs->chisel = &gs->chisel_small;
@@ -81,8 +82,10 @@ void click_gui_tool_button(void *type_ptr) {
     }
 
     for (int i = 0; i < TOOL_COUNT; i++) {
-        gui->tool_buttons[i]->activated = 0;
+        if (type != i)
+            gui->tool_buttons[i]->activated = false;
     }
+
     tooltip_reset(&gui->tooltip);
 }
 
@@ -110,6 +113,8 @@ void button_tick(struct Button *b, void *data) {
         tooltip_set_position_to_cursor(&gui->tooltip, TOOLTIP_TYPE_BUTTON);
         b->just_had_tooltip = true;
 
+        gs->is_mouse_over_any_button = true;
+
         if (strlen(b->tooltip_text))
             strcpy(gui->tooltip.str[0], b->tooltip_text);
 
@@ -120,10 +125,6 @@ void button_tick(struct Button *b, void *data) {
     } else if (b->just_had_tooltip) {
         b->just_had_tooltip = false;
         tooltip_reset(&gui->tooltip);
-    }
-
-    if (!(input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
-        b->activated = false;
     }
 }
 
@@ -152,7 +153,7 @@ void gui_message_stack_push(const char *str) {
     struct GUI *gui = &gs->gui;
 
     Assert(strlen(str) <= 100);
-    Assert(gui->message_count <= 32);
+    Assert(gui->message_count <= MAX_MESSAGE_STACK);
 
     if (gui->message_count) {
         for (int i = 0; i < gui->message_count; i++) {
@@ -215,6 +216,8 @@ void gui_init() {
 
         cum += gui->tool_buttons[i]->w;
     }
+
+    overlay_interface_init();
 }
 
 void gui_tick() {
@@ -271,6 +274,10 @@ void gui_tick() {
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_tick(gui->tool_buttons[i], &i);
         }
+
+        if (gs->current_tool == TOOL_OVERLAY)
+            overlay_interface_tick();
+
         if (input->real_my >= GUI_H) {
             // tooltip_reset(&gui->tooltip);
         }

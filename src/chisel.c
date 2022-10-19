@@ -61,7 +61,7 @@ void chisel_hammer_tick() {
         break;
     case HAMMER_STATE_IDLE:
         hammer->dist = hammer->normal_dist;
-        if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
+        if (!gs->is_mouse_over_any_button && input->mouse_pressed[SDL_BUTTON_LEFT]) {
             hammer->state = HAMMER_STATE_WINDUP;
             save_state_to_next();
         }

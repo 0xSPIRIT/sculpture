@@ -12,6 +12,8 @@ void overlay_init() {
     overlay->temp_y = -1;
     overlay->size = 3;
 
+    overlay->eraser_mode = false;
+
     overlay->r.x = overlay->r.y = -1;
 }
 
@@ -153,11 +155,13 @@ void overlay_tick() {
         gui_message_stack_push("Overlay Tool: Bucket");
     }
 
+    if (gs->is_mouse_over_any_button) return;
     switch (overlay->tool) {
     case OVERLAY_TOOL_BRUSH: case OVERLAY_TOOL_ERASER_BRUSH: {
         int value = overlay->tool == OVERLAY_TOOL_BRUSH ? 1 : 0;
 
         if (gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+
             overlay_set_circle(gs->input.mx, gs->input.my, overlay->size, value);
         }
         break;

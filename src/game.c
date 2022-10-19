@@ -13,6 +13,7 @@
 #include "tooltip.c"
 #include "placer.c"
 #include "gui.c"
+#include "overlay_interface.c"
 #include "effects.c"
 #include "grabber.c"
 #include "deleter.c"
@@ -193,16 +194,13 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
 
     if (selected_tool) {
         gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
-        gs->gui.tool_buttons[gs->current_tool]->activated = 1;
+        gs->gui.tool_buttons[gs->current_tool]->activated = true;
     }
 
     return is_running;
 }
 
 void draw_intro() {
-    gui_tick();
-    all_converters_tick();
-
     gui_draw();
 
     SDL_Rect dst = {
@@ -215,6 +213,9 @@ void draw_intro() {
 
     gui_popup_draw();
     all_converters_draw();
+
+    if (gs->current_tool == TOOL_OVERLAY)
+        overlay_interface_draw();
 
     tooltip_draw(&gs->gui.tooltip);
 
@@ -307,7 +308,11 @@ export void game_run(struct Game_State *state) {
 
     struct Level *level = &gs->levels[gs->level_current];
 
+    gui_tick();
+    all_converters_tick();
+
     level_tick();
+
     level_draw();
 
     if (level->state == LEVEL_STATE_OUTRO) {
@@ -322,6 +327,7 @@ export void game_run(struct Game_State *state) {
     } else if (level->state != LEVEL_STATE_INTRO) {
         draw_intro();
     }
-    
     SDL_RenderPresent(gs->renderer);
+
+    gs->is_mouse_over_any_button = false;
 }
