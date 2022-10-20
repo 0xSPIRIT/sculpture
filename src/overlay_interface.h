@@ -1,4 +1,5 @@
 #define OVERLAY_INTERFACE_BUTTONS 5
+#define OVERLAY_INTERFACE_ERASER_MODE 4 // Index into interface->buttons
 
 struct Overlay_Interface {
     struct Button *buttons[OVERLAY_INTERFACE_BUTTONS];

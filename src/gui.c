@@ -120,7 +120,6 @@ void button_tick(struct Button *b, void *data) {
 
         if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
             b->on_pressed(data);
-            b->activated = true;
         }
     } else if (b->just_had_tooltip) {
         b->just_had_tooltip = false;

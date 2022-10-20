@@ -59,32 +59,32 @@ void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
         surf = NULL;
     }
 
-    textures->deleter = load_texture(renderer, RES_DIR "/deleter.png");
-    textures->placer = load_texture(renderer, RES_DIR "/placer.png");
-    textures->knife = load_texture(renderer, RES_DIR "/knife.png");
-    textures->popup = load_texture(renderer, RES_DIR "/popup.png");
+    textures->deleter = load_texture(renderer, RES_DIR "deleter.png");
+    textures->placer = load_texture(renderer, RES_DIR "placer.png");
+    textures->knife = load_texture(renderer, RES_DIR "knife.png");
+    textures->popup = load_texture(renderer, RES_DIR "popup.png");
 
     for (enum Tool_Type i = 0; i < TOOL_COUNT; i++) {
         char filename[128] = {0};
         char path[128] = {0};
 
         get_file_from_tool(i, filename);
-        sprintf(path, RES_DIR "/buttons/%s", filename);
+        sprintf(path, RES_DIR "buttons/%s", filename);
 
         textures->tool_buttons[i] = load_texture(renderer, path);
         Assert(textures->tool_buttons[i]);
     }
 
-    textures->blob_hammer = load_texture(renderer, RES_DIR "/hammer.png");
-    textures->converter_arrow = load_texture(renderer, RES_DIR "/arrow.png");
-    textures->convert_button = load_texture(renderer, RES_DIR "/buttons/convert.png");
+    textures->blob_hammer = load_texture(renderer, RES_DIR "hammer.png");
+    textures->converter_arrow = load_texture(renderer, RES_DIR "arrow.png");
+    textures->convert_button = load_texture(renderer, RES_DIR "buttons/convert.png");
 
     const char *chisel_files[] = {
-        RES_DIR "/chisel_small",
-        RES_DIR "/chisel_medium",
-        RES_DIR "/chisel_large",
+        RES_DIR "chisel_small",
+        RES_DIR "chisel_medium",
+        RES_DIR "chisel_large",
     };
-    textures->chisel_hammer = load_texture(renderer, RES_DIR "/hammer.png");
+    textures->chisel_hammer = load_texture(renderer, RES_DIR "hammer.png");
 
     // Loop through all chisels
     for (int i = 0; i < 3; i++) {
@@ -120,13 +120,13 @@ void textures_deinit(struct Textures *textures) {
 }
 
 void surfaces_init(struct Surfaces *surfaces) {
-    surfaces->bark_surface = IMG_Load(RES_DIR "/bark.png");
-    surfaces->glass_surface = IMG_Load(RES_DIR "/glass.png");
-    surfaces->wood_plank_surface = IMG_Load(RES_DIR "/plank.png");
-    surfaces->diamond_surface = IMG_Load(RES_DIR "/diamond.png");
-    surfaces->ice_surface = IMG_Load(RES_DIR "/ice.png");
-    surfaces->grass_surface = IMG_Load(RES_DIR "/grass.png");
-    surfaces->triangle_blob_surface = IMG_Load(RES_DIR "/triangle_blob.png");
+    surfaces->bark_surface = IMG_Load(RES_DIR "bark.png");
+    surfaces->glass_surface = IMG_Load(RES_DIR "glass.png");
+    surfaces->wood_plank_surface = IMG_Load(RES_DIR "plank.png");
+    surfaces->diamond_surface = IMG_Load(RES_DIR "diamond.png");
+    surfaces->ice_surface = IMG_Load(RES_DIR "ice.png");
+    surfaces->grass_surface = IMG_Load(RES_DIR "grass.png");
+    surfaces->triangle_blob_surface = IMG_Load(RES_DIR "triangle_blob.png");
 }
 
 void surfaces_deinit(struct Surfaces *surfaces) {
@@ -140,12 +140,12 @@ void surfaces_deinit(struct Surfaces *surfaces) {
 }
 
 void fonts_init(struct Fonts *fonts) {
-    fonts->font = TTF_OpenFont(RES_DIR "/cour.ttf", 19);
-    fonts->font_consolas = TTF_OpenFont(RES_DIR "/consola.ttf", 24);
-    fonts->font_courier = TTF_OpenFont(RES_DIR "/cour.ttf", 20);
-    fonts->font_small = TTF_OpenFont(RES_DIR "/cour.ttf", 16);
-    fonts->font_bold_small = TTF_OpenFont(RES_DIR "/courbd.ttf", 16);
-    fonts->font_title = TTF_OpenFont(RES_DIR "/cour.ttf", 45);
+    fonts->font = TTF_OpenFont(RES_DIR "cour.ttf", 19);
+    fonts->font_consolas = TTF_OpenFont(RES_DIR "consola.ttf", 24);
+    fonts->font_courier = TTF_OpenFont(RES_DIR "cour.ttf", 20);
+    fonts->font_small = TTF_OpenFont(RES_DIR "cour.ttf", 16);
+    fonts->font_bold_small = TTF_OpenFont(RES_DIR "courbd.ttf", 16);
+    fonts->font_title = TTF_OpenFont(RES_DIR "cour.ttf", 45);
 
     TTF_Font **ttf_fonts = (TTF_Font**) fonts;
     size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);

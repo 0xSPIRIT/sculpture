@@ -8,6 +8,9 @@ void overlay_init() {
         overlay->temp_grid = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
     }
 
+    memset(overlay->grid, 0, sizeof(int)*gs->gw*gs->gh);
+    memset(overlay->temp_grid, 0, sizeof(int)*gs->gw*gs->gh);
+
     overlay->temp_x = -1;
     overlay->temp_y = -1;
     overlay->size = 3;
@@ -122,12 +125,13 @@ void overlay_tick() {
 
     memset(overlay->temp_grid, 0, sizeof(int)*gs->gw*gs->gh);
 
-    if (gs->input.keys_pressed[SDL_SCANCODE_RIGHTBRACKET]) {
-        overlay->size++;
-    } else if (gs->input.keys_pressed[SDL_SCANCODE_LEFTBRACKET]) {
-        overlay->size--;
+    const f32 speed = 0.1f;
+    if (gs->input.keys[SDL_SCANCODE_W]) {
+        overlay->size += speed;
+    } else if (gs->input.keys[SDL_SCANCODE_S]) {
+        overlay->size -= speed;
     }
-    overlay->size = clamp(overlay->size, 1, 8);
+    if (overlay->size < 0) overlay->size = 0;
 
     if (gs->input.keys_pressed[SDL_SCANCODE_F7]) {
         overlay->tool = OVERLAY_TOOL_RECTANGLE;
@@ -247,12 +251,17 @@ void overlay_draw() {
             if (!overlay->grid[x+y*gs->gw] && !overlay->temp_grid[x+y*gs->gw]) continue;
 
             SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, (Uint8)alpha);
+
             SDL_RenderDrawPoint(gs->renderer, x, y);
         }
     }
 
     if (gs->current_tool == TOOL_OVERLAY && (overlay->tool == OVERLAY_TOOL_BRUSH || overlay->tool == OVERLAY_TOOL_ERASER_BRUSH)) {
-        SDL_SetRenderDrawColor(gs->renderer, 0, 255, 255, 64);
+        if (overlay->eraser_mode) {
+            SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 64);
+        } else {
+            SDL_SetRenderDrawColor(gs->renderer, 0, 255, 255, 64);
+        }
         fill_circle(gs->renderer, gs->input.mx, gs->input.my, overlay->size);
     }
 }

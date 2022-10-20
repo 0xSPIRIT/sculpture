@@ -128,44 +128,44 @@ int level_add(const char *name, const char *desired_image, const char *initial_i
 
 void levels_setup() {
     level_add("Alaska",
-              RES_DIR "/lvl/desired/level 1.png",
-              RES_DIR "/lvl/initial/level 1.png",
+              RES_DIR "lvl/desired/level 1.png",
+              RES_DIR "lvl/initial/level 1.png",
               EFFECT_SNOW);
     level_add("Masonry",
-              RES_DIR "/lvl/desired/level 2.png",
-              RES_DIR "/lvl/initial/level 2.png",
+              RES_DIR "lvl/desired/level 2.png",
+              RES_DIR "lvl/initial/level 2.png",
               EFFECT_NONE);
     level_add("Conversion",
-              RES_DIR "/lvl/desired/level 3.png",
-              RES_DIR "/lvl/initial/level 3.png",
+              RES_DIR "lvl/desired/level 3.png",
+              RES_DIR "lvl/initial/level 3.png",
               EFFECT_NONE);
     level_add("Remainder",
-              RES_DIR "/lvl/desired/level 4.png",
-              RES_DIR "/lvl/initial/level 4.png",
+              RES_DIR "lvl/desired/level 4.png",
+              RES_DIR "lvl/initial/level 4.png",
               EFFECT_NONE);
     level_add("Carbon Copy",
-              RES_DIR "/lvl/desired/level 5.png",
-              RES_DIR "/lvl/initial/level 5.png",
+              RES_DIR "lvl/desired/level 5.png",
+              RES_DIR "lvl/initial/level 5.png",
               EFFECT_RAIN);
     level_add("Metamorphosis",
-              RES_DIR "/lvl/desired/level 1.png",
-              RES_DIR "/lvl/initial/level 1.png",
+              RES_DIR "lvl/desired/level 1.png",
+              RES_DIR "lvl/initial/level 1.png",
               EFFECT_NONE);
     level_add("Procedure Lullaby",
-              RES_DIR "/lvl/desired/level 1.png",
-              RES_DIR "/lvl/initial/level 1.png",
+              RES_DIR "lvl/desired/level 1.png",
+              RES_DIR "lvl/initial/level 1.png",
               EFFECT_NONE);
     level_add("Polished Turd",
-              RES_DIR "/lvl/desired/level 1.png",
-              RES_DIR "/lvl/initial/level 1.png",
+              RES_DIR "lvl/desired/level 1.png",
+              RES_DIR "lvl/initial/level 1.png",
               EFFECT_NONE);
     level_add("Showpiece",
-              RES_DIR "/lvl/desired/level 1.png",
-              RES_DIR "/lvl/initial/level 1.png",
+              RES_DIR "lvl/desired/level 1.png",
+              RES_DIR "lvl/initial/level 1.png",
               EFFECT_NONE);
     level_add("Glass Body",
-              RES_DIR "/lvl/desired/level 1.png",
-              RES_DIR "/lvl/initial/level 1.png",
+              RES_DIR "lvl/desired/level 1.png",
+              RES_DIR "lvl/initial/level 1.png",
               EFFECT_NONE);
 }
 

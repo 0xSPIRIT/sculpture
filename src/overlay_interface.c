@@ -1,5 +1,3 @@
-#define OVERLAY_INTERFACE_ERASER_MODE 4 // Index into interface->buttons
-
 void click_overlay_interface(void *ptr) {
     int button_index = *(int*)ptr;
 
@@ -9,31 +7,22 @@ void click_overlay_interface(void *ptr) {
     switch (button_index) {
     case OVERLAY_TOOL_BRUSH: {
         overlay->tool = OVERLAY_TOOL_BRUSH;
-        gui_message_stack_push("Overlay Tool: Brush");
         break;
     }
     case OVERLAY_TOOL_LINE: {
         overlay->tool = OVERLAY_TOOL_LINE;
-        gui_message_stack_push("Overlay Tool: Line");
         break;
     }
     case OVERLAY_TOOL_RECTANGLE: {
         overlay->tool = OVERLAY_TOOL_RECTANGLE;
-        gui_message_stack_push("Overlay Tool: Line");
         break;
     }
     case OVERLAY_TOOL_BUCKET: {
         overlay->tool = OVERLAY_TOOL_BUCKET;
-        gui_message_stack_push("Overlay Tool: Bucket");
         break;
     }
     case OVERLAY_INTERFACE_ERASER_MODE: {
         overlay->eraser_mode = !overlay->eraser_mode;
-        if (overlay->eraser_mode) {
-            gui_message_stack_push("Eraser Mode: On");
-        } else {
-            gui_message_stack_push("Eraser Mode: Off");
-        }
         break;
     }
     }
@@ -52,10 +41,15 @@ void click_overlay_interface(void *ptr) {
         }
     }
 
+    if (button_index == OVERLAY_INTERFACE_ERASER_MODE) {
+        interface->buttons[OVERLAY_INTERFACE_ERASER_MODE]->activated = overlay->eraser_mode;
+        return;
+    }
+
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
-        if (i == OVERLAY_INTERFACE_ERASER_MODE) {
-            interface->buttons[i]->activated = overlay->eraser_mode;
-        } else if (i != button_index) {
+        if (i == OVERLAY_INTERFACE_ERASER_MODE) continue;
+        
+        if (i != button_index) {
             interface->buttons[i]->activated = false;
         }
     }
@@ -95,6 +89,8 @@ void overlay_interface_init() {
 
         interface->buttons[i] = b;
     }
+
+    interface->buttons[0]->activated = true;
 }
 
 void overlay_interface_tick() {

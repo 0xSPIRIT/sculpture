@@ -312,7 +312,6 @@ export void game_run(struct Game_State *state) {
     all_converters_tick();
 
     level_tick();
-
     level_draw();
 
     if (level->state == LEVEL_STATE_OUTRO) {

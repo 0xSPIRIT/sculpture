@@ -556,7 +556,7 @@ void chisel_draw() {
         // We don't need to loop if we already know at least
         // one of them is close.
         if (!close) {
-            int r = 2;
+            int r = 5;
             for (int yy = -r; yy <= r; yy++) {
                 for (int xx = -r; xx <= r; xx++) {
                     if (xx == 0 && yy == 0) continue;

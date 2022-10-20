@@ -1,4 +1,4 @@
-#define RES_DIR "../res" 
+#define RES_DIR "../res/" 
 
 // Index into textures.render_targets[]
 enum {
