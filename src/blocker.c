@@ -8,7 +8,7 @@ void blocker_add_point(int x, int y) {
 void blocker_init() {
     struct Blocker *blocker = &gs->blocker;
 
-    blocker->state = BLOCKER_STATE_OFF;
+    blocker->state = BLOCKER_STATE_LINE;
     blocker->point_count = 0;
     memset(blocker->points, 0, BLOCKER_MAX_POINTS * sizeof(struct SDL_Point));
 
@@ -23,17 +23,15 @@ void blocker_tick() {
     struct Blocker *blocker = &gs->blocker;
     struct Input *input = &gs->input;
     
-    // if (input->keys_pressed[SDL_SCANCODE_F6]) {
-    // blocker->state = BLOCKER_STATE_OFF;
-    // }
-    // if (input->keys_pressed[SDL_SCANCODE_F7]) {
-    // blocker->state = BLOCKER_STATE_LINE;
-    // }
-    // if (input->keys_pressed[SDL_SCANCODE_F8]) {
-    // blocker->state = BLOCKER_STATE_CURVE;
-    // }
+    if (input->keys_pressed[SDL_SCANCODE_C]) {
+        if (blocker->state == BLOCKER_STATE_LINE) {
+            blocker->state = BLOCKER_STATE_CURVE;
+        } else {
+            blocker->state = BLOCKER_STATE_LINE;
+        }
+        printf("%d\n", blocker->state); fflush(stdout);
+    }
     
-    if (blocker->state == BLOCKER_STATE_OFF) return;
     if (gs->is_mouse_over_any_button) return;
 
     switch (blocker->state) {
@@ -208,18 +206,16 @@ void blocker_draw_curve() {
 
 void blocker_draw() {
     struct Blocker *blocker = &gs->blocker;
-
+    
     if (!blocker->point_count) return;
-
-    if (blocker->state != BLOCKER_STATE_OFF) {
-        for (int i = 0; i < blocker->point_count; i++) {
-            SDL_Point p = blocker->points[i];
-            SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 255);
-
-            SDL_RenderDrawPoint(gs->renderer, p.x, p.y);
-        }
+    
+    for (int i = 0; i < blocker->point_count; i++) {
+        SDL_Point p = blocker->points[i];
+        SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 255);
+        
+        SDL_RenderDrawPoint(gs->renderer, p.x, p.y);
     }
-
+    
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
     SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
 

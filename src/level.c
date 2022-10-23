@@ -131,15 +131,15 @@ void levels_setup() {
               RES_DIR "lvl/desired/level 1.png",
               RES_DIR "lvl/initial/level 1.png",
               EFFECT_SNOW);
-    level_add("Masonry",
+    level_add("Fireplace",
               RES_DIR "lvl/desired/level 2.png",
               RES_DIR "lvl/initial/level 2.png",
               EFFECT_NONE);
-    level_add("Conversion",
+    level_add("Clock's Ticking",
               RES_DIR "lvl/desired/level 3.png",
               RES_DIR "lvl/initial/level 3.png",
               EFFECT_NONE);
-    level_add("Remainder",
+    level_add("The Process",
               RES_DIR "lvl/desired/level 4.png",
               RES_DIR "lvl/initial/level 4.png",
               EFFECT_NONE);
@@ -172,7 +172,9 @@ void levels_setup() {
 void goto_level(int lvl) {
     gs->level_current = lvl;
     gs->levels[lvl].state = LEVEL_STATE_INTRO;
-
+    
+    gs->current_tool = TOOL_GRABBER;
+    
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
 
     gs->S = gs->window_width/gs->gw;
@@ -286,29 +288,36 @@ void level_tick() {
          *     SDL_SetCursor(gs->normal_cursor);
          * } */
     
-        chisel_blocker_tick();
-        blocker_tick();
-
+        //chisel_blocker_tick();
+        
         if (gs->chisel_blocker_mode) break;
-        if (gs->blocker.state) break;
         
         switch (gs->current_tool) {
-        case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE:
-            chisel_tick();
-            break;
-        case TOOL_OVERLAY:
-            overlay_tick();
-            break;
-        case TOOL_DELETER:
-            deleter_tick();
-            break;
-        case TOOL_PLACER:
-            if (!gs->gui.popup) // We'll handle updating it in the converter
-                placer_tick(&gs->placers[gs->current_placer]);
-            break;
-        case TOOL_GRABBER:
-            grabber_tick();
-            break;
+            case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
+                chisel_tick();
+                break;
+            }
+            case TOOL_BLOCKER: {
+                blocker_tick();
+                break;
+            }
+            case TOOL_OVERLAY: {
+                overlay_tick();
+                break;
+            }
+            case TOOL_DELETER: {
+                deleter_tick();
+                break;
+            }
+            case TOOL_PLACER: {
+                if (!gs->gui.popup) // We'll handle updating it in the converter
+                    placer_tick(&gs->placers[gs->current_placer]);
+                break;
+            }
+            case TOOL_GRABBER: {
+                grabber_tick();
+                break;
+            }
         }
 
         break;

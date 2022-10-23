@@ -1,3 +1,89 @@
+-------- New --------
+
+This is an updated list of the levels, with a specific focus on
+what each level's purpose is, and how it is related to the
+development of the gameplay ideas over time.
+
+Level 1 "Alaska"
+  - Shape: Simple house
+  - Introduce chiseling
+  - Introduce a theme of simplicity and the innate calming joy
+    of doing the chiseling.
+  - Must not be too complex.
+
+Level 2 "Fireplace"
+  - Shape: Fireplace
+  - Add upon chiseling, make it slightly more complex,
+    but don't veer too far into tedious work. Fine line.
+  - At the end of the level, make you need to convert dirt
+    to cobblestone. Coal is already in the converter for you.
+
+Level 3 "Clock's Ticking"
+  - Shape: Hourglass.
+  - This level, you focus on conversions.
+  - It still gives you coal by default.
+  - Sand -> Glass.
+  - Structure that requires the blocker (straight lines only).
+
+Level 4 "The Process"
+  - Shape: Tree made of ice.
+  - Learn more about conversions; you need to create coal by yourself.
+  - Learn about higher tiered coal.
+  - Factory steam level.
+  - Convert Steam -> Water -> Ice.
+  - Create an ice sculpture! Chiseling is at a decent level.
+  - Note: You still haven't learnt about the curved blocker.
+          You might have a bit of a problem with that here not
+          knowing it exists.
+
+From this point, the desireds get much more vague. It serves a gameplay
+but also thematic purpose; your ideas are getting less precise as
+complexity (and confidence) increases. Make sure to create allusions
+to this in the narrator dialogue.
+
+Level 5
+  - Many possible combinations are unlocked, you can go wild:
+    - Dirt -> Cobblestone -> Marble.
+    - Cobblestone + Sand -> Sandstone
+
+Level 6
+  - Metamorphosis: Start with a complete scene, and strip it down
+    via chiseling (large chisel or whatever)
+  - More options with the converter since there are more materials.
+  - Things with refined coal; quartz, cement.
+  - Create a completely different scene. Perhaps a nice house?
+
+Level 7
+  - Start with some garbage, green smoke coming out.
+  - Shape: Birdie. Short little legs.
+  - Convert it to something else, use more of quartz, cobblestone [2x ratio]
+  - Still looks like garbage but in a different shape.
+
+Level 8
+  - Dirt to Diamond. Lava in the converter.
+  - Chiseling is at a decent level.
+
+Level 9
+  - The showpiece. Start with the elements needed and process it
+    until you get to the dirt core of the orb, and the several
+    layers around it, and the hands.
+  - Represents something very important to you / tedious to make.
+
+Level 10
+  - Brittle Body.
+  - You need to make a very complex shape but relatively simple material:
+    only glass. 
+  - Turns out you don't have enough sand & coal to finish. You probably
+    don't even get to the interesting part at the top, where all the
+    detail is. You just sort of stop at the feet.
+  - You can probably tell the sand isn't enough for the sculpture you're
+    making but you continue on.
+  - You have to resort to completing the level with a sad sculpture.
+  - The camera pans into 3D space, until it completely disappears and
+    falls to the ground.
+
+-------- Old --------
+
 Level 1 - "Alaska"
   You make a house from stone and wood, while snowing.
 

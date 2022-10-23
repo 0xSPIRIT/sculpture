@@ -15,6 +15,8 @@ struct Textures {
     // List of render targets for each level
     // Index into this using enum.
     SDL_Texture *render_targets[LEVEL_COUNT][RENDER_TARGET_COUNT];
+    
+    SDL_Texture *tab;
 
     SDL_Texture *deleter,
         *placer,

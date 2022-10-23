@@ -58,7 +58,7 @@ struct Button {
     int index;
     SDL_Texture *texture;
     char tooltip_text[128];
-    bool activated;
+    bool active;
     bool just_had_tooltip; // Used to disable the GUI tooltip when the mouse goes off me.
     void (*on_pressed)(void*);
 };

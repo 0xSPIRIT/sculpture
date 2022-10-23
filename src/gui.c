@@ -30,12 +30,6 @@ void converter_begin_converting(void *converter_ptr) {
     converter_set_state(converter, converter->state == CONVERTER_ON ? CONVERTER_OFF : CONVERTER_ON);
 }
 
-struct Placer *converter_get_current_placer() {
-    struct Placer *placers = gs->placers;
-    if (gs->current_placer == -1 || gs->current_tool != TOOL_PLACER) return NULL;
-    return &placers[gs->current_placer];
-}
-
 //////////////////////////////////////////
 
 struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
@@ -55,35 +49,44 @@ void click_gui_tool_button(void *type_ptr) {
     struct GUI *gui = &gs->gui;
 
     if (gui->popup) return;
-
+    
     gs->current_tool = type;
     gs->chisel_blocker_mode = 0;
-
+    
     switch (gs->current_tool) {
-    case TOOL_CHISEL_SMALL:
-        gs->chisel = &gs->chisel_small;
-        for (int i = 0; i < gs->object_count; i++)
-            object_generate_blobs(i, 0);
-        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+2);
-        break;
-    case TOOL_CHISEL_MEDIUM:
-        gs->chisel = &gs->chisel_medium;
-        for (int i = 0; i < gs->object_count; i++)
-            object_generate_blobs(i, 1);
-        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+4);
-        break;
-    case TOOL_CHISEL_LARGE:
-        gs->current_tool = TOOL_CHISEL_LARGE;
-        gs->chisel = &gs->chisel_large;
-        for (int i = 0; i < gs->object_count; i++)
-            object_generate_blobs(i, 2);
-        gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+4);
-        break;
+        case TOOL_CHISEL_SMALL: {
+            gs->chisel = &gs->chisel_small;
+            for (int i = 0; i < gs->object_count; i++)
+                object_generate_blobs(i, 0);
+            gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+2);
+            break;
+        }
+        case TOOL_CHISEL_MEDIUM: {
+            gs->chisel = &gs->chisel_medium;
+            for (int i = 0; i < gs->object_count; i++)
+                object_generate_blobs(i, 1);
+            gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+4);
+            break;
+        }
+        case TOOL_CHISEL_LARGE: {
+            gs->current_tool = TOOL_CHISEL_LARGE;
+            gs->chisel = &gs->chisel_large;
+            for (int i = 0; i < gs->object_count; i++)
+                object_generate_blobs(i, 2);
+            gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+4);
+            break;
+        }
+        case TOOL_OVERLAY: {
+            gs->overlay.show = true;
+            break;
+        }
     }
-
+    
+    gui->tool_buttons[type]->active = true;
+    
     for (int i = 0; i < TOOL_COUNT; i++) {
         if (type != i)
-            gui->tool_buttons[i]->activated = false;
+            gui->tool_buttons[i]->active = false;
     }
 
     tooltip_reset(&gui->tooltip);
@@ -104,6 +107,9 @@ void button_tick(struct Button *b, void *data) {
         break;
     case BUTTON_TYPE_TOOL_BAR:
         b->on_pressed = click_gui_tool_button;
+        break;
+    case BUTTON_TYPE_OVERLAY_INTERFACE:
+        b->on_pressed = click_overlay_interface;
         break;
     }
 
@@ -137,7 +143,7 @@ void button_draw(struct Button *b) {
         b->x, b->y, b->w, b->h
     };
 
-    if (b->activated) {
+    if (b->active) {
         SDL_SetTextureColorMod(b->texture, 200, 200, 200);
     } else if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
                gui_input_my >= b->y && gui_input_my < b->y+b->h) {
@@ -211,7 +217,7 @@ void gui_init() {
         gui->tool_buttons[i]->x = cum;
         gui->tool_buttons[i]->y = 0;
         gui->tool_buttons[i]->index = i;
-        gui->tool_buttons[i]->activated = i == gs->current_tool;
+        gui->tool_buttons[i]->active = i == gs->current_tool;
 
         cum += gui->tool_buttons[i]->w;
     }
@@ -257,7 +263,7 @@ void gui_tick() {
         if (was_placer_active && !gui->is_placer_active) {
             tooltip_reset(&gui->tooltip);
         } else if (!was_placer_active && gui->is_placer_active) {
-            struct Placer *p = converter_get_current_placer();
+            struct Placer *p = get_current_placer();
             p->x = input->mx;
             p->y = input->my;
         }
@@ -328,6 +334,16 @@ void gui_popup_draw() {
 
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(gs->renderer, &popup);
+    
+    int w, h;
+    SDL_QueryTexture(gs->textures.tab, NULL, NULL, &w, &h);
+    
+    int scale = 2;
+    SDL_Rect tab_icon = {
+        gs->gw*gs->S - 128, (int)(GUI_H + gui->popup_y) - h*scale,
+        w*scale, h*scale
+    };
+    SDL_RenderCopy(gs->renderer, gs->textures.tab, NULL, &tab_icon);
 }
 
 bool is_cell_fuel(int type) {
@@ -492,7 +508,7 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
             }
         }
     } else if (gs->gui.is_placer_active) {
-        struct Placer *p = converter_get_current_placer();
+        struct Placer *p = get_current_placer();
         struct Converter *converter = NULL;
         
         can_place_item = can_place_item_in_slot(p->contains_type, slot->type);
@@ -513,8 +529,14 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
                 item->amount = 0;
             }
         } else if (can_place_item && input->mouse & SDL_BUTTON_LEFT) {
+            const bool place_instantly = true;
+                    
             int amt = 0;
-            const int place_speed = 6;
+            int place_speed = 6;
+            
+            if (place_instantly) {
+                place_speed = p->contains_amount;
+            }
             
             if (p->contains_amount && (!item->type || !item->amount)) {
                 item->type = p->contains_type;
@@ -1148,7 +1170,7 @@ void all_converters_tick() {
     }
     
     if (gs->gui.popup && gs->gui.is_placer_active) {
-        placer_tick(converter_get_current_placer());
+        placer_tick(get_current_placer());
     }
     
     converter_tick(gs->material_converter);
@@ -1256,7 +1278,7 @@ void all_converters_draw() {
     converter_draw(gs->fuel_converter);
     
     if (gs->gui.popup && gs->gui.is_placer_active) {
-        placer_draw(converter_get_current_placer(), true);
+        placer_draw(get_current_placer(), true);
     }
     
     struct Input *input = &gs->input;

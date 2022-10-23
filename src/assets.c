@@ -58,7 +58,8 @@ void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
         SDL_FreeSurface(surf);
         surf = NULL;
     }
-
+    
+    textures->tab = load_texture(renderer, RES_DIR "tab.png");
     textures->deleter = load_texture(renderer, RES_DIR "deleter.png");
     textures->placer = load_texture(renderer, RES_DIR "placer.png");
     textures->knife = load_texture(renderer, RES_DIR "knife.png");

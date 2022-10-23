@@ -10,6 +10,7 @@ enum Tool_Type {
     TOOL_CHISEL_SMALL,
     TOOL_CHISEL_MEDIUM,
     TOOL_CHISEL_LARGE,
+    TOOL_BLOCKER,
     TOOL_OVERLAY,
     TOOL_DELETER,
     TOOL_PLACER,
@@ -59,6 +60,7 @@ struct Cell {
     enum Cell_Type type;  // The type of this cell.
     int id;               // Unique ID for each cell.
     int object;           // Object index the cell belongs. -1 for none
+    int glossiness;       // Visual glossiness.
     int temp;             // Temporary variable for algorithms
     bool updated;         // Updated for the frame yet?
     Uint8 depth;          // Z-depth. Controls brightness of the cell.

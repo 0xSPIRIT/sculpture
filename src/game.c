@@ -91,7 +91,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             if (input->keys[SDL_SCANCODE_LCTRL]) {
                 set_text_field("Output current grid to image:", "../", level_output_to_png);
             } else {
-                gs->do_draw_objects = !gs->do_draw_objects;
+                gs->overlay.show = !gs->overlay.show;
             }
             break;
         case SDLK_u:
@@ -167,17 +167,25 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             selected_tool = 1;
             break;
         case SDLK_4:
-            gs->current_tool = TOOL_DELETER;
+            gs->current_tool = TOOL_BLOCKER;
             selected_tool = 1;
             break;
         case SDLK_5:
-            gs->current_tool = TOOL_PLACER;
+            gs->current_tool = TOOL_OVERLAY;
             selected_tool = 1;
             break;
         case SDLK_6:
-            gs->current_tool = TOOL_GRABBER;
+            gs->current_tool = TOOL_DELETER;
             selected_tool = 1;
             break;
+        case SDLK_7:
+            gs->current_tool = TOOL_PLACER;
+            selected_tool = 1;
+        break;
+        case SDLK_8:
+            gs->current_tool = TOOL_GRABBER;
+            selected_tool = 1;
+        break;
         case SDLK_F1:
             gs->current_placer = 0;
             break;
@@ -194,7 +202,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
 
     if (selected_tool) {
         gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
-        gs->gui.tool_buttons[gs->current_tool]->activated = true;
+        gs->gui.tool_buttons[gs->current_tool]->active = true;
     }
 
     return is_running;

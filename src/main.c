@@ -64,30 +64,35 @@ struct Game_Code {
 
 void game_init_sdl(struct Game_State *state, const char *window_title, int w, int h) {
     SDL_Init(SDL_INIT_VIDEO);
-    IMG_Init(IMG_INIT_PNG);
-    TTF_Init();
     
-    state->window = SDL_CreateWindow(window_title,
-                                     SDL_WINDOWPOS_UNDEFINED,
-                                     SDL_WINDOWPOS_UNDEFINED,
-                                     w,
-                                     h,
-                                     0);
+    state->window = SDL_CreateWindow(
+        window_title,
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        w,
+        h,
+        SDL_WINDOW_SHOWN
+    );
     Assert(state->window);
     
-    state->renderer = SDL_CreateRenderer(state->window, -1, SDL_RENDERER_SOFTWARE);
+    IMG_Init(IMG_INIT_PNG);
+    TTF_Init();
+
+    state->renderer = SDL_CreateRenderer(
+        state->window,
+        -1,
+        SDL_RENDERER_SOFTWARE
+    );
     Assert(state->renderer);
 }
 
 void make_memory(struct Memory *persistent_memory, struct Memory *transient_memory) {
-    persistent_memory->size = Megabytes(512);
-    transient_memory->size = Megabytes(32);
+    persistent_memory->size = Megabytes(128);
+    transient_memory->size = Megabytes(8);
     
     AssertNW(persistent_memory->size >= sizeof(struct Game_State));
     
     LPVOID base_address = (LPVOID) Terabytes(2);
-    
-    printf("Large Page Size: %llu\n", GetLargePageMinimum());
     
     persistent_memory->data = VirtualAlloc(base_address,
                                            persistent_memory->size + transient_memory->size,
@@ -185,13 +190,20 @@ void unload_game_code(struct Game_Code *code) {
     code->dll = 0;
 }
 
+#ifdef ALASKA_RELEASE_MODE
+int SDL_main(int argc, char **argv) {
+#else
 int main(int argc, char **argv) {
+#endif
     // Make sure we're running in the right folder.
+#ifndef ALASKA_RELEASE_MODE
     {
         char cwd[1024] = {0};
         size_t length = 0;
         char *final_three_chars = NULL;
-        
+            
+        printf("asdfasdfa\n");
+            
         GetCurrentDirectory(1024, cwd);
         length = strlen(cwd);
         
@@ -199,13 +211,14 @@ int main(int argc, char **argv) {
         
         AssertNW(0 == strcmp(final_three_chars, "bin"));
     }
+#endif
     
     // The level to start on
     int start_level = 0;
     if (argc == 2) {
         start_level = atoi(argv[1]);
     }
-    
+  
     struct Game_Code game_code;
     load_game_code(&game_code);
     
@@ -276,7 +289,7 @@ int main(int argc, char **argv) {
         }
         
         game_code.game_run(game_state);
-        
+
         // Zero out the transient memory for next frame!
         ZeroMemory(transient_memory.data, transient_memory.size);
         transient_memory.cursor = transient_memory.data;
@@ -304,7 +317,6 @@ int main(int argc, char **argv) {
             fps = 1.0/d;
             time_passed = 0;
         }
-        
         
         {
             Uint64 size_current = persistent_memory.cursor - persistent_memory.data;

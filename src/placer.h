@@ -29,3 +29,5 @@ struct Placer {
 
     int placing_solid_time;
 };
+
+struct Placer *get_current_placer();

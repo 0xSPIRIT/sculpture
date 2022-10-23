@@ -89,7 +89,7 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
     f32 current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
 
     int iterations = 0;
-    while (current_length < len) {
+    while (current_length < len && is_in_boundsf(chisel->x, chisel->y)) {
         // If we hit the chisel blocker, keep that in mind for later.
 
         struct Chisel_Blocker *cb = &gs->chisel_blocker;
@@ -560,6 +560,9 @@ void chisel_draw() {
             for (int yy = -r; yy <= r; yy++) {
                 for (int xx = -r; xx <= r; xx++) {
                     if (xx == 0 && yy == 0) continue;
+                    if (x+xx < 0 || x+xx >= gs->gw) continue;
+                    if (y+yy < 0 || y+yy >= gs->gh) continue;
+                    
                     if (gs->overlay.grid[x+xx+(y+yy)*gs->gw]) {
                         close = true;
                         goto next_highlight_loop;
@@ -572,20 +575,26 @@ void chisel_draw() {
     }
 
     // Draw the highlights for blobs now.
-    if (DRAW_CHISEL_HIGHLIGHTS && (close || hit)) {
+
+    if (DRAW_CHISEL_HIGHLIGHTS) {// && gs->overlay.show && (close || hit)) {
         for (int i = 0; i < chisel->highlight_count; i++) {
             int x = chisel->highlights[i]%gs->gw;
             int y = chisel->highlights[i]/gs->gw;
             
-            if (hit) {
-                if (gs->overlay.grid[x+y*gs->gw]) {
-                    SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
+            if (gs->overlay.show) {
+                if (hit) {
+                    if (gs->overlay.grid[x+y*gs->gw]) {
+                        SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
+                    } else {
+                        SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 60);
+                    }
                 } else {
-                    SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 60);
+                    SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 80);
                 }
             } else {
-                SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 200);
+                SDL_SetRenderDrawColor(gs->renderer, 255, 255, 0, 80);
             }
+            
 
             SDL_RenderDrawPoint(gs->renderer, x, y);
         }

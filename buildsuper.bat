@@ -1,7 +1,7 @@
 @echo off
 
-set Common_Compiler_Flags=/nologo /O2 /GR- /EHa- /MT /FC /Fo:"obj\\"
-set Common_Linker_Flags=user32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib
+set Common_Compiler_Flags=/nologo /O2 /GR- /EHa- /MT /FC /Fo:"obj\\" /DALASKA_RELEASE_MODE
+set Common_Linker_Flags=user32.lib shell32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib
 
 rem gcc main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -g -o ..\bin\win32_sculpture.exe
 
@@ -14,7 +14,7 @@ del sculpture_*.pdb >nul 2>nul
 
 REM Build the game layer (.dll that links into SDL layer)
 REM We also set the PDB to a unique filename so visual studio doesn't lock our PDB.
-cl.exe %Common_Compiler_Flags% ..\src\game.c %Common_Linker_Flags% /link /incremental:no /DLL /out:sculpture.dll
+cl.exe %Common_Compiler_Flags% ..\src\game.c %Common_Linker_Flags% /link /incremental:no /DLL /out:sculpture.dll /SUBSYSTEM:WINDOWS
 
 set err=%errorlevel%
 
@@ -23,7 +23,7 @@ REM and we still retain the errorlevel from the DLL compilation.
 (>>win32_sculpture.exe call;) 2>nul || goto end
 
 REM Build the SDL layer (.exe)
-cl.exe %Common_Compiler_Flags% ..\src\main.c %Common_Linker_Flags% SDL2main.lib /link /incremental:no /out:win32_sculpture.exe
+cl.exe %Common_Compiler_Flags% ..\src\main.c %Common_Linker_Flags% SDL2main.lib /link /incremental:no /out:win32_sculpture.exe /SUBSYSTEM:WINDOWS
 
 if NOT %errorlevel%==0 (set err=%errorlevel%)
 

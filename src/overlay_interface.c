@@ -1,32 +1,42 @@
 void click_overlay_interface(void *ptr) {
     int button_index = *(int*)ptr;
-
+    
     struct Overlay *overlay = &gs->overlay;
     struct Overlay_Interface *interface = &gs->gui.overlay_interface;
-
+    
+    if (button_index == OVERLAY_INTERFACE_CLEAR_ALL) {
+        for (int i = 0; i < gs->gw*gs->gh; i++) {
+            overlay->grid[i] = 0;
+        }
+    }
+    
     switch (button_index) {
-    case OVERLAY_TOOL_BRUSH: {
-        overlay->tool = OVERLAY_TOOL_BRUSH;
-        break;
+        case OVERLAY_TOOL_BRUSH: {
+            overlay->tool = OVERLAY_TOOL_BRUSH;
+            break;
+        }
+        case OVERLAY_TOOL_LINE: {
+            overlay->tool = OVERLAY_TOOL_LINE;
+            break;
+        }
+        case OVERLAY_TOOL_SPLINE: {
+            overlay->tool = OVERLAY_TOOL_SPLINE;
+            break;
+        }
+        case OVERLAY_TOOL_RECTANGLE: {
+            overlay->tool = OVERLAY_TOOL_RECTANGLE;
+            break;
+        }
+        case OVERLAY_TOOL_BUCKET: {
+            overlay->tool = OVERLAY_TOOL_BUCKET;
+            break;
+        }
+        case OVERLAY_INTERFACE_ERASER_MODE: {
+            overlay->eraser_mode = !overlay->eraser_mode;
+            break;
+        }
     }
-    case OVERLAY_TOOL_LINE: {
-        overlay->tool = OVERLAY_TOOL_LINE;
-        break;
-    }
-    case OVERLAY_TOOL_RECTANGLE: {
-        overlay->tool = OVERLAY_TOOL_RECTANGLE;
-        break;
-    }
-    case OVERLAY_TOOL_BUCKET: {
-        overlay->tool = OVERLAY_TOOL_BUCKET;
-        break;
-    }
-    case OVERLAY_INTERFACE_ERASER_MODE: {
-        overlay->eraser_mode = !overlay->eraser_mode;
-        break;
-    }
-    }
-
+    
     if (overlay->tool == OVERLAY_TOOL_BRUSH || overlay->tool == OVERLAY_TOOL_ERASER_BRUSH) {
         if (overlay->eraser_mode) {
             overlay->tool = OVERLAY_TOOL_ERASER_BRUSH;
@@ -40,17 +50,19 @@ void click_overlay_interface(void *ptr) {
             overlay->tool = OVERLAY_TOOL_RECTANGLE;
         }
     }
-
+    
     if (button_index == OVERLAY_INTERFACE_ERASER_MODE) {
-        interface->buttons[OVERLAY_INTERFACE_ERASER_MODE]->activated = overlay->eraser_mode;
+        interface->buttons[OVERLAY_INTERFACE_ERASER_MODE]->active = overlay->eraser_mode;
         return;
     }
+    
+    interface->buttons[button_index]->active = true;
 
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
         if (i == OVERLAY_INTERFACE_ERASER_MODE) continue;
         
         if (i != button_index) {
-            interface->buttons[i]->activated = false;
+            interface->buttons[i]->active = false;
         }
     }
 }
@@ -61,9 +73,11 @@ void overlay_interface_init() {
     const char overlay_interface_names[OVERLAY_INTERFACE_BUTTONS][64] = {
         "Brush Tool",
         "Line Tool",
+        "Spline Tool (Under Construction!)",
         "Rectangle Tool",
         "Bucket Tool",
         "Eraser Mode",
+        "Clear All",
     };
 
     int cum = 0;
@@ -72,7 +86,7 @@ void overlay_interface_init() {
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
         struct Button *b = 0;
 
-        SDL_Texture *texture = gs->textures.tool_buttons[0];
+        SDL_Texture *texture = gs->textures.tool_buttons[TOOL_GRABBER];
 
         b = button_allocate(
             BUTTON_TYPE_OVERLAY_INTERFACE,
@@ -90,7 +104,7 @@ void overlay_interface_init() {
         interface->buttons[i] = b;
     }
 
-    interface->buttons[0]->activated = true;
+    interface->buttons[0]->active = true;
 }
 
 void overlay_interface_tick() {

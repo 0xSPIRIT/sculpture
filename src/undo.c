@@ -22,9 +22,6 @@ void undo_system_init() {
         current_state()->grid_layers[i] = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
         memcpy(current_state()->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
     }
-
-    Uint64 size = sizeof(struct Cell) * gs->gw * gs->gh * NUM_GRID_LAYERS * MAX_UNDO;
-    printf("Size: %.2f MB\n", (f64)size/(1024.f*1024.f));
 }
 
 bool is_current_grid_same_as(struct Save_State *state) {

@@ -1,3 +1,9 @@
+struct Placer *get_current_placer() {
+    struct Placer *placers = gs->placers;
+    if (gs->current_tool != TOOL_PLACER) return NULL;
+    return &placers[gs->current_placer];
+}
+
 void placer_init(int num) {
     struct Placer *placer = &gs->placers[num];
 
@@ -18,14 +24,6 @@ void placer_init(int num) {
     placer->placing_solid_time = 0;
 
     placer->rect.x = placer->rect.y = -1;
-
-    if (num == 1) {
-        placer->contains_type = CELL_UNREFINED_COAL;
-        placer->contains_amount = 200;
-    } else if (num == 0) {
-        placer->contains_type = CELL_LAVA;
-        placer->contains_amount = 200;
-    }
 }
 
 // Places a circle down.
@@ -283,13 +281,13 @@ void placer_tick(struct Placer *placer) {
         }
     }
 
-    // If the cell type is hard, use rectangle placing, otherwise use circle placing.
+    // If the cell type is hard, use rectangle placing, otherwise use brush/circle placing.
     if (placer->state != PLACER_SUCK_MODE) {
-        /* if (is_cell_hard(placer->contains_type)) { */
+        if (is_cell_hard(placer->contains_type)) {
             placer->state = PLACER_PLACE_RECT_MODE;
-        /* } else {
-         *     placer->state = PLACER_PLACE_CIRCLE_MODE;
-         * } */
+        } else {
+            placer->state = PLACER_PLACE_CIRCLE_MODE;
+        }
     }
 
     if (gs->is_mouse_over_any_button) return;
@@ -301,6 +299,7 @@ void placer_tick(struct Placer *placer) {
             placer->contains_amount > 0 &&
             !gs->gui.popup && gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT))
         {
+            save_state_to_next();
             placer->object_index = gs->object_count++;
         }
 
@@ -319,6 +318,10 @@ void placer_tick(struct Placer *placer) {
     case PLACER_PLACE_RECT_MODE:
         if (gs->gui.popup) break;
 
+        if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
+            save_state_to_next();
+        }
+        
         if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
             placer_set_and_resize_rect(placer);
         } else {

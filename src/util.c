@@ -42,98 +42,100 @@ void move_mouse_to_grid_position(f32 x, f32 y) {
 
 void get_filename_from_type(int type, char *out) {
     switch (type) {
-    case CELL_NONE:        strcpy(out, "nothing"); break;
-    case CELL_DIRT:        strcpy(out, RES_DIR "items/dirt.png"); break;
-    case CELL_SAND:        strcpy(out, RES_DIR "items/sand.png"); break;
+        case CELL_NONE:        strcpy(out, "nothing"); break;
+        case CELL_DIRT:        strcpy(out, RES_DIR "items/dirt.png"); break;
+        case CELL_SAND:        strcpy(out, RES_DIR "items/sand.png"); break;
         
-    case CELL_WATER:       strcpy(out, RES_DIR "items/water.png"); break;
-    case CELL_ICE:         strcpy(out, RES_DIR "items/ice.png"); break;
-    case CELL_STEAM:       strcpy(out, RES_DIR "items/steam.png"); break;
-    
-    case CELL_WOOD_LOG:    strcpy(out, RES_DIR "items/wood_log.png"); break;
-    case CELL_WOOD_PLANK:  strcpy(out, RES_DIR "items/wood_plank.png"); break;
-    
-    case CELL_COBBLESTONE: strcpy(out, RES_DIR "items/cobblestone.png"); break;
-    case CELL_MARBLE:      strcpy(out, RES_DIR "items/marble.png"); break;
-    case CELL_SANDSTONE:   strcpy(out, RES_DIR "items/sandstone.png"); break;
-    
-    case CELL_CEMENT:      strcpy(out, RES_DIR "items/cement.png"); break;
-    case CELL_CONCRETE:    strcpy(out, RES_DIR "items/concrete.png"); break;
-    
-    case CELL_QUARTZ:      strcpy(out, RES_DIR "items/quartz.png"); break;
-    case CELL_GLASS:       strcpy(out, RES_DIR "items/glass.png"); break;
-    
-    case CELL_GRANITE:     strcpy(out, RES_DIR "items/granite.png"); break;
-    case CELL_BASALT:      strcpy(out, RES_DIR "items/basalt.png"); break;
-    case CELL_DIAMOND:     strcpy(out, RES_DIR "items/diamond.png"); break;
-    
-    case CELL_UNREFINED_COAL: strcpy(out, RES_DIR "items/coal.png"); break;
-    case CELL_REFINED_COAL:   strcpy(out, RES_DIR "items/coal.png"); break;
-    case CELL_LAVA:           strcpy(out, RES_DIR "items/lava.png"); break;
-    
-    case CELL_SMOKE:       strcpy(out, RES_DIR "items/smoke.png"); break;
-    case CELL_DUST:        strcpy(out, RES_DIR "items/dust.png"); break;
+        case CELL_WATER:       strcpy(out, RES_DIR "items/water.png"); break;
+        case CELL_ICE:         strcpy(out, RES_DIR "items/ice.png"); break;
+        case CELL_STEAM:       strcpy(out, RES_DIR "items/steam.png"); break;
+        
+        case CELL_WOOD_LOG:    strcpy(out, RES_DIR "items/wood_log.png"); break;
+        case CELL_WOOD_PLANK:  strcpy(out, RES_DIR "items/wood_plank.png"); break;
+        
+        case CELL_COBBLESTONE: strcpy(out, RES_DIR "items/cobblestone.png"); break;
+        case CELL_MARBLE:      strcpy(out, RES_DIR "items/marble.png"); break;
+        case CELL_SANDSTONE:   strcpy(out, RES_DIR "items/sandstone.png"); break;
+        
+        case CELL_CEMENT:      strcpy(out, RES_DIR "items/cement.png"); break;
+        case CELL_CONCRETE:    strcpy(out, RES_DIR "items/concrete.png"); break;
+        
+        case CELL_QUARTZ:      strcpy(out, RES_DIR "items/quartz.png"); break;
+        case CELL_GLASS:       strcpy(out, RES_DIR "items/glass.png"); break;
+        
+        case CELL_GRANITE:     strcpy(out, RES_DIR "items/granite.png"); break;
+        case CELL_BASALT:      strcpy(out, RES_DIR "items/basalt.png"); break;
+        case CELL_DIAMOND:     strcpy(out, RES_DIR "items/diamond.png"); break;
+        
+        case CELL_UNREFINED_COAL: strcpy(out, RES_DIR "items/coal.png"); break;
+        case CELL_REFINED_COAL:   strcpy(out, RES_DIR "items/coal.png"); break;
+        case CELL_LAVA:           strcpy(out, RES_DIR "items/lava.png"); break;
+        
+        case CELL_SMOKE:       strcpy(out, RES_DIR "items/smoke.png"); break;
+        case CELL_DUST:        strcpy(out, RES_DIR "items/dust.png"); break;
     }
 }
 
 void get_name_from_type(int type, char *out) {
     switch (type) {
-    case CELL_NONE:        strcpy(out, "nothing"); break;
-
-    case CELL_DIRT:        strcpy(out, "Dirt"); break;
-    case CELL_SAND:        strcpy(out, "Sand"); break;
-
-    case CELL_WATER:       strcpy(out, "Water"); break;
-    case CELL_ICE:         strcpy(out, "Ice"); break;
-    case CELL_STEAM:       strcpy(out, "Steam"); break;
-
-    case CELL_WOOD_LOG:    strcpy(out, "Wood Log"); break;
-    case CELL_WOOD_PLANK:  strcpy(out, "Wood Plank"); break;
-
-    case CELL_COBBLESTONE: strcpy(out, "Cobblestone"); break;
-    case CELL_MARBLE:      strcpy(out, "Marble"); break;
-    case CELL_SANDSTONE:   strcpy(out, "Sandstone"); break;
-
-    case CELL_CEMENT:      strcpy(out, "Cement"); break;
-    case CELL_CONCRETE:    strcpy(out, "Concrete"); break;
-
-    case CELL_QUARTZ:      strcpy(out, "Quartz"); break;
-    case CELL_GLASS:       strcpy(out, "Glass"); break;
-
-    case CELL_GRANITE:     strcpy(out, "Granite"); break;
-    case CELL_BASALT:      strcpy(out, "Basalt"); break;
-    case CELL_DIAMOND:     strcpy(out, "Diamond"); break;
-
-    case CELL_UNREFINED_COAL: strcpy(out, "Unref. Coal"); break;
-    case CELL_REFINED_COAL: strcpy(out, "Ref. Coal"); break;
-    case CELL_LAVA:        strcpy(out, "Lava"); break;
-
-    case CELL_SMOKE:       strcpy(out, "Smoke"); break;
-    case CELL_DUST:        strcpy(out, "Dust"); break;
+        case CELL_NONE:        strcpy(out, "nothing"); break;
+        
+        case CELL_DIRT:        strcpy(out, "Dirt"); break;
+        case CELL_SAND:        strcpy(out, "Sand"); break;
+        
+        case CELL_WATER:       strcpy(out, "Water"); break;
+        case CELL_ICE:         strcpy(out, "Ice"); break;
+        case CELL_STEAM:       strcpy(out, "Steam"); break;
+        
+        case CELL_WOOD_LOG:    strcpy(out, "Wood Log"); break;
+        case CELL_WOOD_PLANK:  strcpy(out, "Wood Plank"); break;
+        
+        case CELL_COBBLESTONE: strcpy(out, "Cobblestone"); break;
+        case CELL_MARBLE:      strcpy(out, "Marble"); break;
+        case CELL_SANDSTONE:   strcpy(out, "Sandstone"); break;
+        
+        case CELL_CEMENT:      strcpy(out, "Cement"); break;
+        case CELL_CONCRETE:    strcpy(out, "Concrete"); break;
+        
+        case CELL_QUARTZ:      strcpy(out, "Quartz"); break;
+        case CELL_GLASS:       strcpy(out, "Glass"); break;
+        
+        case CELL_GRANITE:     strcpy(out, "Granite"); break;
+        case CELL_BASALT:      strcpy(out, "Basalt"); break;
+        case CELL_DIAMOND:     strcpy(out, "Diamond"); break;
+        
+        case CELL_UNREFINED_COAL: strcpy(out, "Unref. Coal"); break;
+        case CELL_REFINED_COAL: strcpy(out, "Ref. Coal"); break;
+        case CELL_LAVA:        strcpy(out, "Lava"); break;
+        
+        case CELL_SMOKE:       strcpy(out, "Smoke"); break;
+        case CELL_DUST:        strcpy(out, "Dust"); break;
     }
 }
 
 void get_name_from_tool(int type, char *out) {
     switch (type) {
-    case TOOL_CHISEL_SMALL:  strcpy(out, "Small Chisel"); break;
-    case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel"); break;
-    case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel"); break;
-    case TOOL_OVERLAY:       strcpy(out, "Overlay"); break;
-    case TOOL_DELETER:       strcpy(out, "Deleter"); break;
-    case TOOL_PLACER:        strcpy(out, "Placer"); break;
-    case TOOL_GRABBER:       strcpy(out, "Grabber"); break;
+        case TOOL_CHISEL_SMALL:  strcpy(out, "Small Chisel"); break;
+        case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel"); break;
+        case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel"); break;
+        case TOOL_OVERLAY:       strcpy(out, "Overlay"); break;
+        case TOOL_BLOCKER:       strcpy(out, "Blocker"); break;
+        case TOOL_DELETER:       strcpy(out, "Deleter (Under Construction!)"); break;
+        case TOOL_PLACER:        strcpy(out, "Placer"); break;
+        case TOOL_GRABBER:       strcpy(out, "Grabber"); break;
     }
 }
 
 void get_file_from_tool(int type, char *out) {
     switch (type) {
-    case TOOL_CHISEL_SMALL:  strcpy(out, "chisel_small.png"); break;
-    case TOOL_CHISEL_MEDIUM: strcpy(out, "chisel_medium.png"); break;
-    case TOOL_CHISEL_LARGE:  strcpy(out, "chisel_large.png"); break;
-    case TOOL_OVERLAY:       strcpy(out, "overlay.png"); break;
-    case TOOL_DELETER:       strcpy(out, "deleter.png"); break;
-    case TOOL_PLACER:        strcpy(out, "placer.png"); break;
-    case TOOL_GRABBER:       strcpy(out, "pointer.png"); break;
+        case TOOL_CHISEL_SMALL:  strcpy(out, "chisel_small.png"); break;
+        case TOOL_CHISEL_MEDIUM: strcpy(out, "chisel_medium.png"); break;
+        case TOOL_CHISEL_LARGE:  strcpy(out, "chisel_large.png"); break;
+        case TOOL_BLOCKER:       strcpy(out, "blocker.png"); break;
+        case TOOL_OVERLAY:       strcpy(out, "overlay.png"); break;
+        case TOOL_DELETER:       strcpy(out, "deleter.png"); break;
+        case TOOL_PLACER:        strcpy(out, "placer.png"); break;
+        case TOOL_GRABBER:       strcpy(out, "pointer.png"); break;
     }
 }
 
@@ -150,12 +152,12 @@ SDL_Color get_pixel(SDL_Surface *surf, int x, int y) {
     if (y >= surf->h) y %= surf->h;
     int bpp = surf->format->BytesPerPixel;
     Assert(bpp == 4);
-
+    
     Uint32 *pixels = (Uint32*)surf->pixels;
     SDL_Color color;
-
+    
     Uint32 pixel = pixels[x+y*surf->w];
-
+    
     SDL_GetRGBA(pixel, surf->format, &color.r, &color.g, &color.b, &color.a);
     
     return color;
@@ -170,12 +172,12 @@ Uint32 get_pixel_int(SDL_Surface *surf, int x, int y) {
     return pixels[x+y*surf->w];
 }
 
-int _a = 1103515245;
-int _c = 12345;
-int _m = 2000000;
+const int _a = 1103515245;
+const int _c = 12345;
+const int _m = 2000000;
 
 int my_rand(int seed) {
-    return (_a * seed + _c) % _m;
+    return (_a * (seed * seed) + _c) % _m;
 }
 
 f32 my_rand_f32(int seed) {
@@ -231,11 +233,11 @@ bool is_point_on_line(SDL_Point p, SDL_Point a, SDL_Point b) {
 SDL_Point closest_point_on_line(SDL_Point a, SDL_Point b, SDL_Point p) {
     SDL_Point AP = {p.x - a.x, p.y - a.y};
     SDL_Point AB = {b.x - a.x, b.y - a.y};
-
+    
     f32 magnitudeAB = (f32) (AB.x*AB.x + AB.y*AB.y);
     f32 ABAPproduct = (f32) (AP.x*AB.x + AP.y*AB.y);
     f32 distance = ABAPproduct / magnitudeAB;
-
+    
     if (distance < 0) {
         return a;
     } else if (distance > 1) {
@@ -261,34 +263,34 @@ f32 sign_triangle(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
 bool is_point_in_triangle(SDL_Point pt, SDL_Point v1, SDL_Point v2, SDL_Point v3) {
     f32 d1, d2, d3;
     int has_neg, has_pos;
-
+    
     d1 = sign_triangle(pt, v1, v2);
     d2 = sign_triangle(pt, v2, v3);
     d3 = sign_triangle(pt, v3, v1);
-
+    
     has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
     has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
-
+    
     return !(has_neg && has_pos);
 }
 
-void draw_text(TTF_Font *font, const char *str, SDL_Color col, bool align_left, bool align_bottom, int x, int y, int *out_w, int *out_h) {
+void draw_text(TTF_Font *font, const char *str, SDL_Color col, bool align_right, bool align_bottom, int x, int y, int *out_w, int *out_h) {
     SDL_Surface *surf = TTF_RenderText_Blended(font, str, col);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-            
+    
     SDL_Rect dst = { x, y, surf->w, surf->h };
-
-    if (!align_left) dst.x -= surf->w;
+    
+    if (align_right) dst.x -= surf->w;
     if (align_bottom) dst.y -= surf->h;
-
+    
     if (out_w)
         *out_w = surf->w;
     if (out_h)
         *out_h = surf->h;
-
+    
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
-
+    
     SDL_FreeSurface(surf);
     SDL_DestroyTexture(texture);
 }
@@ -298,7 +300,7 @@ void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
     for (int yy = -size; yy <= size; yy++) {
         for (int xx = -size; xx <= size; xx++) {
             if (xx*xx + yy*yy > size*size) continue;
-
+            
             SDL_RenderDrawPoint(renderer, x+xx, y+yy);
         }
     }
@@ -310,7 +312,7 @@ void fill_circle_in_buffer(int *buffer, int value, int x, int y, int w, int h, i
             if (xx*xx + yy*yy > size*size) continue;
             if (x+xx < 0 || x+xx >= w) continue;
             if (y+yy < 0 || y+yy >= h) continue;
-
+            
             buffer[x+xx+(y+yy)*w] = value;
         }
     }

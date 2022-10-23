@@ -1,7 +1,6 @@
 #define BLOCKER_MAX_POINTS 256
 
 enum Blocker_State {
-    BLOCKER_STATE_OFF,
     BLOCKER_STATE_LINE,
     BLOCKER_STATE_CURVE,
 };

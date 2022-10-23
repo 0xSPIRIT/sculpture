@@ -1,57 +1,37 @@
       --------------------------TODO----------------------------
 
-x Create drawable highlight to overlay. Purely aesthetic,
-  but helps the player with creating shapes. Perhaps add
-  a red highlight whenever your chisel is in a space where,
-  if you click, it will delete some cells that are a part
-  of the highlight.
-     x Brush tool
-     x Line tool
-     x Rectangle tool
-     x Fill tool
-     x Circle tool
-     x Eraser tool (circle & rectangle)
-        x Circle
-        x Rectangle
-     x Modifying sizes
+[ ] Improve the circle generator.
 
-     Essentially, your workflow would consist of getting
-     the material in place, then drawing the shape of 
-     what you want with the highlight, then just being
-     careful about how you're chiseling. No chisel
-     blocker nonsense.
-
-- Stage play themed. (Gives reason for narrator, and shows
+[ ] Stage play themed. (Gives reason for narrator, and shows
   that it's telling a story in the first place.)
 
-- Create levels 1-4, and experiment with them & the converter.
-  Get them on the right track first.
-    - Level 1 "Now Entering..."
-    - Level 2 "Alaska"
-    - Level 3 "Clock's Ticking"
-    - Level 4 "The Process"
-  When doing these levels, try having a large screen resolution.
-  Modify blob generators as well? Larger circles?
-
-- Grid (improve the circle generator. it's very good so far,
-        go far the last time.)
-
-- Some kind of crash when closing the game, and sometimes when using
+[ ] Some kind of crash when closing the game, and sometimes when using
   the material converter... but only when in release mode... sigh.
   Why do these happen so often to me?
 
-- Add ability to join two objects together (Future. Don't care)
+[ ] Add ability to join two objects together (Future. Don't care)
 
-- There's a memory leak which adds slowly over time. There's probably
+[ ] There's a memory leak which adds slowly over time. There's probably
   a missing SDL_FreeTexture or SDL_FreeSurface somewhere because it
   still allocates when the game is paused.
 
-- In goto_level, most of those init functions don't need to reallocate
+[ ] In goto_level, most of those init functions don't need to reallocate
   memory. What they really want is zeroing out the memory.
 
-
 If deleter is still an option:
-   - Only use it for large changes. Denounce any points that are in
+   [ ] Only use it for large changes. Denounce any points that are in
      any way close together.
-   - For the deleter, incinerate. Don't dustize the things removed
+   [ ] For the deleter, incinerate. Don't dustize the things removed
      via the deleter.
+
+To reduce tediousness, remove focus from chiseling. You start doing it
+manually in the first level, then you learn about the chisel blocker, etc.
+Tutorialization is very important here. Show things that might seem obvious
+to you. At some point you get an automatic chiseler; you highlight a region
+and it chisels it for you. So then, you'd just be sort of at an architectural
+or planning level, and not being bogged down by the tediousness.
+
+Of cousre, if the levels are given to you specifically as in the first levels,
+it'd just be very boring. The point of the future levels is to be given
+a prompt, and create something from that prompt, and judge it from your own
+merit.
