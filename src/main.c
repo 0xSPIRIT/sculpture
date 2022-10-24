@@ -284,7 +284,7 @@ int main(int argc, char **argv)
         
         bool should_stop = false;
         while (SDL_PollEvent(&event)) {
-            bool should_continue = game_code.game_tick_event(game_state, &event);
+                bool should_continue = game_code.game_tick_event(game_state, &event);
             if (!should_continue) {
                 should_stop = true;
             }

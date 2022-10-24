@@ -137,9 +137,11 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                    gs->objects[obj].blob_data[gs->chisel->size].blobs[input->mx+input->my*gs->gw]);
             break;
         }
+/* 
         case SDLK_i:
             gs->grid_show_ghost = !gs->grid_show_ghost;
             break;
+ */
         case SDLK_1:
             gs->current_tool = TOOL_CHISEL_SMALL;
             gs->chisel = &gs->chisel_small;

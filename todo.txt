@@ -4,11 +4,11 @@ Todo:
 
 [x] Add surrounding lines to the blocker, and fix all bugs.
 [x] Deleter: An automatic chiseler. Unlocked mid- to end-game.
-[ ] Fix up the circle generator.
+[x] Fix up the circle generator.
+[x] Add ability to join two objects together
 
   >=Monday:
 
-[ ] Add ability to join two objects together
 [ ] Add more levels
 
   Bugs:

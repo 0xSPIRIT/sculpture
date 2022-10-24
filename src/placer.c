@@ -17,8 +17,8 @@ void placer_init(int num) {
 
     placer->object_index = -1;
     placer->did_click = 0;
-    placer->contains_type = 0;
-    placer->contains_amount = 0;
+    placer->contains_type = CELL_GLASS;
+    placer->contains_amount = 1000;
     placer->radius = 2;
 
     placer->placing_solid_time = 0;
@@ -145,8 +145,30 @@ void placer_place_rect(struct Placer *placer) {
     }
     placer->rect.w = abs(placer->rect.w);
     placer->rect.h = abs(placer->rect.h);
-            
-    placer->object_index = gs->object_count++;
+    
+    int object_index = 0;
+    
+    // Check if we're intersecting with any other object.
+    // If so, then we just join that object with this by
+    // using its object index, not a new one.
+    for (int y = placer->rect.y; y <= placer->rect.y+placer->rect.h; y++) {
+        for (int x = placer->rect.x; x <= placer->rect.x+placer->rect.w; x++) {
+            if (!is_in_bounds(x, y)) continue;
+            if (gs->grid[x+y*gs->gw].object != 0) {
+                object_index = gs->grid[x+y*gs->gw].object;
+                break;
+            }
+        }
+        
+        if (object_index)
+            break;
+    }
+    
+    if (object_index) {
+        placer->object_index = object_index;
+    } else {
+        placer->object_index = gs->object_count++;
+    }
 
     for (int y = placer->rect.y; y <= placer->rect.y+placer->rect.h; y++) {
         for (int x = placer->rect.x; x <= placer->rect.x+placer->rect.w; x++) {
@@ -157,7 +179,7 @@ void placer_place_rect(struct Placer *placer) {
             }
             if (gs->grid[x+y*gs->gw].type == placer->contains_type) continue; // Don't overwrite anything.
 
-            int object_index = placer->object_index;
+            object_index = placer->object_index;
             if (!is_cell_hard(placer->contains_type)) {
                 object_index = -1;
             }

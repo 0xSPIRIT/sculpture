@@ -159,6 +159,20 @@ int blob_find_count_from_position(int object, int chisel_size, int x, int y) {
     return count;
 }
 
+// Find the neighbouring blobs that are the same as 'blob'
+int get_neighbouring_same_blobs(int x, int y, int blob, int obj, int size) {
+    int result = 0;
+    
+    Uint32 *blobs = gs->objects[obj].blob_data[size].blobs;
+    
+    result += blobs[x-1+y*gs->gw] == blob;
+    result += blobs[x+1+y*gs->gw] == blob;
+    result += blobs[x+(y+1)*gs->gw] == blob;
+    result += blobs[x+(y-1)*gs->gw] == blob;
+    
+    return result;
+}
+
 void random_set_blob(struct Object *obj, int x, int y, Uint32 blob, int chisel_size, int perc) {
     if (!is_cell_hard(gs->grid[x+y*gs->gw].type) ||
         (x+1 < gs->gw && !is_cell_hard(gs->grid[x+1 + y*gs->gw].type)) ||
@@ -228,51 +242,63 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
 
     Uint32 *blobs = gs->objects[obj].blob_data[size].blobs;
     
+    const int medium_chisel_size = 2;
+    const int large_chisel_size = 3;
+    
+    const int r = size == 1 ? medium_chisel_size : large_chisel_size;
+    
     for (int y = 0; y < gs->gh; y += interval) {
         for (int x = 0; x < gs->gw; x += interval) {
-
+            
             if (gs->grid[x+y*gs->gw].object != obj) continue;
             if (blobs[x+y*gs->gw]) continue;
-
-            if (any_neighbours_free(gs->grid, x, y)) {
-                const int r = size == 1 ? 2 : 3;
-                
-                bool dont_add = false;
+            
+            if (any_neighbours_free(gs->grid, x, y) && blobs[x+y*gs->gw] == 0) {
+                bool added = false;
+                bool first = true;
                 
                 for (int yy = -r; yy <= r; yy++) {
                     for (int xx = -r; xx <= r; xx++) {
+                        
                         if (xx*xx + yy*yy > r*r) continue;
-                        if (blobs[x+xx+(y+yy)*gs->gw]) {
-                            dont_add = true;
-                            break;
-                        }
+                        if (gs->grid[x+xx+(y+yy)*gs->gw].type == 0) continue;
                         if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
+                        if (blobs[x+xx+(y+yy)*gs->gw]) continue;
+                        
+                        // Only add if we have our blob to our immediates...
+                        // or if it's the first cell we're setting.
+                        
+                        //if (first || get_neighbouring_same_blobs(x+xx, y+yy, *blob_count, obj, size)) {
+                            blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
+                        //}
+                        
+                        first = false;
+                        added = true;
                     }
-                    
-                    if (dont_add) break;
                 }
                 
-                bool added = false;
-                if (!dont_add) {
-                    for (int yy = -r; yy <= r; yy++) {
-                        for (int xx = -r; xx <= r; xx++) {
-                            if (xx*xx + yy*yy > r*r) continue;
-                            if (gs->grid[x+xx+(y+yy)*gs->gw].type == 0) continue;
-                            if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
-
-                            blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
-                            /* blobs[x+y*gs->gw] = *blob_count; */
-                            added = true;
+                if (added) {
+                    // Fix up one-off cells.
+                    
+                    for (int yy = y-r; yy <= y+r; yy++) {
+                        for (int xx = x-r; xx <= x+r; xx++) {
+                            if (blobs[xx+yy*gs->gw] == *blob_count &&
+                                get_neighbouring_same_blobs(xx, yy, *blob_count, obj, size) == 0) 
+                            {
+                                blobs[xx+yy*gs->gw] = 0;
+                            }
                         }
                     }
-                }
-
-                if (added)
+                    
                     (*blob_count)++;
+                }
             }
-
         }
     }
+    
+    // Separate blobs that are not directly together.
+    // Fix up one off mistakes that we made before.
+    
 }
 
 // Sets up all blobs whose cells belongs to our obj.
