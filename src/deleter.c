@@ -38,9 +38,8 @@ const Uint32 red = 0xFFFF0000;
 void deleter_fill_neighbours(int x, int y) {
     struct Deleter *deleter = &gs->deleter;
 
-    if (!is_in_bounds(x, y))                   return;
-    if (deleter->pixels[x+y*gs->gw] == marked) return;
-    if (deleter->pixels[x+y*gs->gw] == red)    return;
+    if (!is_in_bounds(x, y))              return;
+    if (deleter->pixels[x+y*gs->gw] != 0) return;
 
     deleter->pixels[x+y*gs->gw] = marked;
 
@@ -52,22 +51,23 @@ void deleter_fill_neighbours(int x, int y) {
 
 void deleter_delete() {
     struct Deleter *deleter = &gs->deleter;
-
+    
+    save_state_to_next();
+    
     deleter_fill_neighbours(0, 0);
-
+    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (deleter->pixels[x+y*gs->gw] == 0 ||
                 deleter->pixels[x+y*gs->gw] == red)
             {
-                set_array(gs->pickup_grid, x, y, gs->grid[x+y*gs->gw].type, -2);
+                //set_array(gs->pickup_grid, x, y, gs->grid[x+y*gs->gw].type, -2);
                 set(x, y, 0, -1);
             }
         }
     }
 
     objects_reevaluate();
-    save_state_to_next();
 }
 
 void deleter_stop(bool cancel) {
@@ -151,10 +151,15 @@ void deleter_draw() {
             if (deleter->points[i].x == 0 && deleter->points[i].y == 0) continue;
         
             if (prev.x != -1) {
-                SDL_RenderDrawLine(gs->renderer, prev.x, prev.y, deleter->points[i].x,
+                SDL_RenderDrawLine(gs->renderer, 
+                                   prev.x, 
+                                   prev.y, 
+                                   deleter->points[i].x,
                                    deleter->points[i].y);
             } else {
-                SDL_RenderDrawPoint(gs->renderer, deleter->points[i].x, deleter->points[i].y);
+                SDL_RenderDrawPoint(gs->renderer, 
+                                    deleter->points[i].x, 
+                                    deleter->points[i].y);
             }
 
             prev = deleter->points[i];

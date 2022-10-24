@@ -6,7 +6,6 @@ void converter_set_state(struct Converter *converter, enum Converter_State state
     }
 }
 
-
 bool converter_is_layout_valid(struct Converter *converter) {
     bool is_empty = true;
     for (int i = 0; i < converter->slot_count; i++) {
@@ -44,7 +43,7 @@ struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, cons
 }
 
 void click_gui_tool_button(void *type_ptr) {
-    int type = *((int*)type_ptr);
+    int type = *(int*)type_ptr;
     
     struct GUI *gui = &gs->gui;
 
@@ -338,10 +337,10 @@ void gui_popup_draw() {
     int w, h;
     SDL_QueryTexture(gs->textures.tab, NULL, NULL, &w, &h);
     
-    int scale = 2;
+    // int scale = 2;
     SDL_Rect tab_icon = {
-        gs->gw*gs->S - 128, (int)(GUI_H + gui->popup_y) - h*scale,
-        w*scale, h*scale
+        gs->gw*gs->S - 128, (int)(GUI_H + gui->popup_y) - h,
+        w, h
     };
     SDL_RenderCopy(gs->renderer, gs->textures.tab, NULL, &tab_icon);
 }
@@ -688,6 +687,11 @@ struct Converter *converter_init(int type, bool allocated) {
 
         if (!allocated) {
             converter->slots = arena_alloc(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
+        } else {
+            memset(&converter->slots[SLOT_INPUT1], 0, sizeof(struct Slot));
+            memset(&converter->slots[SLOT_INPUT2], 0, sizeof(struct Slot));
+            memset(&converter->slots[SLOT_FUEL], 0, sizeof(struct Slot));
+            memset(&converter->slots[SLOT_OUTPUT], 0, sizeof(struct Slot));
         }
         
         converter->slots[SLOT_INPUT1].x = converter->w/3.f;
@@ -713,6 +717,10 @@ struct Converter *converter_init(int type, bool allocated) {
 
         if (!allocated) {
             converter->slots = arena_alloc(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
+        } else {
+            memset(&converter->slots[SLOT_INPUT1], 0, sizeof(struct Slot));
+            memset(&converter->slots[SLOT_INPUT2], 0, sizeof(struct Slot));
+            memset(&converter->slots[SLOT_OUTPUT], 0, sizeof(struct Slot));
         }
         
         converter->slots[SLOT_INPUT1].x = converter->w/3.f;
@@ -927,15 +935,15 @@ int fuel_converter_convert(struct Item *input1, struct Item *input2) {
 int material_converter_convert(struct Item *input1, struct Item *input2, struct Item *fuel) {
     Assert(input1);
     Assert(input2);
-
-    int result_type = 0;
+    
+    int result = 0;
     int number_inputs = (input1->type != 0) + (input2->type != 0);
-
+    
     // TOOD: Turn this into number_unique_inputs? Won't this not work
     //       with that?
-
+    
     struct Item *input = NULL;
-
+    
     if (number_inputs == 1) {
         input = input1->type ? input1 : input2;
     } else if (number_inputs == 2) {
@@ -943,93 +951,84 @@ int material_converter_convert(struct Item *input1, struct Item *input2, struct 
     }
     
     switch (fuel->type) {
-    case CELL_NONE:
-        switch (input->type) {
-        case CELL_WOOD_LOG:
-            result_type = CELL_WOOD_PLANK;
+        case CELL_NONE: {
+            switch (input->type) {
+                case CELL_WOOD_LOG: result = CELL_WOOD_PLANK; break;
+                case CELL_STEAM:    result = CELL_WATER;      break;
+                case CELL_WATER:    result = CELL_ICE;        break;
+            }
             break;
         }
-        break;
-    case CELL_UNREFINED_COAL:
-        if (number_inputs == 2) {
-            struct Converter_Checker checker = converter_checker(input1, input2);
-
-            if (is_either_input_type(&checker, CELL_COBBLESTONE, true) &&
-                is_either_input_type(&checker, CELL_SAND, false))
-            {
-                result_type = CELL_SANDSTONE;
+        case CELL_UNREFINED_COAL: {
+            if (number_inputs == 2) {
+                struct Converter_Checker checker = converter_checker(input1, input2);
+                
+                if (is_either_input_type(&checker, CELL_COBBLESTONE, true) &&
+                    is_either_input_type(&checker, CELL_SAND, false))
+                {
+                    result = CELL_SANDSTONE;
+                }
+            } else if (number_inputs == 1) {
+                switch (input->type) {
+                    case CELL_SAND:        result = CELL_GLASS;       break;
+                    case CELL_DIRT:        result = CELL_COBBLESTONE; break;
+                    case CELL_COBBLESTONE: result = CELL_MARBLE;      break;
+                    case CELL_ICE:         result = CELL_WATER;       break;
+                    case CELL_WATER:       result = CELL_STEAM;       break;
+                }
             }
-        } else if (number_inputs == 1) {
-            switch (input->type) {
-            case CELL_SAND:
-                result_type = CELL_GLASS;
-                break;
-            case CELL_DIRT:
-                result_type = CELL_COBBLESTONE;
-                break;
-            case CELL_COBBLESTONE:
-                result_type = CELL_MARBLE;
-                break;
-            case CELL_ICE:
-                result_type = CELL_WATER;
-                break;
-            case CELL_WATER:
-                result_type = CELL_STEAM;
-                break;
-            }
+            break;
         }
-        break;
-    case CELL_REFINED_COAL:
-        if (number_inputs == 1) {
-            switch (input->type) {
-            case CELL_DIRT:
-                result_type = CELL_COBBLESTONE;
-                break;
-            case CELL_ICE:
-                result_type = CELL_STEAM;
-                break;
+        case CELL_REFINED_COAL: {
+            if (number_inputs == 1) {
+                switch (input->type) {
+                    case CELL_DIRT: result = CELL_COBBLESTONE; break;
+                    case CELL_ICE:   result = CELL_STEAM;      break;
+                }
+            } else if (number_inputs == 2) {
+                struct Converter_Checker checker = converter_checker(input1, input2);
+                
+                if (is_either_input_type(&checker, CELL_SANDSTONE, true) &&
+                    is_either_input_type(&checker, CELL_MARBLE, false))
+                {
+                    result = CELL_QUARTZ;
+                }
+                else if (is_either_input_type(&checker, CELL_WATER, true) &&
+                         is_either_input_type(&checker, CELL_COBBLESTONE, false))
+                {
+                    result = CELL_CEMENT;
+                }
             }
-        } else if (number_inputs == 2) {
-            struct Converter_Checker checker = converter_checker(input1, input2);
-
-            if (is_either_input_type(&checker, CELL_SANDSTONE, true) &&
-                is_either_input_type(&checker, CELL_MARBLE, false))
-            {
-                result_type = CELL_QUARTZ;
-            }
-            else if (is_either_input_type(&checker, CELL_WATER, true) &&
-                     is_either_input_type(&checker, CELL_COBBLESTONE, false))
-            {
-                result_type = CELL_CEMENT;
-            }
+            
+            break;
         }
-
-        break;
-    case CELL_LAVA:
-        if (number_inputs == 1) {
-            switch (input->type) {
-            case CELL_REFINED_COAL: case CELL_UNREFINED_COAL:
-                result_type = CELL_BASALT;
-                break;
+        case CELL_LAVA: {
+            if (number_inputs == 1) {
+                switch (input->type) {
+                    case CELL_REFINED_COAL: case CELL_UNREFINED_COAL: {
+                        result = CELL_BASALT;
+                        break;
+                    }
+                }
+            } else if (number_inputs == 2) {
+                struct Converter_Checker checker = converter_checker(input1, input2);
+                
+                if (is_either_input_type(&checker, CELL_QUARTZ, true) &&
+                    is_either_input_type(&checker, CELL_MARBLE, false))
+                {
+                    result = CELL_GRANITE;
+                }
+                else if (is_either_input_type(&checker, CELL_BASALT, true) &&
+                         is_either_input_type(&checker, CELL_GRANITE, false))
+                {
+                    result = CELL_DIAMOND;
+                }
             }
-        } else if (number_inputs == 2) {
-            struct Converter_Checker checker = converter_checker(input1, input2);
-
-            if (is_either_input_type(&checker, CELL_QUARTZ, true) &&
-                is_either_input_type(&checker, CELL_MARBLE, false))
-            {
-                result_type = CELL_GRANITE;
-            }
-            else if (is_either_input_type(&checker, CELL_BASALT, true) &&
-                     is_either_input_type(&checker, CELL_GRANITE, false))
-            {
-                result_type = CELL_DIAMOND;
-            }
+            break;
         }
-        break;
     }
     
-    return result_type;
+    return result;
 }
 
 // Returns if the conversion went succesfully.

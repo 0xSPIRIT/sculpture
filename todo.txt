@@ -1,28 +1,36 @@
-      --------------------------TODO----------------------------
+Todo:
 
-[ ] Improve the circle generator.
+  Sunday:
 
-[ ] Stage play themed. (Gives reason for narrator, and shows
-  that it's telling a story in the first place.)
+[x] Add surrounding lines to the blocker, and fix all bugs.
+[x] Deleter: An automatic chiseler. Unlocked mid- to end-game.
+[ ] Fix up the circle generator.
 
-[ ] Some kind of crash when closing the game, and sometimes when using
-  the material converter... but only when in release mode... sigh.
-  Why do these happen so often to me?
+  >=Monday:
 
-[ ] Add ability to join two objects together (Future. Don't care)
+[ ] Add ability to join two objects together
+[ ] Add more levels
+
+  Bugs:
+
+[ ] Fix bug with chisel going through the blocker.
 
 [ ] There's a memory leak which adds slowly over time. There's probably
-  a missing SDL_FreeTexture or SDL_FreeSurface somewhere because it
-  still allocates when the game is paused.
+    a missing SDL_FreeTexture or SDL_FreeSurface somewhere because it
+    still allocates when the game is paused.
 
-[ ] In goto_level, most of those init functions don't need to reallocate
-  memory. What they really want is zeroing out the memory.
+[ ] Some kind of crash when closing the game, and sometimes when using
+    the material converter... but only when in release mode... sigh.
+    Why do these happen so often to me?
 
-If deleter is still an option:
-   [ ] Only use it for large changes. Denounce any points that are in
-     any way close together.
-   [ ] For the deleter, incinerate. Don't dustize the things removed
-     via the deleter.
+
+Done:
+
+[x] In goto_level, most of those init functions don't need to reallocate
+    memory. What they really want is zeroing out the memory.
+
+
+Notes:
 
 To reduce tediousness, remove focus from chiseling. You start doing it
 manually in the first level, then you learn about the chisel blocker, etc.

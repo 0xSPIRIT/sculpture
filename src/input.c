@@ -18,8 +18,10 @@ void input_tick(struct Game_State *state) {
         in->keys_released[i] = !in->keys[i] && keys_previous[i];
     }
     for (int i = 0; i < MOUSE_BUTTONS; i++) {
-        in->mouse_pressed[i] = in->mouse & SDL_BUTTON(i) && !(mouse_previous & SDL_BUTTON(i));
-        in->mouse_released[i] = !(in->mouse & SDL_BUTTON(i)) && (mouse_previous & SDL_BUTTON(i));
+        in->mouse_pressed[i] = 
+            in->mouse & SDL_BUTTON(i) && !(mouse_previous & SDL_BUTTON(i));
+        in->mouse_released[i] = 
+            !(in->mouse & SDL_BUTTON(i)) && (mouse_previous & SDL_BUTTON(i));
     }
 
     in->mx = in->real_mx/state->S;

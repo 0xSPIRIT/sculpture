@@ -61,8 +61,6 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         case SDLK_ESCAPE:
             if (gs->deleter.active) {
                 deleter_stop(true);
-            } else {
-                is_running = false;
             }
             break;
         case SDLK_SPACE:

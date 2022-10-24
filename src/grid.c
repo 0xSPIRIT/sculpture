@@ -142,20 +142,20 @@ int blob_find_count_from_position(int object, int chisel_size, int x, int y) {
     int count = 0;
     const int max_size = 5;
     Uint32 *blobs = gs->objects[object].blob_data[chisel_size].blobs;
-
+    
     Uint32 mine = blobs[x+y*gs->gw];
-
+    
     for (int yy = -max_size; yy <= max_size; yy++) {
         for (int xx = -max_size; xx <= max_size; xx++) {
             int rx = x+xx;
             int ry = y+yy;
-
+            
             if (blobs[rx+ry*gs->gw] == mine) {
                 count++;
             }
         }
     }
-
+    
     return count;
 }
 
@@ -182,7 +182,7 @@ void object_blobs_set_pressure(int obj, int chisel_size) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         temp_blobs[i] = object->blob_data[chisel_size].blobs[i];
     }
-
+    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (!object->blob_data[chisel_size].blobs[x+y*gs->gw] || temp_blobs[x+y*gs->gw] == -1) continue;
@@ -248,10 +248,10 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
                         }
                         if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
                     }
-                
+                    
                     if (dont_add) break;
                 }
-
+                
                 bool added = false;
                 if (!dont_add) {
                     for (int yy = -r; yy <= r; yy++) {
@@ -429,6 +429,7 @@ void grid_init(int w, int h) {
 }
 
 int randR(int i) {
+    Assert(i > 0 && i < gs->gw* gs->gh);
     int num = gs->grid[i].rand;
     return my_rand(num*num);
 }
@@ -460,9 +461,9 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
         case CELL_SAND: {
             int v = my_rand(i) % 20;
             color = (SDL_Color){
-                216 + v + randR(i*i)%15,
-                190 + v + randG(i*i)%15,
-                125 + v + randB(i*i)%15,
+                216 + v + randR(i)%15,
+                190 + v + randG(i)%15,
+                125 + v + randB(i)%15,
                 255
             };
             break;
@@ -535,12 +536,9 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
         }
         
         case CELL_GLASS: {
-            /* r = randR(i*i) % 100 < 5; */
             color = get_pixel(gs->surfaces.glass_surface, i%gs->gw, i/gs->gw);
-            color.a = 255;
-            /* if (r || number_neighbours_of_object(i%gs->gw, i/gs->gw, 1, cells[i].object) < 8) { */
-            /*     color.a = 240; */
-            /* } */
+            const f32 coeff = 0.2f;
+            color.a = 180 + sin(coeff * (i + sin(gs->frames/200.0)*6))*20;
             break;
         }
         
@@ -1044,12 +1042,14 @@ void dust_set_random_velocity(int x, int y) {
     c->vy_acc = (f32) y;
 }
 
-bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_dust) {
+bool object_remove_blob(int object, Uint32 blob, int chisel_size, int blocker_side, bool replace_dust) {
     struct Object *obj = &gs->objects[object];
+    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
+            
             if (obj->blob_data[chisel_size].blobs[x+y*gs->gw] != blob) continue;
-            if (gs->blocker.pixels[x+y*gs->gw] != 0) continue;
+            if (gs->blocker.active && gs->blocker.pixels[x+y*gs->gw] != blocker_side) continue;
             if (gs->grid[x+y*gs->gw].type == CELL_DIAMOND && chisel_size != 0) continue;
 
             if (replace_dust) {

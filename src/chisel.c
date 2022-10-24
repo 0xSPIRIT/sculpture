@@ -69,13 +69,15 @@ void chisel_hammer_tick() {
     }
 }
 
-//// Chisel
-
-// if remove, delete the blob
-// else, highlight it and don't change anything about the chisel's state.
+//
+// If remove == true, delete the blob
+// Else, highlight it and don't change anything about the chisel's state.
+//
 // ux, uy = unit vector for the direction of chisel.
 // px, py = initial positions.
+//
 // Returns the blob it reaches only if remove == false.
+//
 Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
     struct Chisel *chisel = gs->chisel;
     struct Object *objects = gs->objects;
@@ -87,7 +89,9 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
     if (gs->object_current == -1) return 0;
 
     f32 current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
-
+    
+    int blocker_side = find_blocker_side(chisel->x, chisel->y);
+    
     int iterations = 0;
     while (current_length < len && is_in_boundsf(chisel->x, chisel->y)) {
         // If we hit the chisel blocker, keep that in mind for later.
@@ -104,8 +108,6 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
         // then remove it. We only remove one blob per chisel,
         // so we stop our speed right here.
         Uint32 b = curr_blobs[(int)chisel->x + ((int)chisel->y)*gs->gw];
-
-        /* printf("Iterations: %d\n", iterations); */
 
         if (b > 0 && ((remove && !chisel->did_remove) || !remove)) {
             // We want to attempt to destroy this blob now.
@@ -135,8 +137,8 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
                         chisel->y = py;
                         return b;
                     }
-
-                    object_remove_blob(gs->object_current, b, chisel->size, true);
+                    
+                    object_remove_blob(gs->object_current, b, chisel->size, blocker_side, true);
 
                     move_mouse_to_grid_position(chisel->x, chisel->y);
                     chisel->did_remove = true;
@@ -182,7 +184,7 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
                 Uint32 blob = curr_blobs[xx+yy*gs->gw];
 
                 if (blob > 0) {
-                    object_remove_blob(gs->object_current, blob, chisel->size, true);
+                    object_remove_blob(gs->object_current, blob, chisel->size, blocker_side, true);
                     chisel->did_remove = true;
                     goto chisel_did_remove;
                 }

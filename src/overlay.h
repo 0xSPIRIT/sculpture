@@ -14,7 +14,7 @@ struct Overlay {
     enum Overlay_Tool tool;
 
     SDL_Rect r;
-    float size;
+    f32 size;
 
     bool eraser_mode;
     bool show;

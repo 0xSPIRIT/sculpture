@@ -18,8 +18,16 @@ SDL_Point get_spline_point(SDL_Point *points, f32 t) {
     f32 q3 = -3.f*t3 + 4.f*t2 + t;
     f32 q4 = t3 - t2;
 
-    f32 tx = points[p0].x * q1 + points[p1].x * q2 + points[p2].x * q3 + points[p3].x * q4;
-    f32 ty = points[p0].y * q1 + points[p1].y * q2 + points[p2].y * q3 + points[p3].y * q4;
+    f32 tx = 
+        points[p0].x * q1 + 
+        points[p1].x * q2 + 
+        points[p2].x * q3 + 
+        points[p3].x * q4;
+    f32 ty = 
+        points[p0].y * q1 + 
+        points[p1].y * q2 + 
+        points[p2].y * q3 + 
+        points[p3].y * q4;
 
     return (SDL_Point){(int)tx, (int)ty};
 }

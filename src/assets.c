@@ -113,7 +113,7 @@ void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
 void textures_deinit(struct Textures *textures) {
     SDL_Texture **texs = (SDL_Texture**) textures;
     size_t tex_count = sizeof(struct Textures)/sizeof(SDL_Texture*);
-
+    
     for (size_t i = 0; i < tex_count; i++) {
         if (texs[i])
             SDL_DestroyTexture(texs[i]);

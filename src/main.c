@@ -172,9 +172,12 @@ void load_game_code(struct Game_Code *code) {
         exit(1);
     }
     
-    code->game_init = (GameInitProc) GetProcAddress(code->dll, "game_init");
-    code->game_tick_event = (GameTickEventProc) GetProcAddress(code->dll, "game_tick_event");
-    code->game_run = (GameRunProc) GetProcAddress(code->dll, "game_run");
+    code->game_init = (GameInitProc) 
+        GetProcAddress(code->dll, "game_init");
+    code->game_tick_event = (GameTickEventProc) 
+        GetProcAddress(code->dll, "game_tick_event");
+    code->game_run = (GameRunProc) 
+        GetProcAddress(code->dll, "game_run");
     
     if (!code->game_run) {
         fprintf(stderr, "Error finding the functions in the DLL!\n");
@@ -191,19 +194,18 @@ void unload_game_code(struct Game_Code *code) {
 }
 
 #ifdef ALASKA_RELEASE_MODE
-int SDL_main(int argc, char **argv) {
+int SDL_main(int argc, char **argv)
 #else
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
 #endif
-    // Make sure we're running in the right folder.
+{
 #ifndef ALASKA_RELEASE_MODE
+    // Make sure we're running in the right folder.
     {
         char cwd[1024] = {0};
         size_t length = 0;
         char *final_three_chars = NULL;
-            
-        printf("asdfasdfa\n");
-            
+        
         GetCurrentDirectory(1024, cwd);
         length = strlen(cwd);
         

@@ -1,5 +1,7 @@
 #define MAX_UNDO 128
 
+// We don't want to save the entire memory of the game since
+// that will destroy RAM usage.
 struct Save_State {
     struct Cell *grid_layers[NUM_GRID_LAYERS];
     // TODO: Save placer type & amount status.

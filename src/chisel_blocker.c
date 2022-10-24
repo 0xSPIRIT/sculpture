@@ -18,19 +18,6 @@ void chisel_blocker_init() {
     }
 }
 
-void flood_fill(Uint32 *pixels, int x, int y, Uint32 value) {
-    if (x < 0 || y < 0 || x >= gs->gw || y >= gs->gh || pixels[x+y*gs->gw] != 0) {
-        return;
-    }
-
-    pixels[x+y*gs->gw] = value;
-
-    flood_fill(pixels, x+1, y, value);
-    flood_fill(pixels, x-1, y, value);
-    flood_fill(pixels, x, y+1, value);
-    flood_fill(pixels, x, y-1, value);
-}
-
 void chisel_blocker_tick() {
     struct Chisel_Blocker *chisel_blocker = &gs->chisel_blocker;
     struct Input *input = &gs->input;
@@ -297,7 +284,7 @@ void chisel_blocker_draw() {
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (chisel_blocker->pixels[x+y*gs->gw] == 0) {
-                flood_fill(chisel_blocker->pixels, x, y, value);
+                //flood_fill(chisel_blocker->pixels, x, y, value);
                 value++;
             }
         }

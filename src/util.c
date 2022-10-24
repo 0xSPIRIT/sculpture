@@ -295,7 +295,6 @@ void draw_text(TTF_Font *font, const char *str, SDL_Color col, bool align_right,
     SDL_DestroyTexture(texture);
 }
 
-
 void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
     for (int yy = -size; yy <= size; yy++) {
         for (int xx = -size; xx <= size; xx++) {
@@ -314,6 +313,91 @@ void fill_circle_in_buffer(int *buffer, int value, int x, int y, int w, int h, i
             if (y+yy < 0 || y+yy >= h) continue;
             
             buffer[x+xx+(y+yy)*w] = value;
+        }
+    }
+}
+
+void draw_line_225(f32 deg_angle, SDL_Point a, SDL_Point b, f32 size, bool infinite) {
+    Assert(is_angle_225(deg_angle));
+    
+    int dir_x = sign(b.x - a.x);
+    int dir_y = sign(b.y - a.y);
+    
+    if (dir_x == 0 && dir_y == 0) return;
+    
+    int aa = 0;
+    int x = a.x;
+    int y = a.y;
+    
+    f64 length = distance64((f64)a.x, (f64)b.y, (f64)x, (f64)y);
+    f64 total_length = distance64_point(a, b);
+    
+    f64 prev_length = 0;
+    
+    Assert(is_in_boundsf(x, y));
+    
+    while (length < total_length || infinite) {
+        bool break_out = false;
+        
+        aa = 0;
+        while (aa < 2) {
+            fill_circle(gs->renderer, x, y, size);
+            
+            f64 f = fabs(deg_angle);
+            
+            if (f == 22.5 || f == 157.5) {
+                x += dir_x;
+            } else {
+                y += dir_y;
+            }
+            
+            ++aa;
+            length = distance64((f64)a.x, (f64)a.y, (f64)x, (f64)y);
+            prev_length = length;
+            
+            if (!infinite && length > total_length) {
+                break;
+            }
+        }
+        
+        if (break_out) break;
+        
+        f64 f = fabs(deg_angle);
+        
+        if (f == 22.5 || f == 157.5) {
+            y += dir_y;
+        } else {
+            x += dir_x;
+        }
+        
+        if (!is_in_boundsf(x, y)) {
+            return;
+        }
+    }
+}
+
+void draw_line(SDL_Point a, SDL_Point b, f32 size, bool infinite) {
+    f32 len = distancei(b.x, b.y, a.x, a.y);
+    f32 dx = (f32) (b.x - a.x);
+    f32 dy = (f32) (b.y - a.y);
+    
+    f32 ux, uy;
+    
+    ux = dx/len;
+    uy = dy/len;
+    
+    SDL_FPoint c = {(f32)a.x, (f32)a.y};
+    
+    f32 curr_dist = 0;
+    while (curr_dist < len || infinite) {
+        fill_circle(gs->renderer, (int)c.x, (int)c.y, size);
+        c.x += ux;
+        c.y += uy;
+        
+        curr_dist = distance(c.x, c.y, (f32)a.x, (f32)a.y);
+        
+        if (infinite && !is_in_boundsf(c.x, c.y)) {
+            return;
         }
     }
 }
