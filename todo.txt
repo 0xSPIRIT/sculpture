@@ -1,34 +1,15 @@
 Todo:
 
-  Sunday:
-
-[x] Add surrounding lines to the blocker, and fix all bugs.
-[x] Deleter: An automatic chiseler. Unlocked mid- to end-game.
-[x] Fix up the circle generator.
-[x] Add ability to join two objects together
-
-  >=Monday:
-
-[ ] Add more levels
-
-  Bugs:
-
-[ ] Fix bug with chisel going through the blocker.
-
-[ ] There's a memory leak which adds slowly over time. There's probably
-    a missing SDL_FreeTexture or SDL_FreeSurface somewhere because it
-    still allocates when the game is paused.
-
-[ ] Some kind of crash when closing the game, and sometimes when using
-    the material converter... but only when in release mode... sigh.
-    Why do these happen so often to me?
-
-
-Done:
-
-[x] In goto_level, most of those init functions don't need to reallocate
-    memory. What they really want is zeroing out the memory.
-
+[ ] Add more levels!
+    [ ] Level 3 is wayyyy too complicated for that early.
+    [ ] Add Level 3
+    [ ] Add Level 4
+    [ ] Add Level 5
+    [ ] Add Level 6
+    [ ] Add Level 7
+    [ ] Add Level 8
+    [ ] Add Level 9
+    [ ] Add Level 10
 
 Notes:
 

@@ -14,7 +14,7 @@ void effect_set(int type) {
     }
 
     if (gs->current_effect.particles == NULL) {
-        gs->current_effect.particles = arena_alloc(gs->persistent_memory, gs->current_effect.particle_count, sizeof(struct Effect_Particle));
+        gs->current_effect.particles = PushArray(gs->persistent_memory, gs->current_effect.particle_count, sizeof(struct Effect_Particle));
     }
 
     switch (type) {
@@ -45,13 +45,12 @@ void effect_set(int type) {
     }
 }
 
-void effect_tick(struct Effect *effect) {
+void particle_tick(struct Effect *effect, int i) {
     if ((gs->paused && !gs->step_one) || effect->type == EFFECT_NONE)
         return;
     
     switch (effect->type) {
-    case EFFECT_SNOW: case EFFECT_RAIN:
-        for (int i = 0; i < effect->particle_count; i++) {
+        case EFFECT_SNOW: case EFFECT_RAIN: {
             struct Effect_Particle *particle = &gs->current_effect.particles[i];
             particle->x += particle->vx;
             particle->y += particle->vy;
@@ -84,6 +83,8 @@ void effect_draw(struct Effect *effect) {
     switch (effect->type) {
     case EFFECT_SNOW:
         for (int i = 0; i < effect->particle_count; i++) {
+            particle_tick(effect, i);
+            
             struct Effect_Particle *particle = &gs->current_effect.particles[i];
             f32 length = (f32) sqrt(particle->vx*particle->vx + particle->vy*particle->vy);
             const f32 max = 1.125;
@@ -104,6 +105,8 @@ void effect_draw(struct Effect *effect) {
         break;
     case EFFECT_RAIN:
         for (int i = 0; i < effect->particle_count; i++) {
+            particle_tick(effect, i);
+            
             struct Effect_Particle *particle = &gs->current_effect.particles[i];
 
             int px = (int)particle->x;

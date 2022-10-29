@@ -4,11 +4,11 @@ void deleter_init() {
     deleter->highlight_count = 0;
 
     if (deleter->highlights == NULL) {
-        deleter->highlights = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
+        deleter->highlights = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
     }
 
     if (deleter->pixels == NULL) {
-        deleter->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+        deleter->pixels = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
     }
 
     deleter->texture = gs->textures.deleter;
@@ -32,8 +32,8 @@ void take_point() {
 
 // A special number marking a pixel as marked in deleter->pixels.
 const Uint32 marked = 1234567890;
-// TODO: Account for different color formats, this assumes ARGB
-const Uint32 red = 0xFFFF0000;
+// TODO: Account for different color formats, this assumes ABGR
+#define red 0xFF0000FF
 
 void deleter_fill_neighbours(int x, int y) {
     struct Deleter *deleter = &gs->deleter;
@@ -58,11 +58,14 @@ void deleter_delete() {
     
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
-            if (deleter->pixels[x+y*gs->gw] == 0 ||
-                deleter->pixels[x+y*gs->gw] == red)
-            {
-                //set_array(gs->pickup_grid, x, y, gs->grid[x+y*gs->gw].type, -2);
+            Uint32 color = deleter->pixels[x+y*gs->gw];
+            
+            if (color == 0 || color == red) {
                 set(x, y, 0, -1);
+            } 
+            
+            if (color != 0 && color != red && color != marked) {
+                Log("%x\n", color);
             }
         }
     }
@@ -89,8 +92,6 @@ void deleter_tick() {
     struct Deleter *deleter = &gs->deleter;
     struct Input *input = &gs->input;
 
-    bool p_active = deleter->active;
-
     if (gs->is_mouse_over_any_button) return;
 
     deleter->x = (f32) input->mx;
@@ -101,18 +102,21 @@ void deleter_tick() {
     } else if (!(input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
         deleter->active = false;
     }
-
+    
+    const int min_distance = 8;
+    
     if (deleter->active) {
-        if (!gs->input.keys[SDL_SCANCODE_LSHIFT] && (!p_active || gs->frames % 2 == 0)) {
+        if (deleter->point_count == 0) {
             take_point();
-        } else if (gs->input.keys_pressed[SDL_SCANCODE_LSHIFT]) {
+        } else if (distancei(deleter->points[deleter->point_count-1].x,
+                             deleter->points[deleter->point_count-1].y,
+                             deleter->x,
+                             deleter->y) >= min_distance) {
             take_point();
-        } else if (gs->input.keys[SDL_SCANCODE_LSHIFT]) {
-            deleter->points[deleter->point_count-1].x = (int) deleter->x;
         }
     } else if (deleter->was_active) {
         deleter_stop(false);
-    }
+    }                                   
 
     deleter->was_active = deleter->active;
 }
@@ -175,4 +179,14 @@ void deleter_draw() {
     SDL_SetRenderTarget(gs->renderer, prev_target);
 
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_DELETER), NULL, NULL);
+    
+    if (deleter->point_count > 0) {
+        SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 100);
+        SDL_RenderDrawLine(gs->renderer,
+                           deleter->points[deleter->point_count-1].x,
+                           deleter->points[deleter->point_count-1].y,
+                           deleter->x,
+                           deleter->y);
+        SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+    }
 }

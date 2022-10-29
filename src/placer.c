@@ -14,11 +14,11 @@ void placer_init(int num) {
 
     placer->texture = gs->textures.placer;
     SDL_QueryTexture(placer->texture, NULL, NULL, &placer->w, &placer->h);
-
+    
     placer->object_index = -1;
     placer->did_click = 0;
-    placer->contains_type = CELL_GLASS;
-    placer->contains_amount = 1000;
+    placer->contains_type = CELL_NONE;
+    placer->contains_amount = 0;
     placer->radius = 2;
 
     placer->placing_solid_time = 0;
@@ -293,7 +293,11 @@ void placer_tick(struct Placer *placer) {
 
     placer->x = gs->input.mx;
     placer->y = gs->input.my;
-
+    
+    if (gs->creative_mode) {
+        placer->contains_amount = gs->gw*gs->gh;
+    }
+    
     // Switch from ejecting to sucking.
     if (input->keys_pressed[SDL_SCANCODE_P]) {
         if (placer->state == PLACER_SUCK_MODE) {

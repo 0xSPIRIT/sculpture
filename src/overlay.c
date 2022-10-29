@@ -4,8 +4,8 @@ void overlay_init() {
     overlay->tool = OVERLAY_TOOL_BRUSH;
     
     if (overlay->grid == NULL) {
-        overlay->grid = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
-        overlay->temp_grid = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
+        overlay->grid = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
+        overlay->temp_grid = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
     }
     
     memset(overlay->grid, 0, sizeof(int)*gs->gw*gs->gh);
@@ -145,6 +145,10 @@ void overlay_tick() {
         overlay->size -= speed;
     }
     if (overlay->size < 0) overlay->size = 0;
+    
+    if (gs->input.keys[SDL_SCANCODE_ESCAPE]) {
+        gs->overlay.show = false;
+    }
     
     if (gs->is_mouse_over_any_button) return;
     switch (overlay->tool) {

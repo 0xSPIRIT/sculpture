@@ -14,7 +14,7 @@ void chisel_blocker_init() {
     SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), SDL_BLENDMODE_BLEND);
     
     if (chisel_blocker->pixels == NULL) {
-        chisel_blocker->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+        chisel_blocker->pixels = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
     }
 }
 
@@ -84,7 +84,7 @@ void chisel_blocker_tick() {
                 /* angle /= 45.; */
                 /* angle = round(angle) * 45; */
 
-                /* printf("Angle: %f\n", angle); */
+                /* Log("Angle: %f\n", angle); */
 
                 /* angle = 2*M_PI * angle/360.0; */
 

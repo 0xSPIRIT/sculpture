@@ -1,5 +1,3 @@
-#pragma once
-
 #define MAX_TOOLTIP_LEN 128
 #define MAX_TOOLTIP_LINE_LEN 128
 #define CONVERTER_NAME_LEN 32
@@ -59,6 +57,7 @@ struct Button {
     SDL_Texture *texture;
     char tooltip_text[128];
     bool active;
+    bool disabled;
     bool just_had_tooltip; // Used to disable the GUI tooltip when the mouse goes off me.
     void (*on_pressed)(void*);
 };
@@ -104,6 +103,7 @@ struct Arrow {
 enum Converter_State {
     CONVERTER_OFF,
     CONVERTER_ON,
+    CONVERTER_INACTIVE // Used in levels where the converter is greyed out.
 };
 
 struct Converter {

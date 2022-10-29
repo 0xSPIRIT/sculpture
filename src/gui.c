@@ -32,9 +32,10 @@ void converter_begin_converting(void *converter_ptr) {
 //////////////////////////////////////////
 
 struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
-    struct Button *b = arena_alloc(gs->persistent_memory, 1, sizeof(struct Button));
+    struct Button *b = PushStruct(gs->persistent_memory, struct Button);
     b->type = type;
     b->texture = texture;
+    b->disabled = false;
     SDL_QueryTexture(texture, NULL, NULL, &b->w, &b->h);
 
     strcpy(b->tooltip_text, tooltip_text);
@@ -111,6 +112,8 @@ void button_tick(struct Button *b, void *data) {
         b->on_pressed = click_overlay_interface;
         break;
     }
+    
+    if (b->disabled) return;
 
     if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
         gui_input_my >= b->y && gui_input_my < b->y+b->h) {
@@ -141,8 +144,10 @@ void button_draw(struct Button *b) {
     SDL_Rect dst = {
         b->x, b->y, b->w, b->h
     };
-
-    if (b->active) {
+    
+    if (b->disabled) {
+        SDL_SetTextureColorMod(b->texture, 100, 100, 100);
+    } else if (b->active) {
         SDL_SetTextureColorMod(b->texture, 200, 200, 200);
     } else if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
                gui_input_my >= b->y && gui_input_my < b->y+b->h) {
@@ -178,7 +183,7 @@ void gui_message_stack_tick_and_draw() {
         struct Message *msg = &gui->message_stack[i];
     
         SDL_Color col = { 255, 255, 255, msg->alpha };
-        draw_text(gs->fonts.font_consolas, msg->str, col, true, true, 0, GUI_H+gs->S*gs->gh - i*32, NULL, NULL);
+        draw_text(gs->fonts.font_consolas, msg->str, col, (SDL_Color){0, 0, 0, 255}, true, true, 0, GUI_H+gs->S*gs->gh - i*32, NULL, NULL);
     
         msg->alpha--;
         if (msg->alpha == 127) {
@@ -232,8 +237,6 @@ void gui_tick() {
         gui->popup = !gui->popup;
         gui->popup_y_vel = 0;
         tooltip_reset(&gui->tooltip);
-
-        gs->current_tool = gs->previous_tool;
 
         // Just in case the player had reset it.
         if (gs->current_placer == -1)
@@ -331,18 +334,28 @@ void gui_popup_draw() {
         gs->gw*gs->S, (int)gui->popup_h
     };
 
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(gs->renderer, 235, 235, 235, 255);
     SDL_RenderFillRect(gs->renderer, &popup);
     
     int w, h;
     SDL_QueryTexture(gs->textures.tab, NULL, NULL, &w, &h);
     
+    SDL_Rect bar = {
+        0, popup.y,
+        gs->gw*gs->S, (int)36
+    };
+    
+    Uint8 r = 200, g = 200, b = 200;
+    
+    SDL_SetRenderDrawColor(gs->renderer, r, g, b, 255);
+    SDL_RenderFillRect(gs->renderer, &bar);
+    
     // int scale = 2;
-    SDL_Rect tab_icon = {
+    /*SDL_Rect tab_icon = {
         gs->gw*gs->S - 128, (int)(GUI_H + gui->popup_y) - h,
         w, h
-    };
-    SDL_RenderCopy(gs->renderer, gs->textures.tab, NULL, &tab_icon);
+    };*/
+    //SDL_RenderCopy(gs->renderer, gs->textures.tab, NULL, &tab_icon);
 }
 
 bool is_cell_fuel(int type) {
@@ -582,7 +595,7 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
     
     SDL_Color color = (SDL_Color){255, 255, 255, 255};
     
-    SDL_Surface *surf = TTF_RenderText_Solid(gs->fonts.font_bold_small, number, color);
+    SDL_Surface *surf = TTF_RenderText_LCD(gs->fonts.font_bold_small, number, color, (SDL_Color){0, 0, 0, 255});
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     
     SDL_Rect dst = {
@@ -591,9 +604,6 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
         surf->w,
         surf->h
     };
-    
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-    SDL_RenderFillRect(gs->renderer, &dst);
     
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
 
@@ -634,7 +644,7 @@ void slot_draw(struct Slot *slot) {
         SDL_Texture **texture = &gs->textures.slot_names[SLOT_MAX_COUNT * c->type + slot->type];
         
         if (!*surf) {
-            *surf = TTF_RenderText_Blended(gs->fonts.font_small, slot->name, (SDL_Color){0, 0, 0, 255});
+            *surf = TTF_RenderText_LCD(gs->fonts.font_small, slot->name, (SDL_Color){0, 0, 0, 255}, (SDL_Color){255, 255, 255, 255});
         }
         Assert(*surf);
 
@@ -658,11 +668,29 @@ void slot_draw(struct Slot *slot) {
 
 //////////////////////////////////////////
 
+void auto_set_material_converter_slots() {
+    int level = gs->level_current;
+    
+    switch (level+1) {
+        case 3: {
+            gs->material_converter->slots[SLOT_FUEL].item = (struct Item)
+            {
+                .type = CELL_UNREFINED_COAL,
+                .amount = 1428
+            };
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+}
+
 struct Converter *converter_init(int type, bool allocated) {
     struct Converter *converter = NULL;
 
     if (!allocated) {
-        converter = arena_alloc(gs->persistent_memory, 1, sizeof(struct Converter));
+        converter = PushStruct(gs->persistent_memory, struct Converter);
     } else {
         switch (type) {
         case CONVERTER_FUEL:
@@ -681,16 +709,20 @@ struct Converter *converter_init(int type, bool allocated) {
     converter->timer_max = 1;
     converter->timer_current = 0;
     
+    if (type == CONVERTER_FUEL && gs->level_current+1 == 3) {
+        converter->state = CONVERTER_INACTIVE;
+    }
+    
     switch (type) {
     case CONVERTER_MATERIAL:
         converter->slot_count = 4;
 
         if (!allocated) {
-            converter->slots = arena_alloc(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
+            converter->slots = PushArray(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
         } else {
             memset(&converter->slots[SLOT_INPUT1], 0, sizeof(struct Slot));
             memset(&converter->slots[SLOT_INPUT2], 0, sizeof(struct Slot));
-            memset(&converter->slots[SLOT_FUEL], 0, sizeof(struct Slot));
+            memset(&converter->slots[SLOT_FUEL],   0, sizeof(struct Slot));
             memset(&converter->slots[SLOT_OUTPUT], 0, sizeof(struct Slot));
         }
         
@@ -711,12 +743,14 @@ struct Converter *converter_init(int type, bool allocated) {
         strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
         
         strcpy(converter->name, "Material Converter");
+        
+        auto_set_material_converter_slots();
         break;
     case CONVERTER_FUEL:
         converter->slot_count = 3;
 
         if (!allocated) {
-            converter->slots = arena_alloc(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
+            converter->slots = PushArray(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
         } else {
             memset(&converter->slots[SLOT_INPUT1], 0, sizeof(struct Slot));
             memset(&converter->slots[SLOT_INPUT2], 0, sizeof(struct Slot));
@@ -769,6 +803,13 @@ void all_converters_init() {
     bool allocated = gs->material_converter != NULL || gs->fuel_converter != NULL;
     gs->material_converter = converter_init(CONVERTER_MATERIAL, allocated);
     gs->fuel_converter = converter_init(CONVERTER_FUEL, allocated);
+    
+    switch (gs->level_current) {
+        case 2: {
+            Log("Happened!\n");
+            break;
+        }
+    }
 }
 
 int get_number_unique_inputs(struct Item *input1, struct Item *input2) {
@@ -1128,6 +1169,9 @@ void converter_tick(struct Converter *converter) {
     converter->go_button->x = (int) (converter->x + converter->arrow.x - 128);
     converter->go_button->y = (int) (gs->gui.popup_y + 240);
     
+    if (converter->state == CONVERTER_INACTIVE)
+        return;
+    
     for (int i = 0; i < converter->slot_count; i++) {
         struct Slot *s = &converter->slots[i];
         slot_tick(s);
@@ -1211,13 +1255,21 @@ void all_converters_tick() {
 }
 
 void converter_draw(struct Converter *converter) {
-    SDL_Rect converter_bounds = {
-        (int)converter->x, (int)converter->y + GUI_H,
-        (int)converter->w, (int)converter->h
-    };
+    // SDL_Rect converter_bounds = {
+        // (int)converter->x, (int)converter->y + GUI_H,
+        // (int)converter->w, (int)converter->h
+    // };
+    // 
+    // SDL_RenderDrawRect(gs->renderer, &converter_bounds);
+    
+    if (converter->state == CONVERTER_INACTIVE)
+        return;
+    
     
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-    SDL_RenderDrawRect(gs->renderer, &converter_bounds);
+    SDL_RenderDrawLine(gs->renderer, converter->x+converter->w,
+                       converter->y+GUI_H, converter->x+converter->w,
+                       converter->y+GUI_H+converter->h);
     
     for (int i = 0; i < converter->slot_count; i++) {
         slot_draw(&converter->slots[i]);
@@ -1250,7 +1302,10 @@ void converter_draw(struct Converter *converter) {
     SDL_Texture **tex = &gs->textures.converter_names[converter->type];
     
     if (!*surf) {
-        *surf = TTF_RenderText_Blended(gs->fonts.font_courier, converter->name, (SDL_Color){0, 0, 0, 255});
+        *surf = TTF_RenderText_LCD(gs->fonts.font_courier,
+                                   converter->name, 
+                                   (SDL_Color){0, 0, 0, 255},
+                                   (SDL_Color){255, 255, 255, 255});
     }
     Assert(*surf);
 

@@ -55,7 +55,7 @@ Level 6
 
 Level 7
   - Start with some garbage, green smoke coming out.
-  - Shape: Birdie. Short little legs.
+  - Shape: Birdie, Short little legs.
   - Convert it to something else, use more of quartz, cobblestone [2x ratio]
   - Still looks like garbage but in a different shape.
 

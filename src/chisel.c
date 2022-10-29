@@ -247,7 +247,7 @@ void chisel_init(struct Chisel *type) {
     chisel->face_mode = false;
 
     if (chisel->pixels == NULL) {
-        chisel->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+        chisel->pixels = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
     }
 
     chisel->texture = chisel->outside_texture;
@@ -255,7 +255,7 @@ void chisel_init(struct Chisel *type) {
     chisel->h = chisel->outside_h;
 
     if (chisel->highlights == NULL) {
-        chisel->highlights = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
+        chisel->highlights = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
     }
 
     chisel->highlight_count = 0;
@@ -296,7 +296,7 @@ void chisel_update_texture() {
     int y = (int)chisel->y;
 
     if (gs->input.keys[SDL_SCANCODE_J]) {
-        printf("%f\n", chisel->angle);
+        Log("%f\n", chisel->angle);
     }
 
     // Disgusting hardcoding to adjust the weird rotation SDL does.
@@ -463,13 +463,14 @@ void chisel_tick() {
         }
         chisel->angle /= step;
         chisel->angle = ((int)chisel->angle) * step;
-        /* SDL_ShowCursor(1); */
-    }/*  else { */
-    /*     f32 dx = chisel->x - input->mx; */
-    /*     f32 dy = chisel->y - input->my; */
-    /*     f32 dist = sqrt(dx*dx + dy*dy); */
-    /*     SDL_ShowCursor(dist > 1); */
-    /* } */
+        
+        //SDL_ShowCursor(1);
+    } else {
+         // f32 dx = chisel->x - input->mx;
+         // f32 dy = chisel->y - input->my;
+         // f32 dist = sqrt(dx*dx + dy*dy);
+         //SDL_ShowCursor(dist > 1);
+     }
 
     if (input->keys_pressed[SDL_SCANCODE_S]) {
         chisel->face_mode = !chisel->face_mode;

@@ -1,8 +1,12 @@
+/* 
 #ifdef ALASKA_RELEASE_MODE
   #define RES_DIR "res/"
 #else
   #define RES_DIR "../res/"
 #endif
+ */
+
+#define RES_DIR "../res/"
 
 // Index into textures.render_targets[]
 enum {

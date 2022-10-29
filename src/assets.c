@@ -31,7 +31,7 @@ void render_targets_init(SDL_Renderer *renderer,
                 textures->render_targets[lvl][i] = CreateRenderTarget(width, GUI_H);
                 continue;
             }
-
+            
             Assert(l->w != 0 && l->h != 0);
             textures->render_targets[lvl][i] = CreateRenderTarget(l->w, l->h);
             Assert(textures->render_targets[lvl][i]);
@@ -41,20 +41,20 @@ void render_targets_init(SDL_Renderer *renderer,
 
 void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
     SDL_Surface *surf = NULL;
-
+    
     // Converter Item Textures || previously item_init()
     for (int i = 0; i < CELL_TYPE_COUNT; i++) {
         if (i == CELL_NONE) continue;
         
         char file[64] = {0};
         get_filename_from_type(i, file);
-
+        
         surf = IMG_Load(file);
         Assert(surf);
-
+        
         textures->items[i] = SDL_CreateTextureFromSurface(renderer, surf);
         Assert(textures->items[i]);
-
+        
         SDL_FreeSurface(surf);
         surf = NULL;
     }
@@ -64,41 +64,41 @@ void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
     textures->placer = load_texture(renderer, RES_DIR "placer.png");
     textures->knife = load_texture(renderer, RES_DIR "knife.png");
     textures->popup = load_texture(renderer, RES_DIR "popup.png");
-
+    
     for (enum Tool_Type i = 0; i < TOOL_COUNT; i++) {
         char filename[128] = {0};
         char path[128] = {0};
-
+        
         get_file_from_tool(i, filename);
         sprintf(path, RES_DIR "buttons/%s", filename);
-
+        
         textures->tool_buttons[i] = load_texture(renderer, path);
         Assert(textures->tool_buttons[i]);
     }
-
+    
     textures->blob_hammer = load_texture(renderer, RES_DIR "hammer.png");
     textures->converter_arrow = load_texture(renderer, RES_DIR "arrow.png");
     textures->convert_button = load_texture(renderer, RES_DIR "buttons/convert.png");
-
+    
     const char *chisel_files[] = {
         RES_DIR "chisel_small",
         RES_DIR "chisel_medium",
         RES_DIR "chisel_large",
     };
     textures->chisel_hammer = load_texture(renderer, RES_DIR "hammer.png");
-
+    
     // Loop through all chisels
     for (int i = 0; i < 3; i++) {
         // Alternate through face mode
         for (int face = 1; face != -1; face--) {
             char file[512] = {0};
             strcpy(file, chisel_files[i]);
-
+            
             if (face)
                 strcat(file, "_face");
-
+            
             strcat(file, ".png");
-
+            
             if (face) {
                 textures->chisel_face[i] = load_texture(renderer, file);
                 Assert(textures->chisel_face[i]);
@@ -114,8 +114,8 @@ void textures_deinit(struct Textures *textures) {
     SDL_Texture **texs = (SDL_Texture**) textures;
     size_t tex_count = sizeof(struct Textures)/sizeof(SDL_Texture*);
     
-    for (size_t i = 0; i < tex_count; i++) {
-        if (texs[i])
+    for (int i = 0; i < tex_count; i++) {
+        if (texs[i] != NULL)
             SDL_DestroyTexture(texs[i]);
     }
 }
@@ -133,7 +133,7 @@ void surfaces_init(struct Surfaces *surfaces) {
 void surfaces_deinit(struct Surfaces *surfaces) {
     SDL_Surface **surfs = (SDL_Surface**) surfaces;
     size_t surf_count = sizeof(struct Surfaces)/sizeof(SDL_Surface*);
-
+    
     for (size_t i = 0; i < surf_count; i++) {
         if (surfs[i])
             SDL_FreeSurface(surfs[i]);
@@ -147,10 +147,10 @@ void fonts_init(struct Fonts *fonts) {
     fonts->font_small = TTF_OpenFont(RES_DIR "cour.ttf", 16);
     fonts->font_bold_small = TTF_OpenFont(RES_DIR "courbd.ttf", 16);
     fonts->font_title = TTF_OpenFont(RES_DIR "cour.ttf", 45);
-
+    
     TTF_Font **ttf_fonts = (TTF_Font**) fonts;
     size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);
-
+    
     for (size_t i = 0; i < font_count; i++) {
         TTF_SetFontHinting(ttf_fonts[i], TTF_HINTING_LIGHT_SUBPIXEL);
     }
@@ -159,7 +159,7 @@ void fonts_init(struct Fonts *fonts) {
 void fonts_deinit(struct Fonts *fonts) {
     TTF_Font **ttf_fonts = (TTF_Font**) fonts;
     size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);
-
+    
     for (size_t i = 0; i < font_count; i++) {
         TTF_CloseFont(ttf_fonts[i]);
     }

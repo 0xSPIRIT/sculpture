@@ -1,8 +1,8 @@
 //
 // Basically, the game is split up into two compilation units.
 // This one is compiled to an .exe file that simply loads
-// a DLL, intializes SDL, and // the game's assets, and
-// calls functions to run the game etc.
+// a DLL, intializes SDL, loads the game's assets, and
+// calls two functions from the DLL to run the game.
 //
 // The app itself is, as I said, compiled to a .dll and can
 // be found in game.c
@@ -15,7 +15,7 @@
 //
 // Note that the DLL is not allowed to allocate memory
 // because we're statically linking against the C Runtime
-// Library. So, the DLL and the platform layer do not share
+// Library. So the DLL and the platform layer do not share
 // the same heap. The solution is to simply allocate a huge
 // block of memory at the start of the program in this file
 // using VirtualAlloc() and give it pointers into that
@@ -49,6 +49,8 @@
 #define GAME_DLL_NAME "sculpture.dll"
 #define TEMP_DLL_NAME "sculpture_temp.dll"
 
+#define ALASKA_SOFTWARE_RENDERER
+
 typedef void (*GameInitProc)(struct Game_State *state, int start_level);
 typedef bool (*GameTickEventProc)(struct Game_State *state, SDL_Event *event);
 typedef void (*GameRunProc)(struct Game_State *state);
@@ -65,28 +67,28 @@ struct Game_Code {
 void game_init_sdl(struct Game_State *state, const char *window_title, int w, int h) {
     SDL_Init(SDL_INIT_VIDEO);
     
-    state->window = SDL_CreateWindow(
-        window_title,
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        w,
-        h,
-        SDL_WINDOW_SHOWN
-    );
+    state->window = SDL_CreateWindow(window_title,
+                                     SDL_WINDOWPOS_CENTERED,
+                                     SDL_WINDOWPOS_CENTERED,
+                                     w,
+                                     h,
+                                     SDL_WINDOW_SHOWN);
     Assert(state->window);
     
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
-
-    state->renderer = SDL_CreateRenderer(
-        state->window,
-        -1,
-        SDL_RENDERER_SOFTWARE
-    );
+    
+#ifdef ALASKA_SOFTWARE_RENDERER
+    const int flags = SDL_RENDERER_SOFTWARE;
+#else
+    const int flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+#endif
+    
+    state->renderer = SDL_CreateRenderer(state->window, -1, flags);
     Assert(state->renderer);
 }
 
-void make_memory(struct Memory *persistent_memory, struct Memory *transient_memory) {
+void make_memory_arena(struct Memory_Arena *persistent_memory, struct Memory_Arena *transient_memory) {
     persistent_memory->size = Megabytes(128);
     transient_memory->size = Megabytes(8);
     
@@ -96,7 +98,7 @@ void make_memory(struct Memory *persistent_memory, struct Memory *transient_memo
     
     persistent_memory->data = VirtualAlloc(base_address,
                                            persistent_memory->size + transient_memory->size,
-                                           MEM_COMMIT|MEM_RESERVE,
+                                           MEM_COMMIT | MEM_RESERVE,
                                            PAGE_READWRITE);
     AssertNW(persistent_memory->data);
     persistent_memory->cursor = persistent_memory->data;
@@ -116,7 +118,10 @@ void game_init(struct Game_State *state) {
     // Taken from https://github.com/kumar8600/win32_SetProcessDpiAware
     win32_SetProcessDpiAware();
     
-    game_init_sdl(state, "Alaska", state->window_width, state->window_height);
+    game_init_sdl(state,
+                  "Alaska", 
+                  state->window_width, 
+                  state->window_height);
     
     // Load all assets... except for render targets.
     // We can't create render targets until levels
@@ -168,7 +173,7 @@ void load_game_code(struct Game_Code *code) {
     CopyFileA(GAME_DLL_NAME, TEMP_DLL_NAME, FALSE);
     code->dll = LoadLibraryA(TEMP_DLL_NAME);
     if (!code->dll) {
-        fprintf(stderr, "Error loading the DLL!\n");
+        Error("Error loading the DLL!\n");
         exit(1);
     }
     
@@ -180,7 +185,7 @@ void load_game_code(struct Game_Code *code) {
         GetProcAddress(code->dll, "game_run");
     
     if (!code->game_run) {
-        fprintf(stderr, "Error finding the functions in the DLL!\n");
+        Error("Error finding the functions in the DLL!\n");
         exit(1);
     }
 }
@@ -220,15 +225,15 @@ int main(int argc, char **argv)
     if (argc == 2) {
         start_level = atoi(argv[1]);
     }
-  
+    
     struct Game_Code game_code;
     load_game_code(&game_code);
     
-    struct Memory persistent_memory, transient_memory;
-    make_memory(&persistent_memory, &transient_memory);
+    struct Memory_Arena persistent_memory, transient_memory;
+    make_memory_arena(&persistent_memory, &transient_memory);
     
     // *1.5 in case we add more values at runtime.
-    struct Game_State *game_state = arena_alloc(&persistent_memory, 1, (Uint64) (sizeof(struct Game_State)*1.5));
+    struct Game_State *game_state = PushArray(&persistent_memory, 1, sizeof(struct Game_State));
     
     gs = game_state; // This is so that our macros can pick up "gs" instead of game_state.
     
@@ -255,8 +260,10 @@ int main(int argc, char **argv)
     QueryPerformanceFrequency(&frequency);
     QueryPerformanceCounter(&time_start);
     
+#ifdef ALASKA_SOFTWARE_RENDERER
     const f64 target_seconds_per_frame = 1.0/60.0;
     f64 time_passed = 0.0;
+#endif
     f32 fps = 0.f;
     
     while (running) {
@@ -284,16 +291,16 @@ int main(int argc, char **argv)
         
         bool should_stop = false;
         while (SDL_PollEvent(&event)) {
-                bool should_continue = game_code.game_tick_event(game_state, &event);
+            bool should_continue = game_code.game_tick_event(game_state, &event);
             if (!should_continue) {
                 should_stop = true;
             }
         }
         
         game_code.game_run(game_state);
-
+        
         // Zero out the transient memory for next frame!
-        ZeroMemory(transient_memory.data, transient_memory.size);
+        memset(transient_memory.data, 0, transient_memory.size);
         transient_memory.cursor = transient_memory.data;
         
         if (should_stop) {
@@ -302,6 +309,7 @@ int main(int argc, char **argv)
         
         QueryPerformanceCounter(&time_elapsed);
         
+#ifdef ALASKA_SOFTWARE_RENDERER
         Uint64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
         f64 d = (f64)delta / (f64)frequency.QuadPart;
         
@@ -315,10 +323,11 @@ int main(int argc, char **argv)
         time_passed += d;
         
         // Only update FPS counter every 0.25s.
-        if (time_passed > 0.25) {
+        if (time_passed > 0.1) {
             fps = 1.0/d;
             time_passed = 0;
         }
+#endif
         
         {
             Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
@@ -327,7 +336,7 @@ int main(int argc, char **argv)
             percentage *= 100.f;
             
             char title[128] = {0};
-            sprintf(title, "Alaska | Memory Used: %.2f%% | FPS: %.2f", percentage, fps);
+            sprintf(title, "Alaska | Memory Used: %.2f/%.2f MB [%.2f%%] | FPS: %.2f", size_current/1024.0/1024.0, size_max/1024.0/1024.0, percentage, fps);
             
             SDL_SetWindowTitle(game_state->window, title);
         }

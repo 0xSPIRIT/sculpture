@@ -1,6 +1,3 @@
-#define Radians(x) ((x) * (M_PI / 180.0))
-#define Degrees(x) ((x) * (180.0 / M_PI))
-
 bool is_angle_225(f64 deg_angle) {
     f64 f = fabs(deg_angle);
     if (f == 22.5 || f == 157.5 || f == 112.5 || f == 67.5) {
@@ -32,7 +29,7 @@ void start_timer() {
 void _end_timer(const char *func) {
     gs->global_end = clock();
     f64 cpu_time_used = ((f64) (gs->global_end-gs->global_start))/CLOCKS_PER_SEC;
-    printf("(%s) Time: %f\n", func, cpu_time_used);
+    Log("(%s) Time: %f\n", func, cpu_time_used);
 }
 
 // Moves the mouse to the middle of the grid cell, not the top-left.
@@ -274,8 +271,8 @@ bool is_point_in_triangle(SDL_Point pt, SDL_Point v1, SDL_Point v2, SDL_Point v3
     return !(has_neg && has_pos);
 }
 
-void draw_text(TTF_Font *font, const char *str, SDL_Color col, bool align_right, bool align_bottom, int x, int y, int *out_w, int *out_h) {
-    SDL_Surface *surf = TTF_RenderText_Blended(font, str, col);
+void draw_text(TTF_Font *font, const char *str, SDL_Color col, SDL_Color bg_col, bool align_right, bool align_bottom, int x, int y, int *out_w, int *out_h) {
+    SDL_Surface *surf = TTF_RenderText_LCD(font, str, col, bg_col);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     
     SDL_Rect dst = { x, y, surf->w, surf->h };

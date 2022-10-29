@@ -21,12 +21,13 @@ void grabber_tick() {
     }
 
     if (gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+        if (gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
+            save_state_to_next();
+        }
         // Find object at point, and attempt move to cursor pixel by pixel.
         int object = gs->grid[(int)grabber->x+(int)grabber->y*gs->gw].object;
         if (object != -1) grabber->object_holding = object;
     } else {
         grabber->object_holding = -1;
-        /* if (mouse_released[SDL_BUTTON_LEFT]) */
-        /*     save_state(); */
     }
 }

@@ -117,11 +117,11 @@ int blob_find_pressure(int obj, Uint32 blob, int x, int y, int r) {
 void print_blob_data(struct Object *object, int chisel_size) {
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
-            printf("%u ", object->blob_data[chisel_size].blobs[x+y*gs->gw]);
+            Log("%u ", object->blob_data[chisel_size].blobs[x+y*gs->gw]);
         }
-        printf("\n");
+        Log("\n");
     }
-    printf("\n\n");
+    Log("\n\n");
 }
 
 int get_any_neighbour_object(int x, int y) {
@@ -190,7 +190,7 @@ void random_set_blob(struct Object *obj, int x, int y, Uint32 blob, int chisel_s
 }
 
 void object_blobs_set_pressure(int obj, int chisel_size) {
-    int *temp_blobs = arena_alloc(gs->transient_memory, gs->gw*gs->gh, sizeof(int));
+    int *temp_blobs = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(int));
     struct Object *object = &gs->objects[obj];
     
     for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -245,8 +245,6 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
     const int medium_chisel_size = 2;
     const int large_chisel_size = 3;
     
-    const int r = size == 1 ? medium_chisel_size : large_chisel_size;
-    
     for (int y = 0; y < gs->gh; y += interval) {
         for (int x = 0; x < gs->gw; x += interval) {
             
@@ -256,6 +254,13 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
             if (any_neighbours_free(gs->grid, x, y) && blobs[x+y*gs->gw] == 0) {
                 bool added = false;
                 bool first = true;
+                
+                int r = size == 1 ? medium_chisel_size : large_chisel_size;
+                
+                // if (size != 1) {
+                    // int add = abs(my_rand(x+y*gs->gw))%5 - 2;
+                    // r += add;
+                // }
                 
                 for (int yy = -r; yy <= r; yy++) {
                     for (int xx = -r; xx <= r; xx++) {
@@ -412,8 +417,8 @@ f32 water_spread() {
 
 f32 get_pressure_threshold(int chisel_size) {
     switch (chisel_size) {
-        case 0: return 0.75f;
-        case 1: return 0.7f;
+        case 0: return 0.8f;
+        case 1: return 0.8f;
         case 2: return 0.8f;
     }
     return 0;
@@ -425,20 +430,19 @@ void grid_init(int w, int h) {
 
     if (gs->grid_layers[0] == NULL) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-            gs->grid_layers[i] = arena_alloc(gs->persistent_memory, w*h, sizeof(struct Cell));
+            gs->grid_layers[i] = PushArray(gs->persistent_memory, w*h, sizeof(struct Cell));
         }
     }
 
     if (gs->objects[0].blob_data[0].blobs == NULL) {
         for (int i = 0; i < MAX_OBJECTS; i++) {
             for (int j = 0; j < 3; j++) {
-                gs->objects[i].blob_data[j].blobs = arena_alloc(gs->persistent_memory, w*h, sizeof(Uint32));
-                gs->objects[i].blob_data[j].blob_pressures = arena_alloc(gs->persistent_memory, w*h, sizeof(int));
+                gs->objects[i].blob_data[j].blobs = PushArray(gs->persistent_memory, w*h, sizeof(Uint32));
+                gs->objects[i].blob_data[j].blob_pressures = PushArray(gs->persistent_memory, w*h, sizeof(int));
             }
         }
     }
 
-    srand((unsigned int) time(0));
 
     for (int i = 0; i < w*h; i++) {
         for (int j = 0; j < NUM_GRID_LAYERS; j++) {
@@ -646,18 +650,18 @@ void move_by_velocity(struct Cell *arr, int x, int y) {
     }
     
     // If vel < 1, that means we should wait for it to accumulate before moving.
-    if (p->vx < 1) {
+    if (abs(p->vx) < 1) {
         p->vx_acc += p->vx;
     }
-    if (p->vy < 1) {
+    if (abs(p->vy) < 1) {
         p->vy_acc += p->vy;
     }
     
-    if (p->vx_acc >= 1) {
+    if (abs(p->vx_acc) >= 1) {
         p->vx = p->vx_acc;
         p->vx_acc = 0;
     }
-    if (p->vy_acc >= 1) {
+    if (abs(p->vy_acc) >= 1) {
         p->vy = p->vy_acc;
         p->vy_acc = 0;
     }
@@ -732,7 +736,7 @@ bool blob_can_destroy(int obj, int chisel_size, int blob) {
     f32 normalized_pressure = (f32) (blob_pressure / MAX_PRESSURE);
     
     if (normalized_pressure >= get_pressure_threshold(chisel_size)) {
-        /* printf("Blocked due to too much pressure (%f > %f).\n", normalized_pressure, get_pressure_threshold(chisel_size)); */
+        /* Log("Blocked due to too much pressure (%f > %f).\n", normalized_pressure, get_pressure_threshold(chisel_size)); */
     }
     
     return normalized_pressure < get_pressure_threshold(chisel_size);
@@ -955,17 +959,18 @@ void grid_array_draw(struct Cell *array) {
                 col.b /= 2;
             }
             
-            const bool draw_pressure = false;
+            const bool draw_pressure = true;
+            // TODO: This only draws pressures for the last object.
+            int blob_pressure = 0;
+            f32 normalized_pressure = 0;
+
+            if (gs->object_count > 0) {
+                blob_pressure = (int)gs->objects[gs->object_count - 1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count - 1].blob_data[gs->chisel->size].blobs[x + y * gs->gw]];
+                normalized_pressure = (f32)(blob_pressure / MAX_PRESSURE);
+            }
             
-            if (draw_pressure && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]) {
-                int blob_pressure = (int)gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw]];
-                f32 normalized_pressure = (f32) (blob_pressure / MAX_PRESSURE);
-                
-                if (normalized_pressure >= get_pressure_threshold(gs->chisel->size)) {
-                    SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
-                } else {
-                    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
-                }
+            if (draw_pressure && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw] && normalized_pressure >= get_pressure_threshold(gs->chisel->size)) {
+                SDL_SetRenderDrawColor(gs->renderer, min((int)col.r * 2.0, 255), col.g, col.b, col.a);
             } else {
                 SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, col.a);
             }
@@ -1029,7 +1034,7 @@ void object_tick(int obj) {
     if (gs->current_tool == TOOL_GRABBER && gs->grabber.object_holding == obj) return;
     
     // Copy of grid to fall back to if we abort.
-    struct Cell *grid_temp = arena_alloc(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
+    struct Cell *grid_temp = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
     memcpy(grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
     
     int dy = 1;
@@ -1225,7 +1230,7 @@ int object_attempt_move(int object, int dx, int dy) {
     f32 vx = ux; // = 0;
     f32 vy = uy; // = 0;
     
-    struct Cell *grid_temp = arena_alloc(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
+    struct Cell *grid_temp = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
     memcpy(grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
     
     /* while (sqrt(vx*vx + vy*vy) < len) { */
@@ -1284,13 +1289,11 @@ void draw_blobs() {
                 Uint32 b = gs->objects[i].blob_data[gs->chisel->size].blobs[x+y*gs->gw];
                 b *= b;
                 if (b == 0) continue;
-                srand(b);
-                SDL_SetRenderDrawColor(gs->renderer, rand()%255, rand()%255, rand()%255, 255);
+                SDL_SetRenderDrawColor(gs->renderer, my_rand(b), my_rand(b*b), my_rand(b*b*b), 255);
                 SDL_RenderDrawPoint(gs->renderer, x, y);
             }
         }
     }
-    srand((unsigned int) time(0));
 }
 
 void draw_objects() {
@@ -1301,8 +1304,7 @@ void draw_objects() {
 			if (gs->grid[x+y*gs->gw].object == -1) continue;
 			int b = gs->grid[x+y*gs->gw].object + 10;
             b *= b;
-			srand(b);
-			SDL_SetRenderDrawColor(gs->renderer, rand()%255, rand()%255, rand()%255, 255);
+			SDL_SetRenderDrawColor(gs->renderer, randR(b), randG(b), randB(b), 255);
 			SDL_RenderDrawPoint(gs->renderer, x, y);
 		}
 	}
@@ -1365,7 +1367,7 @@ int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_o
             gs->object_current = get_any_neighbour_object(closest_index%gs->gw, closest_index/gs->gw);
         }
         if (gs->object_current < -1) {
-            printf("Object Current was < -1. You are permitted to panic! D:\n");
+            Log("Object Current was < -1. You are permitted to panic! D:\n");
             gs->object_current = -1;
         }
     }

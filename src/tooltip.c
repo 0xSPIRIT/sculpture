@@ -76,7 +76,7 @@ void tooltip_draw(struct Tooltip *tooltip) {
         }
 
         // @Performance
-        surfaces[i] = TTF_RenderText_Solid(gs->fonts.font, tooltip->str[i], color);
+        surfaces[i] = TTF_RenderText_LCD(gs->fonts.font, tooltip->str[i], color, (SDL_Color){0, 0, 0, 255});
         Assert(surfaces[i]);
         textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surfaces[i]);
         Assert(textures[i]);
@@ -89,7 +89,7 @@ void tooltip_draw(struct Tooltip *tooltip) {
         dsts[i].y += GUI_H;
 
         height += surfaces[i]->h;
-
+        
         if (surfaces[i]->w > highest_w) highest_w = surfaces[i]->w;
     }
 

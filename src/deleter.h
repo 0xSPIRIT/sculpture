@@ -1,4 +1,4 @@
-#define DELETER_POINT_COUNT 50
+#define DELETER_POINT_COUNT 10
 
 struct Deleter {
     f32 x, y;

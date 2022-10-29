@@ -13,27 +13,30 @@
 #define Terabytes(x) ((Uint64)x*1024*1024*1024*1024)
 
 // Assert using an SDL MessageBox popup. Prints to the console too.
-#define Assert(condition) (_assert((condition), gs->window, __func__, __FILE__, __LINE__))
+#define Assert(condition) if(!(condition)) {   _assert(gs->window, __func__, __FILE__, __LINE__) , __debugbreak(); }
 // Assert without the popup (no window); use only console instead.
-#define AssertNW(condition) (_assert((condition), NULL, __func__, __FILE__, __LINE__))
+#define AssertNW(condition) if(!(condition)) { _assert(NULL, __func__, __FILE__, __LINE__) , __debugbreak(); }
 
-#define arena_alloc(mem, num, size) (_arena_alloc(mem, num, size, __FILE__, __LINE__))
+#define PushSize(arena, size) (_push_array(arena, 1, size, __FILE__, __LINE__))
+#define PushArray(arena, count, size) (_push_array(arena, count, size, __FILE__, __LINE__))
+#define PushStruct(arena, structure) (_push_array(arena, 1, sizeof(structure), __FILE__, __LINE__))
+
 // 'which' is an enum in assets.h
 #define RenderTarget(which) (gs->textures.render_targets[gs->level_current][which])
 
-#include "headers.h"
+#include "headers.h" // Used to get type size information.
 
 //
 // To allocate permanent memory that will persist until
 // the end of the session, use persistent allocation.
-//   [arena_alloc(gs->persistent_memory, ...)]
+//   [PushArray(gs->persistent_memory, ...)]
 //
 // Otherwise, when allocating memory that you will
 // just need for a specific function and will free it,
 // use transient allocation.
-//   [arena_alloc(gs->transient_memory, ...)]
+//   [PushArray(gs->transient_memory, ...)]
 //
-struct Memory {
+struct Memory_Arena {
     Uint8 *data;
     Uint8 *cursor;
     Uint64 size;
@@ -44,7 +47,7 @@ struct Memory {
 // to the end, because we have pointers pointing to variables
 // in here and we don't want to mess that up.
 struct Game_State {
-    struct Memory *persistent_memory, *transient_memory;
+    struct Memory_Arena *persistent_memory, *transient_memory;
 
     struct SDL_Window *window;
     struct SDL_Renderer *renderer;
@@ -90,6 +93,8 @@ struct Game_State {
     int save_state_count; // Number of states saved.
 
     struct Text_Field text_field;
+    
+    bool creative_mode;
 
     struct Placer placers[PLACER_COUNT];
     int current_placer;
@@ -122,9 +127,7 @@ struct Game_State {
 
 struct Game_State *gs = NULL;
 
-inline void _assert(bool condition, SDL_Window *window, const char *func, const char *file, const int line) {
-    if (condition) return;
-
+inline void _assert(SDL_Window *window, const char *func, const char *file, const int line) {
     char message[64] = {0};
     char line_of_code[2048] = {0};
 
@@ -146,14 +149,11 @@ inline void _assert(bool condition, SDL_Window *window, const char *func, const 
         __debugbreak();
     }
 
-    fprintf(stderr, "\n:::: ASSERTION FAILED ::::\n%s", message);
-    fflush(stderr);
-
-    __debugbreak();
+    Error("\n:::: ASSERTION FAILED ::::\n%s", message);
 }
 
 // Gives pointer to zeroed memory.
-inline allocator void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
+inline allocator void *_push_array(struct Memory_Arena *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
     void *output = NULL;
 
@@ -171,16 +171,16 @@ inline allocator void *_arena_alloc(struct Memory *memory, Uint64 num, Uint64 si
             Assert(0);
         }
 
-        printf("%s Memory :: Allocated %zd bytes at %s(%d)\n", memory_name, size, file, line);
+        Log("%s Memory_Arena :: Allocated %zd bytes at %s(%d)\n", memory_name, size, file, line);
     }
 
     if (memory->cursor+size > memory->data+memory->size) {
         char message[256] = {0};
-        sprintf(message, "Out of Memory!\nAllowed memory: %zd bytes, Attempted allocation to %zd bytes.\n%s:%d",
+        sprintf(message, "Out of Memory_Arena!\nAllowed memory: %zd bytes, Attempted allocation to %zd bytes.\n%s:%d",
                 memory->size,
                 size+(memory->cursor-memory->data),
                 file, line);
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory Error :(", message, gs->window);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory_Arena Error :(", message, gs->window);
         exit(1);
     }
 

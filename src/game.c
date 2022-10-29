@@ -44,7 +44,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     if (event->type == SDL_MOUSEWHEEL) {
         if (gs->current_tool == TOOL_PLACER) {
             struct Placer *placer = &gs->placers[gs->current_placer];
-            if (input->keys[SDL_SCANCODE_LCTRL]) {
+            if (input->keys[SDL_SCANCODE_LCTRL] && gs->creative_mode) {
                 placer->contains_type += event->wheel.y;
                 if (placer->contains_type < CELL_NONE+1) placer->contains_type = CELL_NONE+1;
                 if (placer->contains_type >= CELL_TYPE_COUNT) placer->contains_type = CELL_TYPE_COUNT-1;
@@ -62,6 +62,13 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             if (gs->deleter.active) {
                 deleter_stop(true);
             }
+            break;
+        case SDLK_BACKQUOTE:
+            gs->creative_mode = !gs->creative_mode;
+            if (gs->creative_mode)
+                gui_message_stack_push("Creative Mode: On");
+            else
+                gui_message_stack_push("Creative Mode: Off");
             break;
         case SDLK_SPACE:
             gs->paused = !gs->paused;
@@ -122,7 +129,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
 
             Assert(obj != -1);
 
-            printf("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
+            Log("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
                    input->mx,
                    input->my,
                    c->vx_acc,
@@ -246,7 +253,7 @@ void draw_outro(struct Level *level) {
         int x = rect.x + margin;
         int y = rect.y + margin;
 
-        draw_text(gs->fonts.font, string, (SDL_Color){0,0,0,255}, 0, 0, x, y, NULL, NULL);
+        draw_text(gs->fonts.font, string, (SDL_Color){0,0,0,255}, (SDL_Color){255, 255, 255, 255}, 0, 0, x, y, NULL, NULL);
     }
 
     // Desired and Your grid.
@@ -264,7 +271,7 @@ void draw_outro(struct Level *level) {
             dx += rect.w - margin - 2*level->w - margin;
         }
 
-        draw_text(gs->fonts.font, string, (SDL_Color){0, 0, 0, 255}, 0, 0, dx, dy, NULL, NULL);
+        draw_text(gs->fonts.font, string, (SDL_Color){0, 0, 0, 255}, (SDL_Color){255, 255, 255, 255}, 0, 0, dx, dy, NULL, NULL);
 
         for (int y = 0; y < gs->gh; y++) {
             for (int x = 0; x < gs->gw; x++) {
@@ -296,6 +303,7 @@ void draw_outro(struct Level *level) {
     draw_text(gs->fonts.font,
               "Next Level [n]",
               (SDL_Color){0, 91, 0, 255},
+              (SDL_Color){255, 255, 255, 255},
               1, 1,
               rect.x + rect.w - margin,
               rect.y + rect.h - margin,
@@ -304,6 +312,7 @@ void draw_outro(struct Level *level) {
     draw_text(gs->fonts.font,
               "Close [f]",
               (SDL_Color){0, 91, 0, 255},
+              (SDL_Color){255, 255, 255, 255}, 
               0, 1,
               rect.x + margin,
               rect.y + rect.h - margin,

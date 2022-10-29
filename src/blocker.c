@@ -30,7 +30,7 @@ void blocker_init() {
     blocker->active = false;
     
     if (blocker->pixels == NULL) {
-        blocker->pixels = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+        blocker->pixels = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
     }
 }
 
@@ -39,6 +39,11 @@ void blocker_tick() {
     struct Input *input = &gs->input;
     
     if (gs->is_mouse_over_any_button) return;
+    
+    if (input->keys_pressed[SDL_SCANCODE_C]) {
+        blocker->state = (blocker->state == BLOCKER_STATE_LINE) ?
+            BLOCKER_STATE_CURVE : BLOCKER_STATE_LINE;
+    }
     
     switch (blocker->state) {
         case BLOCKER_STATE_LINE: {
@@ -96,23 +101,22 @@ void blocker_tick() {
             blocker->prev_state = blocker->state;
             break;
         }
-        case BLOCKER_STATE_CURVE:
-#if 0
-        if (input->mouse_pressed[SDL_BUTTON_RIGHT]) {
-            memset(blocker->points, 0, BLOCKER_MAX_POINTS * sizeof(SDL_Point));
-            blocker->point_count = 0;
+        case BLOCKER_STATE_CURVE: {
+            if (input->mouse_pressed[SDL_BUTTON_RIGHT]) {
+                memset(blocker->points, 0, BLOCKER_MAX_POINTS * sizeof(SDL_Point));
+                blocker->point_count = 0;
+                
+                blocker_add_point(input->mx, input->my);
+                blocker_add_point(input->mx, input->my);
+            }
             
-            blocker_add_point(input->mx, input->my);
-            blocker_add_point(input->mx, input->my);
+            if (input->mouse_pressed[SDL_BUTTON_LEFT] && blocker->point_count < BLOCKER_MAX_POINTS) {
+                blocker_add_point(input->mx, input->my);
+            }
+            
+            blocker->prev_state = blocker->state;
+            break;
         }
-        
-        if (input->mouse_pressed[SDL_BUTTON_LEFT] && blocker->point_count < BLOCKER_MAX_POINTS) {
-            blocker_add_point(input->mx, input->my);
-        }
-        
-        blocker->prev_state = blocker->state;
-#endif
-        break;
     }
 }
 
@@ -209,12 +213,14 @@ void blocker_draw() {
     f64 deg_angle = Degrees(blocker->angle);
     
     switch (blocker->prev_state) {
-        case BLOCKER_STATE_LINE:
-        blocker_draw_line(deg_angle);
-        break;
-        case BLOCKER_STATE_CURVE:
-        blocker_draw_curve();
-        break;
+        case BLOCKER_STATE_LINE: {
+            blocker_draw_line(deg_angle);
+            break;
+        }
+        case BLOCKER_STATE_CURVE: {
+            blocker_draw_curve();
+            break;
+        }
     }
     
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
@@ -236,9 +242,9 @@ void blocker_draw() {
     if (gs->input.keys_pressed[SDL_SCANCODE_RETURN]) {
         for (int y = 0; y < gs->gh; y++) {
             for (int x = 0; x < gs->gw; x++) {
-                printf("%d ", blocker->pixels[x+y*gs->gw]);
+                Log("%d ", blocker->pixels[x+y*gs->gw]);
             }
-            printf("\n");
+            Log("\n");
         }
     }
     

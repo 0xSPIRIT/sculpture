@@ -19,7 +19,7 @@ void undo_system_init() {
     gs->save_state_count = 1;
 
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        current_state()->grid_layers[i] = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
+        current_state()->grid_layers[i] = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
         memcpy(current_state()->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
     }
 }
@@ -40,6 +40,9 @@ void save_state_to_next() {
             for (int j = 0; j < NUM_GRID_LAYERS; j++) {
                 memcpy(gs->save_states[i].grid_layers[j], gs->save_states[i+1].grid_layers[j], sizeof(struct Cell)*gs->gw*gs->gh);
             }
+            memcpy(&gs->save_states[i].placers, 
+                   &gs->save_states[i+1].placers, 
+                   sizeof(struct Placer)*PLACER_COUNT);
         }
 
         int i = gs->save_state_count;
@@ -59,12 +62,13 @@ void save_state_to_next() {
     // zeroed out.
     if (!state->grid_layers[0]) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-            state->grid_layers[i] = arena_alloc(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
+            state->grid_layers[i] = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
         }
     }
 
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
         memcpy(state->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
+        memcpy(&state->placers, &gs->placers, sizeof(struct Placer)*PLACER_COUNT);
     }
 }
 

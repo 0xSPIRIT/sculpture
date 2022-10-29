@@ -52,7 +52,7 @@ void level_get_cells_from_image(const char *path, struct Cell **out, struct Sour
     *out_w = w;
     *out_h = h;
 
-    *out = arena_alloc(gs->persistent_memory, w*h, sizeof(struct Cell));
+    *out = PushArray(gs->persistent_memory, w*h, sizeof(struct Cell));
 
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
@@ -119,7 +119,7 @@ int level_add(const char *name, const char *desired_image, const char *initial_i
     Assert(h > 0);
 
     if (w != level->w || h != level->h) {
-        fprintf(stderr, "%s and %s aren't the same size. Initial: %d, Desired: %d.\n", initial_image, desired_image, w, level->w);
+        Error("%s and %s aren't the same size. Initial: %d, Desired: %d.\n", initial_image, desired_image, w, level->w);
         exit(1);
     }
 
@@ -225,7 +225,6 @@ void level_tick() {
         if (level->popup_time_current >= level->popup_time_max) {
             level->popup_time_current = 0;
             level->state = LEVEL_STATE_PLAY;
-            srand((unsigned int) time(0));
 
             // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
             for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -258,8 +257,6 @@ void level_tick() {
             gs->levels[gs->level_current].state = LEVEL_STATE_OUTRO;
             input->keys[SDL_SCANCODE_F] = 0;
         }
-
-        effect_tick(&gs->current_effect);
 
         simulation_tick();
     
@@ -348,7 +345,7 @@ void level_draw_intro() {
     char name[256] = {0};
     sprintf(name, "Level %d: %s", level->index+1, level->name);
 
-    SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_title, name, (SDL_Color){255,255,255,255});
+    SDL_Surface *surf = TTF_RenderText_LCD(gs->fonts.font_title, name, (SDL_Color){255,255,255,255},(SDL_Color){0, 0, 0, 255});
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
 
     SDL_Rect dst = {
