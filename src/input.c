@@ -24,8 +24,8 @@ void input_tick(struct Game_State *state) {
             !(in->mouse & SDL_BUTTON(i)) && (mouse_previous & SDL_BUTTON(i));
     }
 
-    in->mx = in->real_mx/state->S;
-    in->my = in->real_my/state->S;
+    in->mx = (in->real_mx+state->view.x)/state->S;
+    in->my = (in->real_my+state->view.y)/state->S;
         
     in->my -= GUI_H/state->S;
 

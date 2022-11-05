@@ -7,5 +7,8 @@
 #define Log(...) printf(__VA_ARGS__), fflush(stdout)
 #define Error(...) fprintf(stderr, __VA_ARGS__), fflush(stderr)
 
+#define WHITE ((SDL_Color){255,255,255,255})
+#define BLACK ((SDL_Color){0,0,0,255})
+
 typedef float f32;
 typedef double f64;

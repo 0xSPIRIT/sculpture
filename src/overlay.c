@@ -1,4 +1,4 @@
-void overlay_init() {
+void overlay_init(void) {
     struct Overlay *overlay = &gs->overlay;
     
     overlay->tool = OVERLAY_TOOL_BRUSH;
@@ -42,7 +42,7 @@ void overlay_set_circle(int x, int y, int r, int value) {
     }
 }
 
-void overlay_set_spline() {//int *grid, int x1, int y1, int x2, int y2, int value) {
+void overlay_set_spline(void) {//int *grid, int x1, int y1, int x2, int y2, int value) {
     // TODO
 }
 
@@ -133,7 +133,7 @@ void overlay_set_rectangle(int *grid, SDL_Rect r, int value) {
 
 void gui_message_stack_push(const char *str);
 
-void overlay_tick() {
+void overlay_tick(void) {
     struct Overlay *overlay = &gs->overlay;
     
     memset(overlay->temp_grid, 0, sizeof(int)*gs->gw*gs->gh);
@@ -200,12 +200,7 @@ void overlay_tick() {
                                      gs->input.my,
                                      1);
                 } else {
-                    overlay_set_spline(overlay->temp_grid,
-                                       overlay->temp_x,
-                                       overlay->temp_y,
-                                       gs->input.mx,
-                                       gs->input.my,
-                                       1);
+                    overlay_set_spline();
                 }
             } else if (gs->input.mouse_released[SDL_BUTTON_LEFT]) {
                 if (overlay->tool == OVERLAY_TOOL_LINE) {
@@ -216,12 +211,7 @@ void overlay_tick() {
                                      gs->input.my,
                                      1);
                 } else {
-                    overlay_set_spline(overlay->grid,
-                                       overlay->temp_x,
-                                       overlay->temp_y,
-                                       gs->input.mx,
-                                       gs->input.my,
-                                       1);
+                    overlay_set_spline();
                 }
                 
                 overlay->temp_x = -1;
@@ -238,7 +228,7 @@ void overlay_tick() {
     }
 }
 
-void overlay_draw() {
+void overlay_draw(void) {
     struct Overlay *overlay = &gs->overlay;
     
     if (!overlay->show)

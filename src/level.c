@@ -3,32 +3,32 @@ Uint8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
     CELL_NONE,            0,   0,   0,
     CELL_DIRT,          200,   0,   0,
     CELL_SAND,          255, 255,   0,
-
+    
     CELL_WATER,           0,   0, 255,
     CELL_ICE,           188, 255, 255,
     CELL_STEAM,         225, 225, 225,
-
+    
     CELL_WOOD_LOG,      128,  80,   0,
     CELL_WOOD_PLANK,    200,  80,   0,
-
+    
     CELL_COBBLESTONE,   128, 128, 128,
     CELL_MARBLE,        255, 255, 255,
     CELL_SANDSTONE,     255, 128,   0,
-
+    
     CELL_CEMENT,        130, 130, 130,
     CELL_CONCRETE,      140, 140, 140,
-
+    
     CELL_QUARTZ,        200, 200, 200,
     CELL_GLASS,         180, 180, 180,
-
+    
     CELL_GRANITE,       132, 158, 183,
     CELL_BASALT,         32,  32,  32,
     CELL_DIAMOND,       150, 200, 200,
-
+    
     CELL_UNREFINED_COAL, 50,  50,  50,
     CELL_REFINED_COAL,   70,  70,  70,
     CELL_LAVA,          255,   0,   0,
-
+    
     CELL_SMOKE,         170, 170, 170,
     CELL_DUST,          150, 150, 150
 };
@@ -45,24 +45,24 @@ void level_get_cells_from_image(const char *path, struct Cell **out, struct Sour
     Assert(surface);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surface);
     Assert(texture);
-
+    
     int w = surface->w;
     int h = surface->h;
-
+    
     *out_w = w;
     *out_h = h;
-
+    
     *out = PushArray(gs->persistent_memory, w*h, sizeof(struct Cell));
-
+    
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
             Uint8 r, g, b;
-
+            
             Uint32 pixel = ((Uint32*)surface->pixels)[x+y*w];
             SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-
+            
             int cell = 0;
-
+            
             if (r == 255 && g == 0 && b == 0) {
                 struct Source_Cell *s = &source_cells[(*out_source_cell_count)++];
                 s->x = x;
@@ -76,18 +76,18 @@ void level_get_cells_from_image(const char *path, struct Cell **out, struct Sour
                         type_to_rgb_table[i*4 + 3],
                         255
                     };
-                        
+                    
                     if (r == c.r && g == c.g && b == c.b) {
                         cell = i;
                         break;
                     }
                 }
             }
-
+            
             (*out)[x+y*w].type = cell;
         }
     }
-
+    
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
 }
@@ -100,7 +100,7 @@ int level_add(const char *name, const char *desired_image, const char *initial_i
     level->popup_time_max = POPUP_TIME;
     level->state = LEVEL_STATE_INTRO;
     level->effect_type = effect_type;
-
+    
     int w, h;
     level_get_cells_from_image(desired_image,
                                &level->desired_grid,
@@ -114,19 +114,19 @@ int level_add(const char *name, const char *desired_image, const char *initial_i
                                &level->source_cell_count,
                                &w,
                                &h);
-
+    
     Assert(w > 0);
     Assert(h > 0);
-
+    
     if (w != level->w || h != level->h) {
         Error("%s and %s aren't the same size. Initial: %d, Desired: %d.\n", initial_image, desired_image, w, level->w);
         exit(1);
     }
-
+    
     return level->index;
 }
 
-void levels_setup() {
+void levels_setup(void) {
     level_add("Alaska",
               RES_DIR "lvl/desired/level 1.png",
               RES_DIR "lvl/initial/level 1.png",
@@ -135,7 +135,7 @@ void levels_setup() {
               RES_DIR "lvl/desired/level 2.png",
               RES_DIR "lvl/initial/level 2.png",
               EFFECT_NONE);
-    level_add("Clock's Ticking",
+    level_add("Clearcut Shapes",
               RES_DIR "lvl/desired/level 3.png",
               RES_DIR "lvl/initial/level 3.png",
               EFFECT_NONE);
@@ -173,13 +173,15 @@ void goto_level(int lvl) {
     gs->level_current = lvl;
     gs->levels[lvl].state = LEVEL_STATE_INTRO;
     
+    gs->levels[lvl].popup_time_current = 0;
+    
     gs->current_tool = TOOL_GRABBER;
     
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
-
+    
     gs->S = gs->window_width/gs->gw;
     Assert(gs->gw==gs->gh);
-
+    
     chisel_init(&gs->chisel_small);
     chisel_init(&gs->chisel_medium);
     chisel_init(&gs->chisel_large);
@@ -195,9 +197,9 @@ void goto_level(int lvl) {
     gui_init();
     all_converters_init();
     overlay_init();
-
+    
     effect_set(gs->levels[lvl].effect_type);
-
+    
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         gs->grid[i].type = gs->levels[lvl].desired_grid[i].type;
     }
@@ -205,34 +207,34 @@ void goto_level(int lvl) {
 
 void goto_level_string_hook(const char *string) {
     int lvl = atoi(string) - 1;
-
+    
     if (lvl < 0) return;
     if (lvl >= LEVEL_COUNT) return;
-
+    
     goto_level(lvl);
 }
 
-void level_tick() {
+void level_tick(void) {
     struct Level *level = &gs->levels[gs->level_current];
     struct Input *input = &gs->input;
-
+    
     if (gs->text_field.active) return;
     if (gs->gui.popup) return;
     
     switch (level->state) {
-    case LEVEL_STATE_INTRO:
+        case LEVEL_STATE_INTRO:
         level->popup_time_current++;
         if (level->popup_time_current >= level->popup_time_max) {
             level->popup_time_current = 0;
             level->state = LEVEL_STATE_PLAY;
-
+            
             // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
             for (int i = 0; i < gs->gw*gs->gh; i++) {
                 int id = gs->grid[i].id;
                 gs->grid[i] = (struct Cell){.type = level->initial_grid[i].type, .rand = rand(), .id = id, .object = -1, .depth = 255};
             }
             objects_reevaluate();
-
+            
             if (!gs->undo_initialized) {
                 undo_system_init();
             } else {
@@ -240,36 +242,36 @@ void level_tick() {
             }
         }
         break;
-    case LEVEL_STATE_OUTRO:
+        case LEVEL_STATE_OUTRO:
         if (input->keys[SDL_SCANCODE_N]) {
             if (gs->level_current+1 < 10) {
                 goto_level(++gs->level_current);
             }
         }
-
+        
         if (input->keys_pressed[SDL_SCANCODE_F]) {
             gs->levels[gs->level_current].state = LEVEL_STATE_PLAY;
             input->keys[SDL_SCANCODE_F] = 0;
         }
         break;
-    case LEVEL_STATE_PLAY:
+        case LEVEL_STATE_PLAY:
         if (input->keys_pressed[SDL_SCANCODE_F]) {
             gs->levels[gs->level_current].state = LEVEL_STATE_OUTRO;
             input->keys[SDL_SCANCODE_F] = 0;
         }
-
+        
         simulation_tick();
-    
+        
         if (!gs->paused || gs->step_one) {
             for (int i = 0; i < gs->object_count; i++) {
                 object_tick(i);
             }
         }
-
+        
         if (gs->step_one) {
             gs->step_one = 0;
         }
-
+        
         /* if (input->my < 0) { // If the mouse is in the GUI gs->window...
          *     SDL_ShowCursor(1);
          *     if (SDL_GetCursor() != gs->normal_cursor) {
@@ -284,7 +286,7 @@ void level_tick() {
          * } else if (SDL_GetCursor() != gs->normal_cursor) {
          *     SDL_SetCursor(gs->normal_cursor);
          * } */
-    
+        
         //chisel_blocker_tick();
         
         if (gs->chisel_blocker_mode) break;
@@ -316,20 +318,20 @@ void level_tick() {
                 break;
             }
         }
-
+        
         break;
     }
 }
 
-void level_draw_intro() {
+void level_draw_intro(void) {
     struct Level *level = &gs->levels[gs->level_current];
-
+    
     Assert(RenderTarget(RENDER_TARGET_GLOBAL));
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
-        
+    
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
     SDL_RenderClear(gs->renderer);
-
+    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (level->desired_grid[x+y*gs->gw].type == 0) continue;
@@ -338,14 +340,16 @@ void level_draw_intro() {
             SDL_RenderDrawPoint(gs->renderer, x, y);
         }
     }
-
+    
     SDL_SetRenderTarget(gs->renderer, NULL);
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, NULL);
-
+    
     char name[256] = {0};
     sprintf(name, "Level %d: %s", level->index+1, level->name);
-
-    SDL_Surface *surf = TTF_RenderText_LCD(gs->fonts.font_title, name, (SDL_Color){255,255,255,255},(SDL_Color){0, 0, 0, 255});
+    
+    SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_title,
+                                               name,
+                                               WHITE);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
 
     SDL_Rect dst = {
@@ -358,7 +362,7 @@ void level_draw_intro() {
     SDL_DestroyTexture(texture);
 }
 
-void level_draw() {
+void level_draw(void) {
     struct Level *level = &gs->levels[gs->level_current];
 
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);

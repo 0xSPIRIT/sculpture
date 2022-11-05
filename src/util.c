@@ -22,7 +22,7 @@ bool is_in_boundsf(f32 x, f32 y) {
     return is_in_bounds((int)x, (int)y);
 }
 
-void start_timer() {
+void start_timer(void) {
     gs->global_start = clock();
 }
 

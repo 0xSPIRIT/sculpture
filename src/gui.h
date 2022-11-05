@@ -24,7 +24,7 @@ enum Button_Type {
 
 struct Tooltip {
     enum Tooltip_Type type;
-
+    
     f32 x, y;
     char str[MAX_TOOLTIP_LEN][MAX_TOOLTIP_LINE_LEN];
     int w, h;
@@ -41,11 +41,11 @@ struct GUI {
     f32 popup_y, popup_y_vel, popup_h;
     SDL_Texture *popup_texture;
     struct Tooltip tooltip;
-
+    
     struct Overlay_Interface overlay_interface;
-
+    
     struct Button *tool_buttons[TOOL_COUNT];
-
+    
     struct Message message_stack[MAX_MESSAGE_STACK];
     int message_count;
 };
@@ -80,12 +80,12 @@ enum Slot_Type {
 struct Slot {
     struct Converter *converter; // The converter this slot belongs to.
     struct Item item;
-
+    
     enum Slot_Type type;
-
+    
     char name[32];
     int dx, dy;                  // Orientation of the name string.
-
+    
     f32 x, y, w, h;              // Relative to the converter it's in.
 };
 

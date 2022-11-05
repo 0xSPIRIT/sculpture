@@ -53,6 +53,8 @@ struct Game_State {
     struct SDL_Renderer *renderer;
 
     SDL_Event *event;
+    
+    struct View view;
 
     struct Textures textures; // Contains pointers to SDL textures.
     struct Surfaces surfaces;

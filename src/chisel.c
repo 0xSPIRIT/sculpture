@@ -1,4 +1,4 @@
-void chisel_hammer_init() {
+void chisel_hammer_init(void) {
     struct Chisel_Hammer *hammer = &gs->chisel_hammer;
     struct Chisel *chisel = gs->chisel;
 
@@ -13,7 +13,7 @@ void chisel_hammer_init() {
     SDL_QueryTexture(hammer->texture, NULL, NULL, &hammer->w, &hammer->h);
 }
 
-void chisel_hammer_tick() {
+void chisel_hammer_tick(void) {
     struct Chisel_Hammer *hammer = &gs->chisel_hammer;
     struct Input *input = &gs->input;
     struct Chisel *chisel = gs->chisel;
@@ -263,7 +263,7 @@ void chisel_init(struct Chisel *type) {
     chisel->spd = 3.;
 }
 
-void chisel_hammer_draw() {
+void chisel_hammer_draw(void) {
     struct Chisel_Hammer *hammer = &gs->chisel_hammer;
 
     const SDL_Rect dst = {
@@ -280,7 +280,7 @@ void chisel_hammer_draw() {
 
     SDL_RenderCopyEx(gs->renderer, hammer->texture, NULL, &dst, hammer->angle, &center, flip);
 }
-void chisel_update_texture() {
+void chisel_update_texture(void) {
     struct Chisel *chisel = gs->chisel;
 
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
@@ -294,10 +294,6 @@ void chisel_update_texture() {
     
     int x = (int)chisel->x;
     int y = (int)chisel->y;
-
-    if (gs->input.keys[SDL_SCANCODE_J]) {
-        Log("%f\n", chisel->angle);
-    }
 
     // Disgusting hardcoding to adjust the weird rotation SDL does.
     // TODO: Clean this up.
@@ -356,7 +352,7 @@ void chisel_update_texture() {
     SDL_SetRenderTarget(gs->renderer, prev_target);
 }
 
-void chisel_set_depth() {
+void chisel_set_depth(void) {
     struct Chisel *chisel = gs->chisel;
     struct Cell *grid = gs->grid;
 
@@ -378,7 +374,20 @@ void chisel_set_depth() {
     }
 }
 
-void chisel_tick() {
+void set_all_chisel_positions(void) {
+    struct Chisel *chisels = &gs->chisel_small;
+    
+    for (int i = 0; i < 3; i++) {
+        struct Chisel *curr = &chisels[i];
+        if (curr != gs->chisel) {
+            curr->x = gs->chisel->x;
+            curr->y = gs->chisel->y;
+            curr->angle = gs->chisel->angle;
+        }
+    }
+}
+
+void chisel_tick(void) {
     struct Chisel *chisel = gs->chisel;
     struct Chisel_Hammer *hammer = &gs->chisel_hammer;
     struct Input *input = &gs->input;
@@ -396,7 +405,13 @@ void chisel_tick() {
     }
 
     if (hammer->state == HAMMER_STATE_IDLE && !chisel->is_changing_angle && !chisel->click_cooldown) {
-        int index = clamp_to_grid(input->mx, input->my, !chisel->face_mode, false, true, true);
+        int index = clamp_to_grid(input->mx, 
+                                  input->my, 
+                                  !chisel->face_mode, 
+                                  false, 
+                                  true, 
+                                  true);
+        
         if (index != -1) {
             chisel->x = (f32) (index%gs->gw);
             chisel->y = (f32) (index/gs->gw);
@@ -515,7 +530,7 @@ void chisel_tick() {
                 while (sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y)) < len) {
                     chisel->x += ux;
                     chisel->y += uy;
-                    chisel_set_depth(chisel);
+                    chisel_set_depth();
                     chisel_update_texture();
                 }
             } else if (!chisel->did_remove && gs->object_current != -1) {
@@ -529,16 +544,23 @@ void chisel_tick() {
         chisel->click_cooldown--;
         if (chisel->click_cooldown == 0) {
             chisel->line = NULL;
-            int index = clamp_to_grid(input->mx, input->my, !chisel->face_mode, false, true, true);
+            int index = clamp_to_grid(input->mx, 
+                                      input->my, 
+                                      !chisel->face_mode, 
+                                      false, 
+                                      true, 
+                                      true);
             chisel->x = (f32) (index%gs->gw);
             chisel->y = (f32) (index/gs->gw);
         }
     }
-
+    
+    set_all_chisel_positions();
+    
     chisel_hammer_tick();
 }
 
-void chisel_draw() {
+void chisel_draw(void) {
     struct Chisel *chisel = gs->chisel;
 
     chisel_update_texture();

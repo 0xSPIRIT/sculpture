@@ -1,4 +1,4 @@
-void chisel_blocker_init() {
+void chisel_blocker_init(void) {
     struct Chisel_Blocker *chisel_blocker = &gs->chisel_blocker;
 
     chisel_blocker->state = CHISEL_BLOCKER_OFF;
@@ -18,7 +18,7 @@ void chisel_blocker_init() {
     }
 }
 
-void chisel_blocker_tick() {
+void chisel_blocker_tick(void) {
     struct Chisel_Blocker *chisel_blocker = &gs->chisel_blocker;
     struct Input *input = &gs->input;
 
@@ -162,7 +162,7 @@ SDL_FPoint bezier_tangent(f32 t, SDL_Point a, SDL_Point b, SDL_Point c, SDL_Poin
     return p;
 }
 
-void chisel_blocker_draw() {
+void chisel_blocker_draw(void) {
     struct Chisel_Blocker *chisel_blocker = &gs->chisel_blocker;
 
     if (chisel_blocker->state == CHISEL_BLOCKER_OFF)

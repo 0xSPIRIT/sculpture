@@ -28,3 +28,4 @@
 #include "blocker.h"
 #include "assets.h"
 #include "undo.h"
+#include "view.h"

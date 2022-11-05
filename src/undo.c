@@ -1,4 +1,4 @@
-void undo_system_reset() {
+void undo_system_reset(void) {
     for (int i = 0; i < MAX_UNDO; i++) {
         for (int j = 0; j < NUM_GRID_LAYERS; j++) {
             if (gs->save_states[i].grid_layers[j]) {
@@ -8,12 +8,12 @@ void undo_system_reset() {
     }
 }
 
-struct Save_State *current_state() {
+struct Save_State *current_state(void) {
     if (gs->save_state_count == 0) return NULL;
     return &gs->save_states[gs->save_state_count-1];
 }
 
-void undo_system_init() {
+void undo_system_init(void) {
     gs->undo_initialized = true;
 
     gs->save_state_count = 1;
@@ -28,7 +28,7 @@ bool is_current_grid_same_as(struct Save_State *state) {
     return memcmp(gs->grid_layers[0], state->grid_layers[0], gs->gw*gs->gh*sizeof(struct Cell)) == 0;
 }
     
-void save_state_to_next() {
+void save_state_to_next(void) {
     if (gs->save_state_count == MAX_UNDO) {
         // Move everything back by one, destroying the first
         // save state and leaving the last slot open.
@@ -87,7 +87,7 @@ void set_state_to_string_hook(const char *string) {
     set_state(state_num);
 }
 
-void undo() {
+void undo(void) {
     if (is_current_grid_same_as(current_state())) {
         if (gs->save_state_count == 1) {
             return;

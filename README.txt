@@ -13,5 +13,6 @@ then simply call it. Two binaries will be produced in bin/:
 win32_sculpture.exe and sculpture.dll. Double-click
 win32_sculpture.exe and run it!
 
-The game *should* work with GCC as well. The build file
-has a gcc compile line commented out in there.
+The game *should* work with GCC as well. The build line
+for GCC is a bit outdated though, without the use of
+outputting the .dll

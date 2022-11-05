@@ -48,8 +48,9 @@
 
 #define GAME_DLL_NAME "sculpture.dll"
 #define TEMP_DLL_NAME "sculpture_temp.dll"
+#define LOCK_NAME     "lock.tmp"
 
-#define ALASKA_SOFTWARE_RENDERER
+#define ALASKA_USE_SOFTWARE_RENDERER
 
 typedef void (*GameInitProc)(struct Game_State *state, int start_level);
 typedef bool (*GameTickEventProc)(struct Game_State *state, SDL_Event *event);
@@ -78,7 +79,7 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
     
-#ifdef ALASKA_SOFTWARE_RENDERER
+#ifdef ALASKA_USE_SOFTWARE_RENDERER
     const int flags = SDL_RENDERER_SOFTWARE;
 #else
     const int flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
@@ -155,22 +156,33 @@ void game_deinit(struct Game_State *state) {
 
 // @Performance
 inline FILETIME get_last_write_time(char *filename) {
-    FILETIME write_time = {0};
+    FILETIME result = {0};
+    WIN32_FILE_ATTRIBUTE_DATA data;
     
-    WIN32_FIND_DATA find_data;
-    HANDLE find_handle = FindFirstFileA(filename, &find_data);
-    if (find_handle != INVALID_HANDLE_VALUE) {
-        write_time = find_data.ftLastWriteTime;
-        FindClose(find_handle);
+    if (GetFileAttributesExA(filename, GetFileExInfoStandard, &data)) {
+        result = data.ftLastWriteTime;
     }
     
-    return write_time;
+    return result;
 }
 
 void load_game_code(struct Game_Code *code) {
     code->last_write_time = get_last_write_time(GAME_DLL_NAME);
     
-    CopyFileA(GAME_DLL_NAME, TEMP_DLL_NAME, FALSE);
+    // Copy File may fail the first few times ..?
+    int copy_counter = 0;
+    while(1) {
+        copy_counter++;
+        Assert(copy_counter <= 10);
+        
+        if (CopyFileA(GAME_DLL_NAME, TEMP_DLL_NAME, FALSE)) {
+            break;
+        }
+        if (GetLastError() == ERROR_FILE_NOT_FOUND) {
+            break;
+        }
+    }
+    
     code->dll = LoadLibraryA(TEMP_DLL_NAME);
     if (!code->dll) {
         Error("Error loading the DLL!\n");
@@ -190,12 +202,21 @@ void load_game_code(struct Game_Code *code) {
     }
 }
 
-void unload_game_code(struct Game_Code *code) {
-    FreeLibrary(code->dll);
-    code->game_init = 0;
-    code->game_run = 0;
-    code->game_tick_event = 0;
-    code->dll = 0;
+void reload_game_code(struct Game_Code *code) {
+    WIN32_FILE_ATTRIBUTE_DATA ignored;
+    if (GetFileAttributesExA(LOCK_NAME, GetFileExInfoStandard, &ignored)) {
+        return;
+    }
+    
+    if (code->dll) {
+        FreeLibrary(code->dll);
+        code->game_init = 0;
+        code->game_run = 0;
+        code->game_tick_event = 0;
+        code->dll = 0;
+    }
+    
+    load_game_code(code);
 }
 
 #ifdef ALASKA_RELEASE_MODE
@@ -226,7 +247,7 @@ int main(int argc, char **argv)
         start_level = atoi(argv[1]);
     }
     
-    struct Game_Code game_code;
+    struct Game_Code game_code = {0};
     load_game_code(&game_code);
     
     struct Memory_Arena persistent_memory, transient_memory;
@@ -249,9 +270,6 @@ int main(int argc, char **argv)
     
     render_targets_init(game_state->renderer, game_state->window_width, game_state->levels, &game_state->textures);
     
-    const int reload_delay_max = 5;
-    int reload_delay = reload_delay_max; // Frames of delay.
-    
     bool running = true;
     
     LARGE_INTEGER time_start, time_elapsed;
@@ -260,7 +278,7 @@ int main(int argc, char **argv)
     QueryPerformanceFrequency(&frequency);
     QueryPerformanceCounter(&time_start);
     
-#ifdef ALASKA_SOFTWARE_RENDERER
+#ifdef ALASKA_USE_SOFTWARE_RENDERER
     const f64 target_seconds_per_frame = 1.0/60.0;
     f64 time_passed = 0.0;
 #endif
@@ -275,25 +293,19 @@ int main(int argc, char **argv)
         // It's only a 5-frame delay so it doesn't matter compared to compilation
         // times anyways.
         FILETIME new_dll_write_time = get_last_write_time(GAME_DLL_NAME);
+            
         if (CompareFileTime(&new_dll_write_time, &game_code.last_write_time) != 0) {
-            reload_delay--;
-        }
-        
-        if (reload_delay <= 0) {
-            unload_game_code(&game_code);
-            load_game_code(&game_code);
-            reload_delay = reload_delay_max;
+            reload_game_code(&game_code);
         }
         
         input_tick(game_state);
         
         SDL_Event event;
         
-        bool should_stop = false;
         while (SDL_PollEvent(&event)) {
             bool should_continue = game_code.game_tick_event(game_state, &event);
             if (!should_continue) {
-                should_stop = true;
+                running = false;
             }
         }
         
@@ -303,13 +315,13 @@ int main(int argc, char **argv)
         memset(transient_memory.data, 0, transient_memory.size);
         transient_memory.cursor = transient_memory.data;
         
-        if (should_stop) {
-            running = false;
-        }
+        // if (should_stop) {
+            // running = false;
+        // }
         
         QueryPerformanceCounter(&time_elapsed);
         
-#ifdef ALASKA_SOFTWARE_RENDERER
+#ifdef ALASKA_USE_SOFTWARE_RENDERER
         Uint64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
         f64 d = (f64)delta / (f64)frequency.QuadPart;
         
@@ -336,7 +348,12 @@ int main(int argc, char **argv)
             percentage *= 100.f;
             
             char title[128] = {0};
-            sprintf(title, "Alaska | Memory Used: %.2f/%.2f MB [%.2f%%] | FPS: %.2f", size_current/1024.0/1024.0, size_max/1024.0/1024.0, percentage, fps);
+            sprintf(title,
+                    "Alaska | Memory Used: %.2f/%.2f MB [%.2f%%] | FPS: %.2f",
+                    size_current/1024.0/1024.0,
+                    size_max/1024.0/1024.0,
+                    percentage,
+                    fps);
             
             SDL_SetWindowTitle(game_state->window, title);
         }

@@ -18,7 +18,7 @@ void blocker_add_point(int x, int y) {
     blocker->point_count++;
 }
 
-void blocker_init() {
+void blocker_init(void) {
     struct Blocker *blocker = &gs->blocker;
     
     blocker->state = BLOCKER_STATE_LINE;
@@ -34,7 +34,7 @@ void blocker_init() {
     }
 }
 
-void blocker_tick() {
+void blocker_tick(void) {
     struct Blocker *blocker = &gs->blocker;
     struct Input *input = &gs->input;
     
@@ -160,7 +160,7 @@ void blocker_draw_line(f64 deg_angle) {
     }
 }
 
-void blocker_draw_curve() {
+void blocker_draw_curve(void) {
     struct Blocker *blocker = &gs->blocker;
     if (!blocker->point_count) return;
     
@@ -193,7 +193,7 @@ void flood_fill(Uint32 *pixels, int x, int y, Uint32 value) {
     flood_fill(pixels, x, y-1, value);
 }
 
-void blocker_draw() {
+void blocker_draw(void) {
     struct Blocker *blocker = &gs->blocker;
     
     if (!blocker->point_count) return;

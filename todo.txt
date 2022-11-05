@@ -1,22 +1,44 @@
 Todo:
 
+For the levels, don't worry about making them abide
+by the story right now. We need to figure out the
+mechanics first, so we're just using these as a
+benchmark to actually build up the gameplay first,
+and see what works.
+
 [ ] Add more levels!
-    [ ] Level 3 is wayyyy too complicated for that early.
-    [ ] Add Level 3
-    [ ] Add Level 4
-    [ ] Add Level 5
-    [ ] Add Level 6
-    [ ] Add Level 7
-    [ ] Add Level 8
-    [ ] Add Level 9
-    [ ] Add Level 10
+    [x] Add Level 3 - Heart
+    [x] Add Level 4 - Easier tree & Fix the Pressure oddities
+    [ ] Add Level 5 - Sandstone + Marble sculpture
+    [ ] Add Level 6 - Metamorphosis
+    [ ] Add Level 7 - Birdie
+    [ ] Add Level 8 - Dirt to Diamond
+    [ ] Add Level 9 - Showpiece
+    [ ] Add Level 10 - Brittle Body
+
+[ ] Negative fuel amount in level 5?!?!?!?!?!
+
+[ ] For the picking up of dusts, you should not have it on the grid itself,
+    since it's pretty distracting while chiseling. Maybe automatically
+    picku it up somehow.
+
+[ ] For the beginning levels, you use the predefined overlay, but for the later
+    levels, you make your own overlays/helpers and just use the refernce
+    image window on the side.
+
+[ ] Add Zoom + WASD Movement to make things easier & more precise when
+    working with the chisel.
+
+[ ] The blob generator still needs some work to make it feel less
+    scary and freaky when you're chiseling. It should have a very consistent
+    feeling to it.
 
 Notes:
 
 To reduce tediousness, remove focus from chiseling. You start doing it
 manually in the first level, then you learn about the chisel blocker, etc.
 Tutorialization is very important here. Show things that might seem obvious
-to you. At some point you get an automatic chiseler; you highlight a region
+as the dev. At some point you get an automatic chiseler; you highlight a region
 and it chisels it for you. So then, you'd just be sort of at an architectural
 or planning level, and not being bogged down by the tediousness.
 

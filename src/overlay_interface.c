@@ -67,7 +67,7 @@ void click_overlay_interface(void *ptr) {
     }
 }
 
-void overlay_interface_init() {
+void overlay_interface_init(void) {
     struct Overlay_Interface *interface = &gs->gui.overlay_interface;
 
     const char overlay_interface_names[OVERLAY_INTERFACE_BUTTONS][64] = {
@@ -107,7 +107,7 @@ void overlay_interface_init() {
     interface->buttons[0]->active = true;
 }
 
-void overlay_interface_tick() {
+void overlay_interface_tick(void) {
     struct Overlay_Interface *interface = &gs->gui.overlay_interface;
 
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
@@ -115,7 +115,7 @@ void overlay_interface_tick() {
     }
 }
 
-void overlay_interface_draw() {
+void overlay_interface_draw(void) {
     struct Overlay_Interface *interface = &gs->gui.overlay_interface;
 
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {

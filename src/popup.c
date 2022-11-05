@@ -8,29 +8,29 @@ void set_text_field(const char *description, const char *initial_text, void (*on
     strcpy(text_field->text, initial_text);
 }
 
-void text_field_tick() {
+void text_field_tick(void) {
     struct Text_Field *text_field = &gs->text_field;
-
+    
     if (!text_field->active) return;
-
+    
     switch (gs->event->type) {
-    case SDL_TEXTINPUT:
+        case SDL_TEXTINPUT:
         strcat(text_field->text, gs->event->text.text);
         break;
-    case SDL_KEYDOWN:
+        case SDL_KEYDOWN:
         switch (gs->event->key.keysym.sym) {
-        case SDLK_RETURN:
+            case SDLK_RETURN:
             text_field->on_return(text_field->text);
             text_field->active = false;
             memset(text_field->description, 0, 256);
             memset(text_field->text, 0, 256);
             break;
-        case SDLK_BACKSPACE:;
+            case SDLK_BACKSPACE:;
             size_t length = strlen(text_field->text);
             if (length)
                 text_field->text[length-1] = 0;
             break;
-        case SDLK_ESCAPE:
+            case SDLK_ESCAPE:
             memset(text_field->description, 0, 256);
             memset(text_field->text, 0, 256);
             text_field->active = false;
@@ -40,20 +40,20 @@ void text_field_tick() {
     }
 }
 
-void text_field_draw() {
+void text_field_draw(void) {
     struct Text_Field *text_field = &gs->text_field;
     
     if (!text_field->active) return;
-
+    
     SDL_Surface *description_surf = 0, *text_surf = 0;
     SDL_Texture *description_texture = 0, *text_texture = 0;
-
+    
     SDL_Rect field_rect = {0}, text_field_rect = {0}, description_rect = {0};
-
+    
     if (*text_field->description)
-        description_surf = TTF_RenderText_LCD(gs->fonts.font_consolas, text_field->description, (SDL_Color){180,180,180,255}, (SDL_Color){0, 0, 0, 255});
+        description_surf = TTF_RenderText_LCD(gs->fonts.font_consolas, text_field->description, (SDL_Color){180,180,180,255}, BLACK);
     if (*text_field->text)
-        text_surf = TTF_RenderText_LCD(gs->fonts.font_consolas, text_field->text, (SDL_Color){255,255,255,255},(SDL_Color){0, 0, 0, 255});
+        text_surf = TTF_RenderText_LCD(gs->fonts.font_consolas, text_field->text, WHITE, BLACK);
 
     if (text_surf) {
         field_rect = (SDL_Rect){

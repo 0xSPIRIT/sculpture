@@ -1,4 +1,4 @@
-void deleter_init() {
+void deleter_init(void) {
     struct Deleter *deleter = &gs->deleter;
 
     deleter->highlight_count = 0;
@@ -15,7 +15,7 @@ void deleter_init() {
     SDL_QueryTexture(deleter->texture, NULL, NULL, &deleter->w, &deleter->h);
 }
 
-void take_point() {
+void take_point(void) {
     struct Deleter *deleter = &gs->deleter;
 
     if (deleter->point_count == DELETER_POINT_COUNT-1) {
@@ -49,7 +49,7 @@ void deleter_fill_neighbours(int x, int y) {
     deleter_fill_neighbours(x, y-1);
 }
 
-void deleter_delete() {
+void deleter_delete(void) {
     struct Deleter *deleter = &gs->deleter;
     
     save_state_to_next();
@@ -88,7 +88,7 @@ void deleter_stop(bool cancel) {
         deleter->was_active = false; // To prevent deletion the second time around if you cancel.
 }
 
-void deleter_tick() {
+void deleter_tick(void) {
     struct Deleter *deleter = &gs->deleter;
     struct Input *input = &gs->input;
 
@@ -121,7 +121,7 @@ void deleter_tick() {
     deleter->was_active = deleter->active;
 }
 
-void deleter_draw() {
+void deleter_draw(void) {
     struct Deleter *deleter = &gs->deleter;
 
     const SDL_Rect dst = {

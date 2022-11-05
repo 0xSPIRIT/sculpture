@@ -6,15 +6,15 @@ int is_cell_hard(int type) {
         type == CELL_COBBLESTONE ||
         type == CELL_MARBLE      ||
         type == CELL_SANDSTONE   ||
-
+        
         type == CELL_CONCRETE    ||
         type == CELL_QUARTZ      ||
         type == CELL_GLASS       ||
-
+        
         type == CELL_GRANITE     ||
         type == CELL_BASALT      ||
         type == CELL_DIAMOND     ||
-
+        
         type == CELL_UNREFINED_COAL ||
         type == CELL_REFINED_COAL;
 }
@@ -55,12 +55,12 @@ int number_neighbours(struct Cell *array, int x, int y, int r) {
 
 int number_direct_neighbours(struct Cell *array, int x, int y) {
     int count = 0;
-
+    
     if (array[x-1 + (y  ) * gs->gw].type) count++;
     if (array[x+1 + (y  ) * gs->gw].type) count++;
     if (array[x   + (y-1) * gs->gw].type) count++;
     if (array[x   + (y+1) * gs->gw].type) count++;
-
+    
     return count;
 }
 
@@ -78,7 +78,7 @@ int is_any_neighbour_hard(int x, int y) {
 
 int number_neighbours_of_object(int x, int y, int r, int obj) {
     int c = 0;
-
+    
     for (int xx = -r; xx <= r; xx++) {
         for (int yy = -r; yy <= r; yy++) {
             if (xx == 0 && yy == 0) continue;
@@ -86,7 +86,7 @@ int number_neighbours_of_object(int x, int y, int r, int obj) {
             if (gs->grid[x+xx+(y+yy)*gs->gw].type && gs->grid[x+xx+(y+yy)*gs->gw].object == obj) c++;
         }
     }
-
+    
     return c;
 }
 
@@ -95,7 +95,7 @@ int blob_find_pressure(int obj, Uint32 blob, int x, int y, int r) {
     f32 pressure = 0.f;
     int count = 0;
     struct Object *object = &gs->objects[obj];
-
+    
     for (int dy = -max_blob_size/2; dy < max_blob_size/2; dy++) {
         for (int dx = -max_blob_size/2; dx < max_blob_size/2; dx++) {
             int rx = x+dx;
@@ -106,11 +106,11 @@ int blob_find_pressure(int obj, Uint32 blob, int x, int y, int r) {
             }
         }
     }
-
+    
     if (count == 0) return 0;
-
+    
     pressure /= count;
-
+    
     return (int)pressure;
 }
 
@@ -173,22 +173,6 @@ int get_neighbouring_same_blobs(int x, int y, int blob, int obj, int size) {
     return result;
 }
 
-void random_set_blob(struct Object *obj, int x, int y, Uint32 blob, int chisel_size, int perc) {
-    if (!is_cell_hard(gs->grid[x+y*gs->gw].type) ||
-        (x+1 < gs->gw && !is_cell_hard(gs->grid[x+1 + y*gs->gw].type)) ||
-        (x-1 >= 0 && !is_cell_hard(gs->grid[x-1 + y*gs->gw].type)) ||
-        (y+1 < gs->gh && !is_cell_hard(gs->grid[x + (y+1)*gs->gw].type)) ||
-        (y-1 >= 0 && !is_cell_hard(gs->grid[x + (y-1)*gs->gw].type))) {
-        return;
-    }
-    if (!is_in_bounds(x, y)) return;
-    if (perc == 0) return;
-
-    if (rand() % 100 < perc) {
-        obj->blob_data[chisel_size].blobs[x+y*gs->gw] = blob;
-    }
-}
-
 void object_blobs_set_pressure(int obj, int chisel_size) {
     int *temp_blobs = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(int));
     struct Object *object = &gs->objects[obj];
@@ -200,14 +184,14 @@ void object_blobs_set_pressure(int obj, int chisel_size) {
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (!object->blob_data[chisel_size].blobs[x+y*gs->gw] || temp_blobs[x+y*gs->gw] == -1) continue;
-
+            
             Uint32 blob = object->blob_data[chisel_size].blobs[x+y*gs->gw];
             
             // Debugging
             Assert(blob < 2147483648-1);
-
+            
             object->blob_data[chisel_size].blob_pressures[blob] = blob_find_pressure(obj, blob, x, y, (chisel_size == 2 ? 3 : 5));
-
+            
             // Mark this blob as complete.
             int max_blob_size = 8;
             for (int dy = -max_blob_size/2; dy < max_blob_size/2; dy++) {
@@ -230,7 +214,7 @@ void blob_generate_dumb(int obj, int chisel_size, Uint32 *blob_count) {
         for (int x = 0; x < gs->gw; x++) {
             if (gs->grid[x+y*gs->gw].object != obj) continue;
             struct Object *o = &gs->objects[obj];
-
+            
             o->blob_data[chisel_size].blobs[x+y*gs->gw] = *blob_count;
             (*blob_count)++;
         }
@@ -239,7 +223,7 @@ void blob_generate_dumb(int obj, int chisel_size, Uint32 *blob_count) {
 
 void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
     int interval = 1;
-
+    
     Uint32 *blobs = gs->objects[obj].blob_data[size].blobs;
     
     const int medium_chisel_size = 2;
@@ -258,8 +242,8 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
                 int r = size == 1 ? medium_chisel_size : large_chisel_size;
                 
                 // if (size != 1) {
-                    // int add = abs(my_rand(x+y*gs->gw))%5 - 2;
-                    // r += add;
+                // int add = abs(my_rand(x+y*gs->gw))%5 - 2;
+                // r += add;
                 // }
                 
                 for (int yy = -r; yy <= r; yy++) {
@@ -268,13 +252,13 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
                         if (xx*xx + yy*yy > r*r) continue;
                         if (gs->grid[x+xx+(y+yy)*gs->gw].type == 0) continue;
                         if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
-                        if (blobs[x+xx+(y+yy)*gs->gw]) continue;
+                        if ( blobs[x+xx+(y+yy)*gs->gw]) continue;
                         
                         // Only add if we have our blob to our immediates...
                         // or if it's the first cell we're setting.
                         
                         //if (first || get_neighbouring_same_blobs(x+xx, y+yy, *blob_count, obj, size)) {
-                            blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
+                        blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
                         //}
                         
                         first = false;
@@ -309,28 +293,28 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
 // Sets up all blobs whose cells belongs to our obj.
 void object_generate_blobs(int object_index, int chisel_size) {
     if (object_index >= MAX_OBJECTS) return;
-        
+    
     Uint32 count = 1;
-
+    
     int percentage = 0;
-
+    
     if (chisel_size == 1) {
         percentage = 0;
     }
-
+    
     struct Object *obj = &gs->objects[object_index];
-
+    
     memset(obj->blob_data[chisel_size].blobs, 0, gs->gw*gs->gh*sizeof(Uint32));
-
+    
     if (chisel_size == 0) {
         blob_generate_dumb(object_index, chisel_size, &count);
     } else {
         /* blob_generate_old_smart(object_index, chisel_size, percentage, &count); */
         blob_generate_circles(object_index, chisel_size, &count);
     }
-
+    
     obj->blob_data[chisel_size].blob_count = count;
-
+    
     object_blobs_set_pressure(object_index, chisel_size);
 }
 
@@ -347,10 +331,10 @@ void object_generate_blobs(int object_index, int chisel_size) {
 //
 void set_array(struct Cell *arr, int x, int y, int val, int object) {
     if (x < 0 || x >= gs->gw || y < 0 || y >= gs->gh) return;
-
+    
     arr[x+y*gs->gw].type = val;
     arr[x+y*gs->gw].time = 0;
-
+    
     if (object == -2) {
         arr[x+y*gs->gw].object = -1;
     } else if (object != -1) {
@@ -365,13 +349,13 @@ void set_array(struct Cell *arr, int x, int y, int val, int object) {
             arr[x+y*gs->gw].object = gs->object_count++;
         }
     }
-
+    
     int obj = arr[x+y*gs->gw].object;
-
+    
     if (obj == -1 || obj >= MAX_OBJECTS) {
         return;
     }
-
+    
     if (val == 0) {
         gs->objects[obj].blob_data[gs->chisel->size].blobs[x+y*gs->gw] = 0;
         arr[x+y*gs->gw].object = -1;
@@ -387,16 +371,16 @@ void set(int x, int y, int val, int object) {
 void swap_array(struct Cell *arr, int x1, int y1, int x2, int y2) {
     if (x1 < 0 || x1 >= gs->gw || y1 < 0 || y1 >= gs->gh) return;
     if (x2 < 0 || x2 >= gs->gw || y2 < 0 || y2 >= gs->gh) return;
-
+    
     // The blob data isn't swapped here so after calling this,
     // you should update the blob data.
-
+    
     arr[x1+y1*gs->gw].px = x1;
     arr[x1+y1*gs->gw].py = y1;
     
     arr[x2+y2*gs->gw].px = x2;
     arr[x2+y2*gs->gw].py = y2;
-
+    
     struct Cell temp = arr[x2+y2*gs->gw];
     arr[x2+y2*gs->gw] = arr[x1+y1*gs->gw];
     arr[x1+y1*gs->gw] = temp;
@@ -411,7 +395,7 @@ f32 damp(int i) {
     return 0.5f + ((f32)rand())/RAND_MAX * 0.4f;
 }
 
-f32 water_spread() {
+f32 water_spread(void) {
     return rand()%3 + ((f32)rand())/RAND_MAX;
 }
 
@@ -427,13 +411,13 @@ f32 get_pressure_threshold(int chisel_size) {
 void grid_init(int w, int h) {
     gs->gw = w;
     gs->gh = h;
-
+    
     if (gs->grid_layers[0] == NULL) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
             gs->grid_layers[i] = PushArray(gs->persistent_memory, w*h, sizeof(struct Cell));
         }
     }
-
+    
     if (gs->objects[0].blob_data[0].blobs == NULL) {
         for (int i = 0; i < MAX_OBJECTS; i++) {
             for (int j = 0; j < 3; j++) {
@@ -442,8 +426,8 @@ void grid_init(int w, int h) {
             }
         }
     }
-
-
+    
+    
     for (int i = 0; i < w*h; i++) {
         for (int j = 0; j < NUM_GRID_LAYERS; j++) {
             gs->grid_layers[j][i] = (struct Cell){.type = 0, .object = -1, .depth = 255 };
@@ -451,7 +435,7 @@ void grid_init(int w, int h) {
             gs->grid_layers[j][i].id = i;
         }
     }
-
+    
     gs->grid = gs->grid_layers[0];
     gs->fg_grid = gs->grid_layers[1];
     gs->gas_grid = gs->grid_layers[2];
@@ -552,14 +536,13 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
             color = (SDL_Color){125, 125, 125, 255};
             break;
         }
-        
         case CELL_QUARTZ: {
-            r = randR(i) % 100 < 10;
-            amt = 20;
+            int base = 255;
+            amt = abs(my_rand(i))%15;
             color = (SDL_Color){
-                140 + r*amt,
-                140 + r*amt,
-                140 + r*amt,
+                base - amt,
+                base - amt,
+                base - amt,
                 255
             };
             break;
@@ -573,12 +556,20 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
         }
         
         case CELL_GRANITE: {
-            color = (SDL_Color){255, 255, 255, 255};
+            int baseR = 64;
+            int baseG = 64;
+            int baseB = 64;
+            color = (SDL_Color){
+                baseR+my_rand(i)%90,
+                baseG+my_rand(i)%90,
+                baseB+my_rand(i)%90,
+                255
+            };
             break;
         }
         
         case CELL_BASALT: {
-            color = (SDL_Color){200, 200, 200, 255};
+            color = WHITE;
             break;
         }
         
@@ -908,7 +899,7 @@ int grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
     return cells_updated;
 }
 
-void simulation_tick() {
+void simulation_tick(void) {
     if (!gs->step_one)
         if (gs->paused) return;
     
@@ -959,7 +950,7 @@ void grid_array_draw(struct Cell *array) {
                 col.b /= 2;
             }
             
-            const bool draw_pressure = true;
+            const bool draw_pressure = false;
             // TODO: This only draws pressures for the last object.
             int blob_pressure = 0;
             f32 normalized_pressure = 0;
@@ -995,7 +986,7 @@ void grid_draw(void) {
     grid_array_draw(gs->gas_grid);
     grid_array_draw(gs->grid);
     grid_array_draw(gs->fg_grid);
-    grid_array_draw(gs->pickup_grid);
+    //grid_array_draw(gs->pickup_grid);
     
     overlay_draw();
     
@@ -1076,11 +1067,14 @@ void dust_set_random_velocity(int x, int y) {
 bool object_remove_blob(int object, Uint32 blob, int chisel_size, int blocker_side, bool replace_dust) {
     struct Object *obj = &gs->objects[object];
     
+    const bool easy_chiseling = false;
+    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             
             if (obj->blob_data[chisel_size].blobs[x+y*gs->gw] != blob) continue;
             if (gs->blocker.active && gs->blocker.pixels[x+y*gs->gw] != blocker_side) continue;
+            if (easy_chiseling && gs->overlay.grid[x+y*gs->gw]) continue;
             if (gs->grid[x+y*gs->gw].type == CELL_DIAMOND && chisel_size != 0) continue;
 
             if (replace_dust) {
@@ -1130,7 +1124,7 @@ void mark_neighbours(int x, int y, int obj, int pobj, int *cell_count) {
 // We don't want to use a memset because there are pointers
 // that would need to be freed. So, we just reset all the memory
 // the pointers point to, instead of having to reallocate everything.
-void objects_zero_memory() {
+void objects_zero_memory(void) {
     for (int i = 0; i < MAX_OBJECTS; i++) {
         gs->objects[i].cell_count = 0;
         for (int chisel_size = 0; chisel_size < 3; chisel_size++) {
@@ -1147,7 +1141,7 @@ void objects_zero_memory() {
 // to split that into two separate objects.
 // We don't want to bind together two objects which happen to be neighbouring,
 // though, only break apart things.
-void objects_reevaluate() {
+void objects_reevaluate(void) {
     gs->object_count = 0;
     gs->object_current = 0;
     for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -1280,7 +1274,7 @@ void convert_object_to_dust(int object) {
     }
 }
 
-void draw_blobs() {
+void draw_blobs(void) {
     if (!gs->do_draw_blobs) return;
     
     for (int i = 0; i < gs->object_count; i++) {
@@ -1296,7 +1290,7 @@ void draw_blobs() {
     }
 }
 
-void draw_objects() {
+void draw_objects(void) {
 	if (!gs->do_draw_objects) return;
     
 	for (int y = 0; y < gs->gh; y++) {
@@ -1311,7 +1305,13 @@ void draw_objects() {
 }
 
 // Returns the index of the closest cell to the point (px, py)
-int clamp_to_grid(int px, int py, bool outside, bool on_edge, bool set_current_object, bool must_be_hard) {
+int clamp_to_grid(int px, 
+                  int py, 
+                  bool outside, 
+                  bool on_edge, 
+                  bool set_current_object, 
+                  bool must_be_hard) 
+{
     int closest_index = -1;
     f32 closest_distance = (f32) (gs->gw*gs->gh); // Arbitrarily high number
     

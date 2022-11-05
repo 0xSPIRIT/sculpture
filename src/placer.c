@@ -1,4 +1,4 @@
-struct Placer *get_current_placer() {
+struct Placer *get_current_placer(void) {
     struct Placer *placers = gs->placers;
     if (gs->current_tool != TOOL_PLACER) return NULL;
     return &placers[gs->current_placer];
@@ -383,14 +383,6 @@ void placer_tick(struct Placer *placer) {
 void placer_draw(struct Placer *placer, bool full_size) {
     const int scale = full_size ? gs->S : 1;
     int y_off = full_size ? GUI_H : 0;
-
-    /* if (gs->gui.popup) {
-     *     if (SDL_GetCursor() != gs->placer_cursor) {
-     *         SDL_SetCursor(gs->placer_cursor);
-     *     }
-     * } else if (SDL_GetCursor() == gs->placer_cursor) {
-     *     SDL_SetCursor(gs->normal_cursor);
-     * } */
     
     if (placer->state == PLACER_SUCK_MODE || placer->state == PLACER_PLACE_CIRCLE_MODE) {
         int radius = placer->radius;
@@ -443,6 +435,13 @@ void placer_draw(struct Placer *placer, bool full_size) {
         SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
         SDL_RenderDrawRect(gs->renderer, &placer->rect);
     }
+    
+    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 64);
+    
+    SDL_RenderDrawLine(gs->renderer, 0, placer->y, gs->gw, placer->y);
+    SDL_RenderDrawLine(gs->renderer, placer->x, 0, placer->x, gs->gh);
+    
+    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
 }
 
 bool is_mouse_in_placer(struct Placer *placer) {

@@ -22,6 +22,12 @@
 
 export void game_init(struct Game_State *state, int level) {
     gs = state;
+    
+    gs->view.x = 0;
+    gs->view.y = 0;
+    gs->view.w = gs->window_width;
+    gs->view.h = gs->window_height-GUI_H;
+    
     levels_setup();
 
     goto_level(level);
@@ -30,7 +36,7 @@ export void game_init(struct Game_State *state, int level) {
 export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     gs = state;
     gs->event = event;
-
+    
     bool is_running = true;
     struct Input *input = &gs->input;
 
@@ -61,14 +67,28 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         case SDLK_ESCAPE:
             if (gs->deleter.active) {
                 deleter_stop(true);
+            } else {
+#ifdef ALASKA_DEBUG
+                is_running = false; 
+#endif
             }
             break;
+         case SDLK_F12: {
+                int is_on = SDL_ShowCursor(SDL_QUERY);
+                if (is_on == SDL_ENABLE) {
+                    SDL_ShowCursor(SDL_DISABLE);
+                } else {
+                    SDL_ShowCursor(SDL_ENABLE);
+                }
+                break;
+            }
         case SDLK_BACKQUOTE:
             gs->creative_mode = !gs->creative_mode;
-            if (gs->creative_mode)
+            if (gs->creative_mode) {
                 gui_message_stack_push("Creative Mode: On");
-            else
+            } else {
                 gui_message_stack_push("Creative Mode: Off");
+            }
             break;
         case SDLK_SPACE:
             gs->paused = !gs->paused;
@@ -144,11 +164,6 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                    gs->objects[obj].blob_data[gs->chisel->size].blobs[input->mx+input->my*gs->gw]);
             break;
         }
-/* 
-        case SDLK_i:
-            gs->grid_show_ghost = !gs->grid_show_ghost;
-            break;
- */
         case SDLK_1:
             gs->current_tool = TOOL_CHISEL_SMALL;
             gs->chisel = &gs->chisel_small;
@@ -215,17 +230,18 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     return is_running;
 }
 
-void draw_intro() {
-    gui_draw();
-
+void draw_intro(void) {
     SDL_Rect dst = {
-        0, GUI_H,
-        gs->window_width, gs->window_height-GUI_H
+        -gs->view.x,
+        -gs->view.y + GUI_H,
+        gs->view.w, gs->view.h
     };
-
+    
     SDL_SetRenderTarget(gs->renderer, NULL);
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
-
+    
+    gui_draw();
+    
     gui_popup_draw();
     all_converters_draw();
 
@@ -253,7 +269,7 @@ void draw_outro(struct Level *level) {
         int x = rect.x + margin;
         int y = rect.y + margin;
 
-        draw_text(gs->fonts.font, string, (SDL_Color){0,0,0,255}, (SDL_Color){255, 255, 255, 255}, 0, 0, x, y, NULL, NULL);
+        draw_text(gs->fonts.font, string, BLACK, WHITE, 0, 0, x, y, NULL, NULL);
     }
 
     // Desired and Your grid.
@@ -271,7 +287,7 @@ void draw_outro(struct Level *level) {
             dx += rect.w - margin - 2*level->w - margin;
         }
 
-        draw_text(gs->fonts.font, string, (SDL_Color){0, 0, 0, 255}, (SDL_Color){255, 255, 255, 255}, 0, 0, dx, dy, NULL, NULL);
+        draw_text(gs->fonts.font, string, BLACK, WHITE, 0, 0, dx, dy, NULL, NULL);
 
         for (int y = 0; y < gs->gh; y++) {
             for (int x = 0; x < gs->gw; x++) {
@@ -324,7 +340,9 @@ export void game_run(struct Game_State *state) {
     gs = state;
 
     struct Level *level = &gs->levels[gs->level_current];
-
+    
+    view_tick(&gs->view, &gs->input);
+    
     gui_tick();
     all_converters_tick();
 
@@ -333,8 +351,9 @@ export void game_run(struct Game_State *state) {
 
     if (level->state == LEVEL_STATE_OUTRO) {
         SDL_Rect dst = {
-            0, GUI_H,
-            gs->window_width, gs->window_height-GUI_H
+            -gs->view.x,
+            -gs->view.y + GUI_H,
+            gs->view.w, gs->view.h
         };
 
         SDL_SetRenderTarget(gs->renderer, NULL);

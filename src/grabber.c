@@ -1,9 +1,9 @@
-void grabber_init() {
+void grabber_init(void) {
     gs->grabber.texture = 0;
     gs->grabber.object_holding = -1;
 }
 
-void grabber_tick() {
+void grabber_tick(void) {
     struct Grabber *grabber = &gs->grabber;
 
     f32 px = grabber->x, py = grabber->y;

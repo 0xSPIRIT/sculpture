@@ -26,7 +26,7 @@ void tooltip_draw_box(struct Tooltip *tooltip, int w, int h) {
         w,
         h
     };
-
+    
     SDL_SetRenderDrawColor(gs->renderer, 12, 12, 12, 255);
     SDL_RenderFillRect(gs->renderer, &r);
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
@@ -52,44 +52,48 @@ void tooltip_get_string(int type, int amt, char *out_str) {
 // multiply all positions by scale.
 void tooltip_draw(struct Tooltip *tooltip) {
     if (tooltip->x == -1 && tooltip->y == -1) return;
-
+    
     const int margin = 8; // In real pixels.
-
+    
     SDL_Surface *surfaces[MAX_TOOLTIP_LINE_LEN] = {0};
     SDL_Texture *textures[MAX_TOOLTIP_LINE_LEN] = {0};
     SDL_Rect dsts[MAX_TOOLTIP_LINE_LEN];
     int count = 0;
-
+    
     int highest_w = 0;
     int height = 0;
-
+    
     for (int i = 0; i < MAX_TOOLTIP_LINE_LEN; i++) {
         if (!strlen(tooltip->str[i])) continue;
         count++;
         
         SDL_Color color;
-
+        
         if (i == 0) {
             color = (SDL_Color){200,200,200,255};
         } else {
-            color = (SDL_Color){255,255,255,255};
+            color = WHITE;
         }
 
         // @Performance
-        surfaces[i] = TTF_RenderText_LCD(gs->fonts.font, tooltip->str[i], color, (SDL_Color){0, 0, 0, 255});
+        surfaces[i] = TTF_RenderText_LCD(gs->fonts.font,
+                                         tooltip->str[i],
+                                         color,
+                                         BLACK);
         Assert(surfaces[i]);
         textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surfaces[i]);
         Assert(textures[i]);
-
+        
         dsts[i] = (SDL_Rect){
             (int) (gs->S * tooltip->x + margin),
             (int) (height + gs->S * tooltip->y + margin),
             surfaces[i]->w,
-            surfaces[i]->h };
+            surfaces[i]->h
+        };
         dsts[i].y += GUI_H;
 
         height += surfaces[i]->h;
-        
+
         if (surfaces[i]->w > highest_w) highest_w = surfaces[i]->w;
     }
 
