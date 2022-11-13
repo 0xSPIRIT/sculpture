@@ -1,48 +1,14 @@
-Todo:
+TODO :: Sunday {
 
-For the levels, don't worry about making them abide
-by the story right now. We need to figure out the
-mechanics first, so we're just using these as a
-benchmark to actually build up the gameplay first,
-and see what works.
+    [ ] Add inventory slots
+         [x] Make it work with placing items into it.
+         [ ] Make the sucking in placer obsolete by automatically adding
+             to inventory.
 
-[ ] Add more levels!
-    [x] Add Level 3 - Heart
-    [x] Add Level 4 - Easier tree & Fix the Pressure oddities
-    [ ] Add Level 5 - Sandstone + Marble sculpture
-    [ ] Add Level 6 - Metamorphosis
-    [ ] Add Level 7 - Birdie
-    [ ] Add Level 8 - Dirt to Diamond
-    [ ] Add Level 9 - Showpiece
-    [ ] Add Level 10 - Brittle Body
+    [ ] Make fuel slower (make it easier to make fuel) (amount should be f32?)
+    [ ] Replace the placer with an eyedropper sprite.
 
-[ ] Negative fuel amount in level 5?!?!?!?!?!
+    [ ] How are overlays going to work? Predefined for all levels? I don't think so.
+        Write response after you've though about it:
 
-[ ] For the picking up of dusts, you should not have it on the grid itself,
-    since it's pretty distracting while chiseling. Maybe automatically
-    picku it up somehow.
-
-[ ] For the beginning levels, you use the predefined overlay, but for the later
-    levels, you make your own overlays/helpers and just use the refernce
-    image window on the side.
-
-[ ] Add Zoom + WASD Movement to make things easier & more precise when
-    working with the chisel.
-
-[ ] The blob generator still needs some work to make it feel less
-    scary and freaky when you're chiseling. It should have a very consistent
-    feeling to it.
-
-Notes:
-
-To reduce tediousness, remove focus from chiseling. You start doing it
-manually in the first level, then you learn about the chisel blocker, etc.
-Tutorialization is very important here. Show things that might seem obvious
-as the dev. At some point you get an automatic chiseler; you highlight a region
-and it chisels it for you. So then, you'd just be sort of at an architectural
-or planning level, and not being bogged down by the tediousness.
-
-Of cousre, if the levels are given to you specifically as in the first levels,
-it'd just be very boring. The point of the future levels is to be given
-a prompt, and create something from that prompt, and judge it from your own
-merit.
+}

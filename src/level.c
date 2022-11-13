@@ -143,25 +143,25 @@ void levels_setup(void) {
               RES_DIR "lvl/desired/level 4.png",
               RES_DIR "lvl/initial/level 4.png",
               EFFECT_NONE);
-    level_add("Carbon Copy",
+    level_add("Flower Pot",
               RES_DIR "lvl/desired/level 5.png",
               RES_DIR "lvl/initial/level 5.png",
               EFFECT_RAIN);
     level_add("Metamorphosis",
-              RES_DIR "lvl/desired/level 1.png",
-              RES_DIR "lvl/initial/level 1.png",
+              RES_DIR "lvl/desired/level 6.png",
+              RES_DIR "lvl/initial/level 6.png",
               EFFECT_NONE);
     level_add("Procedure Lullaby",
-              RES_DIR "lvl/desired/level 1.png",
-              RES_DIR "lvl/initial/level 1.png",
+              RES_DIR "lvl/desired/level 7.png",
+              RES_DIR "lvl/initial/level 7.png",
               EFFECT_NONE);
     level_add("Polished Turd",
               RES_DIR "lvl/desired/level 1.png",
               RES_DIR "lvl/initial/level 1.png",
               EFFECT_NONE);
     level_add("Showpiece",
-              RES_DIR "lvl/desired/level 1.png",
-              RES_DIR "lvl/initial/level 1.png",
+              RES_DIR "lvl/desired/level 9.png",
+              RES_DIR "lvl/initial/level 9.png",
               EFFECT_NONE);
     level_add("Glass Body",
               RES_DIR "lvl/desired/level 1.png",
@@ -181,6 +181,8 @@ void goto_level(int lvl) {
     
     gs->S = gs->window_width/gs->gw;
     Assert(gs->gw==gs->gh);
+    
+    inventory_init();
     
     chisel_init(&gs->chisel_small);
     chisel_init(&gs->chisel_medium);

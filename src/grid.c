@@ -246,13 +246,13 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
                 // r += add;
                 // }
                 
-                for (int yy = -r; yy <= r; yy++) {
-                    for (int xx = -r; xx <= r; xx++) {
+                for (int yy = -r+2; yy <= r+2; yy++) {
+                    for (int xx = -r+2; xx <= r+2; xx++) {
                         
-                        if (xx*xx + yy*yy > r*r) continue;
+                        if (xx*xx + yy*yy > (r*r)+1) continue;
                         if (gs->grid[x+xx+(y+yy)*gs->gw].type == 0) continue;
                         if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
-                        if ( blobs[x+xx+(y+yy)*gs->gw]) continue;
+                        if (blobs[x+xx+(y+yy)*gs->gw]) continue;
                         
                         // Only add if we have our blob to our immediates...
                         // or if it's the first cell we're setting.
@@ -287,7 +287,6 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
     
     // Separate blobs that are not directly together.
     // Fix up one off mistakes that we made before.
-    
 }
 
 // Sets up all blobs whose cells belongs to our obj.
@@ -309,7 +308,7 @@ void object_generate_blobs(int object_index, int chisel_size) {
     if (chisel_size == 0) {
         blob_generate_dumb(object_index, chisel_size, &count);
     } else {
-        /* blob_generate_old_smart(object_index, chisel_size, percentage, &count); */
+        gs->blob_type = BLOB_CIRCLE_B;
         blob_generate_circles(object_index, chisel_size, &count);
     }
     
@@ -556,15 +555,18 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
         }
         
         case CELL_GRANITE: {
+            color = get_pixel(gs->surfaces.glass_surface, i%gs->gw, i/gs->gw);
+#if 0
             int baseR = 64;
             int baseG = 64;
             int baseB = 64;
             color = (SDL_Color){
-                baseR+my_rand(i)%90,
-                baseG+my_rand(i)%90,
-                baseB+my_rand(i)%90,
+                baseR+my_rand(i)%10,
+                baseG+my_rand(i)%10,
+                baseB+my_rand(i)%10,
                 255
             };
+#endif
             break;
         }
         
@@ -986,7 +988,7 @@ void grid_draw(void) {
     grid_array_draw(gs->gas_grid);
     grid_array_draw(gs->grid);
     grid_array_draw(gs->fg_grid);
-    //grid_array_draw(gs->pickup_grid);
+    grid_array_draw(gs->pickup_grid);
     
     overlay_draw();
     
@@ -1373,48 +1375,3 @@ int clamp_to_grid(int px,
     }
     return closest_index;
 }
-
-int clamp_to_grid_angle(int x, int y, f32 rad_angle, bool set_current_object) {
-    int l = gs->gw;
-    
-    f32 x1 = (f32) x;
-    f32 y1 = (f32) y;
-    f32 y2 = y1 + l * sinf(rad_angle);
-    f32 x2 = x1 + l * cosf(rad_angle);
-    
-    f32 dx = x2-x1;
-    f32 dy = y2-y1;
-    f32 len = sqrtf(dx*dx + dy*dy);
-    f32 ux = dx/len;
-    f32 uy = dy/len;
-    
-    // Loop until one of the values goes off-screen.
-    // This is so that we expand the line out so that it reaches
-    // until the edge of the screen.
-    while (x1 >= 0 && x1 < gs->gw && y1 >= 0 && y1 < gs->gh) {
-        x1 -= ux;
-        y1 -= uy;
-    }
-    
-    f32 closest_distance = (f32) (gs->gw*gs->gh);
-    int closest_index = -1;
-    
-    for (int yy = 0; yy < gs->gh; yy++) {
-        for (int xx = 0; xx < gs->gw; xx++) {
-            if (!gs->grid[xx+yy*gs->gw].type && is_point_on_line((SDL_Point){(int)xx, (int)yy}, (SDL_Point){(int)x1, (int)y1}, (SDL_Point){(int)x2, (int)y2}) && number_neighbours(gs->grid, (int)xx, (int)yy, 1) >= 1) {
-                f32 dist = distance((f32) xx, (f32) yy, (f32)x, (f32)y);
-                if (dist < closest_distance) {
-                    closest_distance = dist;
-                    closest_index = xx+yy*gs->gw;
-                }
-            }
-        }
-    }
-    
-    if (set_current_object) {
-        gs->object_current = get_any_neighbour_object(closest_index%gs->gw, closest_index/gs->gw);
-    }
-    
-    return closest_index;
-}
-

@@ -47,7 +47,7 @@ Fuel Converter Combinations:
        Unref. Coal --\
                       \
                        v
-       Tier 2 -------> Refined Coal
+       Glass ---------> Refined Coal
     }
     
     Must have both of these

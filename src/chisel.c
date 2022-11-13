@@ -113,7 +113,7 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
             // We want to attempt to destroy this blob now.
             // Firstly, we want to do a diagonal check.
             
-            //      /       
+            //      /
             //   xx/    xxx/
             //   xxx    xx/x
             //   xxx    xxxxx
@@ -200,12 +200,24 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
         // dust particles in order to get out of the player's way.
         
         bool did_remove = false;
-        for (int i = 0; i < gs->object_count; i++) {
-            if (objects[i].cell_count <= 4) {
-                convert_object_to_dust(i);
-                did_remove = true;
+        
+        const bool CHISEL_REMOVE_SMALL_OBJECTS = false;
+        if (CHISEL_REMOVE_SMALL_OBJECTS) {
+            for (int i = 0; i < gs->object_count; i++) {
+                if (objects[i].cell_count <= 4) {
+                    convert_object_to_dust(i);
+                    did_remove = true;
+                }
+            }
+        } else {
+            for (int i = 0; i < gs->object_count; i++) {
+                if (objects[i].cell_count == 1) {
+                    convert_object_to_dust(i);
+                    did_remove = true;
+                }
             }
         }
+        
         if (did_remove) {
             objects_reevaluate();
         }
@@ -405,11 +417,11 @@ void chisel_tick(void) {
     }
 
     if (hammer->state == HAMMER_STATE_IDLE && !chisel->is_changing_angle && !chisel->click_cooldown) {
-        int index = clamp_to_grid(input->mx, 
-                                  input->my, 
-                                  !chisel->face_mode, 
-                                  false, 
-                                  true, 
+        int index = clamp_to_grid(input->mx,
+                                  input->my,
+                                  !chisel->face_mode,
+                                  false,
+                                  true,
                                   true);
         
         if (index != -1) {
@@ -492,7 +504,7 @@ void chisel_tick(void) {
         chisel->w = chisel->face_mode ? chisel->face_w : chisel->outside_w;
         chisel->h = chisel->face_mode ? chisel->face_h : chisel->outside_h;
         chisel->texture = chisel->face_mode ? chisel->face_texture : chisel->outside_texture;
-    }    
+    }
 
     if (input->mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
         chisel->is_changing_angle = 0;
@@ -503,8 +515,8 @@ void chisel_tick(void) {
             // Cut out the stone.
             f32 px = chisel->x;
             f32 py = chisel->y;
-            f32 ux = (f32) cosf(2.f * (f32)M_PI * ((chisel->angle+180) / 360.f));
-            f32 uy = (f32) sinf(2.f * (f32)M_PI * ((chisel->angle+180) / 360.f));
+            f32 ux = cosf(2.f * (f32)M_PI * ((chisel->angle+180) / 360.f));
+            f32 uy = sinf(2.f * (f32)M_PI * ((chisel->angle+180) / 360.f));
             f32 len = chisel->spd;
 
             switch ((int)chisel->angle) {
@@ -544,11 +556,11 @@ void chisel_tick(void) {
         chisel->click_cooldown--;
         if (chisel->click_cooldown == 0) {
             chisel->line = NULL;
-            int index = clamp_to_grid(input->mx, 
-                                      input->my, 
-                                      !chisel->face_mode, 
-                                      false, 
-                                      true, 
+            int index = clamp_to_grid(input->mx,
+                                      input->my,
+                                      !chisel->face_mode,
+                                      false,
+                                      true,
                                       true);
             chisel->x = (f32) (index%gs->gw);
             chisel->y = (f32) (index/gs->gw);

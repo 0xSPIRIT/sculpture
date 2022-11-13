@@ -20,6 +20,7 @@
 #include "placer.h"
 #include "level.h"
 #include "overlay_interface.h"
+#include "inventory.h"
 #include "gui.h"
 #include "input.h"
 #include "grabber.h"

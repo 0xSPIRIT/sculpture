@@ -22,6 +22,9 @@ void undo_system_init(void) {
         current_state()->grid_layers[i] = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
         memcpy(current_state()->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
     }
+    
+    Uint64 size = MAX_UNDO*(NUM_GRID_LAYERS*gs->gw*gs->gh*sizeof(struct Cell) + sizeof(struct Placer)*PLACER_COUNT);
+    Log("%zu\n", size/1024/1024);
 }
 
 bool is_current_grid_same_as(struct Save_State *state) {

@@ -5,4 +5,6 @@
 //
 
 struct Tutorial {
+    char *str;
+    int a, b, c, d, e;
 };

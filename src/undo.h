@@ -1,4 +1,4 @@
-#define MAX_UNDO 128
+#define MAX_UNDO 1024
 
 // We don't want to save the entire memory of the game since
 // that will destroy RAM usage.

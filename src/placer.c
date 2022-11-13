@@ -6,19 +6,19 @@ struct Placer *get_current_placer(void) {
 
 void placer_init(int num) {
     struct Placer *placer = &gs->placers[num];
-
+    
     placer->state = PLACER_PLACE_CIRCLE_MODE;
     placer->index = num;
     placer->x = gs->gw/2;
     placer->y = gs->gh/2;
-
+    
     placer->texture = gs->textures.placer;
     SDL_QueryTexture(placer->texture, NULL, NULL, &placer->w, &placer->h);
     
     placer->object_index = -1;
     placer->did_click = 0;
-    placer->contains_type = CELL_NONE;
-    placer->contains_amount = 0;
+    placer->contains_type = CELL_QUARTZ;
+    placer->contains_amount = 100;
     placer->radius = 2;
 
     placer->placing_solid_time = 0;

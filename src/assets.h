@@ -45,7 +45,7 @@ struct Textures {
     // TODO: Perhaps use an array and streamline this process
     //       by only using calls to draw_text()
 
-    SDL_Texture *slot_names[SLOT_MAX_COUNT * CONVERTER_COUNT];
+    SDL_Texture *slot_names[TOTAL_SLOT_COUNT];
     SDL_Texture *converter_names[CONVERTER_COUNT];
 };
 
@@ -59,7 +59,7 @@ struct Surfaces {
         *triangle_blob_surface;
 
     // Any temp surfaces you might need to draw text or w/e goes here!
-    SDL_Surface *slot_names[SLOT_MAX_COUNT * CONVERTER_COUNT];
+    SDL_Surface *slot_names[TOTAL_SLOT_COUNT];
     SDL_Surface *converter_names[CONVERTER_COUNT];
 };
 

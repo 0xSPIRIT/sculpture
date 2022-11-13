@@ -1,0 +1,77 @@
+Problems:
+
+- There isn't a good way to destroy massive portions, for eg.
+    with the level where you start off with a finished scene and
+    work backwards, no one wants to large-chisel their way through
+    everything. Make a bomb!!
+
+- Fuel needs to work much slower.
+
+- Add storage spaces in the converter GUI.
+
+- The pickup layer feels very clunky, and materials should just
+  automatically be added to an inventory, that is accessed via
+  the converter's GUI.
+
+The converter system is very very good. It just needs some adjusting
+to make it viable, and produce more material than it does currently.
+
+- Add more levels!
+    - Add Level 7 - Birdie
+       - Garbage -> Nice Birdie.
+       - Relatively converter-heavy.
+       - Sandstone + Marble -> Quartz
+       - Quartz + Marble & lava -> Granite.
+
+       - Contains:
+          - Cobblestone, sand
+               to make sandstone, marble, unref. coal, and glass to make ref. coal.
+          - Cobblestone + Ref. Coal -> Lava
+          - Use the ref. coal to make Quartz
+          - Use the lava to make granite.
+    - Add Level 8 - Polished Turd: Dirt to Diamond: Statue of David (crap version)
+    - Add Level 9 - Showpiece: Hand holding orb
+       - Quartz
+       - Granite
+       - Diamond
+       - Dirt in center.
+    - Add Level 10 - Brittle Body: Body shape.
+
+== Complete by the end of Saturday ==
+Use a timer to make sure you do it properly
+
+- Replace placer with eyedropper sprite.
+
+- Think about adding an object joiner? Don't add it unless you know it's a
+  good idea.
+- Chisel pattern still needs work.
+
+- For the beginning levels, you use the predefined overlay, but for the later
+  levels, you make your own overlays/helpers and just use the refernce
+  image window on the side.
+
+- Add Zoom + WASD Movement to make things easier & more precise when
+    working with the chisel.
+
+- The blob generator still needs some work to make it feel less
+    scary and freaky when you're chiseling. It should have a very consistent
+    feeling to it.
+
+Notes:
+
+To reduce tediousness, remove focus from chiseling. You start doing it
+manually in the first level, then you learn about the chisel blocker, etc.
+Tutorialization is very important here. Show things that might seem obvious
+as the dev. At some point you get an automatic chiseler; you highlight a region
+and it chisels it for you. So then, you'd just be sort of at an architectural
+or planning level, and not being bogged down by the tediousness.
+
+Of cousre, if the levels are given to you specifically as in the first levels,
+it'd just be very boring. The point of the future levels is to be given
+a prompt, and create something from that prompt, and judge it from your own
+merit.
+
+===
+
+How do I portray having too much ambition & your skill level not being as
+high as you originally thought?

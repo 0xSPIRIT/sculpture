@@ -6,6 +6,13 @@
 #define GRAV 0.5
 #define MAX_GRAV 4
 
+enum Blob_Type {
+    BLOB_CIRCLE_A,
+    BLOB_CIRCLE_B,
+    BLOB_CIRCLE_C,
+    BLOB_RECTANGLE,
+};
+
 enum Tool_Type {
     TOOL_CHISEL_SMALL,
     TOOL_CHISEL_MEDIUM,

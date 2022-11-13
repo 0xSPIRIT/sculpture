@@ -25,7 +25,7 @@ struct Chisel {
     f32 x, y;
     bool is_changing_angle;
     int click_cooldown;
-	bool did_remove;
+    bool did_remove;
     bool face_mode;
     struct Line *line;
     f32 spd;

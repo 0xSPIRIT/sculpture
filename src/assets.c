@@ -141,12 +141,12 @@ void surfaces_deinit(struct Surfaces *surfaces) {
 }
 
 void fonts_init(struct Fonts *fonts) {
-    fonts->font = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", 19);
+    fonts->font          = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", 19);
     fonts->font_consolas = TTF_OpenFont(RES_DIR "consola.ttf", 24);
-    fonts->font_courier = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", 20);
-    fonts->font_small = TTF_OpenFont(RES_DIR "consola.ttf", 16);
+    fonts->font_courier  = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", 20);
+    fonts->font_small    = TTF_OpenFont(RES_DIR "consola.ttf", 16);
+    fonts->font_title    = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", 45);
     fonts->font_bold_small = TTF_OpenFont(RES_DIR "courbd.ttf", 16);
-    fonts->font_title = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", 45);
     
     TTF_Font **ttf_fonts = (TTF_Font**) fonts;
     size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);

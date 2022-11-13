@@ -19,7 +19,6 @@
 
 #define PushSize(arena, size) (_push_array(arena, 1, size, __FILE__, __LINE__))
 #define PushArray(arena, count, size) (_push_array(arena, count, size, __FILE__, __LINE__))
-#define PushStruct(arena, structure) (_push_array(arena, 1, sizeof(structure), __FILE__, __LINE__))
 
 // 'which' is an enum in assets.h
 #define RenderTarget(which) (gs->textures.render_targets[gs->level_current][which])
@@ -70,6 +69,8 @@ struct Game_State {
     int debug_mode;
     
     SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
+    
+    enum Blob_Type blob_type;
 
     struct Cell *grid_layers[NUM_GRID_LAYERS]; 
     struct Cell *grid, *fg_grid, *gas_grid, *pickup_grid;
@@ -83,6 +84,8 @@ struct Game_State {
     bool paused;
     int frames;
     bool step_one;
+    
+    struct Inventory inventory;
     
     struct Deleter deleter;
     struct Overlay overlay;
@@ -132,6 +135,8 @@ struct Game_State *gs = NULL;
 inline void _assert(SDL_Window *window, const char *func, const char *file, const int line) {
     char message[64] = {0};
     char line_of_code[2048] = {0};
+    
+    Log("SDFSDF");
 
     FILE *f = fopen(file, "r");
     if (f) {

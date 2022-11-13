@@ -240,7 +240,7 @@ void overlay_draw(void) {
     alpha = 1 + sinf(strobe_speed * SDL_GetTicks()/1000.0);
     alpha /= 2;
     alpha *= 16;
-    alpha += 80;
+    alpha += 180;
     
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {

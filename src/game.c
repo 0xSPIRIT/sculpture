@@ -12,6 +12,7 @@
 #include "chisel.c"
 #include "tooltip.c"
 #include "placer.c"
+#include "inventory.c"
 #include "gui.c"
 #include "overlay_interface.c"
 #include "effects.c"
@@ -219,7 +220,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             break;
         }
     }
-
+    
     text_field_tick();
 
     if (selected_tool) {
@@ -241,10 +242,8 @@ void draw_intro(void) {
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
     
     gui_draw();
-    
     gui_popup_draw();
-    all_converters_draw();
-
+    
     if (gs->current_tool == TOOL_OVERLAY)
         overlay_interface_draw();
 
@@ -344,6 +343,7 @@ export void game_run(struct Game_State *state) {
     view_tick(&gs->view, &gs->input);
     
     gui_tick();
+    inventory_tick();
     all_converters_tick();
 
     level_tick();

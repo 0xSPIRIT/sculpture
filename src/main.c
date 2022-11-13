@@ -21,7 +21,7 @@
 // using VirtualAlloc() and give it pointers into that
 // memory block through functions defined in shared.h
 //
-// This method also means you can't store "local persistant"
+// This method also means you can't store "local persistent"
 // (static) variables inside functions nor global variables
 // because they reset every time you reload the DLL. The only
 // global variable I have is "gs", which is the GameState.
@@ -90,7 +90,7 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
 }
 
 void make_memory_arena(struct Memory_Arena *persistent_memory, struct Memory_Arena *transient_memory) {
-    persistent_memory->size = Megabytes(128);
+    persistent_memory->size = Megabytes(1024);
     transient_memory->size = Megabytes(8);
     
     AssertNW(persistent_memory->size >= sizeof(struct Game_State));
@@ -171,7 +171,7 @@ void load_game_code(struct Game_Code *code) {
     
     // Copy File may fail the first few times ..?
     int copy_counter = 0;
-    while(1) {
+    while (1) {
         copy_counter++;
         Assert(copy_counter <= 10);
         
@@ -254,7 +254,7 @@ int main(int argc, char **argv)
     make_memory_arena(&persistent_memory, &transient_memory);
     
     // *1.5 in case we add more values at runtime.
-    struct Game_State *game_state = PushArray(&persistent_memory, 1, sizeof(struct Game_State));
+    struct Game_State *game_state = PushSize(&persistent_memory, sizeof(struct Game_State));
     
     gs = game_state; // This is so that our macros can pick up "gs" instead of game_state.
     

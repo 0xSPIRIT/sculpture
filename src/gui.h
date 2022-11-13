@@ -36,7 +36,7 @@ struct Message {
 };
 
 struct GUI {
-    int popup;
+    bool popup;
     bool is_placer_active;
     f32 popup_y, popup_y_vel, popup_h;
     SDL_Texture *popup_texture;
@@ -60,33 +60,6 @@ struct Button {
     bool disabled;
     bool just_had_tooltip; // Used to disable the GUI tooltip when the mouse goes off me.
     void (*on_pressed)(void*);
-};
-
-struct Item {
-    enum Cell_Type type;
-    int amount;
-};
-
-// If adding more slots, ensure that the slots
-// every converter has is at the top.
-enum Slot_Type {
-    SLOT_INPUT1,
-    SLOT_INPUT2,
-    SLOT_OUTPUT,
-    SLOT_FUEL,
-    SLOT_MAX_COUNT
-};
-
-struct Slot {
-    struct Converter *converter; // The converter this slot belongs to.
-    struct Item item;
-    
-    enum Slot_Type type;
-    
-    char name[32];
-    int dx, dy;                  // Orientation of the name string.
-    
-    f32 x, y, w, h;              // Relative to the converter it's in.
 };
 
 enum Converter_Type {
