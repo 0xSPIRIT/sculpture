@@ -29,6 +29,7 @@ int is_cell_gas(int type) {
         type == CELL_STEAM;
 }
 
+
 bool any_neighbours_free(struct Cell *array, int x, int y) {
     for (int xx = -1; xx <= 1; xx++) {
         for (int yy = -1; yy <= 1; yy++) {
@@ -221,6 +222,49 @@ void blob_generate_dumb(int obj, int chisel_size, Uint32 *blob_count) {
     }
 }
 
+int flood_fill_outlines(Uint32 *blobs, Uint32 *blob_count, int obj, int x, int y, int counter) {
+    if (counter <= 0) {
+        (*blob_count)++;
+        return 0;
+    }
+    
+    for (int yy = -1; yy <= 1; yy++) {
+        for (int xx = -1; xx <= 1; xx++) {
+            int rx = x+xx;
+            int ry = y+yy;
+            
+            if (gs->grid[rx+ry*gs->gw].object != obj) continue;
+            if (blobs[rx+ry*gs->gw]) continue;
+            
+            if (any_neighbours_free(gs->grid, rx, ry)) {
+                blobs[rx+ry*gs->gw] = *blob_count;
+                counter = flood_fill_outlines(blobs, blob_count, obj, rx, ry, counter-1);
+            }
+        }
+    }
+    
+    return counter;
+}
+
+// Start at an edge blob, and work through neighbours until you get
+// to the start, or if you can't find another neighbour, start from
+// somewhere else that hasn't been set yet.
+void blob_generate_outlines(int obj, int length, int chisel_size, Uint32 *blob_count) {
+    Uint32 *blobs = gs->objects[obj].blob_data[chisel_size].blobs;
+    
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            if (gs->grid[x+y*gs->gw].object != obj) continue;
+            if (blobs[x+y*gs->gw]) continue;
+            
+            // We are on an outline.
+            if (any_neighbours_free(gs->grid, x, y)) {
+                flood_fill_outlines(blobs, blob_count, obj, x, y, length);
+            }
+        }
+    }
+}
+
 void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
     int interval = 1;
     
@@ -289,6 +333,36 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
     // Fix up one off mistakes that we made before.
 }
 
+void grid_fill_circle(Uint32 *blobs, Uint32 *blob_count, int obj, int x, int y, int size) {
+    for (int yy = -size; yy <= size; yy++) {
+        for (int xx = -size; xx <= size; xx++) {
+            if (xx*xx+yy*yy > size*size) continue;
+            if (gs->grid[(x+xx)+(y+yy)*gs->gw].object != obj) continue;
+            if (blobs[(x+xx)+(y+yy)*gs->gw]) continue;
+            
+            blobs[xx+x+(yy+y)*gs->gw] = *blob_count;
+        }
+    }
+    (*blob_count)++;
+}
+
+void blob_generate_pizza(int obj, int size, Uint32 *blob_count) {
+    Uint32 *blobs = gs->objects[obj].blob_data[size].blobs;
+    
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            if (gs->grid[x+y*gs->gw].object != obj) continue;
+            if (blobs[x+y*gs->gw]) continue;
+            
+            if (any_neighbours_free(gs->grid, x, y)) {
+                int radius = size == 1 ? 2 : 4;
+                //int amt = 8; // the desired amount of pixels.
+                grid_fill_circle(blobs, blob_count, obj, x, y, radius);
+            }
+        }
+    }
+}
+
 // Sets up all blobs whose cells belongs to our obj.
 void object_generate_blobs(int object_index, int chisel_size) {
     if (object_index >= MAX_OBJECTS) return;
@@ -309,7 +383,9 @@ void object_generate_blobs(int object_index, int chisel_size) {
         blob_generate_dumb(object_index, chisel_size, &count);
     } else {
         gs->blob_type = BLOB_CIRCLE_B;
-        blob_generate_circles(object_index, chisel_size, &count);
+        //blob_generate_circles(object_index, chisel_size, &count);
+        //blob_generate_outlines(object_index, 2, chisel_size, &count);
+        blob_generate_pizza(object_index, chisel_size, &count);
     }
     
     obj->blob_data[chisel_size].blob_count = count;
@@ -436,9 +512,8 @@ void grid_init(int w, int h) {
     }
     
     gs->grid = gs->grid_layers[0];
-    gs->fg_grid = gs->grid_layers[1];
+    gs->dust_grid = gs->grid_layers[1];
     gs->gas_grid = gs->grid_layers[2];
-    gs->pickup_grid = gs->grid_layers[3];    
 }
 
 int randR(int i) {
@@ -926,9 +1001,8 @@ void simulation_tick(void) {
     }
     
     grid_array_tick(gs->grid, 1, -1);
-    grid_array_tick(gs->fg_grid, 1, 1);
+    dust_grid_tick();
     grid_array_tick(gs->gas_grid, 1, 1);
-    grid_array_tick(gs->pickup_grid, 1, -1);
 }
 
 void grid_array_draw(struct Cell *array) {
@@ -940,17 +1014,6 @@ void grid_array_draw(struct Cell *array) {
             if (!array[x+y*gs->gw].type) continue;
             
             SDL_Color col = pixel_from_index(array, x+y*gs->gw);
-            if (array == gs->pickup_grid) {
-                struct Placer *current = get_current_placer();
-                if (!current || (current->state != PLACER_SUCK_MODE)) {
-                    col.a = (Uint8) (128 + (col.a * 0.1f*(1+sinf(SDL_GetTicks()/300.f))));
-                } else {
-                    col.a = 210;
-                }
-                col.r /= 2;
-                col.g /= 2;
-                col.b /= 2;
-            }
             
             const bool draw_pressure = false;
             // TODO: This only draws pressures for the last object.
@@ -960,6 +1023,10 @@ void grid_array_draw(struct Cell *array) {
             if (gs->object_count > 0) {
                 blob_pressure = (int)gs->objects[gs->object_count - 1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count - 1].blob_data[gs->chisel->size].blobs[x + y * gs->gw]];
                 normalized_pressure = (f32)(blob_pressure / MAX_PRESSURE);
+            }
+            
+            if (array == gs->dust_grid) {
+                col.a = 128;
             }
             
             if (draw_pressure && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw] && normalized_pressure >= get_pressure_threshold(gs->chisel->size)) {
@@ -987,8 +1054,7 @@ void grid_draw(void) {
     // Draw all the grids in a layered order.
     grid_array_draw(gs->gas_grid);
     grid_array_draw(gs->grid);
-    grid_array_draw(gs->fg_grid);
-    grid_array_draw(gs->pickup_grid);
+    grid_array_draw(gs->dust_grid);
     
     overlay_draw();
     
@@ -1058,14 +1124,6 @@ void object_tick(int obj) {
     object_generate_blobs(obj, 2);
 }
 
-void dust_set_random_velocity(int x, int y) {
-    struct Cell *c = &gs->pickup_grid[x+y*gs->gw];
-    c->vx = 3.f  * (f32)(rand()%100) / 100.f;
-    c->vy = -2.f * (f32)(rand()%100) / 100.f;
-    c->vx_acc = (f32) x;
-    c->vy_acc = (f32) y;
-}
-
 bool object_remove_blob(int object, Uint32 blob, int chisel_size, int blocker_side, bool replace_dust) {
     struct Object *obj = &gs->objects[object];
     
@@ -1078,9 +1136,10 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, int blocker_si
             if (gs->blocker.active && gs->blocker.pixels[x+y*gs->gw] != blocker_side) continue;
             if (easy_chiseling && gs->overlay.grid[x+y*gs->gw]) continue;
             if (gs->grid[x+y*gs->gw].type == CELL_DIAMOND && chisel_size != 0) continue;
-
+            
             if (replace_dust) {
-                set_array(gs->pickup_grid, x, y, gs->grid[x+y*gs->gw].type, -2);
+                //set_array(gs->pickup_grid, x, y, gs->grid[x+y*gs->gw].type, -2);
+                Assert(add_item_to_inventory_slot(gs->grid[x+y*gs->gw].type, 1));
             }
             set(x, y, CELL_NONE, -1);
         }
@@ -1208,20 +1267,20 @@ int object_attempt_move(int object, int dx, int dy) {
         end_y = 0;
         dir_y = -1;
     } else {
-		start_y = 0;
-		end_y = gs->gh - 1;
-		dir_y = 1;
+        start_y = 0;
+        end_y = gs->gh - 1;
+        dir_y = 1;
     }
     
     if (ux > 0) {
-		start_x = gs->gw - 1;
-		end_x = 0;
-		dir_x = -1;
-	} else {
-		start_x = 0;
-		end_x = gs->gw - 1;
-		dir_x = 1;
-	}
+        start_x = gs->gw - 1;
+        end_x = 0;
+        dir_x = -1;
+    } else {
+        start_x = 0;
+        end_x = gs->gw - 1;
+        dir_x = 1;
+    }
     
     f32 vx = ux; // = 0;
     f32 vy = uy; // = 0;
@@ -1266,16 +1325,6 @@ int get_cell_index_by_id(struct Cell *array, int id) {
     return -1;
 }
 
-void convert_object_to_dust(int object) {
-    for (int y = 0; y < gs->gh; y++) {
-        for (int x = 0; x < gs->gw; x++) {
-            if (gs->grid[x+y*gs->gw].object != object) continue;
-            set(x, y, 0, -1);
-            set_array(gs->pickup_grid, x, y, gs->grid[x+y*gs->gw].type, -1);
-        }
-    }
-}
-
 void draw_blobs(void) {
     if (!gs->do_draw_blobs) return;
     
@@ -1292,18 +1341,27 @@ void draw_blobs(void) {
     }
 }
 
+void convert_object_to_dust(int object) {
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            if (gs->grid[x+y*gs->gw].object != object) continue;
+            set(x, y, 0, -1);
+        }
+    }
+}
+
 void draw_objects(void) {
-	if (!gs->do_draw_objects) return;
+    if (!gs->do_draw_objects) return;
     
-	for (int y = 0; y < gs->gh; y++) {
-		for (int x = 0; x < gs->gw; x++) {
-			if (gs->grid[x+y*gs->gw].object == -1) continue;
-			int b = gs->grid[x+y*gs->gw].object + 10;
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            if (gs->grid[x+y*gs->gw].object == -1) continue;
+            int b = gs->grid[x+y*gs->gw].object + 10;
             b *= b;
-			SDL_SetRenderDrawColor(gs->renderer, randR(b), randG(b), randB(b), 255);
-			SDL_RenderDrawPoint(gs->renderer, x, y);
-		}
-	}
+            SDL_SetRenderDrawColor(gs->renderer, randR(b), randG(b), randB(b), 255);
+            SDL_RenderDrawPoint(gs->renderer, x, y);
+        }
+    }
 }
 
 // Returns the index of the closest cell to the point (px, py)

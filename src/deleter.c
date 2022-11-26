@@ -61,9 +61,6 @@ void deleter_delete(void) {
             Uint32 color = deleter->pixels[x+y*gs->gw];
             
             if (color == 0 || color == red) {
-                if (gs->grid[x+y*gs->gw].type != 0) {
-                    set_array(gs->pickup_grid, x, y, gs->grid[x+y*gs->gw].type, -2);
-                }
                 set(x, y, 0, -1);
             }
         }

@@ -44,91 +44,39 @@ Fuel Converter Combinations:
     
     Must have both of these
     {
-       Unref. Coal --\
-                      \
-                       v
-       Glass ---------> Refined Coal
+       Unref. Coal + Glass -> Refined Coal
     }
     
     Must have both of these
     {
-       Unref. Coal --\
-                      \
-                       v
-       Lava ---------> Refined Coal [Much higher output ratio]
+       Unref. Coal + Lava -> Refined Coal [Much higher output ratio]
     }
 
     Must have both of these
     {
-       Any Stone \
-                  \
-                   v
-       Ref. Coal -> Lava
+       Any Stone + Ref. Coal -> Lava
     }
 
 Material Converter Combinations:
 
    With Fuel: none
-      {
-         Wood log -> wood planks
-      }
+       Wood log -> wood planks
  
    With Fuel: Unref. Coal
-      {
-         Sand -> Glass
-      }
-      {
-         Dirt -> Cobblestone
-      }
-      {
-         Cobblestone -> Marble
-      }
-      {
-         Cobblestone \
-                      \
-                       v
-         Sand --------> Sandstone
-      }
-      {
-         Ice -> Water
-      }
-      {
-         Water -> Steam
-      }
+      Sand               -> Glass
+      Dirt               -> Cobblestone
+      Cobblestone        -> Marble
+      Cobblestone + Sand -> Sandstone
+      Ice                -> Water
+      Water              -> Steam
 
    With Fuel: Ref. Coal
-      {
-         Sandstone \
-                    \
-                     v
-         Marble ----> Quartz
-      }
-      {
-         Dirt -> Cobblestone [2x]
-      }
-      {
-         Ice -> Steam
-      }
-      {
-         Water -\
-                 \
-                  v
-         Cobble -> Cement
-      }
+      Sandstone + Marble -> Quartz
+      Dirt               -> Cobblestone [2x]
+      Ice                -> Steam
+      Water + Cobble     -> Cement
 
    With Fuel: Lava
-      {
-         Any Coal -> Basalt
-      }
-      {
-         Quartz \
-                 \
-                  v
-         Marble -> Granite
-      }
-      {
-         Basalt -\
-                  \
-                   v
-         Granite -> Diamond
-      }
+     Any Coal         -> Basalt
+     Quartz + Marble  -> Granite
+     Basalt + Granite -> Diamond

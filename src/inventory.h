@@ -34,3 +34,5 @@ struct Slot {
 struct Inventory {
     struct Slot slots[INVENTORY_SLOT_COUNT];
 };
+
+bool add_item_to_inventory_slot(enum Cell_Type type, int amount);

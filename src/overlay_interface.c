@@ -2,7 +2,7 @@ void click_overlay_interface(void *ptr) {
     int button_index = *(int*)ptr;
     
     struct Overlay *overlay = &gs->overlay;
-    struct Overlay_Interface *interface = &gs->gui.overlay_interface;
+    struct Overlay_Interface *interf = &gs->gui.overlay_interface;
     
     if (button_index == OVERLAY_INTERFACE_CLEAR_ALL) {
         for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -52,23 +52,23 @@ void click_overlay_interface(void *ptr) {
     }
     
     if (button_index == OVERLAY_INTERFACE_ERASER_MODE) {
-        interface->buttons[OVERLAY_INTERFACE_ERASER_MODE]->active = overlay->eraser_mode;
+        interf->buttons[OVERLAY_INTERFACE_ERASER_MODE]->active = overlay->eraser_mode;
         return;
     }
     
-    interface->buttons[button_index]->active = true;
+    interf->buttons[button_index]->active = true;
 
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
         if (i == OVERLAY_INTERFACE_ERASER_MODE) continue;
         
         if (i != button_index) {
-            interface->buttons[i]->active = false;
+            interf->buttons[i]->active = false;
         }
     }
 }
 
 void overlay_interface_init(void) {
-    struct Overlay_Interface *interface = &gs->gui.overlay_interface;
+    struct Overlay_Interface *interf = &gs->gui.overlay_interface;
 
     const char overlay_interface_names[OVERLAY_INTERFACE_BUTTONS][64] = {
         "Brush Tool",
@@ -101,24 +101,24 @@ void overlay_interface_init(void) {
 
         cum += b->w + ypad;
 
-        interface->buttons[i] = b;
+        interf->buttons[i] = b;
     }
 
-    interface->buttons[0]->active = true;
+    interf->buttons[0]->active = true;
 }
 
 void overlay_interface_tick(void) {
-    struct Overlay_Interface *interface = &gs->gui.overlay_interface;
+    struct Overlay_Interface *interf = &gs->gui.overlay_interface;
 
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
-        button_tick(interface->buttons[i], (void*)&i);
+        button_tick(interf->buttons[i], (void*)&i);
     }
 }
 
 void overlay_interface_draw(void) {
-    struct Overlay_Interface *interface = &gs->gui.overlay_interface;
+    struct Overlay_Interface *interf = &gs->gui.overlay_interface;
 
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
-        button_draw(interface->buttons[i]);
+        button_draw(interf->buttons[i]);
     }
 }

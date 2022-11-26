@@ -37,7 +37,6 @@ struct Message {
 
 struct GUI {
     bool popup;
-    bool is_placer_active;
     f32 popup_y, popup_y_vel, popup_h;
     SDL_Texture *popup_texture;
     struct Tooltip tooltip;

@@ -3,16 +3,32 @@ void inventory_setup_slots() {
     const int starty = GUI_H/2;
     
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
-        gs->inventory.slots[i].x = startx + i * 100 + ITEM_SIZE;
-        gs->inventory.slots[i].y = starty;
-        gs->inventory.slots[i].w = ITEM_SIZE;
-        gs->inventory.slots[i].h = ITEM_SIZE;
-        gs->inventory.slots[i].inventory_index = i;
+        struct Slot *slot = &gs->inventory.slots[i];
+        slot->x = startx + i * 100 + ITEM_SIZE;
+        slot->y = starty;
+        slot->w = ITEM_SIZE;
+        slot->h = ITEM_SIZE;
+        slot->inventory_index = i;
         
         char name[32] = {0};
         sprintf(name, "Slot %d", i+1);
         strcpy(gs->inventory.slots[i].name, name);
     }
+}
+
+bool add_item_to_inventory_slot(enum Cell_Type type, int amount) {
+    for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
+        struct Slot *slot = &gs->inventory.slots[i];
+        if (slot->item.type == 0 ||
+            slot->item.type == type)
+        {
+            slot->item.type = type;
+            slot->item.amount += amount;
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 void inventory_init(void) {
@@ -30,7 +46,6 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
     SDL_Rect r = {
         x, y,
         w, h
-            
     };
     SDL_RenderCopy(gs->renderer, gs->textures.items[item->type], NULL, &r);
     
@@ -150,21 +165,6 @@ bool can_place_item_in_slot(int type, enum Slot_Type slot) {
         can_put_fuel;
 }
 
-bool is_mouse_in_converter(struct Converter *converter) {
-    struct Input *input = &gs->input;
-    
-    return is_point_in_rect((SDL_Point){
-                                input->real_mx,
-                                input->real_my
-                            },
-                            (SDL_Rect){
-                                (int)converter->x,
-                                (int)converter->y,
-                                (int)converter->w,
-                                (int)converter->h
-                            });
-}
-
 // Slot may be NULL if the item doesn't belong to any slot.
 // This function mostly just handles interactions with items and the mouse.
 void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h) {
@@ -190,93 +190,45 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
     
     bool can_place_item = false;
     
-    // If we're NOT holding down ctrl...
-    if (!gs->gui.is_placer_active) {
-        can_place_item = can_place_item_in_slot(gs->item_holding.type, slot->type);
-        if (!gs->item_holding.type) can_place_item = true;
-        
-        if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
-            // If they're the same type, just add their amounts.
-            if (item->type && gs->item_holding.type == item->type) {
-                // Add the amount from holding to the item.
-                item->amount += gs->item_holding.amount;
-                
-                gs->item_holding.type = 0;
-                gs->item_holding.amount = 0;
-            }
+    can_place_item = can_place_item_in_slot(gs->item_holding.type, slot->type);
+    if (!gs->item_holding.type) can_place_item = true;
+    
+    if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
+        // If they're the same type, just add their amounts.
+        if (item->type && gs->item_holding.type == item->type) {
+            // Add the amount from holding to the item.
+            item->amount += gs->item_holding.amount;
             
-            // Otherwise if we're either holding an item or have an item in slot,
-            // swap them since they're different types.
-            else if ((gs->item_holding.type || item->type) && can_place_item) {
-                struct Item a = *item;
-                
-                item->type = gs->item_holding.type;
-                item->amount = gs->item_holding.amount;
-                
-                gs->item_holding.type = a.type;
-                gs->item_holding.amount = a.amount;
-                
-                tooltip_reset(&gs->gui.tooltip);
-            }
-            
-        } else if (input->mouse_pressed[SDL_BUTTON_RIGHT] && item->type && gs->item_holding.type == 0) { // If holding nothing
-            // Split the amount into two like minecraft.
-            Assert(gs->item_holding.amount == 0);
-            
-            const int half = item->amount/2;
-            
-            if (half) {
-                item->amount -= half;
-                gs->item_holding.type = item->type;
-                gs->item_holding.amount += half;
-                
-                tooltip_reset(&gs->gui.tooltip);
-            }
-        }
-    }
-    // If we ARE holding down ctrl...
-    else if (gs->gui.is_placer_active) {
-        struct Placer *p = get_current_placer();
-        struct Converter *converter = NULL;
-        
-        can_place_item = can_place_item_in_slot(p->contains_type, slot->type);
-        
-        if (is_mouse_in_converter(gs->material_converter)) {
-            converter = gs->material_converter;
-        } else if (is_mouse_in_converter(gs->fuel_converter)) {
-            converter = gs->fuel_converter;
+            gs->item_holding.type = 0;
+            gs->item_holding.amount = 0;
         }
         
-        if (input->mouse_pressed[SDL_BUTTON_RIGHT]) {
-            if (p->contains_amount == 0) p->contains_type = 0;
-            if (p->contains_type == 0 || p->contains_type == item->type) {
-                p->contains_type = item->type;
-                p->contains_amount += item->amount;
-                
-                item->type = 0;
-                item->amount = 0;
-            }
-        } else if (can_place_item && input->mouse & SDL_BUTTON_LEFT) {
-            const bool place_instantly = true;
+        // Otherwise if we're either holding an item or have an item in slot,
+        // swap them since they're different types.
+        else if ((gs->item_holding.type || item->type) && can_place_item) {
+            struct Item a = *item;
             
-            int amt = 0;
-            int place_speed = 6;
+            item->type = gs->item_holding.type;
+            item->amount = gs->item_holding.amount;
             
-            if (place_instantly) {
-                place_speed = p->contains_amount;
-            } else {
-                // Make sure you handle the case where place_speed > p->contains_amount!
-                Assert(0);
-            }
+            gs->item_holding.type = a.type;
+            gs->item_holding.amount = a.amount;
             
-            amt = place_speed;
+            tooltip_reset(&gs->gui.tooltip);
+        }
+        
+    } else if (input->mouse_pressed[SDL_BUTTON_RIGHT] && item->type && gs->item_holding.type == 0) { // If holding nothing
+        // Split the amount into two like minecraft.
+        Assert(gs->item_holding.amount == 0);
+        
+        const int half = item->amount/2;
+        
+        if (half) {
+            item->amount -= half;
+            gs->item_holding.type = item->type;
+            gs->item_holding.amount += half;
             
-            if (p->contains_amount && (!item->type || !item->amount)) {
-                item->type = p->contains_type;
-            }
-            
-            item->amount += amt;
-            p->contains_amount -= amt;
+            tooltip_reset(&gs->gui.tooltip);
         }
     }
 }
@@ -297,6 +249,7 @@ void slot_tick(struct Slot *slot) {
               (int) slot->h);
 }
 
+// Look in gui.c for the ticking of converter slots.
 void inventory_tick() {
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
         slot_tick(&gs->inventory.slots[i]);

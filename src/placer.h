@@ -2,9 +2,9 @@
 #define MAX_PLACE_SOLID_TIME 45 // Frames until cut off for solids.
 
 enum {
-    PLACER_SUCK_MODE,
     PLACER_PLACE_RECT_MODE,
-    PLACER_PLACE_CIRCLE_MODE
+    PLACER_PLACE_CIRCLE_MODE,
+    PLACER_SUCK_MODE,
 };
 
 struct Placer {
@@ -24,7 +24,7 @@ struct Placer {
     int did_click;    // Did we actually place down any material?
     int did_set_new;
 
-    int contains_type, contains_amount;
+    struct Item *contains;
 
     int placing_solid_time;
 };

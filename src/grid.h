@@ -84,6 +84,12 @@ struct Blob_Data {
     int blob_count;
 };
 
+// Provides higher fidelity X and Y values
+struct Dust_Data {
+    f64 *xs;
+    f64 *ys;
+};
+
 struct Object {
     struct Blob_Data blob_data[3]; // 3 Blob sizes for 3 chisels. 
     int cell_count;

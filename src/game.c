@@ -4,6 +4,7 @@
 // compilation speed's sake. ("Unity Build")
 #include "util.c"
 #include "overlay.c"
+#include "dust.c"
 #include "grid.c"
 #include "undo.c"
 #include "chisel_blocker.c"
@@ -41,9 +42,6 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     bool is_running = true;
     struct Input *input = &gs->input;
 
-    // This is checked at game_run.
-    /* gs->prev_tool = gs->current_tool; */
-
     if (event->type == SDL_QUIT) {
         is_running = false;
     }
@@ -52,16 +50,16 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         if (gs->current_tool == TOOL_PLACER) {
             struct Placer *placer = &gs->placers[gs->current_placer];
             if (input->keys[SDL_SCANCODE_LCTRL] && gs->creative_mode) {
-                placer->contains_type += event->wheel.y;
-                if (placer->contains_type < CELL_NONE+1) placer->contains_type = CELL_NONE+1;
-                if (placer->contains_type >= CELL_TYPE_COUNT) placer->contains_type = CELL_TYPE_COUNT-1;
+                placer->contains->type += event->wheel.y;
+                if (placer->contains->type < CELL_NONE+1) placer->contains->type = CELL_NONE+1;
+                if (placer->contains->type >= CELL_TYPE_COUNT) placer->contains->type = CELL_TYPE_COUNT-1;
             } else {
                 placer->radius += event->wheel.y;
                 placer->radius = clamp(placer->radius, 1, 5);
             }
         }
     }
-           
+    
     int selected_tool = 0;
     if (event->type == SDL_KEYDOWN && !gs->text_field.active) {
         switch (event->key.keysym.sym) {
@@ -94,8 +92,12 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         case SDLK_SPACE:
             gs->paused = !gs->paused;
             break;
-        case SDLK_SEMICOLON:
-            gui_message_stack_push("Test");
+        case SDLK_p:
+            if (get_current_placer()->state == PLACER_SUCK_MODE) {
+                get_current_placer()->state = PLACER_PLACE_RECT_MODE;
+            } else {
+                get_current_placer()->state = PLACER_SUCK_MODE;
+            }
             break;
         case SDLK_n:
             gs->step_one = 1;
@@ -107,6 +109,9 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             break;
         case SDLK_b:
             gs->do_draw_blobs = !gs->do_draw_blobs;
+            break;
+        case SDLK_w:
+            emit_dust(CELL_GRANITE, gs->input.mx, gs->input.my);
             break;
         case SDLK_g:
             if (input->keys[SDL_SCANCODE_LCTRL]) {
@@ -138,7 +143,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         case SDLK_q: {
             struct Cell *c;
             if (input->keys[SDL_SCANCODE_LSHIFT]) {
-                c = &gs->fg_grid[input->mx+input->my*gs->gw];
+                c = &gs->dust_grid[input->mx+input->my*gs->gw];
             } else {
                 c = &gs->grid[input->mx+input->my*gs->gw];
             }

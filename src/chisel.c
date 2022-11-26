@@ -8,7 +8,7 @@ void chisel_hammer_init(void) {
     hammer->dist = hammer->normal_dist;
     hammer->time = 0;
     hammer->angle = 0;
-
+    
     hammer->texture = gs->textures.chisel_hammer;
     SDL_QueryTexture(hammer->texture, NULL, NULL, &hammer->w, &hammer->h);
 }
@@ -17,27 +17,27 @@ void chisel_hammer_tick(void) {
     struct Chisel_Hammer *hammer = &gs->chisel_hammer;
     struct Input *input = &gs->input;
     struct Chisel *chisel = gs->chisel;
-
+    
     hammer->angle = chisel->angle;
-
+    
     f32 rad = (hammer->angle) / 360.f;
     rad *= 2 * (f32)M_PI;
-
+    
     const f32 off = 6;
-
+    
     int dir = 1;
-
+    
     if (hammer->angle > 90 && hammer->angle < 270) {
         dir = -1;
     }
     
     hammer->x = chisel->x + hammer->dist * cosf(rad) - dir * off * sinf(rad);
     hammer->y = chisel->y + hammer->dist * sinf(rad) + dir * off * cosf(rad);
-
+    
     const int stop = 24;
     
     switch (hammer->state) {
-    case HAMMER_STATE_WINDUP:
+        case HAMMER_STATE_WINDUP:
         hammer->time++;
         if (hammer->time < 3) {
             hammer->dist += hammer->time * 4;
@@ -46,7 +46,7 @@ void chisel_hammer_tick(void) {
             hammer->state = HAMMER_STATE_SWING;
         }
         break;
-    case HAMMER_STATE_SWING:
+        case HAMMER_STATE_SWING:
         hammer->dist -= 8;
         if (hammer->dist < stop) {
             hammer->dist = (f32) stop;
@@ -59,7 +59,7 @@ void chisel_hammer_tick(void) {
             hammer->state = HAMMER_STATE_IDLE;
         }
         break;
-    case HAMMER_STATE_IDLE:
+        case HAMMER_STATE_IDLE:
         hammer->dist = hammer->normal_dist;
         if (!gs->is_mouse_over_any_button && input->mouse_pressed[SDL_BUTTON_LEFT]) {
             hammer->state = HAMMER_STATE_WINDUP;
@@ -82,12 +82,12 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
     struct Chisel *chisel = gs->chisel;
     struct Object *objects = gs->objects;
     Uint32 *curr_blobs = objects[gs->object_current].blob_data[chisel->size].blobs;
-
+    
     bool did_hit_blocker = false;
     f32 px = chisel->x, py = chisel->y;
-
+    
     if (gs->object_current == -1) return 0;
-
+    
     f32 current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
     
     int blocker_side = find_blocker_side(chisel->x, chisel->y);
@@ -95,7 +95,7 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
     int iterations = 0;
     while (current_length < len && is_in_boundsf(chisel->x, chisel->y)) {
         // If we hit the chisel blocker, keep that in mind for later.
-
+        
         struct Chisel_Blocker *cb = &gs->chisel_blocker;
         if (gs->current_tool == TOOL_CHISEL_MEDIUM &&
             cb->state != CHISEL_BLOCKER_OFF &&
@@ -103,22 +103,24 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
         {
             did_hit_blocker = true;
         }
-
+        
         // If we come into contact with a cell, locate its blob
         // then remove it. We only remove one blob per chisel,
         // so we stop our speed right here.
         Uint32 b = curr_blobs[(int)chisel->x + ((int)chisel->y)*gs->gw];
-
+        
         if (b > 0 && ((remove && !chisel->did_remove) || !remove)) {
             // We want to attempt to destroy this blob now.
             // Firstly, we want to do a diagonal check.
             
+            //
             //      /
-            //   xx/    xxx/
-            //   xxx    xx/x
-            //   xxx    xxxxx
-
+            //  xxx/    xxx/
+            //  xxxx    xx/x
+            //  xxxxx   xxxxx
+            //
             //  ^ This is what we want to prevent.
+            //
 
             if (chisel->size != TOOL_CHISEL_SMALL || number_direct_neighbours(gs->grid, (int)chisel->x, (int)chisel->y) < 4) {
                 // We continue at our current direction until we reach

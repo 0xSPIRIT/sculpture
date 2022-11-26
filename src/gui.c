@@ -201,7 +201,6 @@ void gui_init(void) {
     gui->popup_texture = gs->textures.popup;
     
     tooltip_reset(&gui->tooltip);
-    gui->is_placer_active = false;
     
     int cum = 0;
     
@@ -251,18 +250,6 @@ void gui_tick(void) {
         } else {
             gui->popup_y_vel = 0;
             gui->popup_y = gs->S*gs->gh-gui->popup_h;
-        }
-        
-        int was_placer_active = gui->is_placer_active;
-        
-        gui->is_placer_active = input->keys[SDL_SCANCODE_LCTRL];
-        
-        if (was_placer_active && !gui->is_placer_active) {
-            tooltip_reset(&gui->tooltip);
-        } else if (!was_placer_active && gui->is_placer_active) {
-            struct Placer *p = get_current_placer();
-            p->x = input->mx;
-            p->y = input->my;
         }
     } else if (gui->popup_y < gs->S*gs->gh) {
         gui->popup_y_vel += speed;
@@ -430,9 +417,9 @@ void gui_popup_draw(void) {
     all_converters_draw();
     inventory_draw();
     
-    if (gs->gui.popup && gs->gui.is_placer_active) {
-        placer_draw(get_current_placer(), true);
-    }
+    // if (gs->gui.popup && gs->gui.is_placer_active) {
+        // placer_draw(get_current_placer(), true);
+    // }
 }
 
 bool is_cell_stone(int type) {
@@ -971,8 +958,9 @@ bool converter_convert(struct Converter *converter) {
             input2->amount -= amount;
         }
         
-        if (fuel && fuel->type)
-            fuel->amount -= amount;
+        if (fuel && fuel->type) {
+            fuel->amount--;
+        }
         output->amount += amount;
         
         did_convert = true;
@@ -1004,8 +992,7 @@ void converter_tick(struct Converter *converter) {
         return;
     
     for (int i = 0; i < converter->slot_count; i++) {
-        struct Slot *s = &converter->slots[i];
-        slot_tick(s);
+        slot_tick(&converter->slots[i]);
     }
     
     button_tick(converter->go_button, converter);
@@ -1049,40 +1036,38 @@ void all_converters_tick(void) {
         }
     }
     
-    if (gs->gui.popup && gs->gui.is_placer_active) {
-        placer_tick(get_current_placer());
-    }
+//    if (gs->gui.popup && gs->gui.is_placer_active) {
+//        placer_tick(get_current_placer());
+//    }
     
     converter_tick(gs->material_converter);
     converter_tick(gs->fuel_converter);
     
-    if (!gs->gui.is_placer_active) {
-        bool set_tooltip_this_frame = false;
+    bool set_tooltip_this_frame = false;
+    
+    for (int i = 0; i < 2; i++) {
+        struct Converter *c = i == 0 ? gs->material_converter : gs->fuel_converter;
         
-        for (int i = 0; i < 2; i++) {
-            struct Converter *c = i == 0 ? gs->material_converter : gs->fuel_converter;
+        for (int j = 0; j < c->slot_count; j++) {
+            if (!c->slots[j].item.type) continue;
             
-            for (int j = 0; j < c->slot_count; j++) {
-                if (!c->slots[j].item.type) continue;
+            if (is_mouse_in_slot(&c->slots[j])) {
+                tooltip_set_position_to_cursor(&gs->gui.tooltip, TOOLTIP_TYPE_ITEM);
                 
-                if (is_mouse_in_slot(&c->slots[j])) {
-                    tooltip_set_position_to_cursor(&gs->gui.tooltip, TOOLTIP_TYPE_ITEM);
-                    
-                    char type[64] = {0};
-                    char type_name[64] = {0};
-                    char amount[64] = {0};
-                    
-                    get_name_from_type(c->slots[j].item.type, type_name);
-                    sprintf(type, "Type: %s", type_name);
-                    sprintf(amount, "Amount: %d", c->slots[j].item.amount);
-                    
-                    strcpy(gs->gui.tooltip.str[0], type);
-                    strcpy(gs->gui.tooltip.str[1], amount);
-                    
-                    set_tooltip_this_frame = true;
-                } else if (!set_tooltip_this_frame && gs->gui.tooltip.type == TOOLTIP_TYPE_ITEM) {
-                    tooltip_reset(&gs->gui.tooltip);
-                }
+                char type[64] = {0};
+                char type_name[64] = {0};
+                char amount[64] = {0};
+                
+                get_name_from_type(c->slots[j].item.type, type_name);
+                sprintf(type, "Type: %s", type_name);
+                sprintf(amount, "Amount: %d", c->slots[j].item.amount);
+                
+                strcpy(gs->gui.tooltip.str[0], type);
+                strcpy(gs->gui.tooltip.str[1], amount);
+                
+                set_tooltip_this_frame = true;
+            } else if (!set_tooltip_this_frame && gs->gui.tooltip.type == TOOLTIP_TYPE_ITEM) {
+                tooltip_reset(&gs->gui.tooltip);
             }
         }
     }

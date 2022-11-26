@@ -1,14 +1,14 @@
-TODO :: Sunday {
+TODO :: {
+	[ ] If placer rectangle overlapping with existing, join the objects together.
+	[ ] Make tooltips work properly in the GUI.
+}
 
-    [ ] Add inventory slots
-         [x] Make it work with placing items into it.
-         [ ] Make the sucking in placer obsolete by automatically adding
-             to inventory.
+Future TODO (Vague) :: {       [Don't actually use this list.]
+    - Finish all the levels (break this down a lot)
+    - Most Important: Improve the converter by looking at levels.
+    - Better way to destroy large objects.
+    - Object joiner ??
 
-    [ ] Make fuel slower (make it easier to make fuel) (amount should be f32?)
-    [ ] Replace the placer with an eyedropper sprite.
-
-    [ ] How are overlays going to work? Predefined for all levels? I don't think so.
-        Write response after you've though about it:
-
+	Only do this later:
+    - View (WASD + Scroll to compensate for chisel going offscreen)
 }

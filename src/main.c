@@ -154,7 +154,6 @@ void game_deinit(struct Game_State *state) {
     SDL_Quit();
 }
 
-// @Performance
 inline FILETIME get_last_write_time(char *filename) {
     FILETIME result = {0};
     WIN32_FILE_ATTRIBUTE_DATA data;

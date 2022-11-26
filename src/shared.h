@@ -13,15 +13,17 @@
 #define Terabytes(x) ((Uint64)x*1024*1024*1024*1024)
 
 // Assert using an SDL MessageBox popup. Prints to the console too.
-#define Assert(condition) if(!(condition)) {   _assert(gs->window, __func__, __FILE__, __LINE__) , __debugbreak(); }
+#define Assert(condition) if(!(condition)) {   _assert(gs->window, __func__, __FILE__, __LINE__), __debugbreak(); }
 // Assert without the popup (no window); use only console instead.
-#define AssertNW(condition) if(!(condition)) { _assert(NULL, __func__, __FILE__, __LINE__) , __debugbreak(); }
+#define AssertNW(condition) if(!(condition)) { _assert(NULL, __func__, __FILE__, __LINE__), __debugbreak(); }
 
 #define PushSize(arena, size) (_push_array(arena, 1, size, __FILE__, __LINE__))
 #define PushArray(arena, count, size) (_push_array(arena, count, size, __FILE__, __LINE__))
 
 // 'which' is an enum in assets.h
 #define RenderTarget(which) (gs->textures.render_targets[gs->level_current][which])
+
+
 
 #include "headers.h" // Used to get type size information.
 
@@ -47,33 +49,39 @@ struct Memory_Arena {
 // in here and we don't want to mess that up.
 struct Game_State {
     struct Memory_Arena *persistent_memory, *transient_memory;
-
+    
     struct SDL_Window *window;
     struct SDL_Renderer *renderer;
-
+    
     SDL_Event *event;
     
     struct View view;
-
+    
     struct Textures textures; // Contains pointers to SDL textures.
     struct Surfaces surfaces;
     struct Fonts fonts;
-
+    
     bool is_mouse_over_any_button;
-
+    
     int S;
     int window_width, window_height;
     f32 delta_time;
-
+    
     int current_tool, previous_tool;
     int debug_mode;
     
     SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
     
     enum Blob_Type blob_type;
-
+    
+    struct Dust_Data dust_data;
     struct Cell *grid_layers[NUM_GRID_LAYERS]; 
-    struct Cell *grid, *fg_grid, *gas_grid, *pickup_grid;
+    struct Cell *grid, *dust_grid, *gas_grid; // Pointers into grid_layers
+    
+    // grid = regular everyday grid
+    // dust_grid = used for destroyed particles
+    // gas_grid = only used for gases
+    
     int gw, gh; // Grid width, grid height
     int grid_show_ghost;
 
@@ -136,14 +144,12 @@ inline void _assert(SDL_Window *window, const char *func, const char *file, cons
     char message[64] = {0};
     char line_of_code[2048] = {0};
     
-    Log("SDFSDF");
-
     FILE *f = fopen(file, "r");
     if (f) {
-        int iterator = 0;
+        int i = 0;
         while (fgets(line_of_code, 2048, f)) {
-            iterator++;
-            if (iterator == line) {
+            i++;
+            if (i == line) {
                 break;
             }
         }
