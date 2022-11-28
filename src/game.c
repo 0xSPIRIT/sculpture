@@ -102,6 +102,9 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         case SDLK_n:
             gs->step_one = 1;
             break;
+        case SDLK_SEMICOLON:
+            gs->do_draw_objects = !gs->do_draw_objects;
+            break;
         case SDLK_r:
             if (gs->input.keys[SDL_SCANCODE_LCTRL]) {
                 goto_level(gs->level_current);
@@ -111,7 +114,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             gs->do_draw_blobs = !gs->do_draw_blobs;
             break;
         case SDLK_w:
-            emit_dust(CELL_GRANITE, gs->input.mx, gs->input.my);
+            emit_dust_explosion(CELL_COBBLESTONE, gs->input.mx, gs->input.my, 20);
             break;
         case SDLK_g:
             if (input->keys[SDL_SCANCODE_LCTRL]) {
@@ -142,11 +145,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             break;
         case SDLK_q: {
             struct Cell *c;
-            if (input->keys[SDL_SCANCODE_LSHIFT]) {
-                c = &gs->dust_grid[input->mx+input->my*gs->gw];
-            } else {
-                c = &gs->grid[input->mx+input->my*gs->gw];
-            }
+            c = &gs->grid[input->mx+input->my*gs->gw];
             char name[256] = {0};
             get_name_from_type(c->type, name);
 
@@ -301,7 +300,7 @@ void draw_outro(struct Level *level) {
                     if (!level->desired_grid[x+y*gs->gw].type) {
                         SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
                     }  else {
-                        SDL_Color col = pixel_from_index(level->desired_grid, x+y*gs->gw);
+                        SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
                         SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
                     }
                     break;
@@ -309,7 +308,7 @@ void draw_outro(struct Level *level) {
                     if (!gs->grid[x+y*gs->gw].type) {
                         SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
                     }  else {
-                        SDL_Color col = pixel_from_index(gs->grid, x+y*gs->gw);
+                        SDL_Color col = pixel_from_index(gs->grid[x+y*gs->gw].type, x+y*gs->gw);
                         SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, col.a);
                     }
                     break;

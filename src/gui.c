@@ -459,30 +459,6 @@ int get_cell_tier(int type) {
     return 0; // 0 = not specified in any tier.
 }
 
-bool is_mouse_in_slot(struct Slot *slot) {
-    struct Input *input = &gs->input;
-    
-    return is_point_in_rect((SDL_Point){input->real_mx, input->real_my-GUI_H},
-                            (SDL_Rect){
-                                (int) (slot->converter->x + slot->x - slot->w/2),
-                                (int) (slot->converter->y + slot->y - slot->h/2),
-                                (int) slot->w,
-                                (int) slot->h
-                            });
-}
-
-bool was_mouse_in_slot(struct Slot *slot) {
-    struct Input *input = &gs->input;
-    
-    return is_point_in_rect((SDL_Point){input->real_pmx,input->real_pmy-GUI_H},
-                            (SDL_Rect){
-                                (int) (slot->converter->x + slot->x - slot->w/2),
-                                (int) (slot->converter->y + slot->y - slot->h/2),
-                                (int) slot->w,
-                                (int) slot->h
-                            });
-}
-
 //////////////////////////////////////////
 
 void auto_set_material_converter_slots(void) {
@@ -937,18 +913,28 @@ bool converter_convert(struct Converter *converter) {
         // gives negative amount. If so, lock the amount
         // we're reducing to by the minimum amount.
         if (input1->type && input1->amount-amount < 0) {
-            amount = input1->amount;
             final_conversion = true;
         }
         if (input2->type && input2->amount-amount < 0) {
-            amount = input2->amount;
             final_conversion = true;
         }
         
         // Same for fuel
-        if (fuel && fuel->type && fuel->amount-amount < 0) {
-            amount = fuel->amount;
+        if (fuel && fuel->type && fuel->amount-1 < 0) {
             final_conversion = true;
+        }
+        
+        if (final_conversion) {
+            // Find the lowest value from the inputs and fuel.
+            amount = converter->slots[0].item.amount;
+            for (int i = SLOT_INPUT1; i <= SLOT_FUEL; i++) {
+                if (i == SLOT_OUTPUT) continue;
+                if (fuel && i == SLOT_FUEL) continue;
+                
+                if (converter->slots[i].item.type && converter->slots[i].item.amount < amount) {
+                    amount = converter->slots[i].item.amount;
+                }
+            }
         }
         
         if (input1->type) {

@@ -184,6 +184,8 @@ void goto_level(int lvl) {
     
     inventory_init();
     
+    dust_init();
+    
     chisel_init(&gs->chisel_small);
     chisel_init(&gs->chisel_medium);
     chisel_init(&gs->chisel_large);
@@ -337,7 +339,7 @@ void level_draw_intro(void) {
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (level->desired_grid[x+y*gs->gw].type == 0) continue;
-            SDL_Color col = pixel_from_index(level->desired_grid, x+y*gs->gw);
+            SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
             SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, 255);
             SDL_RenderDrawPoint(gs->renderer, x, y);
         }

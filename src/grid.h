@@ -85,9 +85,15 @@ struct Blob_Data {
 };
 
 // Provides higher fidelity X and Y values
+// SOA not AOS for simplicity.
 struct Dust_Data {
+    enum Cell_Type *types;
     f64 *xs;
     f64 *ys;
+    f64 *vxs;
+    f64 *vys;
+    int *timers;
+    int count;
 };
 
 struct Object {

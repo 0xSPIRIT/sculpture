@@ -76,10 +76,9 @@ struct Game_State {
     
     struct Dust_Data dust_data;
     struct Cell *grid_layers[NUM_GRID_LAYERS]; 
-    struct Cell *grid, *dust_grid, *gas_grid; // Pointers into grid_layers
+    struct Cell *grid, *gas_grid; // Pointers into grid_layers
     
     // grid = regular everyday grid
-    // dust_grid = used for destroyed particles
     // gas_grid = only used for gases
     
     int gw, gh; // Grid width, grid height

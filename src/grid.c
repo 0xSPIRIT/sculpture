@@ -512,12 +512,12 @@ void grid_init(int w, int h) {
     }
     
     gs->grid = gs->grid_layers[0];
-    gs->dust_grid = gs->grid_layers[1];
-    gs->gas_grid = gs->grid_layers[2];
+    gs->gas_grid = gs->grid_layers[1];
 }
 
 int randR(int i) {
-    Assert(i > 0 && i < gs->gw* gs->gh);
+    Assert(i > 0);
+    Assert(i < gs->gw* gs->gh);
     int num = gs->grid[i].rand;
     return my_rand(num*num);
 }
@@ -532,12 +532,12 @@ int randB(int i) {
     return my_rand(my_rand(my_rand(num*num)));
 }
 
-SDL_Color pixel_from_index(struct Cell *cells, int i) {
+SDL_Color pixel_from_index(enum Cell_Type type, int i) {
     SDL_Color color = {0};
     int r, amt;
     
     // TODO: Granite, Basalt, Lava.
-    switch (cells[i].type) {
+    switch (type) {
         default:
         break;
         
@@ -677,8 +677,8 @@ SDL_Color pixel_from_index(struct Cell *cells, int i) {
             break;
         }
     }
-    if (cells[i].type != CELL_GLASS && is_cell_hard(cells[i].type))
-        color.a = cells[i].depth;
+    //if (cells[i].type != CELL_GLASS && is_cell_hard(cells[i].type))
+        //color.a = cells[i].depth;
     return color;
 }
 
@@ -1013,7 +1013,7 @@ void grid_array_draw(struct Cell *array) {
         for (int x = 0; x < gs->gw; x++) {
             if (!array[x+y*gs->gw].type) continue;
             
-            SDL_Color col = pixel_from_index(array, x+y*gs->gw);
+            SDL_Color col = pixel_from_index(array[x+y*gs->gw].type, x+y*gs->gw);
             
             const bool draw_pressure = false;
             // TODO: This only draws pressures for the last object.
@@ -1023,10 +1023,6 @@ void grid_array_draw(struct Cell *array) {
             if (gs->object_count > 0) {
                 blob_pressure = (int)gs->objects[gs->object_count - 1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count - 1].blob_data[gs->chisel->size].blobs[x + y * gs->gw]];
                 normalized_pressure = (f32)(blob_pressure / MAX_PRESSURE);
-            }
-            
-            if (array == gs->dust_grid) {
-                col.a = 128;
             }
             
             if (draw_pressure && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw] && normalized_pressure >= get_pressure_threshold(gs->chisel->size)) {
@@ -1054,7 +1050,7 @@ void grid_draw(void) {
     // Draw all the grids in a layered order.
     grid_array_draw(gs->gas_grid);
     grid_array_draw(gs->grid);
-    grid_array_draw(gs->dust_grid);
+    dust_grid_draw();
     
     overlay_draw();
     
@@ -1072,7 +1068,7 @@ void grid_draw(void) {
                 alpha *= 16;
                 alpha += 180;
                 
-                SDL_Color col = pixel_from_index(gs->levels[gs->level_current].desired_grid, x+y*gs->gw);
+                SDL_Color col = pixel_from_index(gs->levels[gs->level_current].desired_grid[x+y*gs->gw].type, x+y*gs->gw);
                 f32 b = (f32) (col.r + col.g + col.b);
                 b /= 3.;
                 b = (f32) clamp((int)b, 0, 255);
@@ -1122,6 +1118,19 @@ void object_tick(int obj) {
     object_generate_blobs(obj, 0);
     object_generate_blobs(obj, 1);
     object_generate_blobs(obj, 2);
+}
+
+int cell_count_of_blob(int object, Uint32 blob, int chisel_size) {
+    struct Object *obj = &gs->objects[object];
+    int count = 0;
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            if (gs->grid[x+y*gs->gw].object != object) continue;
+            if (obj->blob_data[chisel_size].blobs[x+y*gs->gw] != blob) continue;
+            count++;
+        }
+    }
+    return count;
 }
 
 bool object_remove_blob(int object, Uint32 blob, int chisel_size, int blocker_side, bool replace_dust) {

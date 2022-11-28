@@ -215,21 +215,18 @@ void placer_place_rect(struct Placer *placer) {
             if (!is_in_bounds(x, y)) continue;
             if (gs->grid[x+y*gs->gw].object != -1) {
                 object_index = gs->grid[x+y*gs->gw].object;
-                printf("Happened\n");
                 break;
             }
         }
         
-        if (object_index)
+        if (object_index != -1)
             break;
     }
     
     if (object_index != -1) {
         placer->object_index = object_index;
-        printf("A!\n");
     } else {
         placer->object_index = gs->object_count++;
-        printf("B!\n");
     }
     
     for (int y = placer->rect.y; y <= placer->rect.y+placer->rect.h; y++) {
@@ -322,6 +319,7 @@ void placer_tick(struct Placer *placer) {
         }
         case PLACER_PLACE_RECT_MODE: {
             if (gs->gui.popup) break;
+            if (gs->input.real_my < GUI_H) break;
             
             if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
                 save_state_to_next();
@@ -329,7 +327,7 @@ void placer_tick(struct Placer *placer) {
             
             if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                 placer_set_and_resize_rect(placer);
-            } else {
+            } else if (input->mouse_released[SDL_BUTTON_LEFT]) {
                 placer_place_rect(placer);
             }
             break;

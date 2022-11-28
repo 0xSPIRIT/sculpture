@@ -1,9 +1,5 @@
 Problems:
 
-For the lined up blobs:
-	The issue that arises is that there isn't any depth to the chiseling.
-	It's a bit buggy but even if it wasn't, it still feels too odd.
-
 - There isn't a good way to destroy massive portions, for eg.
   with the level where you start off with a finished scene and
   work backwards, no one wants to large-chisel their way through

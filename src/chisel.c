@@ -140,9 +140,14 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
                         return b;
                     }
                     
+                    int count = cell_count_of_blob(gs->object_current, b, chisel->size);
+                    enum Cell_Type type = gs->grid[(int)chisel->x + ((int)chisel->y)*gs->gw].type;
+                    
                     object_remove_blob(gs->object_current, b, chisel->size, blocker_side, true);
-
+                    
                     move_mouse_to_grid_position(chisel->x, chisel->y);
+                    emit_dust_explosion(type, chisel->x, chisel->y, count);
+                    
                     chisel->did_remove = true;
                 } else if (!remove) {
                     b = 0;

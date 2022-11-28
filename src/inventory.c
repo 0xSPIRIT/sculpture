@@ -1,3 +1,43 @@
+bool is_mouse_in_slot(struct Slot *slot) {
+    struct Input *input = &gs->input;
+    
+    int dx = 0;
+    int dy = 0;
+    
+    if (slot->converter) {
+        dx = slot->converter->x;
+        dy = slot->converter->y;
+    }
+    
+    return is_point_in_rect((SDL_Point){input->real_mx, input->real_my},
+                            (SDL_Rect){
+                                (int) (dx + slot->x - slot->w/2),
+                                (int) (dy + slot->y - slot->h/2),
+                                (int) slot->w,
+                                (int) slot->h
+                            });
+}
+
+bool was_mouse_in_slot(struct Slot *slot) {
+    struct Input *input = &gs->input;
+    
+    int dx = 0;
+    int dy = 0;
+    
+    if (slot->converter) {
+        dx = slot->converter->x;
+        dy = slot->converter->y;
+    }
+    
+    return is_point_in_rect((SDL_Point){input->real_pmx,input->real_pmy-GUI_H},
+                            (SDL_Rect){
+                                (int) (dx + slot->x - slot->w/2),
+                                (int) (dy + slot->y - slot->h/2),
+                                (int) slot->w,
+                                (int) slot->h
+                            });
+}
+
 void inventory_setup_slots() {
     const int startx = (gs->gw*gs->S)/2 - 0.5*INVENTORY_SLOT_COUNT*100;
     const int starty = GUI_H/2;
@@ -71,7 +111,7 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
 }
 
 // rx, ry are relative values.
-void slot_draw(struct Slot slot, float rx, float ry) {
+void slot_draw(struct Slot slot, f32 rx, f32 ry) {
     SDL_Rect bounds = {
         (int) (rx + slot.x - slot.w/2),
         (int) (ry + slot.y - slot.h/2),
@@ -217,18 +257,27 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
             tooltip_reset(&gs->gui.tooltip);
         }
         
-    } else if (input->mouse_pressed[SDL_BUTTON_RIGHT] && item->type && gs->item_holding.type == 0) { // If holding nothing
-        // Split the amount into two like minecraft.
-        Assert(gs->item_holding.amount == 0);
-        
-        const int half = item->amount/2;
-        
-        if (half) {
-            item->amount -= half;
-            gs->item_holding.type = item->type;
-            gs->item_holding.amount += half;
+    } else if (input->mouse_pressed[SDL_BUTTON_RIGHT]) {
+        if (item->type && gs->item_holding.type == 0) {
+            // Split the amount into two like minecraft.
+            Assert(gs->item_holding.amount == 0);
             
-            tooltip_reset(&gs->gui.tooltip);
+            const int half = item->amount/2;
+            
+            if (half) {
+                item->amount -= half;
+                gs->item_holding.type = item->type;
+                gs->item_holding.amount += half;
+                
+                tooltip_reset(&gs->gui.tooltip);
+            }
+        } else if (gs->item_holding.type && (item->type == 0 || item->type == gs->item_holding.type)) {
+            // Place only one down at a time.
+            gs->item_holding.amount--;
+            item->type = gs->item_holding.type;
+            item->amount++;
+            
+            if (gs->item_holding.amount <= 0) gs->item_holding.type = 0;
         }
     }
 }
@@ -251,9 +300,35 @@ void slot_tick(struct Slot *slot) {
 
 // Look in gui.c for the ticking of converter slots.
 void inventory_tick() {
+    bool set_tooltip_this_frame = false;
+    
+    if (!gs->gui.popup) return;
+    
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
+        struct Slot *slot = &gs->inventory.slots[i];
+        if (slot->item.type && is_mouse_in_slot(slot)) {
+            tooltip_set_position_to_cursor(&gs->gui.tooltip, TOOLTIP_TYPE_ITEM);
+            
+            char type[64] = {0};
+            char type_name[64] = {0};
+            char amount[64] = {0};
+            
+            get_name_from_type(slot->item.type, type_name);
+            sprintf(type, "Type: %s", type_name);
+            sprintf(amount, "Amount: %d", slot->item.amount);
+            
+            strcpy(gs->gui.tooltip.str[0], type);
+            strcpy(gs->gui.tooltip.str[1], amount);
+            
+            set_tooltip_this_frame = true;
+        } else if (!set_tooltip_this_frame && gs->gui.tooltip.type == TOOLTIP_TYPE_ITEM) {
+            tooltip_reset(&gs->gui.tooltip);
+        }
+        
         slot_tick(&gs->inventory.slots[i]);
     }
+    
+    
     struct Input *input = &gs->input;
     item_tick(&gs->item_holding, NULL, input->real_mx, input->real_my, ITEM_SIZE, ITEM_SIZE);
 }

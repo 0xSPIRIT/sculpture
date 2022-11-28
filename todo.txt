@@ -1,6 +1,5 @@
 TODO :: {
-	[ ] If placer rectangle overlapping with existing, join the objects together.
-	[ ] Make tooltips work properly in the GUI.
+	[x] Make dust work upon chiseling.
 }
 
 Future TODO (Vague) :: {       [Don't actually use this list.]

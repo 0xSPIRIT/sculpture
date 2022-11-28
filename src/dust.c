@@ -1,36 +1,89 @@
 void dust_init(void) {
     if (!gs->dust_data.xs) {
+        gs->dust_data.types = PushArray(gs->persistent_memory,
+                                        gs->gw*gs->gh,
+                                        sizeof(enum Cell_Type));
         gs->dust_data.xs = PushArray(gs->persistent_memory,
                                      gs->gw*gs->gh,
                                      sizeof(f64));
         gs->dust_data.ys = PushArray(gs->persistent_memory,
                                      gs->gw*gs->gh,
                                      sizeof(f64));
+        gs->dust_data.vxs = PushArray(gs->persistent_memory,
+                                     gs->gw*gs->gh,
+                                     sizeof(f64));
+        gs->dust_data.vys = PushArray(gs->persistent_memory,
+                                     gs->gw*gs->gh,
+                                     sizeof(f64));
+        gs->dust_data.timers = PushArray(gs->persistent_memory,
+                                         gs->gw*gs->gh,
+                                         sizeof(int));
     }
     
-    for (int i = 0; i < gs->gw*gs->gh; i++) {
-        gs->dust_data.xs[i] = i % gs->gw;
-        gs->dust_data.ys[i] = i / gs->gw;
+    memset(gs->dust_data.types, 0, sizeof(enum Cell_Type)*gs->gw*gs->gh);
+    memset(gs->dust_data.xs, 0, sizeof(f64)*gs->gw*gs->gh);
+    memset(gs->dust_data.ys, 0, sizeof(f64)*gs->gw*gs->gh);
+    memset(gs->dust_data.vxs, 0, sizeof(f64)*gs->gw*gs->gh);
+    memset(gs->dust_data.vys, 0, sizeof(f64)*gs->gw*gs->gh);
+    memset(gs->dust_data.timers, 0, sizeof(int)*gs->gw*gs->gh);
+    gs->dust_data.count = 0;
+}
+
+void emit_dust(enum Cell_Type type, int x, int y, f64 vx, f64 vy) {
+    gs->dust_data.types[gs->dust_data.count] = type;
+    gs->dust_data.xs[gs->dust_data.count] = x;
+    gs->dust_data.ys[gs->dust_data.count] = y;
+    gs->dust_data.vxs[gs->dust_data.count] = vx;
+    gs->dust_data.vys[gs->dust_data.count] = vy;
+    gs->dust_data.timers[gs->dust_data.count] = 0;
+    gs->dust_data.count++;
+}
+
+void emit_dust_explosion(enum Cell_Type type, int x, int y, int count) {
+    for (int i = 0; i < count; i++) {
+        f64 vx = randf(2.0)-1;
+        f64 vy = randf(2.0)-1;
+        emit_dust(type, x, y, vx, vy);
     }
 }
 
-void emit_dust(enum Cell_Type type, int x, int y) {
-    struct Cell *c = &gs->dust_grid[x+y*gs->gw];
-    
-    c->type = type;
-    c->vx = 1.f;
-    c->vy = 0.f;
-}
+void swap_array(struct Cell *arr, int x1, int y1, int x2, int y2);
 
 void dust_grid_tick(void) {
-    struct Cell *grid = gs->dust_grid;
+    struct Dust_Data *data = &gs->dust_data;
     
-    for (int i = 0; i < gs->gw * gs->gh; i++) {
-        if (grid[i].type == 0) continue;
-        if (grid[i].vx == 0 && grid[i].vy == 0) continue;
+    for (int i = 0; i < data->count; i++) {
+        const f64 gravity = 0.2f;
+        data->vys[i] += gravity;
         
-        // TODO: Finish adding the code for moving cells here.
-        //       You use the Dust_Data as position data and
-        //       round to int.
+        data->xs[i] += data->vxs[i];
+        data->ys[i] += data->vys[i];
+        data->timers[i]++;
+        
+        const int total = 30;
+        if (data->timers[i] >= total || !is_in_boundsf(data->xs[i], data->ys[i])) {
+            data->count--;
+            for (int j = i; j < data->count; j++) {
+                data->xs[j] = data->xs[j+1];
+                data->ys[j] = data->ys[j+1];
+                data->vxs[j] = data->vxs[j+1];
+                data->vys[j] = data->vys[j+1];
+                data->timers[j] = data->timers[j+1];
+            }
+            i--;
+        }
+    }
+}
+
+SDL_Color pixel_from_index(enum Cell_Type type, int i);
+
+void dust_grid_draw(void) {
+    struct Dust_Data *data = &gs->dust_data;
+    
+    for (int i = 0; i < data->count; i++) {
+        SDL_Color c = pixel_from_index(data->types[i], (int)data->xs[i] + (int)data->ys[i]*gs->gw);
+        const float coeff = 0.5;
+        SDL_SetRenderDrawColor(gs->renderer, c.r*coeff, c.g*coeff, c.b*coeff, c.a);
+        SDL_RenderDrawPoint(gs->renderer, data->xs[i], data->ys[i]);
     }
 }
