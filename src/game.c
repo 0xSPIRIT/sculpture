@@ -72,15 +72,14 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
 #endif
             }
             break;
-         case SDLK_F12: {
-                int is_on = SDL_ShowCursor(SDL_QUERY);
-                if (is_on == SDL_ENABLE) {
-                    SDL_ShowCursor(SDL_DISABLE);
-                } else {
-                    SDL_ShowCursor(SDL_ENABLE);
-                }
-                break;
+         case SDLK_F12:
+            int is_on = SDL_ShowCursor(SDL_QUERY);
+            if (is_on == SDL_ENABLE) {
+                SDL_ShowCursor(SDL_DISABLE);
+            } else {
+                SDL_ShowCursor(SDL_ENABLE);
             }
+            break;
         case SDLK_BACKQUOTE:
             gs->creative_mode = !gs->creative_mode;
             if (gs->creative_mode) {

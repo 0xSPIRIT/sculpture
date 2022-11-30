@@ -185,6 +185,23 @@ f32 randf(f32 size) {
     return size * ((f32)(rand()%RAND_MAX))/(f32)RAND_MAX;
 }
 
+int randR(int i) {
+    Assert(i > 0);
+    Assert(i < gs->gw* gs->gh);
+    int num = gs->grid[i].rand;
+    return my_rand(num*num);
+}
+
+int randG(int i) {
+    int num = gs->grid[i].rand;
+    return my_rand(my_rand(num*num));
+}
+
+int randB(int i) {
+    int num = gs->grid[i].rand;
+    return my_rand(my_rand(my_rand(num*num)));
+}
+
 int minimum(int a, int b) {
     if (a < b) return a;
     return b;

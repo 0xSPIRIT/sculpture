@@ -124,6 +124,8 @@ void surfaces_init(struct Surfaces *surfaces) {
     surfaces->bark_surface = IMG_Load(RES_DIR "bark.png");
     surfaces->glass_surface = IMG_Load(RES_DIR "glass.png");
     surfaces->wood_plank_surface = IMG_Load(RES_DIR "plank.png");
+    surfaces->marble_surface = IMG_Load(RES_DIR "marble.png");
+    surfaces->granite_surface = IMG_Load(RES_DIR "granite.png");
     surfaces->diamond_surface = IMG_Load(RES_DIR "diamond.png");
     surfaces->ice_surface = IMG_Load(RES_DIR "ice.png");
     surfaces->grass_surface = IMG_Load(RES_DIR "grass.png");

@@ -243,7 +243,9 @@ int main(int argc, char **argv)
     // The level to start on
     int start_level = 0;
     if (argc == 2) {
-        start_level = atoi(argv[1]);
+        start_level = atoi(argv[1])-1;
+        if (start_level < 0) start_level = 0;
+        if (start_level >= 10) start_level = 9;
     }
     
     struct Game_Code game_code = {0};

@@ -24,7 +24,6 @@
 #define RenderTarget(which) (gs->textures.render_targets[gs->level_current][which])
 
 
-
 #include "headers.h" // Used to get type size information.
 
 //

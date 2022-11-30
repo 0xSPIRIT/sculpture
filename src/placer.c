@@ -47,39 +47,44 @@ void placer_suck_circle(struct Placer *placer) {
         uy = dy/len;
     }
     
-    while (distance(x, y, (f32)placer->px, (f32)placer->py) < len) {
-        
-        struct Cell *arr = gs->grid;
-        
-        // Remove cells in a circle
-        const int r = placer->radius;
-        
-        for (int ky = -r; ky <= r; ky++) {
-            for (int kx = -r; kx <= r; kx++) {
-                if (kx*kx + ky*ky > r*r)  continue;
-                
-                int xx = (int) (x+kx);
-                int yy = (int) (y+ky);
-                if (!is_in_bounds(xx, yy)) continue;
-                
-                int type = arr[xx+yy*gs->gw].type;
-                if (type == 0) continue;
-                
-                if (is_cell_hard(type)) {
-                    continue;
-                }
-                
-                if (placer->contains->type == type || placer->contains->type == 0 || placer->contains->amount == 0) {
-                    placer->contains->type = type;
-                    placer->contains->amount++;
-                    set_array(arr, xx, yy, 0, -1);
+    struct Cell *arr = gs->grid;
+    
+    while (arr == gs->grid || arr == gs->gas_grid) {
+        while (distance(x, y, (f32)placer->px, (f32)placer->py) < len) {
+            // Remove cells in a circle
+            const int r = placer->radius;
+            
+            for (int ky = -r; ky <= r; ky++) {
+                for (int kx = -r; kx <= r; kx++) {
+                    if (kx*kx + ky*ky > r*r)  continue;
+                    
+                    int xx = (int) (x+kx);
+                    int yy = (int) (y+ky);
+                    if (!is_in_bounds(xx, yy)) continue;
+                    
+                    int type = arr[xx+yy*gs->gw].type;
+                    if (type == 0) continue;
+                    
+                    if (is_cell_hard(type)) {
+                        continue;
+                    }
+                    
+                    if (placer->contains->type == type || placer->contains->type == 0 || placer->contains->amount == 0) {
+                        placer->contains->type = type;
+                        placer->contains->amount++;
+                        set_array(arr, xx, yy, 0, -1);
+                    }
                 }
             }
+            
+            x += ux;
+            y += uy;
+            if (ux == 0 && uy == 0) break;
+            
         }
         
-        x += ux;
-        y += uy;
-        if (ux == 0 && uy == 0) break;
+        if (arr == gs->gas_grid) break;
+        arr = gs->gas_grid;
     }
     
     objects_reevaluate();
@@ -166,13 +171,16 @@ void placer_place_circle(struct Placer *placer) {
 void placer_set_and_resize_rect(struct Placer *placer) {
     struct Input *input = &gs->input;
     
+    int mx = input->mx+1;
+    int my = input->my+1;
+    
     if (placer->rect.x == -1) {
-        placer->rect.x = input->mx;
-        placer->rect.y = input->my;
+        placer->rect.x = mx;
+        placer->rect.y = my;
     }
     
-    placer->rect.w = input->mx - placer->rect.x;
-    placer->rect.h = input->my - placer->rect.y;
+    placer->rect.w = mx - placer->rect.x;
+    placer->rect.h = my - placer->rect.y;
     
     int area = abs((placer->rect.w) * (placer->rect.h));
     if (area > placer->contains->amount) {
@@ -340,7 +348,9 @@ void placer_tick(struct Placer *placer) {
                          placer->y + 3,
                          TOOLTIP_TYPE_PLACER);
 
-    strcpy(gs->gui.tooltip.str[0], "Placer");
+    char name[64] = {0};
+    sprintf(name, "Placer %d", placer->index+1);
+    strcpy(gs->gui.tooltip.str[0], name);
 
     // Get name from type.
     char string[256] = {0};

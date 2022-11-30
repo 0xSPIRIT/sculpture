@@ -11,7 +11,6 @@
          Granite           |   Tier 3
          Basalt            |   Tier 3
          Diamond           |   Tier 3
-         Gold              |   Tier 3
          ------------------+-------------
                Fuel        |    Tier
          ------------------+-------------
@@ -30,9 +29,7 @@
          Ice               |
 
 Fuel Converter Combinations:
-    
-    Any single ones of these
-    {
+
        Tier 1 \
                \
                 v
@@ -40,22 +37,9 @@ Fuel Converter Combinations:
                 ^
                /
        Sand --/
-    }
-    
-    Must have both of these
-    {
-       Unref. Coal + Glass -> Refined Coal
-    }
-    
-    Must have both of these
-    {
-       Unref. Coal + Lava -> Refined Coal [Much higher output ratio]
-    }
 
-    Must have both of these
-    {
-       Any Stone + Ref. Coal -> Lava
-    }
+    Unref. Coal + Glass -> Refined Coal
+    Any Stone + Ref. Coal -> Lava
 
 Material Converter Combinations:
 

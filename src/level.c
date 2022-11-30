@@ -155,9 +155,9 @@ void levels_setup(void) {
               RES_DIR "lvl/desired/level 7.png",
               RES_DIR "lvl/initial/level 7.png",
               EFFECT_NONE);
-    level_add("Polished Turd",
-              RES_DIR "lvl/desired/level 1.png",
-              RES_DIR "lvl/initial/level 1.png",
+    level_add("Yearning",
+              RES_DIR "lvl/desired/level 8.png",
+              RES_DIR "lvl/initial/level 8.png",
               EFFECT_NONE);
     level_add("Showpiece",
               RES_DIR "lvl/desired/level 9.png",

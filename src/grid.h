@@ -51,7 +51,6 @@ enum Cell_Type {
     CELL_GRANITE,
     CELL_BASALT,
     CELL_DIAMOND,
-    // CELL_GOLD,    // Perhaps too much cell types. Aren't that many levels.
     
     CELL_UNREFINED_COAL,
     CELL_REFINED_COAL,

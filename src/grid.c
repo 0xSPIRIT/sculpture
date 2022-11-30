@@ -20,7 +20,7 @@ int is_cell_hard(int type) {
 }
 
 int is_cell_liquid(int type) {
-    return type == CELL_WATER;
+    return type == CELL_WATER || type == CELL_LAVA;
 }
 
 int is_cell_gas(int type) {
@@ -515,28 +515,10 @@ void grid_init(int w, int h) {
     gs->gas_grid = gs->grid_layers[1];
 }
 
-int randR(int i) {
-    Assert(i > 0);
-    Assert(i < gs->gw* gs->gh);
-    int num = gs->grid[i].rand;
-    return my_rand(num*num);
-}
-
-int randG(int i) {
-    int num = gs->grid[i].rand;
-    return my_rand(my_rand(num*num));
-}
-
-int randB(int i) {
-    int num = gs->grid[i].rand;
-    return my_rand(my_rand(my_rand(num*num)));
-}
-
 SDL_Color pixel_from_index(enum Cell_Type type, int i) {
     SDL_Color color = {0};
     int r, amt;
     
-    // TODO: Granite, Basalt, Lava.
     switch (type) {
         default:
         break;
@@ -589,7 +571,9 @@ SDL_Color pixel_from_index(enum Cell_Type type, int i) {
         }
         
         case CELL_MARBLE: {
-            color = (SDL_Color){230+randR(i)%25, 230+randG(i)%25, 230+randB(i)%25, 255};
+            //color = (SDL_Color){245+randR(i)%10, 245+randG(i)%10, 245+randB(i)%10, 255};
+            int id = gs->grid[i].id*2;
+            color = get_pixel(gs->surfaces.marble_surface, id%gs->gw, id/gs->gw);
             break;
         }
         
@@ -630,28 +614,18 @@ SDL_Color pixel_from_index(enum Cell_Type type, int i) {
         }
         
         case CELL_GRANITE: {
-            color = get_pixel(gs->surfaces.glass_surface, i%gs->gw, i/gs->gw);
-#if 0
-            int baseR = 64;
-            int baseG = 64;
-            int baseB = 64;
-            color = (SDL_Color){
-                baseR+my_rand(i)%10,
-                baseG+my_rand(i)%10,
-                baseB+my_rand(i)%10,
-                255
-            };
-#endif
+            color = get_pixel(gs->surfaces.granite_surface, i%gs->gw, i/gs->gw);
             break;
         }
         
         case CELL_BASALT: {
-            color = WHITE;
+            color = BLACK;
             break;
         }
         
         case CELL_DIAMOND: {
-            color = get_pixel(gs->surfaces.diamond_surface, i%gs->gw, i/gs->gw);
+            int id = gs->grid[i].id*2;
+            color = get_pixel(gs->surfaces.diamond_surface, id%gs->gw, id/gs->gw);
             break;
         }
         
@@ -1005,7 +979,7 @@ void simulation_tick(void) {
     grid_array_tick(gs->gas_grid, 1, 1);
 }
 
-void grid_array_draw(struct Cell *array) {
+void grid_array_draw(struct Cell *array, Uint8 alpha) {
     for (int i = 0; i < gs->gw*gs->gh; i++)
         array[i].updated = 0;
     
@@ -1028,7 +1002,9 @@ void grid_array_draw(struct Cell *array) {
             if (draw_pressure && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw] && normalized_pressure >= get_pressure_threshold(gs->chisel->size)) {
                 SDL_SetRenderDrawColor(gs->renderer, min((int)col.r * 2.0, 255), col.g, col.b, col.a);
             } else {
-                SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, col.a);
+                float a = alpha/255.0;
+                //a += -0.075f + 0.075f * sin(x/4.0+y*gs->gw/2.0 + SDL_GetTicks()/1000.0);
+                SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, col.a * a);
             }
             
             const bool draw_lines = false;
@@ -1048,9 +1024,12 @@ void grid_array_draw(struct Cell *array) {
 
 void grid_draw(void) {
     // Draw all the grids in a layered order.
-    grid_array_draw(gs->gas_grid);
-    grid_array_draw(gs->grid);
+    grid_array_draw(gs->gas_grid, 255);
+    grid_array_draw(gs->grid, 255);
     dust_grid_draw();
+    
+//    if (gs->overlay.show)
+//        grid_array_draw(gs->levels[gs->level_current].desired_grid, 255);
     
     overlay_draw();
     

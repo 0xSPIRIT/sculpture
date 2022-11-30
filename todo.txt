@@ -1,12 +1,28 @@
 TODO :: {
-	[x] Make dust work upon chiseling.
+	[x] Add overlay improvement for multiple materials
+	[ ] Finish all the levels!!
+		[ ] Level 8  - "Yearning"
+			[x] Hand reaching out
+			[x] Materials - Marble, Granite, Diamond.
+			[ ] Initial State
+		[ ] Level 9  - "Showpiece"
+			[ ] Hand holding orb
+			[ ] Materials
+			[ ] Initial State
+		[ ] Level 10 - "Brittle Body"
+			[ ] Statue of David in overlay
+			[ ] Materials
+			[ ] Initial State
+		[ ] Level 7 - "Procedure Lullaby"
+			[ ] Make granite and quartz easier to figure out.
+		[ ] Level 6 - "Metamorphosis"
+			[ ] Make it actually work properly.
+		[ ] Level 5 - "Flower Pot"
+			[ ] Make it an actual flower pot.
 }
 
 Future TODO (Vague) :: {       [Don't actually use this list.]
-    - Finish all the levels (break this down a lot)
-    - Most Important: Improve the converter by looking at levels.
     - Better way to destroy large objects.
-    - Object joiner ??
 
 	Only do this later:
     - View (WASD + Scroll to compensate for chisel going offscreen)

@@ -53,6 +53,8 @@ struct Surfaces {
     SDL_Surface *bark_surface,
         *glass_surface,
         *wood_plank_surface,
+        *marble_surface,
+        *granite_surface,
         *diamond_surface,
         *ice_surface,
         *grass_surface,
