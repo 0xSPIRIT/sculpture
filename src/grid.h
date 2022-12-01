@@ -25,6 +25,8 @@ enum Tool_Type {
     TOOL_COUNT
 };
 
+// Don't mess with the arrangement,
+// It'll fuck up the table in level.c!
 enum Cell_Type {
     CELL_NONE,
 

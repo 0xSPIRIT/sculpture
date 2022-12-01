@@ -1,5 +1,5 @@
                Stone       |    Tier
-         ------------------+-------------
+         ==================+=============
          Marble            |   Tier 1
          Cobblestone       |   Tier 1
          Sandstone         |   Tier 1
@@ -18,7 +18,7 @@
          Ref. Coal         |   Tier 2
          Lava              |   Tier 3
          ------------------+-------------
-             Others        |
+               Others      |
          ------------------+-------------
          Wood Logs         |
          Wood Planks       |

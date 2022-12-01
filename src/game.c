@@ -81,12 +81,14 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             }
             break;
         case SDLK_BACKQUOTE:
+#if 0
             gs->creative_mode = !gs->creative_mode;
             if (gs->creative_mode) {
                 gui_message_stack_push("Creative Mode: On");
             } else {
                 gui_message_stack_push("Creative Mode: Off");
             }
+#endif
             break;
         case SDLK_SPACE:
             gs->paused = !gs->paused;
@@ -214,6 +216,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             gs->current_tool = TOOL_GRABBER;
             selected_tool = 1;
         break;
+            
         case SDLK_F1:
             gs->current_placer = 0;
             break;
@@ -222,6 +225,12 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             break;
         case SDLK_F3:
             gs->current_placer = 2;
+            break;
+        case SDLK_F4:
+            gs->current_placer = 3;
+            break;
+        case SDLK_F5:
+            gs->current_placer = 4;
             break;
         }
     }

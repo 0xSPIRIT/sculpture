@@ -1,4 +1,4 @@
-#define PLACER_COUNT 3
+#define PLACER_COUNT 5
 #define MAX_PLACE_SOLID_TIME 45 // Frames until cut off for solids.
 
 enum {

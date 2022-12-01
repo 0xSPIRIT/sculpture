@@ -1,16 +1,6 @@
 TODO :: {
-	[x] After each tick, go through each slot and if type != 0 && amount == 0, set type=0
-	[x] Fix the lone cells in medium blobs
-	[x] Make Inventory Tooltip work... For some reason it keeps breaking?
-	[x] Automatically join objects when placing, even when the objects
-		are of different cell types, when next to each other (the rectangle
-		doesn't have to be directly intersecting!)
-
+	[x] Make F1-F5 work with the placers.
 	[ ] Finish all the levels!!
-		[ ] Level 8  - "Yearning"
-			[x] Hand reaching out
-			[x] Materials - Marble, Granite, Diamond.
-			[ ] Initial State
 		[ ] Level 9  - "Showpiece"
 			[ ] Hand holding orb
 			[ ] Materials
