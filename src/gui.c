@@ -461,12 +461,12 @@ int get_cell_tier(int type) {
 
 //////////////////////////////////////////
 
-void auto_set_material_converter_slots(void) {
+void auto_set_material_converter_slots(struct Converter *converter) {
     int level = gs->level_current;
     
     switch (level+1) {
         case 3: {
-            gs->material_converter->slots[SLOT_FUEL].item = (struct Item)
+            converter->slots[SLOT_FUEL].item = (struct Item)
             {
                 .type = CELL_UNREFINED_COAL,
                 .amount = 1428
@@ -539,7 +539,7 @@ struct Converter *converter_init(int type, bool allocated) {
             
             strcpy(converter->name, "Material Converter");
             
-            auto_set_material_converter_slots();
+            auto_set_material_converter_slots(converter);
             break;
         }
         
@@ -820,8 +820,9 @@ int material_converter_convert(struct Item *input1, struct Item *input2, struct 
         case CELL_REFINED_COAL: {
             if (number_inputs == 1) {
                 switch (input->type) {
-                    case CELL_DIRT: result = CELL_COBBLESTONE; break;
-                    case CELL_ICE:   result = CELL_STEAM;      break;
+                    case CELL_DIRT:        result = CELL_COBBLESTONE; break;
+                    case CELL_ICE:         result = CELL_STEAM;       break;
+                    case CELL_COBBLESTONE: result = CELL_MARBLE;      break;
                 }
             } else if (number_inputs == 2) {
                 struct Converter_Checker checker = converter_checker(input1, input2);
@@ -926,7 +927,7 @@ bool converter_convert(struct Converter *converter) {
         
         if (final_conversion) {
             // Find the lowest value from the inputs and fuel.
-            amount = converter->slots[0].item.amount;
+            amount = 999999999;
             for (int i = SLOT_INPUT1; i <= SLOT_FUEL; i++) {
                 if (i == SLOT_OUTPUT) continue;
                 if (fuel && i == SLOT_FUEL) continue;
@@ -1022,14 +1023,8 @@ void all_converters_tick(void) {
         }
     }
     
-//    if (gs->gui.popup && gs->gui.is_placer_active) {
-//        placer_tick(get_current_placer());
-//    }
-    
     converter_tick(gs->material_converter);
     converter_tick(gs->fuel_converter);
-    
-    bool set_tooltip_this_frame = false;
     
     for (int i = 0; i < 2; i++) {
         struct Converter *c = i == 0 ? gs->material_converter : gs->fuel_converter;
@@ -1051,8 +1046,8 @@ void all_converters_tick(void) {
                 strcpy(gs->gui.tooltip.str[0], type);
                 strcpy(gs->gui.tooltip.str[1], amount);
                 
-                set_tooltip_this_frame = true;
-            } else if (!set_tooltip_this_frame && gs->gui.tooltip.type == TOOLTIP_TYPE_ITEM) {
+                gs->gui.tooltip.set_this_frame = true;
+            } else if (!gs->gui.tooltip.set_this_frame && gs->gui.tooltip.type == TOOLTIP_TYPE_ITEM) {
                 tooltip_reset(&gs->gui.tooltip);
             }
         }

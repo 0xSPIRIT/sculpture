@@ -356,8 +356,23 @@ void blob_generate_pizza(int obj, int size, Uint32 *blob_count) {
             
             if (any_neighbours_free(gs->grid, x, y)) {
                 int radius = size == 1 ? 2 : 4;
-                //int amt = 8; // the desired amount of pixels.
                 grid_fill_circle(blobs, blob_count, obj, x, y, radius);
+            }
+        }
+    }
+    
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            if (!blobs[x+y*gs->gw]) continue;
+            
+            int b = blobs[x+y*gs->gw];
+            
+            if (blobs[(x+1)+y*gs->gw] != b &&
+                blobs[x+(y+1)*gs->gw] != b &&
+                blobs[(x-1)+y*gs->gw] != b &&
+                blobs[x+(y-1)*gs->gw] != b) 
+            {
+                blobs[x+y*gs->gw] = 0;
             }
         }
     }
@@ -1125,11 +1140,16 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, int blocker_si
             if (easy_chiseling && gs->overlay.grid[x+y*gs->gw]) continue;
             if (gs->grid[x+y*gs->gw].type == CELL_DIAMOND && chisel_size != 0) continue;
             
+            bool available = true;
+            
             if (replace_dust) {
                 //set_array(gs->pickup_grid, x, y, gs->grid[x+y*gs->gw].type, -2);
-                Assert(add_item_to_inventory_slot(gs->grid[x+y*gs->gw].type, 1));
+                available = add_item_to_inventory_slot(gs->grid[x+y*gs->gw].type, 1);
             }
-            set(x, y, CELL_NONE, -1);
+            
+            if (available) {
+                set(x, y, CELL_NONE, -1);
+            }
         }
     }
     

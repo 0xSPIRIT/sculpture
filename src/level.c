@@ -355,9 +355,10 @@ void level_draw_intro(void) {
                                                name,
                                                WHITE);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-
+    
     SDL_Rect dst = {
-        gs->S*gs->gw/2 - surf->w/2, gs->S*gs->gh/2 - surf->h/2,
+        gs->S*gs->gw/2 - surf->w/2,
+        surf->h * 1.5,
         surf->w, surf->h
     };
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);

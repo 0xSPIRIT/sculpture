@@ -61,11 +61,14 @@ void deleter_delete(void) {
             Uint32 color = deleter->pixels[x+y*gs->gw];
             
             if (color == 0 || color == red) {
-                set(x, y, 0, -1);
+                emit_dust(gs->grid[x+y*gs->gw].type, x, y, randf(2)-1, randf(2)-1);
+                if (add_item_to_inventory_slot(gs->grid[x+y*gs->gw].type, 1)) {
+                    set(x, y, 0, -1);
+                }
             }
         }
     }
-
+    
     objects_reevaluate();
 }
 
@@ -99,7 +102,7 @@ void deleter_tick(void) {
         deleter->active = false;
     }
     
-    const int min_distance = 8;
+    const int min_distance = 0;
     
     if (deleter->active) {
         if (deleter->point_count == 0) {

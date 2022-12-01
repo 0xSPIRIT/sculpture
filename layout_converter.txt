@@ -55,6 +55,7 @@ Material Converter Combinations:
       Water              -> Steam
 
    With Fuel: Ref. Coal
+      Cobblestone        -> Marble
       Sandstone + Marble -> Quartz
       Dirt               -> Cobblestone [2x]
       Ice                -> Steam

@@ -92,10 +92,12 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             gs->paused = !gs->paused;
             break;
         case SDLK_p:
-            if (get_current_placer()->state == PLACER_SUCK_MODE) {
-                get_current_placer()->state = PLACER_PLACE_RECT_MODE;
-            } else {
-                get_current_placer()->state = PLACER_SUCK_MODE;
+            if (get_current_placer()) {
+                if (get_current_placer()->state == PLACER_SUCK_MODE) {
+                    get_current_placer()->state = PLACER_PLACE_RECT_MODE;
+                } else {
+                    get_current_placer()->state = PLACER_SUCK_MODE;
+                }
             }
             break;
         case SDLK_n:
@@ -342,6 +344,8 @@ export void game_run(struct Game_State *state) {
     gs = state;
 
     struct Level *level = &gs->levels[gs->level_current];
+    
+    gs->gui.tooltip.set_this_frame = false;
     
     view_tick(&gs->view, &gs->input);
     

@@ -195,7 +195,7 @@ void load_game_code(struct Game_Code *code) {
     code->game_run = (GameRunProc) 
         GetProcAddress(code->dll, "game_run");
     
-    if (!code->game_run) {
+    if (!code->game_run || !code->game_tick_event || !code->game_run) {
         Error("Error finding the functions in the DLL!\n");
         exit(1);
     }

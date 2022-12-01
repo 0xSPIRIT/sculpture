@@ -26,6 +26,16 @@ void placer_init(int num) {
     placer->contains = &gs->inventory.slots[num].item;
     placer->contains->type = 0;
     placer->contains->amount = 0;
+    
+#if 0
+    if (num == 0) {
+        placer->contains->type = CELL_COBBLESTONE;
+        placer->contains->amount = 2500;
+    } else if (num == 1) {
+        placer->contains->type = CELL_SAND;
+        placer->contains->amount = 2500;
+    }
+#endif
 }
 
 void placer_suck_circle(struct Placer *placer) {
@@ -171,13 +181,16 @@ void placer_place_circle(struct Placer *placer) {
 void placer_set_and_resize_rect(struct Placer *placer) {
     struct Input *input = &gs->input;
     
-    int mx = input->mx+1;
-    int my = input->my+1;
+    int mx = input->mx;
+    int my = input->my;
     
     if (placer->rect.x == -1) {
         placer->rect.x = mx;
         placer->rect.y = my;
     }
+    
+    mx++;
+    my++;
     
     placer->rect.w = mx - placer->rect.x;
     placer->rect.h = my - placer->rect.y;
@@ -218,8 +231,11 @@ void placer_place_rect(struct Placer *placer) {
     // Check if we're intersecting with any other object.
     // If so, then we just join that object with this by
     // using its object index, not a new one.
-    for (int y = placer->rect.y; y <= placer->rect.y+placer->rect.h; y++) {
-        for (int x = placer->rect.x; x <= placer->rect.x+placer->rect.w; x++) {
+    //
+    // We check with 1 extra row/column to the rectangle
+    // to make things connect when the player wants things to.
+    for (int y = placer->rect.y-1; y <= placer->rect.y+placer->rect.h+1; y++) {
+        for (int x = placer->rect.x-1; x <= placer->rect.x+placer->rect.w+1; x++) {
             if (!is_in_bounds(x, y)) continue;
             if (gs->grid[x+y*gs->gw].object != -1) {
                 object_index = gs->grid[x+y*gs->gw].object;
@@ -244,7 +260,7 @@ void placer_place_rect(struct Placer *placer) {
                 placer->contains->amount = 0;
                 goto end2;
             }
-            if (gs->grid[x+y*gs->gw].type == placer->contains->type) continue; // Don't overwrite anything.
+            if (gs->grid[x+y*gs->gw].type) continue; // Don't overwrite anything.
             
             object_index = placer->object_index;
             if (!is_cell_hard(placer->contains->type)) {

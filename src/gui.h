@@ -25,6 +25,8 @@ enum Button_Type {
 struct Tooltip {
     enum Tooltip_Type type;
     
+    bool set_this_frame;
+    
     f32 x, y;
     char str[MAX_TOOLTIP_LEN][MAX_TOOLTIP_LINE_LEN];
     int w, h;

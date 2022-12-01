@@ -296,13 +296,19 @@ void slot_tick(struct Slot *slot) {
               (int) (ry + slot->y - slot->h/2),
               (int) slot->w,
               (int) slot->h);
+    
+    if (slot->item.type && slot->item.amount == 0) {
+        slot->item.type = 0;
+    }
 }
 
 // Look in gui.c for the ticking of converter slots.
 void inventory_tick() {
-    bool set_tooltip_this_frame = false;
-    
     if (!gs->gui.popup) return;
+    
+    if (gs->item_holding.type == 0 && gs->item_holding.amount) {
+        gs->item_holding.amount = 0;
+    }
     
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
         struct Slot *slot = &gs->inventory.slots[i];
@@ -320,8 +326,8 @@ void inventory_tick() {
             strcpy(gs->gui.tooltip.str[0], type);
             strcpy(gs->gui.tooltip.str[1], amount);
             
-            set_tooltip_this_frame = true;
-        } else if (!set_tooltip_this_frame && gs->gui.tooltip.type == TOOLTIP_TYPE_ITEM) {
+            gs->gui.tooltip.set_this_frame = true;
+        } else if (!gs->gui.tooltip.set_this_frame && gs->gui.tooltip.type == TOOLTIP_TYPE_ITEM) {
             tooltip_reset(&gs->gui.tooltip);
         }
         
