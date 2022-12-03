@@ -1,5 +1,9 @@
 TODO :: {
-	[x] Make F1-F5 work with the placers.
+	[x] Nerf the deleter.
+	[x] Do an objects_reevaluate() after placing.
+	[x] Make the GUI / converter / inventory system be subject to undo.
+		Very important to make it so that mistakes with conversions
+		can be undone.
 	[ ] Finish all the levels!!
 		[ ] Level 9  - "Showpiece"
 			[ ] Hand holding orb
@@ -14,7 +18,13 @@ TODO :: {
 		[ ] Level 6 - "Metamorphosis"
 			[ ] Make it actually work properly.
 		[ ] Level 5 - "Flower Pot"
-			[ ] Make it an actual flower pot.
+			[ ] Make it an actual flower pot lmao.
+			[ ] Change the initial materials. Too many levels
+				especially in the later levels just have cobble
+				and sand as the initials. Be creative please.
+	[ ] Add view mover for when the chisel moves out of the screen.
+		Lerp the view, real smooth-like.
+	[ ] "Everything's Gonna Be Just Fine" - Song?
 }
 
 Future TODO (Vague) :: {       [Don't actually use this list.]

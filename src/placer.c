@@ -278,11 +278,14 @@ void placer_place_rect(struct Placer *placer) {
     placer->rect.w = 0;
     placer->rect.h = 0;
     
+#if 0
     if (placer->object_index != -1) {
         object_generate_blobs(placer->object_index, 0);
         object_generate_blobs(placer->object_index, 1);
         object_generate_blobs(placer->object_index, 2);
     }
+#endif
+    objects_reevaluate();
 }
 
 void placer_tick(struct Placer *placer) {

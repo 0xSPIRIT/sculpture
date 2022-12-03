@@ -5,6 +5,7 @@ void undo_system_reset(void) {
                 memset(gs->save_states[i].grid_layers[j], 0, gs->gw*gs->gh*sizeof(struct Cell));
             }
         }
+        memset(gs->save_states[i].placer_items, 0, sizeof(struct Item)*TOTAL_SLOT_COUNT);
     }
 }
 
@@ -22,9 +23,6 @@ void undo_system_init(void) {
         current_state()->grid_layers[i] = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
         memcpy(current_state()->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
     }
-    
-    Uint64 size = MAX_UNDO*(NUM_GRID_LAYERS*gs->gw*gs->gh*sizeof(struct Cell) + sizeof(struct Placer)*PLACER_COUNT);
-    Log("%zu\n", size/1024/1024);
 }
 
 bool is_current_grid_same_as(struct Save_State *state) {
@@ -43,9 +41,9 @@ void save_state_to_next(void) {
             for (int j = 0; j < NUM_GRID_LAYERS; j++) {
                 memcpy(gs->save_states[i].grid_layers[j], gs->save_states[i+1].grid_layers[j], sizeof(struct Cell)*gs->gw*gs->gh);
             }
-            memcpy(&gs->save_states[i].placers, 
-                   &gs->save_states[i+1].placers, 
-                   sizeof(struct Placer)*PLACER_COUNT);
+            for (int j = 0; j < TOTAL_SLOT_COUNT; j++) {
+                gs->save_states[i].placer_items[j] = gs->save_states[i+1].placer_items[j];
+            }
         }
 
         int i = gs->save_state_count;
@@ -53,6 +51,7 @@ void save_state_to_next(void) {
             if (gs->save_states[i].grid_layers[j]) {
                 memset(gs->save_states[i].grid_layers[j], 0, gs->gw*gs->gh*sizeof(struct Cell));
             }
+            memset(gs->save_states[i].placer_items, 0, sizeof(struct Item)*TOTAL_SLOT_COUNT);
         }
     }
 
@@ -71,7 +70,19 @@ void save_state_to_next(void) {
 
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
         memcpy(state->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
-        memcpy(&state->placers, &gs->placers, sizeof(struct Placer)*PLACER_COUNT);
+    }
+    
+    // Inventory Slots
+    for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
+        state->placer_items[i] = gs->inventory.slots[i].item;
+    }
+    // Material Converter
+    for (int i = 0; i < SLOT_MAX_COUNT; i++) {
+        state->placer_items[INVENTORY_SLOT_COUNT + i] = gs->inventory.slots[i].item;
+    }
+    // Fuel Converter
+    for (int i = 0; i < SLOT_MAX_COUNT-1; i++) {
+        state->placer_items[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT + i] = gs->inventory.slots[i].item;
     }
 }
 
@@ -82,6 +93,19 @@ void set_state(int num) {
 
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
         memcpy(gs->grid_layers[i], state->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
+    }
+    
+    // Inventory Slots
+    for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
+        gs->inventory.slots[i].item = state->placer_items[i];
+    }
+    // Material Converter
+    for (int i = 0; i < SLOT_MAX_COUNT; i++) {
+        gs->inventory.slots[i].item = state->placer_items[INVENTORY_SLOT_COUNT + i];
+    }
+    // Fuel Converter
+    for (int i = 0; i < SLOT_MAX_COUNT-1; i++) {
+        gs->inventory.slots[i].item = state->placer_items[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT + i];
     }
 }
 

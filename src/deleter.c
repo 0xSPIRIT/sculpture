@@ -56,13 +56,24 @@ void deleter_delete(void) {
     
     deleter_fill_neighbours(0, 0);
     
+    int count = 0;
+    
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            if (deleter->pixels[x+y*gs->gw] == 0 || deleter->pixels[x+y*gs->gw] == red) {
+                count++;
+            }
+        }
+    }
+    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             Uint32 color = deleter->pixels[x+y*gs->gw];
+            int t = gs->grid[x+y*gs->gw].type;
             
-            if (color == 0 || color == red) {
-                emit_dust(gs->grid[x+y*gs->gw].type, x, y, randf(2)-1, randf(2)-1);
-                if (add_item_to_inventory_slot(gs->grid[x+y*gs->gw].type, 1)) {
+            if (t != 0 && (color == 0 || color == red)) {
+                emit_dust(t, x, y, randf(2)-1, randf(2)-1);
+                if (add_item_to_inventory_slot(t, 1)) {
                     set(x, y, 0, -1);
                 }
             }
@@ -102,7 +113,7 @@ void deleter_tick(void) {
         deleter->active = false;
     }
     
-    const int min_distance = 0;
+    const int min_distance = 10;
     
     if (deleter->active) {
         if (deleter->point_count == 0) {
@@ -174,7 +185,7 @@ void deleter_draw(void) {
     }
 
     SDL_RenderReadPixels(gs->renderer, NULL, 0, deleter->pixels, 4*gs->gw);
-
+    
     SDL_SetRenderTarget(gs->renderer, prev_target);
 
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_DELETER), NULL, NULL);

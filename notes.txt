@@ -2,30 +2,8 @@ https://static.vecteezy.com/system/resources/previews/000/389/125/original/vecto
 
 Problems:
 
-- A main issue that we have is that the level simply doesn't 
-  have the necessary amount of starting materials to make the conversions
-  have the proper amount in them. The screens are simply just too
-  small. So we must increase the value of each cell, perhaps?
-- A definite no-no would be creating more than you have, which would mean
-  that you're creatin gthings out of nowhere. Horrible, especially
-  considering the themes of the game. No, the cell values you get from
-  each destroy must increase.
-- I think it wouldn't really make much sense to increase the value of each cell, 
-  because wouldn't that be sort of defeating the point? It's like inflation.
-- So, I think that the best way to solve this problem would be to have
-  different caches that you could destroy with the chisel that gives you
-  some large amount of material. The screen is just too small too yield
-  the amount of raw materials required, especially since it maybe several
-  layers down that you get the actual final materials, which may be a
-  very low yield from the start, like 25% or something..
-
-- There isn't a good way to destroy massive portions, for eg.
-  with the level where you start off with a finished scene and
-  work backwards, no one wants to large-chisel their way through
-  everything. Make a bomb!!
-
-The converter system is very very good. It just needs some adjusting
-to make it viable, and produce more material than it does currently.
+- The chisels can be completely removed in favor of the deleter, which
+  is much better at everything. Don't let this happen. Nerf this please.
 
 - Should the levels have a proper evaluater for each level, or just make it
   player-based? I think player-based would be more interesting, since we're
@@ -37,34 +15,15 @@ to make it viable, and produce more material than it does currently.
 
 - Replace placer with eyedropper sprite.
 
-- Think about adding an object joiner? Don't add it unless you know it's a
-  good idea.
 - Chisel pattern still needs work.
 
-- For the beginning levels, you use the predefined overlay, but for the later
-  levels, you make your own overlays/helpers and just use the refernce
-  image window on the side.
+- Predefined overlays are working fine... is it really necessary to
+  need to make your own? Esp. with such a short game... I would
+  really like for the overlay to be user made but also the way it's
+  in the game right now is also great.
 
 - Add Zoom + WASD Movement to make things easier & more precise when
-    working with the chisel.
-
-- The blob generator still needs some work to make it feel less
-    scary and freaky when you're chiseling. It should have a very consistent
-    feeling to it.
-
-////////////////////////////////
-
-To reduce tediousness, remove focus from chiseling. You start doing it
-manually in the first level, then you learn about the chisel blocker, etc.
-Tutorialization is very important here. Show things that might seem obvious
-as the dev. At some point you get an automatic chiseler; you highlight a region
-and it chisels it for you. So then, you'd just be sort of at an architectural
-or planning level, and not being bogged down by the tediousness.
-
-Of cousre, if the levels are given to you specifically as in the first levels,
-it'd just be very boring. The point of the future levels is to be given
-a prompt, and create something from that prompt, and judge it from your own
-merit.
+  working with the chisel.
 
 ////////////////////////////////
 
