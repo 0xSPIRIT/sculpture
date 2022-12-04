@@ -314,6 +314,12 @@ void placer_tick(struct Placer *placer) {
     
     //placer->state = PLACER_SUCK_MODE;
     
+    bool skip=false;
+    if (placer->escape_rect && input->mouse_released[SDL_BUTTON_LEFT]) {
+        placer->escape_rect = false;
+        skip=true;
+    }
+    
     switch (placer->state) {
         case PLACER_SUCK_MODE: {
             if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
@@ -347,6 +353,8 @@ void placer_tick(struct Placer *placer) {
         case PLACER_PLACE_RECT_MODE: {
             if (gs->gui.popup) break;
             if (gs->input.real_my < GUI_H) break;
+            if (placer->escape_rect) break;
+            if (skip) break;
             
             if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
                 save_state_to_next();

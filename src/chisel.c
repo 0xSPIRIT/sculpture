@@ -592,7 +592,7 @@ void chisel_draw(void) {
         int x = chisel->highlights[i]%gs->gw;
         int y = chisel->highlights[i]/gs->gh;
 
-        if (gs->overlay.grid[x+y*gs->gw]) {
+        if (gs->overlay.grid[x+y*gs->gw] == gs->grid[x+y*gs->gw].type) {
             hit = true;
             break;
         }

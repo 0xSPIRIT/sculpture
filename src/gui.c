@@ -276,6 +276,27 @@ void gui_tick(void) {
     gui->popup_y = (f32) clamp((int) gui->popup_y, (int) (gs->S*gs->gh - gui->popup_h), gs->window_height);
 }
 
+void profile_array(struct Cell *desired,
+                   char out[64][CELL_TYPE_COUNT],
+                   int *count);
+
+void gui_draw_profile() {
+    struct Level *level = &gs->levels[gs->level_current];
+    int count = 0;
+    
+    profile_array(level->desired_grid, level->profile_lines, &count);
+    
+    int ah = 0;
+    draw_text(gs->fonts.font, "Required Amounts:", (SDL_Color){255, 255, 0, 255}, BLACK, false, false, 50, GUI_H+50, NULL, &ah);
+    
+    int c = ah;
+    for (int i = 0; i < count; i++) {
+        int h;
+        draw_text(gs->fonts.font, level->profile_lines[i], WHITE, BLACK, false, false, 50, GUI_H+50+c, NULL, &h);
+        c += h;
+    }
+}
+
 void gui_draw(void) {
     struct GUI *gui = &gs->gui;
     
@@ -418,7 +439,7 @@ void gui_popup_draw(void) {
     inventory_draw();
     
     // if (gs->gui.popup && gs->gui.is_placer_active) {
-        // placer_draw(get_current_placer(), true);
+    // placer_draw(get_current_placer(), true);
     // }
 }
 
@@ -469,7 +490,7 @@ void auto_set_material_converter_slots(struct Converter *converter) {
             converter->slots[SLOT_FUEL].item = (struct Item)
             {
                 .type = CELL_UNREFINED_COAL,
-                .amount = 1428
+                .amount = 179
             };
             break;
         }
@@ -846,6 +867,10 @@ int material_converter_convert(struct Item *input1, struct Item *input2, struct 
                 switch (input->type) {
                     case CELL_REFINED_COAL: case CELL_UNREFINED_COAL: {
                         result = CELL_BASALT;
+                        break;
+                    }
+                    case CELL_COBBLESTONE: {
+                        result = CELL_MARBLE;
                         break;
                     }
                 }

@@ -28,6 +28,11 @@
          Steam             |
          Ice               |
 
+Note:
+    In the material converter, fuel is burnt at a 1:8 ratio compared to
+    the inputs. So, if the input's amount is 16, there would need to be
+    2 amounts of fuel.
+
 Fuel Converter Combinations:
 
        Tier 1 \
@@ -57,11 +62,12 @@ Material Converter Combinations:
    With Fuel: Ref. Coal
       Cobblestone        -> Marble
       Sandstone + Marble -> Quartz
-      Dirt               -> Cobblestone [2x]
+      Dirt               -> Cobblestone
       Ice                -> Steam
       Water + Cobble     -> Cement
 
    With Fuel: Lava
+	 Cobblestone      -> Marble
      Any Coal         -> Basalt
      Quartz + Marble  -> Granite
      Basalt + Granite -> Diamond

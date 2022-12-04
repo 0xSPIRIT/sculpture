@@ -19,6 +19,7 @@ struct Level {
     int effect_type;
     struct Cell *desired_grid; // What the inspiration is
     struct Cell *initial_grid; // Starting state of grid
+    char profile_lines[64][CELL_TYPE_COUNT];
     struct Source_Cell source_cell[256];
     int source_cell_count;
     int w, h;

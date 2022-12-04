@@ -11,6 +11,7 @@ struct Placer {
     int index;
 
     int state;
+    bool escape_rect; // A flag for if we escape out of the setting of rectangle.
 
     SDL_Rect rect;
     

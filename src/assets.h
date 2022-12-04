@@ -14,7 +14,7 @@ enum {
     RENDER_TARGET_GUI_TOOLBAR, // The render target showing the tool buttons
     RENDER_TARGET_CHISEL_BLOCKER,
     RENDER_TARGET_CHISEL, // Use the same render target for each chisel.
-    RENDER_TARGET_DELETER,
+    RENDER_TARGET_DELETER, // TODO: Unused
     RENDER_TARGET_COUNT 
 };
 

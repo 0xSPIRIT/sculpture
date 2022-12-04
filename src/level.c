@@ -92,12 +92,13 @@ void level_get_cells_from_image(const char *path, struct Cell **out, struct Sour
     SDL_DestroyTexture(texture);
 }
 
-// Gives the amount of coal, cobblestone, sand needed to
-// create the output from a cell array.
-void profile_level(int lvl, struct Cell *desired) {
+// Gives the amount of each cell type there are
+// in an array of cells.
+void profile_array(struct Cell *desired,
+                   char out[64][CELL_TYPE_COUNT],
+                   int *count) 
+{
     int counts[CELL_TYPE_COUNT] = {0};
-    
-    Log("Profiling Level %d:\n", lvl);
     
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (desired[i].type != 0) {
@@ -111,13 +112,8 @@ void profile_level(int lvl, struct Cell *desired) {
         char name[64];
         get_name_from_type(i, name);
         
-        char output[128];
-        sprintf(output, "    %-15s%d\n", name, counts[i]);
-        
-        Log(output);
+        sprintf(out[(*count)++], "  %-15s%d", name, counts[i]);
     }
-    
-    Log("\n\n");
 }
 
 int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
@@ -171,7 +167,7 @@ void levels_setup(void) {
               RES_DIR "lvl/desired/level 4.png",
               RES_DIR "lvl/initial/level 4.png",
               EFFECT_NONE);
-    level_add("Flower Pot",
+    level_add("Lamplight",
               RES_DIR "lvl/desired/level 5.png",
               RES_DIR "lvl/initial/level 5.png",
               EFFECT_RAIN);
@@ -272,8 +268,6 @@ void level_tick(void) {
             } else {
                 undo_system_reset();
             }
-            
-            profile_level(gs->level_current+1, gs->grid);
         }
         break;
         case LEVEL_STATE_OUTRO:

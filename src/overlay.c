@@ -268,7 +268,7 @@ void overlay_draw(void) {
             
             int t = overlay->grid[x+y*gs->gw];
             // Generate different color depending on the type
-            SDL_Color c = { my_rand(t), my_rand(my_rand(t)), my_rand(t*my_rand(t*t)), 255 };
+            SDL_Color c = { my_rand(t), my_rand(t*t), my_rand(t*t*t), 255 };
             SDL_SetRenderDrawColor(gs->renderer, c.r, c.g, c.b, (Uint8)alpha);
 
             SDL_RenderDrawPoint(gs->renderer, x, y);

@@ -1,9 +1,7 @@
 TODO :: {
-	[x] Nerf the deleter.
-	[x] Do an objects_reevaluate() after placing.
-	[x] Make the GUI / converter / inventory system be subject to undo.
-		Very important to make it so that mistakes with conversions
-		can be undone.
+	[x] Show amount of final materials needed in a level?
+	[x] Make the deleter only do one pixel.
+	[x] Make the chisel highlight be green if it's the same type as the output.
 	[ ] Finish all the levels!!
 		[ ] Level 9  - "Showpiece"
 			[ ] Hand holding orb
@@ -13,22 +11,18 @@ TODO :: {
 			[ ] Statue of David in overlay
 			[ ] Materials
 			[ ] Initial State
-		[ ] Level 7 - "Procedure Lullaby"
-			[ ] Make granite and quartz easier to figure out.
-		[ ] Level 6 - "Metamorphosis"
-			[ ] Make it actually work properly.
-		[ ] Level 5 - "Flower Pot"
-			[ ] Make it an actual flower pot lmao.
-			[ ] Change the initial materials. Too many levels
-				especially in the later levels just have cobble
-				and sand as the initials. Be creative please.
 	[ ] Add view mover for when the chisel moves out of the screen.
 		Lerp the view, real smooth-like.
 	[ ] "Everything's Gonna Be Just Fine" - Song?
 }
 
 Future TODO (Vague) :: {       [Don't actually use this list.]
+	[ ] Fix blobs going across the screen.
+
     - Better way to destroy large objects.
+
+	- Tutorialization:  when a chisel doesn't have the pressure to delete
+						a cell, use the deleter.
 
 	Only do this later:
     - View (WASD + Scroll to compensate for chisel going offscreen)

@@ -64,14 +64,18 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     if (event->type == SDL_KEYDOWN && !gs->text_field.active) {
         switch (event->key.keysym.sym) {
         case SDLK_ESCAPE:
-            if (gs->deleter.active) {
-                deleter_stop(true);
+            if (get_current_placer() && get_current_placer()->state == PLACER_PLACE_RECT_MODE && input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                get_current_placer()->escape_rect = true;
+                get_current_placer()->rect.x = -1;
+                get_current_placer()->rect.y = -1;
+                get_current_placer()->rect.w = 0;
+                get_current_placer()->rect.h = 0;
             } else {
 #ifdef ALASKA_DEBUG
                 is_running = false; 
 #endif
             }
-            break;
+                break;
          case SDLK_F12:
             int is_on = SDL_ShowCursor(SDL_QUERY);
             if (is_on == SDL_ENABLE) {
@@ -81,7 +85,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             }
             break;
         case SDLK_BACKQUOTE:
-#if 0
+#if 1
             gs->creative_mode = !gs->creative_mode;
             if (gs->creative_mode) {
                 gui_message_stack_push("Creative Mode: On");
@@ -260,9 +264,12 @@ void draw_intro(void) {
     
     if (gs->current_tool == TOOL_OVERLAY)
         overlay_interface_draw();
-
+    
     tooltip_draw(&gs->gui.tooltip);
 
+    if (gs->gui.popup)
+        gui_draw_profile();
+    
     gui_message_stack_tick_and_draw();
 
     text_field_draw();

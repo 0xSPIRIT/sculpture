@@ -540,7 +540,12 @@ SDL_Color pixel_from_index(enum Cell_Type type, int i) {
         
         case CELL_DIRT: {
             const int variance = 10;
-            color = (SDL_Color){70+randR(i)%variance, 50+randG(i)%variance, 33+randB(i)%variance, 255};
+            color = (SDL_Color){
+                100+my_rand(gs->grid[i].rand)%variance,
+                80+my_rand(gs->grid[i].rand)%variance,
+                60+my_rand(gs->grid[i].rand)%variance,
+                255
+            };
             break;
         }
         case CELL_SAND: {
@@ -1138,7 +1143,7 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, int blocker_si
             if (obj->blob_data[chisel_size].blobs[x+y*gs->gw] != blob) continue;
             if (gs->blocker.active && gs->blocker.pixels[x+y*gs->gw] != blocker_side) continue;
             if (easy_chiseling && gs->overlay.grid[x+y*gs->gw]) continue;
-            if (gs->grid[x+y*gs->gw].type == CELL_DIAMOND && chisel_size != 0) continue;
+            //if (gs->grid[x+y*gs->gw].type == CELL_DIAMOND && chisel_size != 0) continue;
             
             bool available = true;
             
