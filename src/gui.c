@@ -494,6 +494,13 @@ void auto_set_material_converter_slots(struct Converter *converter) {
             };
             break;
         }
+        case 9: {
+            converter->slots[SLOT_FUEL].item = (struct Item)
+            {
+                .type = CELL_UNREFINED_COAL,
+                .amount = 2000
+            };
+        }
         default: {
             break;
         }

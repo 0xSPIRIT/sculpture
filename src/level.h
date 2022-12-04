@@ -1,5 +1,6 @@
 #define LEVEL_COUNT 10
 #define POPUP_TIME 45
+#define SOURCE_CELL_MAX 8
 
 enum Level_State {
     LEVEL_STATE_INTRO,
@@ -20,7 +21,7 @@ struct Level {
     struct Cell *desired_grid; // What the inspiration is
     struct Cell *initial_grid; // Starting state of grid
     char profile_lines[64][CELL_TYPE_COUNT];
-    struct Source_Cell source_cell[256];
+    struct Source_Cell source_cell[SOURCE_CELL_MAX];
     int source_cell_count;
     int w, h;
     int popup_time_current, popup_time_max;

@@ -143,8 +143,8 @@ int level_add(const char *name, const char *desired_image, const char *initial_i
     Assert(h > 0);
     
     if (w != level->w || h != level->h) {
-        Error("%s and %s aren't the same size. Initial: %d, Desired: %d.\n", initial_image, desired_image, w, level->w);
-        exit(1);
+        Error("%s and %s aren't the same size. Initial W: %d, Desired W: %d.\n", initial_image, desired_image, w, level->w);
+        Assert(0);
     }
     
     return level->index;

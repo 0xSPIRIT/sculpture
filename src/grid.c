@@ -1154,6 +1154,15 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, int blocker_si
             
             if (available) {
                 set(x, y, CELL_NONE, -1);
+                struct Level *lvl = &gs->levels[gs->level_current];
+                for (int i = 0; i < lvl->source_cell_count; i++) {
+                    if (abs(lvl->source_cell[i].x - x) <= 2 && abs(lvl->source_cell[i].y - y) <= 2){
+                        lvl->source_cell_count--;
+                        for (int j = i; j < lvl->source_cell_count; j++) {
+                            lvl->source_cell[j] = lvl->source_cell[j+1];
+                        }
+                    }
+                }
             }
         }
     }

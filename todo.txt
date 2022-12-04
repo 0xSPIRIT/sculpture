@@ -1,12 +1,9 @@
 TODO :: {
-	[x] Show amount of final materials needed in a level?
-	[x] Make the deleter only do one pixel.
-	[x] Make the chisel highlight be green if it's the same type as the output.
 	[ ] Finish all the levels!!
-		[ ] Level 9  - "Showpiece"
-			[ ] Hand holding orb
-			[ ] Materials
-			[ ] Initial State
+		[x] Level 9  - "Showpiece"
+			[x] Hand holding orb
+			[x] Materials
+			[x] Initial State
 		[ ] Level 10 - "Brittle Body"
 			[ ] Statue of David in overlay
 			[ ] Materials
