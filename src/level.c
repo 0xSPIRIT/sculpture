@@ -112,7 +112,11 @@ void profile_array(struct Cell *desired,
         char name[64];
         get_name_from_type(i, name);
         
-        sprintf(out[(*count)++], "  %-15s%d", name, counts[i]);
+        if (gs->level_current == 10-1) {
+            sprintf(out[(*count)++], "  %-15s???", name);
+        } else{
+            sprintf(out[(*count)++], "  %-15s%d", name, counts[i]);
+        }
     }
 }
 
@@ -188,8 +192,8 @@ void levels_setup(void) {
               RES_DIR "lvl/initial/level 9.png",
               EFFECT_NONE);
     level_add("Glass Body",
-              RES_DIR "lvl/desired/level 1.png",
-              RES_DIR "lvl/initial/level 1.png",
+              RES_DIR "lvl/desired/level 10.png",
+              RES_DIR "lvl/initial/level 10.png",
               EFFECT_NONE);
 }
 

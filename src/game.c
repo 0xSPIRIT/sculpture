@@ -53,9 +53,6 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 placer->contains->type += event->wheel.y;
                 if (placer->contains->type < CELL_NONE+1) placer->contains->type = CELL_NONE+1;
                 if (placer->contains->type >= CELL_TYPE_COUNT) placer->contains->type = CELL_TYPE_COUNT-1;
-            } else {
-                placer->radius += event->wheel.y;
-                placer->radius = clamp(placer->radius, 1, 5);
             }
         }
     }
@@ -85,7 +82,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             }
             break;
         case SDLK_BACKQUOTE:
-#if 1
+#if ALASKA_DEBUG
             gs->creative_mode = !gs->creative_mode;
             if (gs->creative_mode) {
                 gui_message_stack_push("Creative Mode: On");
@@ -96,15 +93,6 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             break;
         case SDLK_SPACE:
             gs->paused = !gs->paused;
-            break;
-        case SDLK_p:
-            if (get_current_placer()) {
-                if (get_current_placer()->state == PLACER_SUCK_MODE) {
-                    get_current_placer()->state = PLACER_PLACE_RECT_MODE;
-                } else {
-                    get_current_placer()->state = PLACER_SUCK_MODE;
-                }
-            }
             break;
         case SDLK_n:
             gs->step_one = 1;

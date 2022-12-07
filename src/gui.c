@@ -231,10 +231,6 @@ void gui_tick(void) {
         gui->popup = !gui->popup;
         gui->popup_y_vel = 0;
         tooltip_reset(&gui->tooltip);
-        
-        // Just in case the player had reset it.
-        if (gs->current_placer == -1)
-            gs->current_placer = 0;
     }
     
     const f32 speed = 3.0f;
@@ -437,10 +433,6 @@ void gui_popup_draw(void) {
     
     all_converters_draw();
     inventory_draw();
-    
-    // if (gs->gui.popup && gs->gui.is_placer_active) {
-    // placer_draw(get_current_placer(), true);
-    // }
 }
 
 bool is_cell_stone(int type) {
@@ -1044,17 +1036,6 @@ void converter_tick(struct Converter *converter) {
 }
 
 void all_converters_tick(void) {
-    if (gs->gui.popup && gs->current_tool != TOOL_PLACER) {
-        gs->previous_tool = gs->current_tool;
-        gs->current_tool = TOOL_PLACER;
-        gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
-        gs->gui.tool_buttons[gs->current_tool]->active = true;
-        for (int i = 0; i < TOOL_COUNT; i++) {
-            if (i == gs->current_tool) continue;
-            gs->gui.tool_buttons[i]->active = false;
-        }
-    }
-    
     converter_tick(gs->material_converter);
     converter_tick(gs->fuel_converter);
     

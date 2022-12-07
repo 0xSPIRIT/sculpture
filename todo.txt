@@ -1,26 +1,26 @@
 TODO :: {
+	[x] Remove pushing p for placer suck/place when unnecessary.
+	[x] Removed unimportant remnants from old GUI inventory overhaul that
+		sets the current tool to the placer every time you exit the GUI menu.
 	[ ] Finish all the levels!!
-		[x] Level 9  - "Showpiece"
-			[x] Hand holding orb
-			[x] Materials
-			[x] Initial State
 		[ ] Level 10 - "Brittle Body"
-			[ ] Statue of David in overlay
-			[ ] Materials
-			[ ] Initial State
-	[ ] Add view mover for when the chisel moves out of the screen.
-		Lerp the view, real smooth-like.
-	[ ] "Everything's Gonna Be Just Fine" - Song?
+			[x] Statue with lots of curves in overlay
+			[x] Materials
+			[ ] Initial State:
+					A shape that projects confidence, huge ambition,
+					and overenthusiasm in abilities.
+	[ ] Make all the overlay colors preset, not random.
 }
 
-Future TODO (Vague) :: {       [Don't actually use this list.]
+Future TODO (Vague) :: {
 	[ ] Fix blobs going across the screen.
 
-    - Better way to destroy large objects.
+	[ ] Make the 3D fall in "Glass Body"
+	[ ] Furnace heating up in Glass Body?
 
-	- Tutorialization:  when a chisel doesn't have the pressure to delete
+	[ ] Tutorialization: when a chisel doesn't have the pressure to delete
 						a cell, use the deleter.
 
-	Only do this later:
-    - View (WASD + Scroll to compensate for chisel going offscreen)
+	[ ] Add view mover for when the chisel moves out of the screen.
+		Lerp the view, real smooth-like.
 }

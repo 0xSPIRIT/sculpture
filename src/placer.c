@@ -17,7 +17,7 @@ void placer_init(int num) {
     
     placer->object_index = -1;
     placer->did_click = 0;
-    placer->radius = 2;
+    placer->radius = 4;
 
     placer->placing_solid_time = 0;
 
@@ -228,7 +228,8 @@ void placer_place_rect(struct Placer *placer) {
     
     int object_index = -1;
     
-    // Check if we're intersecting with any other object.
+    // Check if we're intersecting with any other object and
+    // that we have the same material type as them.
     // If so, then we just join that object with this by
     // using its object index, not a new one.
     //
@@ -237,7 +238,7 @@ void placer_place_rect(struct Placer *placer) {
     for (int y = placer->rect.y-1; y <= placer->rect.y+placer->rect.h+1; y++) {
         for (int x = placer->rect.x-1; x <= placer->rect.x+placer->rect.w+1; x++) {
             if (!is_in_bounds(x, y)) continue;
-            if (gs->grid[x+y*gs->gw].object != -1) {
+            if (gs->grid[x+y*gs->gw].object != -1 && gs->grid[x+y*gs->gw].type == placer->contains->type) {
                 object_index = gs->grid[x+y*gs->gw].object;
                 break;
             }
@@ -302,7 +303,12 @@ void placer_tick(struct Placer *placer) {
     }
     
     // If the cell type is hard, use rectangle placing, otherwise use brush/circle placing.
-    if (placer->state == PLACER_PLACE_RECT_MODE || placer->state == PLACER_PLACE_CIRCLE_MODE) {
+    if (placer->contains->type == 0) {
+        placer->state = PLACER_SUCK_MODE;
+    }
+    else if (placer->state == PLACER_PLACE_RECT_MODE ||
+             placer->state == PLACER_PLACE_CIRCLE_MODE)
+    {
         if (is_cell_hard(placer->contains->type)) {
             placer->state = PLACER_PLACE_RECT_MODE;
         } else {
@@ -310,9 +316,19 @@ void placer_tick(struct Placer *placer) {
         }
     }
     
-    if (gs->is_mouse_over_any_button) return;
+    if (placer->contains->type && gs->input.keys_pressed[SDL_SCANCODE_P]) {
+        if (placer->state == PLACER_SUCK_MODE) {
+            placer->state = PLACER_PLACE_CIRCLE_MODE;
+        } else if (placer->state == PLACER_PLACE_CIRCLE_MODE) {
+            placer->state = PLACER_SUCK_MODE;
+        }
+    }
     
-    //placer->state = PLACER_SUCK_MODE;
+    if (is_cell_hard(placer->contains->type) && placer->state == PLACER_SUCK_MODE) {
+        placer->state = PLACER_PLACE_RECT_MODE;
+    }
+    
+    if (gs->is_mouse_over_any_button) return;
     
     bool skip=false;
     if (placer->escape_rect && input->mouse_released[SDL_BUTTON_LEFT]) {
@@ -384,10 +400,18 @@ void placer_tick(struct Placer *placer) {
     tooltip_get_string(placer->contains->type, placer->contains->amount, string);
 
     if (!gs->gui.popup) {
-        if (placer->state == PLACER_SUCK_MODE) {
-            strcpy(gs->gui.tooltip.str[1], "Mode: [TAKE]");
+        if (placer->contains->type && !is_cell_hard(placer->contains->type)) {
+            if (placer->state == PLACER_SUCK_MODE) {
+                strcpy(gs->gui.tooltip.str[1], "Mode: [TAKE] (P for Toggle)");
+            } else {
+                strcpy(gs->gui.tooltip.str[1], "Mode: [PLACE] (P for Toggle)");
+            }
         } else {
-            strcpy(gs->gui.tooltip.str[1], "Mode: [PLACE]");
+            if (placer->state == PLACER_SUCK_MODE) {
+                strcpy(gs->gui.tooltip.str[1], "Mode: [TAKE]");
+            } else {
+                strcpy(gs->gui.tooltip.str[1], "Mode: [PLACE]");
+            }
         }
         strcpy(gs->gui.tooltip.str[2], string);
     } else {
