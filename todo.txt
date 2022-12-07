@@ -1,7 +1,6 @@
 TODO :: {
-	[x] Make undo save states when converter things happen.
+	[x] Fix blobs going across the screen.
 	[ ] Make the 3D fall in "Glass Body"
-	[ ] Fix blobs going across the screen.
 	[ ] Make narrator framework.
 	[ ] Get playtesting done.
 }

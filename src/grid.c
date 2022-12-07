@@ -336,7 +336,8 @@ void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
 void grid_fill_circle(Uint32 *blobs, Uint32 *blob_count, int obj, int x, int y, int size) {
     for (int yy = -size; yy <= size; yy++) {
         for (int xx = -size; xx <= size; xx++) {
-            if (xx*xx+yy*yy > size*size) continue;
+            if (!is_in_bounds(x+xx, y+yy)) continue;
+            if (xx*xx+yy*yy > size*size)   continue;
             if (gs->grid[(x+xx)+(y+yy)*gs->gw].object != obj) continue;
             if (blobs[(x+xx)+(y+yy)*gs->gw]) continue;
             
