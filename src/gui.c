@@ -26,6 +26,10 @@ void converter_begin_converting(void *converter_ptr) {
     if (!converter_is_layout_valid(converter))
         return;
     
+    if (converter->state == CONVERTER_OFF) {
+        save_state_to_next();
+    }
+    
     converter_set_state(converter, converter->state == CONVERTER_ON ? CONVERTER_OFF : CONVERTER_ON);
 }
 

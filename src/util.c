@@ -64,8 +64,8 @@ void get_filename_from_type(int type, char *out) {
         case CELL_BASALT:      strcpy(out, RES_DIR "items/basalt.png"); break;
         case CELL_DIAMOND:     strcpy(out, RES_DIR "items/diamond.png"); break;
         
-        case CELL_UNREFINED_COAL: strcpy(out, RES_DIR "items/coal.png"); break;
-        case CELL_REFINED_COAL:   strcpy(out, RES_DIR "items/coal.png"); break;
+        case CELL_UNREFINED_COAL: strcpy(out, RES_DIR "items/unref_coal.png"); break;
+        case CELL_REFINED_COAL:   strcpy(out, RES_DIR "items/ref_coal.png"); break;
         case CELL_LAVA:           strcpy(out, RES_DIR "items/lava.png"); break;
         
         case CELL_SMOKE:       strcpy(out, RES_DIR "items/smoke.png"); break;

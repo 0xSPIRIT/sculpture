@@ -28,10 +28,16 @@
          Steam             |
          Ice               |
 
-Note:
-    In the material converter, fuel is burnt at a 1:8 ratio compared to
-    the inputs. So, if the input's amount is 16, there would need to be
-    2 amounts of fuel.
+Notes:
+
+1. In the material converter, fuel is burnt at a 1:8 ratio compared to
+   the inputs. So, if the input's amount is 16, there would need to be
+   2 amounts of fuel.
+2. For the conversion of Cobblestone -> Marble, it is available with
+   multiple fuel sources. However, the conversion speed stays the same
+   across fuel sources. Thus, it is best to convert your cobblestone to
+   marble earlier, with your more expendable Unrefined Coal.
+
 
 Fuel Converter Combinations:
 
@@ -46,9 +52,10 @@ Fuel Converter Combinations:
     Unref. Coal + Glass -> Refined Coal
     Any Stone + Ref. Coal -> Lava
 
+
 Material Converter Combinations:
 
-   With Fuel: none
+   With Fuel: None
        Wood log -> wood planks
  
    With Fuel: Unref. Coal
