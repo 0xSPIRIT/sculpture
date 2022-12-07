@@ -52,9 +52,9 @@ Material Converter Combinations:
        Wood log -> wood planks
  
    With Fuel: Unref. Coal
+      Cobblestone        -> Marble
       Sand               -> Glass
       Dirt               -> Cobblestone
-      Cobblestone        -> Marble
       Cobblestone + Sand -> Sandstone
       Ice                -> Water
       Water              -> Steam
@@ -67,7 +67,7 @@ Material Converter Combinations:
       Water + Cobble     -> Cement
 
    With Fuel: Lava
-	 Cobblestone      -> Marble
+     Cobblestone      -> Marble
      Any Coal         -> Basalt
      Quartz + Marble  -> Granite
      Basalt + Granite -> Diamond

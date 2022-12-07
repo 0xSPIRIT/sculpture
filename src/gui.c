@@ -227,7 +227,9 @@ void gui_tick(void) {
     struct GUI *gui = &gs->gui;
     struct Input *input = &gs->input;
     
-    if (input->keys_pressed[SDL_SCANCODE_TAB]) {
+    if (input->keys_pressed[SDL_SCANCODE_TAB] && 
+        gs->levels[gs->level_current].state == LEVEL_STATE_PLAY) 
+    {
         gui->popup = !gui->popup;
         gui->popup_y_vel = 0;
         tooltip_reset(&gui->tooltip);

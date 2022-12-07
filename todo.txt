@@ -1,12 +1,9 @@
 TODO :: {
-	[x] Remove pushing p for placer suck/place when unnecessary.
-	[x] Removed unimportant remnants from old GUI inventory overhaul that
-		sets the current tool to the placer every time you exit the GUI menu.
-	[ ] Finish all the levels!!
-		[ ] Level 10 - "Brittle Body"
+	[x] Finish all the levels!!
+		[x] Level 10 - "Brittle Body"
 			[x] Statue with lots of curves in overlay
 			[x] Materials
-			[ ] Initial State:
+			[x] Initial State:
 					A shape that projects confidence, huge ambition,
 					and overenthusiasm in abilities.
 	[ ] Make all the overlay colors preset, not random.

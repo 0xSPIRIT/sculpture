@@ -280,7 +280,11 @@ void draw_outro(struct Level *level) {
         draw_text(gs->fonts.font, string, BLACK, WHITE, 0, 0, x, y, NULL, NULL);
     }
 
+    
     // Desired and Your grid.
+    
+    const int scale = 3;
+    
     for (int i = 0; i < 2; i++) {
         char string[256] = {0};
         if (!i) {
@@ -292,11 +296,11 @@ void draw_outro(struct Level *level) {
         int dx = rect.x + margin;
         int dy = rect.y + 100;
         if (i) { // If your grid, put it on the right
-            dx += rect.w - margin - 2*level->w - margin;
+            dx += rect.w - margin - scale*level->w - margin;
         }
 
         draw_text(gs->fonts.font, string, BLACK, WHITE, 0, 0, dx, dy, NULL, NULL);
-
+        
         for (int y = 0; y < gs->gh; y++) {
             for (int x = 0; x < gs->gw; x++) {
                 SDL_Rect r;
@@ -318,7 +322,7 @@ void draw_outro(struct Level *level) {
                     }
                     break;
                 }
-                r = (SDL_Rect){ 2*x + dx, 2*y + dy + 32, 2, 2 };
+                r = (SDL_Rect){ scale*x + dx, scale*y + dy + 32, scale, scale };
                 SDL_RenderFillRect(gs->renderer, &r);
             }
         }
