@@ -282,38 +282,35 @@ void chisel_init(struct Chisel *type) {
     chisel->spd = 3.;
 }
 
-void chisel_hammer_draw(void) {
+void chisel_hammer_draw(int dx, int dy) {
     struct Chisel_Hammer *hammer = &gs->chisel_hammer;
-
+    
     const SDL_Rect dst = {
-        (int)hammer->x, (int)(hammer->y - hammer->h/2),
+        dx + (int)hammer->x, dy + (int)(hammer->y - hammer->h/2),
         hammer->w, hammer->h
     };
     const SDL_Point center = { 0, hammer->h/2 };
-
+    
     SDL_RendererFlip flip = SDL_FLIP_NONE;
-
+    
     if (hammer->angle > 90 && hammer->angle < 270) {
         flip = SDL_FLIP_VERTICAL;
     }
-
+    
     SDL_RenderCopyEx(gs->renderer, hammer->texture, NULL, &dst, hammer->angle, &center, flip);
 }
-void chisel_update_texture(void) {
-    struct Chisel *chisel = gs->chisel;
 
+void chisel_draw_target(struct Chisel *chisel, int dx, int dy, int render_target) {
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
-    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL), SDL_BLENDMODE_BLEND);
     
-    Assert(RenderTarget(RENDER_TARGET_CHISEL));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_CHISEL));
-
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(render_target));
+    
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
     SDL_RenderClear(gs->renderer);
     
     int x = (int)chisel->x;
     int y = (int)chisel->y;
-
+    
     // Disgusting hardcoding to adjust the weird rotation SDL does.
     // TODO: Clean this up.
     if (!chisel->face_mode) {
@@ -344,31 +341,33 @@ void chisel_update_texture(void) {
             }
         }
     }
-
+    
     const SDL_Rect dst = {
-        x, y - chisel->h/2,
+        dx + x, dy + y - chisel->h/2,
         chisel->w, chisel->h
     };
     const SDL_Point center = { 0, chisel->h/2 };
-
+    
     SDL_RenderCopyEx(gs->renderer, chisel->texture, NULL, &dst, chisel->angle, &center, SDL_FLIP_NONE);
-
-    chisel_hammer_draw();
-
+    
+    chisel_hammer_draw(dx, dy);
+    
     if (!chisel->face_mode) {
         SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
-        SDL_RenderDrawPoint(gs->renderer, (int)chisel->x, (int)chisel->y);
+        SDL_RenderDrawPoint(gs->renderer, dx + (int)chisel->x, dy + (int)chisel->y);
     }
-
-    // PROBLEM AREA!
-    int w, h;
-
-    SDL_QueryTexture(RenderTarget(RENDER_TARGET_CHISEL), NULL, NULL, &w, &h);
-    Assert(w == gs->gw && h == gs->gh);
     
     SDL_RenderReadPixels(gs->renderer, NULL, 0, chisel->pixels, 4*gs->gw);
-
+    
     SDL_SetRenderTarget(gs->renderer, prev_target);
+}
+
+void chisel_update_texture(void) {
+    struct Chisel *chisel = gs->chisel;
+    
+    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CHISEL), SDL_BLENDMODE_BLEND);
+    
+    chisel_draw_target(chisel, 0, 0, RENDER_TARGET_CHISEL);
 }
 
 void chisel_set_depth(void) {
@@ -584,7 +583,7 @@ void chisel_draw(void) {
 
     chisel_update_texture();
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_CHISEL), NULL, NULL);
-
+    
     bool close = false;
     bool hit = false;
 

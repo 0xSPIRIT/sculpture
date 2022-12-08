@@ -397,6 +397,16 @@ void object_generate_blobs(int object_index, int chisel_size) {
     
     if (chisel_size == 0) {
         blob_generate_dumb(object_index, chisel_size, &count);
+    } else if (obj->cell_count <= 6) {
+        Uint32 *blobs = obj->blob_data[chisel_size].blobs;
+        for (int y = 0; y < gs->gh; y++) {
+            for (int x = 0; x < gs->gw; x++) {
+                if (gs->grid[x+y*gs->gw].object != object_index) continue;
+                
+                blobs[x+y*gs->gw] = 1;
+            }
+        }
+        count = 1;
     } else {
         gs->blob_type = BLOB_CIRCLE_B;
         //blob_generate_circles(object_index, chisel_size, &count);

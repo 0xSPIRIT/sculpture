@@ -1,7 +1,5 @@
 TODO :: {
-	[?] Add view mover for when the chisel moves out of the screen.
-		Lerp the view, real smooth-like.
-	[ ] Small objects not getting blobbed properly?
+	[x] Small objects not getting blobbed properly?
 	[ ] Make the 3D fall in "Glass Body"
 	[ ] Dust is still emitted if on blocker.
 	[ ] Make narrator framework.
