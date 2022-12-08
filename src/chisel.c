@@ -417,7 +417,6 @@ void chisel_tick(void) {
     chisel->is_changing_angle = input->keys[SDL_SCANCODE_LSHIFT];
 
     if (prev_changing_angle && !chisel->is_changing_angle) {
-        /* SDL_WarpMouseInWindow(gs->window, (int)chisel->x*gs->S, GUI_H + (int)chisel->y*gs->S); */
         move_mouse_to_grid_position(chisel->x, chisel->y);
         input->mx = (int)chisel->x;
         input->my = (int)chisel->y;
@@ -506,12 +505,14 @@ void chisel_tick(void) {
          //SDL_ShowCursor(dist > 1);
      }
 
+#if 0
     if (input->keys_pressed[SDL_SCANCODE_S]) {
         chisel->face_mode = !chisel->face_mode;
         chisel->w = chisel->face_mode ? chisel->face_w : chisel->outside_w;
         chisel->h = chisel->face_mode ? chisel->face_h : chisel->outside_h;
         chisel->texture = chisel->face_mode ? chisel->face_texture : chisel->outside_texture;
     }
+#endif
 
     if (input->mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
         chisel->is_changing_angle = 0;
@@ -555,7 +556,6 @@ void chisel_tick(void) {
             } else if (!chisel->did_remove && gs->object_current != -1) {
                 chisel_goto_blob(true, ux, uy, len);
             }
-            /* SDL_WarpMouseInWindow(gs->window, (int)(chisel->x * gs->S), GUI_H + (int)(chisel->y * gs->S)); */
             move_mouse_to_grid_position(chisel->x, chisel->y);
             input->mx = (int)chisel->x;
             input->my = (int)chisel->y;

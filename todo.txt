@@ -1,6 +1,9 @@
 TODO :: {
-	[x] Fix blobs going across the screen.
+	[?] Add view mover for when the chisel moves out of the screen.
+		Lerp the view, real smooth-like.
+	[ ] Small objects not getting blobbed properly?
 	[ ] Make the 3D fall in "Glass Body"
+	[ ] Dust is still emitted if on blocker.
 	[ ] Make narrator framework.
 	[ ] Get playtesting done.
 }
@@ -9,7 +12,6 @@ Future TODO (Vague) :: {
 	[ ] Tutorialization: 
 		- When a chisel doesn't have the pressure to delete
 		  a cell, use the deleter.
-
-	[ ] Add view mover for when the chisel moves out of the screen.
-		Lerp the view, real smooth-like.
+		- Show that when you chisel something, it goes into your
+		  inventory.
 }

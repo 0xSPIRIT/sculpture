@@ -112,13 +112,11 @@ void profile_array(struct Cell *desired,
         char name[64];
         get_name_from_type(i, name);
         
-#if 0
         if (gs->level_current == 10-1) {
             sprintf(out[(*count)++], "  %-15s???", name);
         } else{
-#endif
             sprintf(out[(*count)++], "  %-15s%d", name, counts[i]);
-        //}
+        }
     }
 }
 

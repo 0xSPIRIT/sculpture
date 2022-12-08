@@ -67,7 +67,6 @@ struct Game_State {
     f32 delta_time;
     
     int current_tool, previous_tool;
-    int debug_mode;
     
     SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
     
@@ -82,11 +81,11 @@ struct Game_State {
     
     int gw, gh; // Grid width, grid height
     int grid_show_ghost;
-
+    
     struct Object objects[MAX_OBJECTS];
     int object_count, object_current;
     int do_draw_blobs, do_draw_objects;
-
+    
     bool paused;
     int frames;
     bool step_one;
@@ -97,9 +96,9 @@ struct Game_State {
     struct Overlay overlay;
     
     clock_t global_start, global_end;
-
+    
     bool undo_initialized;
-    // struct Save_State *current_state, *start_state;
+    
     struct Save_State save_states[MAX_UNDO];
     int save_state_count; // Number of states saved.
 

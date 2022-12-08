@@ -38,11 +38,11 @@
 #include <windows.h>
 
 #include "shared.h"
+#include "util.c"
 #include "win32_SetProcessDpiAware.h"
 
 // Include all files to compile in one translation unit for
 // compilation speed's sake. ("Unity Build")
-#include "util.c"
 #include "assets.c"
 #include "input.c"
 

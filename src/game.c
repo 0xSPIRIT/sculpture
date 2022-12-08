@@ -108,9 +108,6 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         case SDLK_b:
             gs->do_draw_blobs = !gs->do_draw_blobs;
             break;
-        case SDLK_w:
-            emit_dust_explosion(CELL_COBBLESTONE, gs->input.mx, gs->input.my, 20);
-            break;
         case SDLK_g:
             if (input->keys[SDL_SCANCODE_LCTRL]) {
 	            set_text_field("Goto Level", "", goto_level_string_hook);
@@ -125,9 +122,6 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             break;
         case SDLK_u:
             objects_reevaluate();
-            break;
-        case SDLK_d:
-            gs->debug_mode = 1;
             break;
         case SDLK_z:
             if (input->keys[SDL_SCANCODE_LCTRL]) {

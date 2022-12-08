@@ -34,7 +34,7 @@ void _end_timer(const char *func) {
 
 // Moves the mouse to the middle of the grid cell, not the top-left.
 void move_mouse_to_grid_position(f32 x, f32 y) {
-    SDL_WarpMouseInWindow(gs->window, (int)(x*gs->S + gs->S/2), GUI_H + (int)(y*gs->S + gs->S/2));
+    SDL_WarpMouseInWindow(gs->window, (int)(x*gs->S + gs->S/2 - gs->view.x), GUI_H + (int)(y*gs->S + gs->S/2 - gs->view.y));
 }
 
 void get_filename_from_type(int type, char *out) {
@@ -119,7 +119,7 @@ void get_name_from_tool(int type, char *out) {
         case TOOL_BLOCKER:       strcpy(out, "Blocker"); break;
         case TOOL_DELETER:       strcpy(out, "Deleter (Under Construction!)"); break;
         case TOOL_PLACER:        strcpy(out, "Placer"); break;
-        case TOOL_GRABBER:       strcpy(out, "Grabber"); break;
+        case TOOL_GRABBER:       strcpy(out, "Pointer"); break;
     }
 }
 

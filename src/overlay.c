@@ -139,9 +139,9 @@ void overlay_tick(void) {
     memset(overlay->temp_grid, 0, sizeof(int)*gs->gw*gs->gh);
     
     const f32 speed = 0.1f;
-    if (gs->input.keys[SDL_SCANCODE_W]) {
+    if (gs->input.keys[SDL_SCANCODE_UP]) {
         overlay->size += speed;
-    } else if (gs->input.keys[SDL_SCANCODE_S]) {
+    } else if (gs->input.keys[SDL_SCANCODE_DOWN]) {
         overlay->size -= speed;
     }
     if (overlay->size < 0) overlay->size = 0;

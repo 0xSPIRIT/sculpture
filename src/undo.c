@@ -32,19 +32,23 @@ bool is_current_grid_same_as(struct Save_State *state) {
 bool is_current_slots_same_as(struct Save_State *state) {
     // Inventory Slots
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
-        if (0 == memcmp(&state->placer_items[i], &gs->inventory.slots[i].item, sizeof(struct Item)))
+        if (0 != memcmp(&state->placer_items[i], &gs->inventory.slots[i].item, sizeof(struct Item))) {
             return false;
+        }
     }
     // Material Converter
     for (int i = 0; i < SLOT_MAX_COUNT; i++) {
-        if (0 == memcmp(&state->placer_items[INVENTORY_SLOT_COUNT + i], &gs->material_converter->slots[i].item, sizeof(struct Item)))
+        if (0 != memcmp(&state->placer_items[INVENTORY_SLOT_COUNT + i], &gs->material_converter->slots[i].item, sizeof(struct Item))) {
             return false;
+        }
     }
     // Fuel Converter
     for (int i = 0; i < SLOT_MAX_COUNT-1; i++) {
-        if (0 == memcmp(&state->placer_items[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT + i], &gs->fuel_converter->slots[i].item, sizeof(struct Item)))
+        if (0 != memcmp(&state->placer_items[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT + i], &gs->fuel_converter->slots[i].item, sizeof(struct Item))) {
             return false;
+        }
     }
+    Log("True!\n");
     return true;
 }
 
@@ -63,7 +67,6 @@ void save_state_to_next(void) {
             for (int j = 0; j < TOTAL_SLOT_COUNT; j++) {
                 gs->save_states[i].placer_items[j] = gs->save_states[i+1].placer_items[j];
             }
-            gs->save_states[i].is_gui = gs->save_states[i+1].is_gui;
         }
         
         int i = gs->save_state_count;
@@ -72,7 +75,6 @@ void save_state_to_next(void) {
                 memset(gs->save_states[i].grid_layers[j], 0, gs->gw*gs->gh*sizeof(struct Cell));
             }
             memset(gs->save_states[i].placer_items, 0, sizeof(struct Item)*TOTAL_SLOT_COUNT);
-            gs->save_states[i].is_gui = 0;
         }
     }
     
@@ -92,8 +94,6 @@ void save_state_to_next(void) {
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
         memcpy(state->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
     }
-    
-    state->is_gui = gs->gui.popup;
     
     // Inventory Slots
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
@@ -150,8 +150,21 @@ void undo(void) {
 
         set_state(gs->save_state_count-2);
         gs->save_state_count--;
-    } else { // Just reset to the current state
-        set_state(gs->save_state_count-1);
+    } else { 
+        if (gs->gui.popup) {
+            if (is_current_slots_same_as(current_state())) {
+                if (gs->save_state_count == 1) {
+                    return;
+                }
+                
+                set_state(gs->save_state_count-2);
+                gs->save_state_count--;
+            } else {
+                set_state(gs->save_state_count-1);
+            }
+        } else {
+            set_state(gs->save_state_count-1);
+        }
     }
 
     objects_reevaluate();

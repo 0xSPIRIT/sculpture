@@ -1,16 +1,28 @@
 struct View {
-    int x, y, w, h;
+    f64 x, y, w, h;
 };
 
+f64 lerp64(f64 a, f64 b, f64 t) {
+    return a + t*(b-a); // or a(1-t) + tb -- same thing.
+}
+
 void view_tick(struct View *view, struct Input *input) {
-    int move_x = input->keys[SDL_SCANCODE_D] - input->keys[SDL_SCANCODE_A];
-    int move_y = input->keys[SDL_SCANCODE_S] - input->keys[SDL_SCANCODE_W];
+    float desired_x = 0;
     
-    const int speed = 9;
+    if (input->keys[SDL_SCANCODE_D]) {
+        desired_x = 100;
+    } else if (input->keys[SDL_SCANCODE_A]) {
+        desired_x = -100;
+    }
     
-    move_x = 0;
-    move_y = 0;
+    float desired_y = 0;
     
-    view->x += move_x * speed;
-    view->y += move_y * speed;
+    if (input->keys[SDL_SCANCODE_S]) {
+        desired_y = 100;
+    } else if (input->keys[SDL_SCANCODE_W]) {
+        desired_y = -100;
+    }
+    
+    view->x = lerp64(view->x, desired_x, 0.35);
+    view->y = lerp64(view->y, desired_y, 0.35);
 }

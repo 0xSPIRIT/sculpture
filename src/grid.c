@@ -636,6 +636,9 @@ SDL_Color pixel_from_index(enum Cell_Type type, int i) {
         
         case CELL_GRANITE: {
             color = get_pixel(gs->surfaces.granite_surface, i%gs->gw, i/gs->gw);
+            color.r *= 0.79;
+            color.g *= 0.79;
+            color.b *= 0.79;
             break;
         }
         

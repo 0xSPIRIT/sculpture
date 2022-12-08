@@ -26,13 +26,15 @@ void render_targets_init(SDL_Renderer *renderer,
                          struct Textures *textures) {
     for (int lvl = 0; lvl < LEVEL_COUNT; lvl++) {
         struct Level *l = &levels[lvl];
+        Assert(l->w != 0 && l->h != 0);
+        
         for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
-            if (i == 1) {
+            if (i == RENDER_TARGET_GUI_TOOLBAR) {
                 textures->render_targets[lvl][i] = CreateRenderTarget(width, GUI_H);
+                Assert(textures->render_targets[lvl][i]);
                 continue;
             }
             
-            Assert(l->w != 0 && l->h != 0);
             textures->render_targets[lvl][i] = CreateRenderTarget(l->w, l->h);
             Assert(textures->render_targets[lvl][i]);
         }
