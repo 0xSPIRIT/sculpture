@@ -288,7 +288,17 @@ bool is_point_in_triangle(SDL_Point pt, SDL_Point v1, SDL_Point v2, SDL_Point v3
     return !(has_neg && has_pos);
 }
 
-void draw_text(TTF_Font *font, const char *str, SDL_Color col, SDL_Color bg_col, bool align_right, bool align_bottom, int x, int y, int *out_w, int *out_h) {
+void draw_text(TTF_Font *font,
+               const char *str,
+               SDL_Color col,
+               SDL_Color bg_col,
+               bool align_right,
+               bool align_bottom,
+               int x,
+               int y,
+               int *out_w,
+               int *out_h) 
+{
     SDL_Surface *surf = TTF_RenderText_LCD(font, str, col, bg_col);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     

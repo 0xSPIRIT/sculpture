@@ -39,7 +39,7 @@ struct Textures {
 
     SDL_Texture *items[CELL_TYPE_COUNT];
     SDL_Texture *tool_buttons[TOOL_COUNT];
-    SDL_Texture *convert_button;
+    SDL_Texture *convert_button, *tutorial_ok_button;
 
     // Temp textures for drawing text goes here!
     // TODO: Perhaps use an array and streamline this process

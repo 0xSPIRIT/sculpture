@@ -19,7 +19,8 @@ enum Tooltip_Type {
 enum Button_Type {
     BUTTON_TYPE_TOOL_BAR,
     BUTTON_TYPE_CONVERTER,
-    BUTTON_TYPE_OVERLAY_INTERFACE
+    BUTTON_TYPE_OVERLAY_INTERFACE,
+    BUTTON_TYPE_TUTORIAL
 };
 
 struct Tooltip {

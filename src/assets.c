@@ -81,7 +81,8 @@ void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
     textures->blob_hammer = load_texture(renderer, RES_DIR "hammer.png");
     textures->converter_arrow = load_texture(renderer, RES_DIR "arrow.png");
     textures->convert_button = load_texture(renderer, RES_DIR "buttons/convert.png");
-    
+    textures->tutorial_ok_button = load_texture(renderer, RES_DIR "buttons/tutorial_ok.png");
+        
     const char *chisel_files[] = {
         RES_DIR "chisel_small",
         RES_DIR "chisel_medium",

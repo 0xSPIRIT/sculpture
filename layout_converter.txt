@@ -20,8 +20,6 @@
          ------------------+-------------
                Others      |
          ------------------+-------------
-         Wood Logs         |
-         Wood Planks       |
          Dirt              |
          Sand              |
          Water             |
@@ -55,9 +53,6 @@ Fuel Converter Combinations:
 
 Material Converter Combinations:
 
-   With Fuel: None
-       Wood log -> wood planks
- 
    With Fuel: Unref. Coal
       Cobblestone        -> Marble
       Sand               -> Glass

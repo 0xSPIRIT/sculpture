@@ -15,6 +15,7 @@
 #include "placer.c"
 #include "inventory.c"
 #include "gui.c"
+#include "tutorial.c"
 #include "overlay_interface.c"
 #include "effects.c"
 #include "grabber.c"
@@ -31,8 +32,10 @@ export void game_init(struct Game_State *state, int level) {
     gs->view.h = gs->window_height-GUI_H;
     
     levels_setup();
-
+    
     goto_level(level);
+    
+    set_tutorial_rect("Tutorial #1\n======\n\nProfound thing.\nPush F to pay respects!\nReehehehe....!", 32, GUI_H+32);
 }
 
 export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
@@ -41,11 +44,11 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     
     bool is_running = true;
     struct Input *input = &gs->input;
-
+    
     if (event->type == SDL_QUIT) {
         is_running = false;
     }
-
+    
     if (event->type == SDL_MOUSEWHEEL) {
         if (gs->current_tool == TOOL_PLACER) {
             struct Placer *placer = &gs->placers[gs->current_placer];
@@ -60,7 +63,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     int selected_tool = 0;
     if (event->type == SDL_KEYDOWN && !gs->text_field.active) {
         switch (event->key.keysym.sym) {
-        case SDLK_ESCAPE:
+            case SDLK_ESCAPE:
             if (get_current_placer() && get_current_placer()->state == PLACER_PLACE_RECT_MODE && input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                 get_current_placer()->escape_rect = true;
                 get_current_placer()->rect.x = -1;
@@ -72,8 +75,8 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 is_running = false; 
 #endif
             }
-                break;
-         case SDLK_F12:
+            break;
+            case SDLK_F12:
             int is_on = SDL_ShowCursor(SDL_QUERY);
             if (is_on == SDL_ENABLE) {
                 SDL_ShowCursor(SDL_DISABLE);
@@ -81,7 +84,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 SDL_ShowCursor(SDL_ENABLE);
             }
             break;
-        case SDLK_BACKQUOTE:
+            case SDLK_BACKQUOTE:
 #if ALASKA_DEBUG
             gs->creative_mode = !gs->creative_mode;
             if (gs->creative_mode) {
@@ -91,39 +94,39 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             }
 #endif
             break;
-        case SDLK_SPACE:
+            case SDLK_SPACE:
             gs->paused = !gs->paused;
             break;
-        case SDLK_n:
+            case SDLK_n:
             gs->step_one = 1;
             break;
-        case SDLK_SEMICOLON:
+            case SDLK_SEMICOLON:
             gs->do_draw_objects = !gs->do_draw_objects;
             break;
-        case SDLK_r:
+            case SDLK_r:
             if (gs->input.keys[SDL_SCANCODE_LCTRL]) {
                 goto_level(gs->level_current);
             }
             break;
-        case SDLK_b:
+            case SDLK_b:
             gs->do_draw_blobs = !gs->do_draw_blobs;
             break;
-        case SDLK_g:
+            case SDLK_g:
             if (input->keys[SDL_SCANCODE_LCTRL]) {
 	            set_text_field("Goto Level", "", goto_level_string_hook);
             }
             break;
-        case SDLK_o:
+            case SDLK_o:
             if (input->keys[SDL_SCANCODE_LCTRL]) {
                 set_text_field("Output current grid to image:", "../", level_output_to_png);
             } else {
                 gs->overlay.show = !gs->overlay.show;
             }
             break;
-        case SDLK_u:
+            case SDLK_u:
             objects_reevaluate();
             break;
-        case SDLK_z:
+            case SDLK_z:
             if (input->keys[SDL_SCANCODE_LCTRL]) {
                 if (input->keys[SDL_SCANCODE_LSHIFT]) {
                     set_text_field("Go to State", "", set_state_to_string_hook);
@@ -132,33 +135,33 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 }
             }
             break;
-        case SDLK_q: {
-            struct Cell *c;
-            c = &gs->grid[input->mx+input->my*gs->gw];
-            char name[256] = {0};
-            get_name_from_type(c->type, name);
-
-            int obj = c->object;
-            if (obj == -1) obj = 0;
-
-            Assert(obj != -1);
-
-            Log("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
-                   input->mx,
-                   input->my,
-                   c->vx_acc,
-                   c->vy_acc,
-                   name,
-                   c->id,
-                   c->rand,
-                   c->object,
-                   c->time,
-                   c->vx,
-                   c->vy,
-                   gs->objects[obj].blob_data[gs->chisel->size].blobs[input->mx+input->my*gs->gw]);
-            break;
-        }
-        case SDLK_1:
+            case SDLK_q: {
+                struct Cell *c;
+                c = &gs->grid[input->mx+input->my*gs->gw];
+                char name[256] = {0};
+                get_name_from_type(c->type, name);
+                
+                int obj = c->object;
+                if (obj == -1) obj = 0;
+                
+                Assert(obj != -1);
+                
+                Log("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
+                    input->mx,
+                    input->my,
+                    c->vx_acc,
+                    c->vy_acc,
+                    name,
+                    c->id,
+                    c->rand,
+                    c->object,
+                    c->time,
+                    c->vx,
+                    c->vy,
+                    gs->objects[obj].blob_data[gs->chisel->size].blobs[input->mx+input->my*gs->gw]);
+                break;
+            }
+            case SDLK_1:
             gs->current_tool = TOOL_CHISEL_SMALL;
             gs->chisel = &gs->chisel_small;
             for (int i = 0; i < gs->object_count; i++)
@@ -166,7 +169,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) gs->chisel->w+2;
             selected_tool = 1;
             break;
-        case SDLK_2:
+            case SDLK_2:
             gs->current_tool = TOOL_CHISEL_MEDIUM;
             gs->chisel = &gs->chisel_medium;
             for (int i = 0; i < gs->object_count; i++)
@@ -174,7 +177,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) gs->chisel->w+4;
             selected_tool = 1;
             break;
-        case SDLK_3:
+            case SDLK_3:
             gs->current_tool = TOOL_CHISEL_LARGE;
             gs->chisel = &gs->chisel_large;
             for (int i = 0; i < gs->object_count; i++)
@@ -182,52 +185,52 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) gs->chisel->w+4;
             selected_tool = 1;
             break;
-        case SDLK_4:
+            case SDLK_4:
             gs->current_tool = TOOL_BLOCKER;
             selected_tool = 1;
             break;
-        case SDLK_5:
+            case SDLK_5:
             gs->current_tool = TOOL_OVERLAY;
             selected_tool = 1;
             break;
-        case SDLK_6:
+            case SDLK_6:
             gs->current_tool = TOOL_DELETER;
             selected_tool = 1;
             break;
-        case SDLK_7:
+            case SDLK_7:
             gs->current_tool = TOOL_PLACER;
             selected_tool = 1;
-        break;
-        case SDLK_8:
+            break;
+            case SDLK_8:
             gs->current_tool = TOOL_GRABBER;
             selected_tool = 1;
-        break;
+            break;
             
-        case SDLK_F1:
+            case SDLK_F1:
             gs->current_placer = 0;
             break;
-        case SDLK_F2:
+            case SDLK_F2:
             gs->current_placer = 1;
             break;
-        case SDLK_F3:
+            case SDLK_F3:
             gs->current_placer = 2;
             break;
-        case SDLK_F4:
+            case SDLK_F4:
             gs->current_placer = 3;
             break;
-        case SDLK_F5:
+            case SDLK_F5:
             gs->current_placer = 4;
             break;
         }
     }
     
     text_field_tick();
-
+    
     if (selected_tool) {
         gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
         gs->gui.tool_buttons[gs->current_tool]->active = true;
     }
-
+    
     return is_running;
 }
 
@@ -243,6 +246,8 @@ void draw_intro(void) {
     
     gui_draw();
     gui_popup_draw();
+    
+    tutorial_rect_run();
     
     if (gs->current_tool == TOOL_OVERLAY)
         overlay_interface_draw();

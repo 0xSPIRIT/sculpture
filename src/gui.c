@@ -110,6 +110,7 @@ void button_tick(struct Button *b, void *data) {
         case BUTTON_TYPE_CONVERTER:         b->on_pressed = converter_begin_converting; break;
         case BUTTON_TYPE_TOOL_BAR:          b->on_pressed = click_gui_tool_button;      break;
         case BUTTON_TYPE_OVERLAY_INTERFACE: b->on_pressed = click_overlay_interface;    break;
+        case BUTTON_TYPE_TUTORIAL:          b->on_pressed = tutorial_rect_close;        break;
     }
     
     if (b->disabled) return;

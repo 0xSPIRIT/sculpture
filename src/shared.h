@@ -54,6 +54,8 @@ struct Game_State {
     
     SDL_Event *event;
     
+    struct Tutorial_Rect tutorial;
+    
     struct View view;
     
     struct Textures textures; // Contains pointers to SDL textures.
