@@ -115,7 +115,7 @@ void get_name_from_tool(int type, char *out) {
         case TOOL_CHISEL_SMALL:  strcpy(out, "Small Chisel"); break;
         case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel"); break;
         case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel"); break;
-        case TOOL_OVERLAY:       strcpy(out, "Overlay"); break;
+        case TOOL_OVERLAY:       strcpy(out, "Overlay [o]"); break;
         case TOOL_BLOCKER:       strcpy(out, "Blocker"); break;
         case TOOL_DELETER:       strcpy(out, "Deleter (Under Construction!)"); break;
         case TOOL_PLACER:        strcpy(out, "Placer"); break;

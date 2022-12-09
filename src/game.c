@@ -249,8 +249,8 @@ void draw_intro(void) {
     
     tutorial_rect_run();
     
-    if (gs->current_tool == TOOL_OVERLAY)
-        overlay_interface_draw();
+    //if (gs->current_tool == TOOL_OVERLAY)
+        //overlay_interface_draw();
     
     tooltip_draw(&gs->gui.tooltip);
 

@@ -54,6 +54,8 @@ void click_gui_tool_button(void *type_ptr) {
     
     if (gui->popup) return;
     
+    int p_tool = gs->current_tool;
+    
     gs->current_tool = type;
     gs->chisel_blocker_mode = 0;
     
@@ -81,8 +83,9 @@ void click_gui_tool_button(void *type_ptr) {
             break;
         }
         case TOOL_OVERLAY: {
-            gs->overlay.show = true;
-            break;
+            gs->overlay.show = !gs->overlay.show;
+            gs->current_tool = p_tool;
+            return;
         }
     }
     
@@ -109,7 +112,7 @@ void button_tick(struct Button *b, void *data) {
     switch (b->type) {
         case BUTTON_TYPE_CONVERTER:         b->on_pressed = converter_begin_converting; break;
         case BUTTON_TYPE_TOOL_BAR:          b->on_pressed = click_gui_tool_button;      break;
-        case BUTTON_TYPE_OVERLAY_INTERFACE: b->on_pressed = click_overlay_interface;    break;
+        //case BUTTON_TYPE_OVERLAY_INTERFACE: b->on_pressed = click_overlay_interface;    break;
         case BUTTON_TYPE_TUTORIAL:          b->on_pressed = tutorial_rect_close;        break;
     }
     
@@ -225,7 +228,7 @@ void gui_init(void) {
         cum += gui->tool_buttons[i]->w;
     }
     
-    overlay_interface_init();
+    //overlay_interface_init();
 }
 
 void gui_tick(void) {
@@ -267,8 +270,8 @@ void gui_tick(void) {
             button_tick(gui->tool_buttons[i], &i);
         }
         
-        if (gs->current_tool == TOOL_OVERLAY)
-            overlay_interface_tick();
+        //if (gs->current_tool == TOOL_OVERLAY)
+            //overlay_interface_tick();
         
         if (input->real_my >= GUI_H) {
             // tooltip_reset(&gui->tooltip);

@@ -275,12 +275,12 @@ void overlay_draw(void) {
         }
     }
 
-    if (gs->current_tool == TOOL_OVERLAY && (overlay->tool == OVERLAY_TOOL_BRUSH || overlay->tool == OVERLAY_TOOL_ERASER_BRUSH)) {
-        if (overlay->eraser_mode) {
-            SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 64);
-        } else {
-            SDL_SetRenderDrawColor(gs->renderer, 0, 255, 255, 64);
-        }
-        fill_circle(gs->renderer, gs->input.mx, gs->input.my, overlay->size);
-    }
+    // if (gs->current_tool == TOOL_OVERLAY && (overlay->tool == OVERLAY_TOOL_BRUSH || overlay->tool == OVERLAY_TOOL_ERASER_BRUSH)) {
+        // if (overlay->eraser_mode) {
+            // SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 64);
+        // } else {
+            // SDL_SetRenderDrawColor(gs->renderer, 0, 255, 255, 64);
+        // }
+        // fill_circle(gs->renderer, gs->input.mx, gs->input.my, overlay->size);
+    // }
 }

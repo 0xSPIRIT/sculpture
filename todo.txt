@@ -1,13 +1,11 @@
-Do some simple tutorialization stuff first,
-then ready for playtesting.
-
 TODO :: {
+	[x] Make the overlay in the menu just a simple toggle- forget abt the manual stuff for now.
 	[ ] Tutorialization: 
+		[ ] Use the different chisels to create your sculpture.
 		[ ] When a chisel doesn't have the pressure to delete
 			a cell, use the deleter.
 		[ ] Show that when you chisel something, it goes into your
 			inventory.
-		[ ] Multiple chisels for different precision levels.
 
 		[ ] Placing material of the same type next to each other joins them.
 

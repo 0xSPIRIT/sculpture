@@ -333,7 +333,7 @@ void level_tick(void) {
                 break;
             }
             case TOOL_OVERLAY: {
-                overlay_tick();
+                //overlay_tick();
                 break;
             }
             case TOOL_DELETER: {
