@@ -201,6 +201,8 @@ void goto_level(int lvl) {
     gs->level_current = lvl;
     gs->levels[lvl].state = LEVEL_STATE_INTRO;
     
+    gs->tutorial.active = false;
+    
     gs->levels[lvl].popup_time_current = 0;
     
     gs->current_tool = TOOL_GRABBER;
@@ -235,6 +237,8 @@ void goto_level(int lvl) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         gs->grid[i].type = gs->levels[lvl].desired_grid[i].type;
     }
+    
+    check_for_tutorial();
 }
 
 void goto_level_string_hook(const char *string) {

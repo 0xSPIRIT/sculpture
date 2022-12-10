@@ -16,9 +16,9 @@ struct Save_State *current_state(void) {
 
 void undo_system_init(void) {
     gs->undo_initialized = true;
-
+    
     gs->save_state_count = 1;
-
+    
     for (int i = 0; i < NUM_GRID_LAYERS; i++) {
         current_state()->grid_layers[i] = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
         memcpy(current_state()->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
@@ -142,6 +142,10 @@ void set_state_to_string_hook(const char *string) {
 }
 
 void undo(void) {
+    if (gs->tutorial.active && strcmp(gs->tutorial.str, TUTORIAL_UNDO_STRING) == 0) {
+        tutorial_rect_close(NULL);
+    }
+    
     if (!gs->gui.popup && is_current_grid_same_as(current_state()))
     {
         if (gs->save_state_count == 1) {

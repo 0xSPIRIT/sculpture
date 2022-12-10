@@ -34,8 +34,6 @@ export void game_init(struct Game_State *state, int level) {
     levels_setup();
     
     goto_level(level);
-    
-    set_tutorial_rect("Tutorial #1\n======\n\nProfound thing.\nPush F to pay respects!\nReehehehe....!", 32, GUI_H+32);
 }
 
 export bool game_tick_event(struct Game_State *state, SDL_Event *event) {

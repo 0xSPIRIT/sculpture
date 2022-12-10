@@ -1,24 +1,18 @@
 TODO :: {
-	[x] Make the overlay in the menu just a simple toggle- forget abt the manual stuff for now.
-	[ ] Tutorialization: 
-		[ ] Use the different chisels to create your sculpture.
-		[ ] When a chisel doesn't have the pressure to delete
+	[x] Tutorialization: 
+		[x] Press overlay button to get what you're supposed to chisel.
+		[x] Use the different chisels to create your sculpture.
+		[x] Undo if they make a mistake.
+		[x] When a chisel doesn't have the pressure to delete
 			a cell, use the deleter.
-		[ ] Show that when you chisel something, it goes into your
+		[x] Show that when you chisel something, it goes into your
 			inventory.
-
-		[ ] Placing material of the same type next to each other joins them.
-
-		[ ] Explain the Fuel Converter's purpose
-		[ ] Explain the Material Converter's purpose.
-		[ ] Open text file with conversions.
-
-		[ ] Ensure they be careful when converting! (Don't go too far into it,
-			let the player figure that out themselves.)
+		[x] Explain the Fuel Converter's purpose
+		[x] Open text file with conversions.
 	[ ] Get playtesting done. Figure out what needs tutorializing the most,
 		and which levels are too far of a jump
-	[ ] Make narrator framework.
 	[ ] Make the 3D fall in "Glass Body"
+	[ ] Make narrator framework.
 }
 
 Future TODO (Vague) :: {

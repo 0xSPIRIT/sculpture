@@ -37,35 +37,38 @@ void chisel_hammer_tick(void) {
     const int stop = 24;
     
     switch (hammer->state) {
-        case HAMMER_STATE_WINDUP:
-        hammer->time++;
-        if (hammer->time < 3) {
-            hammer->dist += hammer->time * 4;
-        } else {
-            hammer->time = 0;
-            hammer->state = HAMMER_STATE_SWING;
-        }
-        break;
-        case HAMMER_STATE_SWING:
-        hammer->dist -= 8;
-        if (hammer->dist < stop) {
-            hammer->dist = (f32) stop;
-            // Activate the chisel.
-            if (chisel->click_cooldown == 0) {
-                chisel->click_cooldown = CHISEL_COOLDOWN;
-                chisel->spd = 3.;
+        case HAMMER_STATE_WINDUP: {
+            hammer->time++;
+            if (hammer->time < 3) {
+                hammer->dist += hammer->time * 4;
+            } else {
+                hammer->time = 0;
+                hammer->state = HAMMER_STATE_SWING;
             }
-            chisel->did_remove = false;
-            hammer->state = HAMMER_STATE_IDLE;
+            break;
         }
-        break;
-        case HAMMER_STATE_IDLE:
-        hammer->dist = hammer->normal_dist;
-        if (!gs->is_mouse_over_any_button && input->mouse_pressed[SDL_BUTTON_LEFT]) {
-            hammer->state = HAMMER_STATE_WINDUP;
-            save_state_to_next();
+        case HAMMER_STATE_SWING: {
+            hammer->dist -= 8;
+            if (hammer->dist < stop) {
+                hammer->dist = (f32) stop;
+                // Activate the chisel.
+                if (chisel->click_cooldown == 0) {
+                    chisel->click_cooldown = CHISEL_COOLDOWN;
+                    chisel->spd = 3.;
+                }
+                chisel->did_remove = false;
+                hammer->state = HAMMER_STATE_IDLE;
+            }
+            break;
         }
-        break;
+        case HAMMER_STATE_IDLE: {
+            hammer->dist = hammer->normal_dist;
+            if (!gs->is_mouse_over_any_button && !gs->tutorial.active && input->mouse_pressed[SDL_BUTTON_LEFT]) {
+                hammer->state = HAMMER_STATE_WINDUP;
+                save_state_to_next();
+            }
+            break;
+        }
     }
 }
 
@@ -133,7 +136,17 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
                 chisel->x -= ux;
                 chisel->y -= uy;
                 
-                if (blob_can_destroy(gs->object_current, chisel->size, b)) {
+                bool can_destroy = blob_can_destroy(gs->object_current, chisel->size, b);
+                
+                if (!can_destroy && remove && !gs->did_pressure_tutorial) {
+                    gs->tutorial = *tutorial_rect(TUTORIAL_PRESSURE_STRING,
+                                                  32,
+                                                  GUI_H+32,
+                                                  NULL);
+                    gs->did_pressure_tutorial = true;
+                }
+                    
+                if (can_destroy) {
                     if (!remove) {
                         chisel->x = px;
                         chisel->y = py;
@@ -415,6 +428,15 @@ void chisel_tick(void) {
     
     chisel->is_changing_angle = input->keys[SDL_SCANCODE_LSHIFT];
     
+    if (!gs->did_chisel_tutorial) {
+        struct Tutorial_Rect *t = tutorial_rect(TUTORIAL_CHISEL_ROTATE_STRING,
+                                                32,
+                                                GUI_H+32,
+                                                NULL);
+        gs->tutorial = *t;
+        gs->did_chisel_tutorial = true;
+    }
+    
     if (prev_changing_angle && !chisel->is_changing_angle) {
         move_mouse_to_grid_position(chisel->x, chisel->y);
         input->mx = (int)chisel->x;
@@ -445,21 +467,21 @@ void chisel_tick(void) {
             
             switch ((int)chisel->angle) {
                 case 135:
-                ux = 1;
-                uy = -1;
-                break;
+                    ux = 1;
+                    uy = -1;
+                    break;
                 case 225:
-                ux = 1;
-                uy = 1;
-                break;
+                    ux = 1;
+                    uy = 1;
+                    break;
                 case 270:
-                ux = 0;
-                uy = 1;
-                break;
+                    ux = 0;
+                    uy = 1;
+                    break;
                 case 315:
-                ux = -1;
-                uy = 1;
-                break;
+                    ux = -1;
+                    uy = 1;
+                    break;
             }
             
             struct Chisel copy = *chisel;
@@ -619,8 +641,7 @@ void chisel_draw(void) {
     
     // Draw the highlights for blobs now.
     
-    // Only draw chisel highlights when it's not the small chisel.
-    if (DRAW_CHISEL_HIGHLIGHTS && chisel->size != 0) {
+    if (DRAW_CHISEL_HIGHLIGHTS) {
         for (int i = 0; i < chisel->highlight_count; i++) {
             int x = chisel->highlights[i]%gs->gw;
             int y = chisel->highlights[i]/gs->gw;

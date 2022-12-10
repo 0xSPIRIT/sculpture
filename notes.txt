@@ -1,6 +1,15 @@
 https://static.vecteezy.com/system/resources/previews/000/389/125/original/vector-brown-marble-texture-background-design.jpg
 https://artdecocollection.com/wp-content/uploads/2019/10/SCREEN-SHOT-2019-10-18-AT-8.28.21-AM.jpeg
 
+Major Milestones:
+
+- Tutorialization
+- Fix levels & gameplay according to playtesting
+- Sound effects & Music
+- Narrator
+- Title Screen
+- Ending (Fall & Credits)
+
 Problems:
 
 - Should the levels have a proper evaluater for each level, or just make it

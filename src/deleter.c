@@ -1,8 +1,6 @@
 void deleter_init(void) {
     struct Deleter *deleter = &gs->deleter;
     deleter->texture = gs->textures.deleter;
-    deleter->counter = 0;
-    deleter->timer = 0;
     SDL_QueryTexture(deleter->texture, NULL, NULL, &deleter->w, &deleter->h);
 }
 
@@ -27,25 +25,8 @@ void deleter_tick(void) {
     deleter->x = (f32) input->mx;
     deleter->y = (f32) input->my;
     
-    if (deleter->timer) {
-        if (deleter->counter == 1) {
-            SDL_SetTextureColorMod(deleter->texture, 0, 255, 0);
-        } else {
-            SDL_SetTextureColorMod(deleter->texture, 255, 0, 0);
-        }
-        deleter->timer--;
-    } else {
-        SDL_SetTextureColorMod(deleter->texture, 255, 255, 255);
-    }
-    
     if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
-        deleter->timer = 3;
-        
-        deleter->counter++;
-        if (deleter->counter == 2) {
-            deleter_delete();
-            deleter->counter = 0;
-        }
+        deleter_delete();
     }
 }
 
@@ -56,6 +37,10 @@ void deleter_draw(void) {
         (int) deleter->x, (int) deleter->y,
         deleter->w, deleter->h
     };
-
+    
+    SDL_SetTextureAlphaMod(deleter->texture, 64);
     SDL_RenderCopy(gs->renderer, deleter->texture, NULL, &dst);
+    
+    SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 64);
+    SDL_RenderDrawPoint(gs->renderer, (int)deleter->x, (int)deleter->y);
 }

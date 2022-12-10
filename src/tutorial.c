@@ -1,9 +1,17 @@
-void set_tutorial_rect(const char *str, int x, int y) {
-    struct Tutorial_Rect *tut = &gs->tutorial;
+struct Tutorial_Rect* tutorial_rect(const char *str,
+                                    int x,
+                                    int y,
+                                    struct Tutorial_Rect *next)
+{
+    struct Tutorial_Rect *tut = PushSize(gs->persistent_memory, sizeof(struct Tutorial_Rect));
+    
     tut->font = gs->fonts.font;
     tut->active = true;
+    tut->next = next;
     
-    memset(tut->lines, 0, 64*64);
+    strcpy(tut->str, str);
+    memset(tut->lines, 0, 8*64);
+    
     int i = 0;
     
     int fw, fh;
@@ -28,7 +36,7 @@ void set_tutorial_rect(const char *str, int x, int y) {
     if (i > largest) largest = i;
     tut->line_count++;
     
-    tut->ok_button = button_allocate(BUTTON_TYPE_TUTORIAL, gs->textures.tutorial_ok_button, "OK", NULL);
+    tut->ok_button = button_allocate(BUTTON_TYPE_TUTORIAL, gs->textures.tutorial_ok_button, "", NULL);
     
     int bw, bh;
     SDL_QueryTexture(gs->textures.tutorial_ok_button, NULL, NULL, &bw, &bh);
@@ -42,6 +50,8 @@ void set_tutorial_rect(const char *str, int x, int y) {
     
     tut->ok_button->x = x + tut->rect.w / 2 - bw/2;
     tut->ok_button->y = y + tut->rect.h - bh - tut->margin;
+    
+    return tut;
 }
 
 void tutorial_rect_close(void *ptr) {
@@ -49,6 +59,11 @@ void tutorial_rect_close(void *ptr) {
     
     struct Tutorial_Rect *tut = &gs->tutorial;
     tut->active = false;
+    
+    if (tut->next) {
+        gs->tutorial = *tut->next;
+        gs->tutorial.active = true;
+    }
 }
 
 void tutorial_rect_run() {
@@ -91,4 +106,32 @@ void tutorial_rect_run() {
     
     button_tick(tut->ok_button, NULL);
     button_draw(tut->ok_button);
+}
+
+void check_for_tutorial() {
+    int l = gs->level_current;
+    
+    switch (l+1) {
+        case 1: {
+            struct Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_CHISEL_STRING,
+                                                     32,
+                                                     GUI_H+32,
+                                                     NULL);
+            
+            struct Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_OVERLAY_STRING,
+                                                     32,
+                                                     GUI_H+32,
+                                                     t2);
+            gs->tutorial = *t1;
+            break;
+        }
+        case 3: {
+            struct Tutorial_Rect *t = tutorial_rect(TUTORIAL_PLACER_STRING,
+                                                    32,
+                                                    GUI_H+32,
+                                                    NULL);
+            gs->tutorial = *t;
+            break;
+        }
+    }
 }

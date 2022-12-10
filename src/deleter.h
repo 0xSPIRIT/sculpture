@@ -4,6 +4,4 @@ struct Deleter {
     f32 x, y;
     int w, h;
     SDL_Texture *texture;
-    int counter;
-    int timer;
 };

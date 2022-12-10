@@ -131,6 +131,12 @@ struct Game_State {
 
     struct Item item_holding;
 
+    bool did_chisel_tutorial;
+    bool did_undo_tutorial;
+    bool did_pressure_tutorial;
+    bool did_inventory_tutorial;
+    bool did_fuel_converter_tutorial;
+        
     struct Chisel chisel_small, chisel_medium, chisel_large;
     struct Chisel *chisel;
 

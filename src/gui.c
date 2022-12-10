@@ -121,7 +121,8 @@ void button_tick(struct Button *b, void *data) {
     if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
         gui_input_my >= b->y && gui_input_my < b->y+b->h) {
         
-        tooltip_set_position_to_cursor(&gui->tooltip, TOOLTIP_TYPE_BUTTON);
+        if (*b->tooltip_text)
+            tooltip_set_position_to_cursor(&gui->tooltip, TOOLTIP_TYPE_BUTTON);
         b->just_had_tooltip = true;
         
         gs->is_mouse_over_any_button = true;
@@ -236,7 +237,8 @@ void gui_tick(void) {
     struct Input *input = &gs->input;
     
     if (input->keys_pressed[SDL_SCANCODE_TAB] && 
-        gs->levels[gs->level_current].state == LEVEL_STATE_PLAY) 
+        gs->levels[gs->level_current].state == LEVEL_STATE_PLAY &&
+        gs->level_current >= 3-1) 
     {
         gui->popup = !gui->popup;
         gui->popup_y_vel = 0;
@@ -438,8 +440,11 @@ void gui_popup_draw(void) {
         gs->gw*gs->S - 128, (int)(GUI_H + gui->popup_y) - h,
         w, h
     };
+    
     SDL_SetTextureAlphaMod(gs->textures.tab, 127);
-    SDL_RenderCopy(gs->renderer, gs->textures.tab, NULL, &tab_icon);
+    
+    if (gs->level_current >= 3-1)
+        SDL_RenderCopy(gs->renderer, gs->textures.tab, NULL, &tab_icon);
     
     all_converters_draw();
     inventory_draw();
@@ -528,7 +533,7 @@ struct Converter *converter_init(int type, bool allocated) {
     converter->timer_max = 1;
     converter->timer_current = 0;
     
-    if (type == CONVERTER_FUEL && gs->level_current+1 == 3) {
+    if (type == CONVERTER_FUEL && gs->level_current+1 <= 4) {
         converter->state = CONVERTER_INACTIVE;
     } else {
         converter->state = CONVERTER_OFF;

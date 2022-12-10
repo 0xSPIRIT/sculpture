@@ -686,7 +686,7 @@ SDL_Color pixel_from_index(enum Cell_Type type, int i) {
         }
     }
     //if (cells[i].type != CELL_GLASS && is_cell_hard(cells[i].type))
-        //color.a = cells[i].depth;
+    //color.a = cells[i].depth;
     return color;
 }
 
@@ -810,10 +810,6 @@ void switch_blob_to_array(struct Cell *from, struct Cell *to, int obj, int blob,
 bool blob_can_destroy(int obj, int chisel_size, int blob) {
     int blob_pressure = gs->objects[obj].blob_data[chisel_size].blob_pressures[blob];
     f32 normalized_pressure = (f32) (blob_pressure / MAX_PRESSURE);
-    
-    if (normalized_pressure >= get_pressure_threshold(chisel_size)) {
-        /* Log("Blocked due to too much pressure (%f > %f).\n", normalized_pressure, get_pressure_threshold(chisel_size)); */
-    }
     
     return normalized_pressure < get_pressure_threshold(chisel_size);
 }
@@ -1027,7 +1023,7 @@ void grid_array_draw(struct Cell *array, Uint8 alpha) {
             // TODO: This only draws pressures for the last object.
             int blob_pressure = 0;
             f32 normalized_pressure = 0;
-
+            
             if (gs->object_count > 0) {
                 blob_pressure = (int)gs->objects[gs->object_count - 1].blob_data[gs->chisel->size].blob_pressures[gs->objects[gs->object_count - 1].blob_data[gs->chisel->size].blobs[x + y * gs->gw]];
                 normalized_pressure = (f32)(blob_pressure / MAX_PRESSURE);
@@ -1062,8 +1058,8 @@ void grid_draw(void) {
     grid_array_draw(gs->grid, 255);
     dust_grid_draw();
     
-//    if (gs->overlay.show)
-//        grid_array_draw(gs->levels[gs->level_current].desired_grid, 255);
+    //    if (gs->overlay.show)
+    //        grid_array_draw(gs->levels[gs->level_current].desired_grid, 255);
     
     overlay_draw();
     
@@ -1157,6 +1153,15 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, int blocker_si
             if (obj->blob_data[chisel_size].blobs[x+y*gs->gw] != blob) continue;
             if (gs->blocker.active && gs->blocker.pixels[x+y*gs->gw] != blocker_side) continue;
             if (easy_chiseling && gs->overlay.grid[x+y*gs->gw]) continue;
+            
+            if (gs->overlay.grid[x+y*gs->gw] && !gs->did_undo_tutorial) {
+                gs->tutorial = *tutorial_rect(TUTORIAL_UNDO_STRING,
+                                              32,
+                                              GUI_H+32,
+                                              NULL);
+                gs->did_undo_tutorial = true;
+            }
+            
             //if (gs->grid[x+y*gs->gw].type == CELL_DIAMOND && chisel_size != 0) continue;
             
             bool available = true;
