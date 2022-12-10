@@ -12,8 +12,8 @@
     "Tutorial\n" \
     "========\n\n" \
     "Click the overlay button to show what you want to create.\n\n" \
-    "With the POINTER tool selected, hovering over the overlay\n" \
-    "shows you the material type of that cell."
+    "With the POINTER tool selected, show the material type of\n" \
+    "a cell by hovering over the overlay."
 
 #define TUTORIAL_UNDO_STRING \
     "Tutorial\n" \
@@ -47,16 +47,22 @@
 #define TUTORIAL_FUEL_CONVERTER_STRING \
     "Tutorial\n" \
     "========\n\n" \
-    "The fuel converter can be used to create fuel from\n" \
+    "The FUEL CONVERTER can be used to create fuel from\n" \
     "existing material.\n" \
-    "You may use RIGHT CLICK to split\n" \
-    "an amount of material in two."
+    "You may use RIGHT CLICK to split an amount of material in two." \
 
 #define TUTORIAL_TEXT_FILE_STRING \
     "Tutorial\n" \
     "========\n\n" \
     "To get a full list of conversions, visit the text file\n" \
     "\"layout_converter.txt\" in the game's top directory."
+
+#define TUTORIAL_CAREFUL_STRING \
+    "Tutorial\n" \
+    "========\n\n" \
+    "Ensure you be careful with the amount of material you're\n" \
+    "converting; You might end up with not enough of a certain\n" \
+    "type!"
 
 // A rectangle containing text, and an "Okay" button.
 struct Tutorial_Rect {

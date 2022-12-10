@@ -316,7 +316,8 @@ void inventory_tick() {
                                       GUI_H+128,
                                       next);
         gs->did_fuel_converter_tutorial = true;
-    } else if (!gs->did_inventory_tutorial) {
+    } 
+    if (gs->level_current == 3-1 && !gs->did_inventory_tutorial) {
         gs->tutorial = *tutorial_rect(TUTORIAL_INVENTORY_STRING,
                                       32,
                                       GUI_H+128,

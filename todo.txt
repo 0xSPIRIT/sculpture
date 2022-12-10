@@ -1,18 +1,10 @@
 TODO :: {
-	[x] Tutorialization: 
-		[x] Press overlay button to get what you're supposed to chisel.
-		[x] Use the different chisels to create your sculpture.
-		[x] Undo if they make a mistake.
-		[x] When a chisel doesn't have the pressure to delete
-			a cell, use the deleter.
-		[x] Show that when you chisel something, it goes into your
-			inventory.
-		[x] Explain the Fuel Converter's purpose
-		[x] Open text file with conversions.
+	[x] Make the outline colours of materials not random.
 	[ ] Get playtesting done. Figure out what needs tutorializing the most,
-		and which levels are too far of a jump
+		and which levels are too far of a jump.
 	[ ] Make the 3D fall in "Glass Body"
 	[ ] Make narrator framework.
+	[ ] Bug with small chisel not getting cells properly. Noteable in level 4.
 }
 
 Future TODO (Vague) :: {

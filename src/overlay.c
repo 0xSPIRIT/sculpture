@@ -1,6 +1,33 @@
+Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
+    // Type              R    G    B
+    CELL_NONE,            57, 57, 57,
+    CELL_DIRT,          38, 38, 38,
+    CELL_SAND,          109, 9, 121,
+    CELL_WATER,           14, 182, 30,
+    CELL_ICE,           9, 185, 57,
+    CELL_STEAM,         94, 86, 142,
+    CELL_WOOD_LOG,      13, 9, 249,
+    CELL_WOOD_PLANK,    150, 6, 118,
+    CELL_COBBLESTONE,   255, 255, 255,
+    CELL_MARBLE,        180, 219, 151,
+    CELL_SANDSTONE,     204, 116, 2,
+    CELL_CEMENT,        190, 22, 46,
+    CELL_CONCRETE,      9, 57, 185,
+    CELL_QUARTZ,        16, 145, 147,
+    CELL_GLASS,         173, 137, 249,
+    CELL_GRANITE,       58, 109, 163,
+    CELL_BASALT,         185, 185, 57,
+    CELL_DIAMOND,       70, 230, 134,
+    CELL_UNREFINED_COAL, 45, 9, 121,
+    CELL_REFINED_COAL,   110, 246, 190,
+    CELL_LAVA,          9, 57, 185,
+    CELL_SMOKE,         126, 22, 238,
+    CELL_DUST,          77, 9, 249,
+};
+
 void overlay_init(void) {
     struct Overlay *overlay = &gs->overlay;
-
+    
     overlay->tool = OVERLAY_TOOL_BRUSH;
 
     if (overlay->grid == NULL) {
@@ -268,7 +295,14 @@ void overlay_draw(void) {
             
             int t = overlay->grid[x+y*gs->gw];
             // Generate different color depending on the type
-            SDL_Color c = { my_rand(t), my_rand(t*t), my_rand(t*t*t), 255 };
+            //SDL_Color c = { my_rand(t), my_rand(t*t), my_rand(t*t*t), 255 };
+            SDL_Color c = { 
+                type_to_outline_color[t*4 + 1],
+                type_to_outline_color[t*4 + 2],
+                type_to_outline_color[t*4 + 3],
+                255
+            };
+            
             SDL_SetRenderDrawColor(gs->renderer, c.r, c.g, c.b, (Uint8)alpha);
 
             SDL_RenderDrawPoint(gs->renderer, x, y);

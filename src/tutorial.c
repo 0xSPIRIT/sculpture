@@ -135,12 +135,17 @@ void check_for_tutorial() {
             break;
         }
         case 3: {
-            struct Tutorial_Rect *t = tutorial_rect(TUTORIAL_PLACER_STRING,
-                                                    32,
-                                                    GUI_H+32,
-                                                    NULL);
-            gs->tutorial = *t;
+            gs->tutorial = *tutorial_rect(TUTORIAL_PLACER_STRING,
+                                          32,
+                                          GUI_H+32,
+                                          NULL);
             break;
+        }
+        case 7: {
+            gs->tutorial = *tutorial_rect(TUTORIAL_CAREFUL_STRING,
+                                          32,
+                                          GUI_H+32,
+                                          NULL);
         }
     }
 }
