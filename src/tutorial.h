@@ -1,5 +1,7 @@
 // Tutorial Strings
 
+#define MAX_TUTORIAL_LINES 10
+
 #define TUTORIAL_CHISEL_STRING  \
     "Tutorial\n" \
     "========\n\n" \
@@ -11,7 +13,7 @@
     "========\n\n" \
     "Click the overlay button to show what you want to create.\n\n" \
     "With the POINTER tool selected, hovering over the overlay\n" \
-    "shows you the material type of that cell.\n"
+    "shows you the material type of that cell."
 
 #define TUTORIAL_UNDO_STRING \
     "Tutorial\n" \
@@ -61,11 +63,13 @@ struct Tutorial_Rect {
     bool active;
     
     TTF_Font *font;
+    SDL_Texture *textures[MAX_TUTORIAL_LINES];
     
     int margin;
     
     char str[8*64];
-    char lines[8][64];
+    char lines[MAX_TUTORIAL_LINES][64];
+    
     int line_count;
     
     SDL_Rect rect;

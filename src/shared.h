@@ -55,6 +55,7 @@ struct Game_State {
     SDL_Event *event;
     
     struct Tutorial_Rect tutorial;
+    bool show_tutorials;
     
     struct View view;
     

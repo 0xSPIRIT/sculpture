@@ -27,7 +27,7 @@
 #include "effects.h"
 #include "chisel_blocker.h"
 #include "blocker.h"
+#include "tutorial.h"
 #include "assets.h"
 #include "undo.h"
 #include "view.h"
-#include "tutorial.h"

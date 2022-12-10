@@ -6,11 +6,11 @@ struct Tutorial_Rect* tutorial_rect(const char *str,
     struct Tutorial_Rect *tut = PushSize(gs->persistent_memory, sizeof(struct Tutorial_Rect));
     
     tut->font = gs->fonts.font;
-    tut->active = true;
+    tut->active = gs->show_tutorials;
     tut->next = next;
     
     strcpy(tut->str, str);
-    memset(tut->lines, 0, 8*64);
+    memset(tut->lines, 0, MAX_TUTORIAL_LINES*64);
     
     int i = 0;
     
@@ -60,6 +60,11 @@ void tutorial_rect_close(void *ptr) {
     struct Tutorial_Rect *tut = &gs->tutorial;
     tut->active = false;
     
+    for (int i = 0; i < MAX_TUTORIAL_LINES; i++) {
+        SDL_DestroyTexture(tut->textures[i]);
+        tut->textures[i] = 0;
+    }
+    
     if (tut->next) {
         gs->tutorial = *tut->next;
         gs->tutorial.active = true;
@@ -79,28 +84,32 @@ void tutorial_rect_run() {
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
     
     int c = 0;
-    int h = -1;
+    SDL_Rect dst;
+    dst.h = -1;
     
     for (int i = 0; i < tut->line_count; i++) {
         if (!*tut->lines[i]) {
-            if (h == -1)
-                TTF_SizeText(tut->font, "L", NULL, &h);
-            c += h;
-            
+            if (dst.h == -1)
+                TTF_SizeText(tut->font, "L", NULL, &dst.h);
+            c += dst.h;
             continue;
         }
         
-        draw_text(tut->font,
-                  tut->lines[i],
-                  WHITE,
-                  bg,
-                  false,
-                  false,
-                  tut->rect.x + tut->margin,
-                  tut->rect.y + c + tut->margin,
-                  NULL,
-                  &h);
-        c += h + 2;
+        if (!tut->textures[i]) {
+            SDL_Surface *surf = TTF_RenderText_LCD(tut->font, tut->lines[i], WHITE, bg);
+            tut->textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surf);
+            SDL_FreeSurface(surf);
+        }
+        
+        SDL_QueryTexture(tut->textures[i], NULL, NULL, &dst.w, &dst.h);
+        
+        dst.x = tut->rect.x + tut->margin;
+        dst.y = tut->rect.y + c + tut->margin;
+        
+        SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+        SDL_RenderCopy(gs->renderer, tut->textures[i], NULL, &dst);
+        
+        c += dst.h + 2;
     }
     
     

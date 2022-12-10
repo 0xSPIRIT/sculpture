@@ -31,6 +31,8 @@ export void game_init(struct Game_State *state, int level) {
     gs->view.w = gs->window_width;
     gs->view.h = gs->window_height-GUI_H;
     
+    gs->show_tutorials = true;
+    
     levels_setup();
     
     goto_level(level);
