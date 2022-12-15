@@ -60,6 +60,10 @@ void tutorial_rect_close(void *ptr) {
     struct Tutorial_Rect *tut = &gs->tutorial;
     tut->active = false;
     
+    for (int i = 0; i < TOOL_COUNT; i++) {
+        gs->gui.tool_buttons[i]->highlighted = false;
+    }
+    
     for (int i = 0; i < MAX_TUTORIAL_LINES; i++) {
         SDL_DestroyTexture(tut->textures[i]);
         tut->textures[i] = 0;
@@ -132,6 +136,8 @@ void check_for_tutorial() {
                                                      GUI_H+32,
                                                      t2);
             gs->tutorial = *t1;
+            
+            gs->gui.tool_buttons[4]->highlighted = true;
             break;
         }
         case 3: {

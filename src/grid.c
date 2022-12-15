@@ -541,7 +541,7 @@ void grid_init(int w, int h) {
     gs->gas_grid = gs->grid_layers[1];
 }
 
-SDL_Color pixel_from_index(enum Cell_Type type, int i) {
+SDL_Color pixel_from_index_grid(struct Cell *grid, enum Cell_Type type, int i) {
     SDL_Color color = {0};
     int r, amt;
     
@@ -552,9 +552,9 @@ SDL_Color pixel_from_index(enum Cell_Type type, int i) {
         case CELL_DIRT: {
             const int variance = 10;
             color = (SDL_Color){
-                100+my_rand(gs->grid[i].rand)%variance,
-                80+my_rand(gs->grid[i].rand)%variance,
-                60+my_rand(gs->grid[i].rand)%variance,
+                100+my_rand(grid[i].rand)%variance,
+                80+my_rand(grid[i].rand)%variance,
+                60+my_rand(grid[i].rand)%variance,
                 255
             };
             break;
@@ -603,7 +603,7 @@ SDL_Color pixel_from_index(enum Cell_Type type, int i) {
         
         case CELL_MARBLE: {
             //color = (SDL_Color){245+randR(i)%10, 245+randG(i)%10, 245+randB(i)%10, 255};
-            int id = gs->grid[i].id*2;
+            int id = grid[i].id*2;
             color = get_pixel(gs->surfaces.marble_surface, id%gs->gw, id/gs->gw);
             break;
         }
@@ -658,7 +658,7 @@ SDL_Color pixel_from_index(enum Cell_Type type, int i) {
         }
         
         case CELL_DIAMOND: {
-            int id = gs->grid[i].id*2;
+            int id = grid[i].id*2;
             color = get_pixel(gs->surfaces.diamond_surface, id%gs->gw, id/gs->gw);
             break;
         }
@@ -688,6 +688,10 @@ SDL_Color pixel_from_index(enum Cell_Type type, int i) {
     //if (cells[i].type != CELL_GLASS && is_cell_hard(cells[i].type))
     //color.a = cells[i].depth;
     return color;
+}
+
+SDL_Color pixel_from_index(enum Cell_Type type, int i) {
+    return pixel_from_index_grid(gs->grid, type, i);
 }
 
 // In this function, we use vx_acc and vy_acc as a higher precision position value.

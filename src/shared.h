@@ -59,6 +59,8 @@ struct Game_State {
     
     struct View view;
     
+    struct Timelapse timelapse;
+    
     struct Textures textures; // Contains pointers to SDL textures.
     struct Surfaces surfaces;
     struct Fonts fonts;

@@ -1,5 +1,10 @@
 #define LEVEL_COUNT 10
-#define POPUP_TIME 45
+#ifdef ALASKA_DEBUG
+  #define POPUP_TIME 45
+#else
+  #define POPUP_TIME 120
+#endif
+
 #define SOURCE_CELL_MAX 8
 
 enum Level_State {

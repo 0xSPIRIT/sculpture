@@ -195,9 +195,27 @@ void placer_set_and_resize_rect(struct Placer *placer) {
     placer->rect.w = mx - placer->rect.x;
     placer->rect.h = my - placer->rect.y;
     
-    int area = abs((placer->rect.w) * (placer->rect.h));
+    // Apply the same operations as when we're placing
+    // to get the proper area.
+    SDL_Rect c = placer->rect;
+    c.w--;
+    c.h--;
+    
+    if (c.w < 0) {
+        c.x += c.w;
+    }
+    if (c.h < 0) {
+        c.y += c.h;
+    }
+    c.w = abs(c.w);
+    c.h = abs(c.h);
+    
+    int area = abs(c.w * c.h);
+    
     if (area > placer->contains->amount) {
-        placer->rect.h = clamp(placer->rect.h, -placer->contains->amount, placer->contains->amount);
+        placer->rect.h = clamp(placer->rect.h,
+                              -placer->contains->amount,
+                               placer->contains->amount);
         
         int placer_rect_h = placer->rect.h;
         if (placer_rect_h == 0) placer_rect_h = 1;

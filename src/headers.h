@@ -31,3 +31,4 @@
 #include "assets.h"
 #include "undo.h"
 #include "view.h"
+#include "timelapse.h"

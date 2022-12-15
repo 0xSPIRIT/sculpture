@@ -60,6 +60,7 @@ struct Button {
     char tooltip_text[128];
     bool active;
     bool disabled;
+    bool highlighted;
     bool just_had_tooltip; // Used to disable the GUI tooltip when the mouse goes off me.
     void (*on_pressed)(void*);
 };

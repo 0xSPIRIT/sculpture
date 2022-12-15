@@ -238,7 +238,16 @@ void goto_level(int lvl) {
         gs->grid[i].type = gs->levels[lvl].desired_grid[i].type;
     }
     
+    for (int i = 0; i < TOOL_COUNT; i++) {
+        gs->gui.tool_buttons[i]->highlighted = false;
+    }
+    
+    timelapse_init();
+    
     check_for_tutorial();
+    
+    undo_system_reset();
+    save_state_to_next();
 }
 
 void goto_level_string_hook(const char *string) {

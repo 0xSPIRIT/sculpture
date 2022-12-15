@@ -1,10 +1,11 @@
 TODO :: {
-	[x] Make the outline colours of materials not random.
+	[?] Sometimes the placer doesn't have enough material to rectangle-place.
+	[?] Show the timelapse of all states in the level.
 	[ ] Get playtesting done. Figure out what needs tutorializing the most,
 		and which levels are too far of a jump.
 	[ ] Make the 3D fall in "Glass Body"
 	[ ] Make narrator framework.
-	[ ] Bug with small chisel not getting cells properly. Noteable in level 4.
+	[ ] Bug with small chisel not getting cells properly. Noticable in level 4.
 }
 
 Future TODO (Vague) :: {

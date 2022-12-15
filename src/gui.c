@@ -153,6 +153,8 @@ void button_draw(struct Button *b) {
         SDL_SetTextureColorMod(b->texture, 100, 100, 100);
     } else if (b->active) {
         SDL_SetTextureColorMod(b->texture, 200, 200, 200);
+    } else if (b->highlighted) {
+        SDL_SetTextureColorMod(b->texture, 128, 128, 255);
     } else if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
                gui_input_my >= b->y && gui_input_my < b->y+b->h) {
         SDL_SetTextureColorMod(b->texture, 230, 230, 230);
