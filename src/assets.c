@@ -16,6 +16,7 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
     Assert(surf);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
     Assert(texture);
+    SDL_FreeSurface(surf);
     return texture;
 }
 
