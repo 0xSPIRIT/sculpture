@@ -245,9 +245,6 @@ void goto_level(int lvl) {
     timelapse_init();
     
     check_for_tutorial();
-    
-    undo_system_reset();
-    save_state_to_next();
 }
 
 void goto_level_string_hook(const char *string) {
@@ -284,6 +281,7 @@ void level_tick(void) {
                 undo_system_init();
             } else {
                 undo_system_reset();
+                save_state_to_next();
             }
         }
         break;

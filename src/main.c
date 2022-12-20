@@ -269,7 +269,10 @@ int main(int argc, char **argv)
     // can we initialize render targets (since they depend
     // on each level's width/height)
     
-    render_targets_init(game_state->renderer, game_state->window_width, game_state->levels, &game_state->textures);
+    render_targets_init(game_state->renderer,
+                        game_state->window_width,
+                        game_state->levels,
+                        &game_state->textures);
     
     bool running = true;
     

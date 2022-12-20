@@ -256,6 +256,8 @@ void chisel_init(struct Chisel *type) {
     gs->chisel = type;
     chisel = gs->chisel;
     
+    chisel->angle = 315;
+    
     if (chisel == chisel_small) {
         chisel->size = 0;
     } else if (chisel == chisel_medium) {
@@ -467,21 +469,21 @@ void chisel_tick(void) {
             
             switch ((int)chisel->angle) {
                 case 135:
-                    ux = 1;
-                    uy = -1;
-                    break;
+                ux = 1;
+                uy = -1;
+                break;
                 case 225:
-                    ux = 1;
-                    uy = 1;
-                    break;
+                ux = 1;
+                uy = 1;
+                break;
                 case 270:
-                    ux = 0;
-                    uy = 1;
-                    break;
+                ux = 0;
+                uy = 1;
+                break;
                 case 315:
-                    ux = -1;
-                    uy = 1;
-                    break;
+                ux = -1;
+                uy = 1;
+                break;
             }
             
             struct Chisel copy = *chisel;
@@ -525,15 +527,6 @@ void chisel_tick(void) {
         // f32 dist = sqrt(dx*dx + dy*dy);
         //SDL_ShowCursor(dist > 1);
     }
-    
-#if 0
-    if (input->keys_pressed[SDL_SCANCODE_S]) {
-        chisel->face_mode = !chisel->face_mode;
-        chisel->w = chisel->face_mode ? chisel->face_w : chisel->outside_w;
-        chisel->h = chisel->face_mode ? chisel->face_h : chisel->outside_h;
-        chisel->texture = chisel->face_mode ? chisel->face_texture : chisel->outside_texture;
-    }
-#endif
     
     if (input->mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
         chisel->is_changing_angle = 0;

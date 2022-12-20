@@ -1,8 +1,12 @@
 TODO :: {
-	[?] Sometimes the placer doesn't have enough material to rectangle-place.
-	[?] Show the timelapse of all states in the level.
-	[ ] Get playtesting done. Figure out what needs tutorializing the most,
-		and which levels are too far of a jump.
+
+	[x] Tutorial: Click and drag to rectangle-place.
+
+	[x] Remove the ability for very small placements of rectangles, in an
+		effort to prefer chiseling.
+
+	[ ] Make the chisel much more consistent.
+
 	[ ] Make the 3D fall in "Glass Body"
 	[ ] Make narrator framework.
 	[ ] Bug with small chisel not getting cells properly. Noticable in level 4.

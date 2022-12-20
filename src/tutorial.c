@@ -80,6 +80,10 @@ void tutorial_rect_run() {
     
     if (!tut->active) return;
     
+    if (gs->input.keys[SDL_SCANCODE_RETURN]) {
+        tutorial_rect_close(NULL);
+    }
+    
     const SDL_Color bg = (SDL_Color){32, 32, 32, 255};
     
     SDL_SetRenderDrawColor(gs->renderer, bg.r, bg.g, bg.b, 255);

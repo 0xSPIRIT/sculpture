@@ -150,7 +150,7 @@ void button_draw(struct Button *b) {
     };
     
     if (b->disabled) {
-        SDL_SetTextureColorMod(b->texture, 100, 100, 100);
+        SDL_SetTextureColorMod(b->texture, 75, 75, 75);
     } else if (b->active) {
         SDL_SetTextureColorMod(b->texture, 200, 200, 200);
     } else if (b->highlighted) {
@@ -275,7 +275,7 @@ void gui_tick(void) {
         }
         
         //if (gs->current_tool == TOOL_OVERLAY)
-            //overlay_interface_tick();
+        //overlay_interface_tick();
         
         if (input->real_my >= GUI_H) {
             // tooltip_reset(&gui->tooltip);
@@ -749,16 +749,6 @@ bool is_either_input_stone(struct Converter_Checker *checker, bool restart) {
     return true;
 }
 
-// Calculate the ratio of inputs -> output.
-f32 calculate_output_ratio(struct Item *input1, struct Item *input2) {
-    f32 result = 0.f;
-    int number_unique_inputs = get_number_unique_inputs(input1, input2);
-    
-    result = (f32) (number_unique_inputs * number_unique_inputs);
-    
-    return result;
-}
-
 int fuel_converter_convert(struct Item *input1, struct Item *input2) {
     int result_type = 0;
     int number_inputs = (input1->type != 0) + (input2->type != 0);
@@ -814,13 +804,17 @@ int material_converter_convert(struct Item *input1, struct Item *input2, struct 
     int result = 0;
     int number_inputs = (input1->type != 0) + (input2->type != 0);
     
-    // TOOD: Turn this into number_unique_inputs? Won't this not work
-    //       with that?
+    // We simply don't allow this.
+    if (input1->type == input2->type) {
+        return 0;
+    }
     
     struct Item *input = NULL;
     
     if (number_inputs == 1) {
         input = input1->type ? input1 : input2;
+        if (input->type == 0 || input->amount == 0) 
+            return 0;
     } else if (number_inputs == 2) {
         input = input1;
     }
@@ -929,6 +923,8 @@ bool converter_convert(struct Converter *converter) {
     int number_inputs = (input1->type != 0) + (input2->type != 0);
     
     if (!number_inputs) return false;
+    if (input1->type == input2->type) return false;
+    
     /* if (fuel && (!fuel->type || fuel->amount == 0)) return false; */
     
     if (converter->type == CONVERTER_FUEL) {
@@ -939,9 +935,6 @@ bool converter_convert(struct Converter *converter) {
     
     if (!temp_output_type) return false;
     
-    f32 output_ratio = calculate_output_ratio(input1, input2);
-    output_ratio = 1;
-    
     bool final_conversion = false;
     
     // Actually remove amounts from the inputs and increase
@@ -949,7 +942,7 @@ bool converter_convert(struct Converter *converter) {
     if (temp_output_type == output->type || output->type == 0) {
         output->type = temp_output_type;
         
-        int amount = (int) (converter->speed * output_ratio);
+        int amount = converter->speed;
         
         // Check if any input, when reduced by the amount,
         // gives negative amount. If so, lock the amount
@@ -1053,6 +1046,16 @@ void converter_tick(struct Converter *converter) {
 }
 
 void all_converters_tick(void) {
+    // Grey out the buttons for each converter
+    // if no conversions are possible right now.
+    if (0 == material_converter_convert(&gs->material_converter->slots[SLOT_INPUT1].item,
+                                        &gs->material_converter->slots[SLOT_INPUT2].item,
+                                        &gs->material_converter->slots[SLOT_FUEL].item)) {
+        gs->material_converter->go_button->disabled = true;
+    } else {
+        gs->material_converter->go_button->disabled = false;
+    }
+    
     converter_tick(gs->material_converter);
     converter_tick(gs->fuel_converter);
     

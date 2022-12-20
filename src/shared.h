@@ -139,6 +139,7 @@ struct Game_State {
     bool did_pressure_tutorial;
     bool did_inventory_tutorial;
     bool did_fuel_converter_tutorial;
+    bool did_placer_rectangle_tutorial;
         
     struct Chisel chisel_small, chisel_medium, chisel_large;
     struct Chisel *chisel;

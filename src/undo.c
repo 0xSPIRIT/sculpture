@@ -1,4 +1,5 @@
 void undo_system_reset(void) {
+    gs->save_state_count = 0;
     for (int i = 0; i < MAX_UNDO; i++) {
         for (int j = 0; j < NUM_GRID_LAYERS; j++) {
             if (gs->save_states[i].grid_layers[j]) {
@@ -12,44 +13,6 @@ void undo_system_reset(void) {
 struct Save_State *current_state(void) {
     if (gs->save_state_count == 0) return NULL;
     return &gs->save_states[gs->save_state_count-1];
-}
-
-void undo_system_init(void) {
-    gs->undo_initialized = true;
-    
-    gs->save_state_count = 1;
-    
-    for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        current_state()->grid_layers[i] = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
-        memcpy(current_state()->grid_layers[i], gs->grid_layers[i], sizeof(struct Cell)*gs->gw*gs->gh);
-    }
-}
-
-bool is_current_grid_same_as(struct Save_State *state) {
-    return memcmp(gs->grid_layers[0], state->grid_layers[0], gs->gw*gs->gh*sizeof(struct Cell)) == 0;
-}
-
-bool is_current_slots_same_as(struct Save_State *state) {
-    // Inventory Slots
-    for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
-        if (0 != memcmp(&state->placer_items[i], &gs->inventory.slots[i].item, sizeof(struct Item))) {
-            return false;
-        }
-    }
-    // Material Converter
-    for (int i = 0; i < SLOT_MAX_COUNT; i++) {
-        if (0 != memcmp(&state->placer_items[INVENTORY_SLOT_COUNT + i], &gs->material_converter->slots[i].item, sizeof(struct Item))) {
-            return false;
-        }
-    }
-    // Fuel Converter
-    for (int i = 0; i < SLOT_MAX_COUNT-1; i++) {
-        if (0 != memcmp(&state->placer_items[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT + i], &gs->fuel_converter->slots[i].item, sizeof(struct Item))) {
-            return false;
-        }
-    }
-    Log("True!\n");
-    return true;
 }
 
 void save_state_to_next(void) {
@@ -109,6 +72,47 @@ void save_state_to_next(void) {
         state->placer_items[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT + i] =
             gs->fuel_converter->slots[i].item;
     }
+}
+
+void undo_system_init(void) {
+    gs->undo_initialized = true;
+    
+    gs->save_state_count = 1;
+    
+    for (int i = 0; i < NUM_GRID_LAYERS; i++) {
+        current_state()->grid_layers[i] = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(struct Cell));
+    }
+    
+    gs->save_state_count = 0;
+    
+    save_state_to_next();
+}
+
+bool is_current_grid_same_as(struct Save_State *state) {
+    return memcmp(gs->grid_layers[0], state->grid_layers[0], gs->gw*gs->gh*sizeof(struct Cell)) == 0;
+}
+
+bool is_current_slots_same_as(struct Save_State *state) {
+    // Inventory Slots
+    for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
+        if (0 != memcmp(&state->placer_items[i], &gs->inventory.slots[i].item, sizeof(struct Item))) {
+            return false;
+        }
+    }
+    // Material Converter
+    for (int i = 0; i < SLOT_MAX_COUNT; i++) {
+        if (0 != memcmp(&state->placer_items[INVENTORY_SLOT_COUNT + i], &gs->material_converter->slots[i].item, sizeof(struct Item))) {
+            return false;
+        }
+    }
+    // Fuel Converter
+    for (int i = 0; i < SLOT_MAX_COUNT-1; i++) {
+        if (0 != memcmp(&state->placer_items[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT + i], &gs->fuel_converter->slots[i].item, sizeof(struct Item))) {
+            return false;
+        }
+    }
+    Log("True!\n");
+    return true;
 }
 
 void set_state(int num) {

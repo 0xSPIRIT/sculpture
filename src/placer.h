@@ -1,5 +1,6 @@
 #define PLACER_COUNT 5
 #define MAX_PLACE_SOLID_TIME 45 // Frames until cut off for solids.
+#define PLACER_MINIMUM_AREA 8
 
 enum {
     PLACER_PLACE_RECT_MODE,
@@ -9,9 +10,11 @@ enum {
 
 struct Placer {
     int index;
-
+    
     int state;
     bool escape_rect; // A flag for if we escape out of the setting of rectangle.
+    
+    bool did_take_anything; // When taking up material, did we actually take any?
 
     SDL_Rect rect;
     

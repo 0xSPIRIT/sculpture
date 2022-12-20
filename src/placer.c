@@ -83,6 +83,7 @@ void placer_suck_circle(struct Placer *placer) {
                         placer->contains->type = type;
                         placer->contains->amount++;
                         set_array(arr, xx, yy, 0, -1);
+                        placer->did_take_anything = true;
                     }
                 }
             }
@@ -212,9 +213,13 @@ void placer_set_and_resize_rect(struct Placer *placer) {
     
     int area = abs(c.w * c.h);
     
+    if (area < PLACER_MINIMUM_AREA) {
+        return;
+    }
+    
     if (area > placer->contains->amount) {
         placer->rect.h = clamp(placer->rect.h,
-                              -placer->contains->amount,
+                               -placer->contains->amount,
                                placer->contains->amount);
         
         int placer_rect_h = placer->rect.h;
@@ -243,6 +248,15 @@ void placer_place_rect(struct Placer *placer) {
     }
     placer->rect.w = abs(placer->rect.w);
     placer->rect.h = abs(placer->rect.h);
+    
+    int area = placer->rect.w * placer->rect.h;
+    if (area < PLACER_MINIMUM_AREA) {
+        placer->rect.x = -1;
+        placer->rect.y = -1;
+        placer->rect.w = 0;
+        placer->rect.h = 0;
+        return;
+    }
     
     int object_index = -1;
     
@@ -358,6 +372,12 @@ void placer_tick(struct Placer *placer) {
         case PLACER_SUCK_MODE: {
             if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                 placer_suck_circle(placer);
+            } else if (input->mouse_released[SDL_BUTTON_LEFT]) {
+                if (placer->did_take_anything) {
+                    save_state_to_next();
+                }
+            } else {
+                placer->did_take_anything = false;
             }
             break;
         }
@@ -389,6 +409,15 @@ void placer_tick(struct Placer *placer) {
             if (gs->input.real_my < GUI_H) break;
             if (placer->escape_rect) break;
             if (skip) break;
+            
+            if (!gs->did_placer_rectangle_tutorial) {
+                struct Tutorial_Rect *t = tutorial_rect(TUTORIAL_RECTANGLE_PLACE,
+                                                        32,
+                                                        GUI_H+32,
+                                                        NULL);
+                gs->tutorial = *t;
+                gs->did_placer_rectangle_tutorial = true;
+            }
             
             if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
                 save_state_to_next();
@@ -491,7 +520,28 @@ void placer_draw(struct Placer *placer, bool full_size) {
     SDL_RenderCopy(gs->renderer, placer->texture, NULL, &dst);
 
     if (placer->rect.x != -1) {
-        SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
+        // Make sure the area is enough before you start drawing the rectangle.
+        SDL_Rect c = placer->rect;
+        c.w--;
+        c.h--;
+        
+        if (c.w < 0) {
+            c.x += c.w;
+        }
+        if (c.h < 0) {
+            c.y += c.h;
+        }
+        c.w = abs(c.w);
+        c.h = abs(c.h);
+        
+        int area = abs(c.w * c.h);
+        
+        if (area >= PLACER_MINIMUM_AREA) {
+            SDL_SetRenderDrawColor(gs->renderer, 255, 255, 0, 255);
+        } else {
+            SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
+        }
+            
         SDL_RenderDrawRect(gs->renderer, &placer->rect);
     }
     

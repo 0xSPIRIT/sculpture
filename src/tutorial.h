@@ -23,14 +23,15 @@
 #define TUTORIAL_CHISEL_ROTATE_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Hold SHIFT and move the cursor to rotate the chisel."
+    "*Hold* SHIFT and move the cursor to rotate the chisel."
 
 #define TUTORIAL_PRESSURE_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Sometimes a chisel is unable to destroy a cell\n" \
-    "when it's too far inside the sculpture.\n" \
-    "In these cases, you can use the DELETER."
+    "Sometimes a chisel is unable to destroy a cell when\n" \
+    "it's too far inside the sculpture. In these cases\n" \
+    "you can use the DELETER to clear up material before\n" \
+    "using the chisel again."
 
 #define TUTORIAL_PLACER_STRING \
     "Tutorial\n" \
@@ -63,6 +64,11 @@
     "Ensure you be careful with the amount of material you're\n" \
     "converting; You might end up with not enough of a certain\n" \
     "type!"
+
+#define TUTORIAL_RECTANGLE_PLACE \
+    "Tutorial\n" \
+    "--------\n\n" \
+    "To place material down, click and drag a rectangle."
 
 // A rectangle containing text, and an "Okay" button.
 struct Tutorial_Rect {
