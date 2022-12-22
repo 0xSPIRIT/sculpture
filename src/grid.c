@@ -222,6 +222,31 @@ void blob_generate_dumb(int obj, int chisel_size, Uint32 *blob_count) {
     }
 }
 
+void blob_generate_large(f64 s, int obj, int chisel_size, Uint32 *blob_count) {
+    Uint32 *blobs = gs->objects[obj].blob_data[chisel_size].blobs;
+    
+    f32 rad = (gs->chisel->angle) / 360.f;
+    rad *= 2 * (f32)M_PI;
+    
+    //int x = gs->chisel->x - cos(rad);
+    //int y = gs->chisel->y - sin(rad);
+    
+    int x = gs->chisel->x;
+    int y = gs->chisel->y;
+    
+    for (int yy = -s; yy <= s; yy++) {
+        for (int xx = -s; xx <= s; xx++) {
+            if (xx*xx + yy*yy > s*s) continue;
+            
+            if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
+            if (blobs[x+xx+(y+yy)*gs->gw]) continue;
+            
+            blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
+        }
+    }
+    (*blob_count)++;
+}
+
 int flood_fill_outlines(Uint32 *blobs, Uint32 *blob_count, int obj, int x, int y, int counter) {
     if (counter <= 0) {
         (*blob_count)++;
@@ -263,27 +288,6 @@ void blob_generate_outlines(int obj, int length, int chisel_size, Uint32 *blob_c
             }
         }
     }
-}
-
-void blob_generate_large(int obj, int size, Uint32 *blob_count) {
-    Uint32 *blobs = gs->objects[obj].blob_data[size].blobs;
-    
-    f64 s = 4;
-    
-    int x = gs->chisel->x;
-    int y = gs->chisel->y;
-    
-    for (int yy = -s; yy <= s; yy++) {
-        for (int xx = -s; xx <= s; xx++) {
-            if (xx*xx + yy*yy > s*s) continue;
-            
-            if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
-            if (blobs[x+xx+(y+yy)*gs->gw]) continue;
-            
-            blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
-        }
-    }
-    (*blob_count)++;
 }
 
 void grid_fill_circle(Uint32 *blobs, Uint32 *blob_count, int obj, int x, int y, int size) {
@@ -364,7 +368,7 @@ void object_generate_blobs(int object_index, int chisel_size) {
         gs->blob_type = BLOB_CIRCLE_B;
         blob_generate_pizza(object_index, chisel_size, &count);
     } else {
-        blob_generate_large(object_index, chisel_size, &count);
+        blob_generate_large(4, object_index, chisel_size, &count);
     }
     
     obj->blob_data[chisel_size].blob_count = count;

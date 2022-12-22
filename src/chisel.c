@@ -81,15 +81,15 @@ void chisel_hammer_tick(void) {
 //
 // Returns the blob it reaches only if remove == false.
 //
-Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
+Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
     struct Chisel *chisel = gs->chisel;
     struct Object *objects = gs->objects;
-    Uint32 *curr_blobs = objects[gs->object_current].blob_data[chisel->size].blobs;
+    Uint32 *curr_blobs = objects[obj].blob_data[chisel->size].blobs;
     
     bool did_hit_blocker = false;
     f32 px = chisel->x, py = chisel->y;
     
-    if (gs->object_current == -1) return 0;
+    if (obj == -1) return 0;
     
     f32 current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
     
@@ -136,7 +136,7 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
                 chisel->x -= ux;
                 chisel->y -= uy;
                 
-                bool can_destroy = blob_can_destroy(gs->object_current, chisel->size, b);
+                bool can_destroy = blob_can_destroy(obj, chisel->size, b);
                 
                 if (!can_destroy && remove && !gs->did_pressure_tutorial) {
                     gs->tutorial = *tutorial_rect(TUTORIAL_PRESSURE_STRING,
@@ -145,7 +145,7 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
                                                   NULL);
                     gs->did_pressure_tutorial = true;
                 }
-                    
+                
                 if (can_destroy) {
                     if (!remove) {
                         chisel->x = px;
@@ -153,10 +153,10 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
                         return b;
                     }
                     
-                    int count = cell_count_of_blob(gs->object_current, b, chisel->size);
+                    int count = cell_count_of_blob(obj, b, chisel->size);
                     enum Cell_Type type = gs->grid[(int)chisel->x + ((int)chisel->y)*gs->gw].type;
                     
-                    object_remove_blob(gs->object_current, b, chisel->size, blocker_side, true);
+                    object_remove_blob(obj, b, chisel->size, blocker_side, true);
                     
                     move_mouse_to_grid_position(chisel->x, chisel->y);
                     emit_dust_explosion(type, chisel->x, chisel->y, count);
@@ -204,7 +204,7 @@ Uint32 chisel_goto_blob(bool remove, f32 ux, f32 uy, f32 len) {
                 Uint32 blob = curr_blobs[xx+yy*gs->gw];
                 
                 if (blob > 0) {
-                    object_remove_blob(gs->object_current, blob, chisel->size, blocker_side, true);
+                    object_remove_blob(obj, blob, chisel->size, blocker_side, true);
                     chisel->did_remove = true;
                     goto chisel_did_remove;
                 }
@@ -430,6 +430,12 @@ void chisel_tick(void) {
     
     chisel->is_changing_angle = input->keys[SDL_SCANCODE_LSHIFT];
     
+    if (chisel->size == 2) {
+        for (int i = 0; i < gs->object_count; i++) {
+            object_generate_blobs(i, 2);
+        }
+    }
+    
     if (!gs->did_chisel_tutorial) {
         struct Tutorial_Rect *t = tutorial_rect(TUTORIAL_CHISEL_ROTATE_STRING,
                                                 32,
@@ -488,7 +494,9 @@ void chisel_tick(void) {
             
             struct Chisel copy = *chisel;
             
-            Uint32 blob_highlight = chisel_goto_blob(false, ux, uy, len);
+            int obj = gs->object_current;
+            
+            Uint32 blob_highlight = chisel_goto_blob(obj, false, ux, uy, len);
             
             *chisel = copy;
             
@@ -496,9 +504,9 @@ void chisel_tick(void) {
             chisel->highlight_count = 0;
             
             if (blob_highlight > 0) {
-                if (blob_can_destroy(gs->object_current, chisel->size, blob_highlight)) {
+                if (blob_can_destroy(obj, chisel->size, blob_highlight)) {
                     for (int i = 0; i < gs->gw*gs->gh; i++) {
-                        Uint32 b = objects[gs->object_current].blob_data[chisel->size].blobs[i];
+                        Uint32 b = objects[obj].blob_data[chisel->size].blobs[i];
                         if (b == blob_highlight) {
                             chisel->highlights[chisel->highlight_count++] = i;
                         }
@@ -568,7 +576,7 @@ void chisel_tick(void) {
                     chisel_update_texture();
                 }
             } else if (!chisel->did_remove && gs->object_current != -1) {
-                chisel_goto_blob(true, ux, uy, len);
+                chisel_goto_blob(gs->object_current, true, ux, uy, len);
             }
             move_mouse_to_grid_position(chisel->x, chisel->y);
             input->mx = (int)chisel->x;
@@ -647,12 +655,11 @@ void chisel_draw(void) {
                         SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 60);
                     }
                 } else {
-                    SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 80);
+                    SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 50);
                 }
             } else {
-                SDL_SetRenderDrawColor(gs->renderer, 255, 255, 0, 80);
+                SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 35);
             }
-            
 
             SDL_RenderDrawPoint(gs->renderer, x, y);
         }

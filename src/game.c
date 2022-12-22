@@ -66,12 +66,13 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     if (event->type == SDL_KEYDOWN && !gs->text_field.active) {
         switch (event->key.keysym.sym) {
             case SDLK_ESCAPE: {
-                if (get_current_placer() && get_current_placer()->state == PLACER_PLACE_RECT_MODE && input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-                    get_current_placer()->escape_rect = true;
-                    get_current_placer()->rect.x = -1;
-                    get_current_placer()->rect.y = -1;
-                    get_current_placer()->rect.w = 0;
-                    get_current_placer()->rect.h = 0;
+                struct Placer *placer = get_current_placer();
+                if (placer && placer->state == PLACER_PLACE_RECT_MODE && input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                    placer->escape_rect = true;
+                    placer->rect.x = -1;
+                    placer->rect.y = -1;
+                    placer->rect.w = 0;
+                    placer->rect.h = 0;
                 } else {
 #ifdef ALASKA_DEBUG
                     is_running = false; 

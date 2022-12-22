@@ -162,7 +162,7 @@ inline void _assert(SDL_Window *window, const char *func, const char *file, cons
                 break;
             }
         }
-
+        
         sprintf(message, "%s :: at %s:%d\nLine:%s", func, file, line, line_of_code);
         if (window) {
             SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, window);

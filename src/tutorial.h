@@ -70,6 +70,12 @@
     "--------\n\n" \
     "To place material down, click and drag a rectangle."
 
+#define TUTORIAL_CHISEL_INVENTORY_STRING \
+    "Tutorial\n" \
+    "--------\n\n" \
+    "Upon chiseling, the broken material gets placed into\n" \
+    "your inventory."
+
 // A rectangle containing text, and an "Okay" button.
 struct Tutorial_Rect {
     bool active;

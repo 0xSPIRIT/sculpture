@@ -263,10 +263,6 @@ void level_tick(void) {
     if (gs->text_field.active) return;
     if (gs->gui.popup) return;
     
-    if (gs->chisel->size == 2) {
-        objects_reevaluate();
-    }
-    
     switch (level->state) {
         case LEVEL_STATE_INTRO:
         level->popup_time_current++;

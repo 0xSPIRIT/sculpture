@@ -80,7 +80,7 @@ void tutorial_rect_run() {
     
     if (!tut->active) return;
     
-    if (gs->input.keys[SDL_SCANCODE_RETURN]) {
+    if (gs->input.keys_pressed[SDL_SCANCODE_RETURN]) {
         tutorial_rect_close(NULL);
     }
     
@@ -146,6 +146,13 @@ void check_for_tutorial() {
         }
         case 3: {
             gs->tutorial = *tutorial_rect(TUTORIAL_PLACER_STRING,
+                                          32,
+                                          GUI_H+32,
+                                          NULL);
+            break;
+        }
+        case 5: {
+            gs->tutorial = *tutorial_rect(TUTORIAL_CHISEL_INVENTORY_STRING,
                                           32,
                                           GUI_H+32,
                                           NULL);
