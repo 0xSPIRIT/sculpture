@@ -265,72 +265,25 @@ void blob_generate_outlines(int obj, int length, int chisel_size, Uint32 *blob_c
     }
 }
 
-void blob_generate_circles(int obj, int size, Uint32 *blob_count) {
-    int interval = 1;
-    
+void blob_generate_large(int obj, int size, Uint32 *blob_count) {
     Uint32 *blobs = gs->objects[obj].blob_data[size].blobs;
     
-    const int medium_chisel_size = 2;
-    const int large_chisel_size = 3;
+    f64 s = 4;
     
-    for (int y = 0; y < gs->gh; y += interval) {
-        for (int x = 0; x < gs->gw; x += interval) {
+    int x = gs->chisel->x;
+    int y = gs->chisel->y;
+    
+    for (int yy = -s; yy <= s; yy++) {
+        for (int xx = -s; xx <= s; xx++) {
+            if (xx*xx + yy*yy > s*s) continue;
             
-            if (gs->grid[x+y*gs->gw].object != obj) continue;
-            if (blobs[x+y*gs->gw]) continue;
+            if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
+            if (blobs[x+xx+(y+yy)*gs->gw]) continue;
             
-            if (any_neighbours_free(gs->grid, x, y) && blobs[x+y*gs->gw] == 0) {
-                bool added = false;
-                bool first = true;
-                
-                int r = size == 1 ? medium_chisel_size : large_chisel_size;
-                
-                // if (size != 1) {
-                // int add = abs(my_rand(x+y*gs->gw))%5 - 2;
-                // r += add;
-                // }
-                
-                for (int yy = -r+2; yy <= r+2; yy++) {
-                    for (int xx = -r+2; xx <= r+2; xx++) {
-                        
-                        if (xx*xx + yy*yy > (r*r)+1) continue;
-                        if (gs->grid[x+xx+(y+yy)*gs->gw].type == 0) continue;
-                        if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
-                        if (blobs[x+xx+(y+yy)*gs->gw]) continue;
-                        
-                        // Only add if we have our blob to our immediates...
-                        // or if it's the first cell we're setting.
-                        
-                        //if (first || get_neighbouring_same_blobs(x+xx, y+yy, *blob_count, obj, size)) {
-                        blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
-                        //}
-                        
-                        first = false;
-                        added = true;
-                    }
-                }
-                
-                if (added) {
-                    // Fix up one-off cells.
-                    
-                    for (int yy = y-r; yy <= y+r; yy++) {
-                        for (int xx = x-r; xx <= x+r; xx++) {
-                            if (blobs[xx+yy*gs->gw] == *blob_count &&
-                                get_neighbouring_same_blobs(xx, yy, *blob_count, obj, size) == 0) 
-                            {
-                                blobs[xx+yy*gs->gw] = 0;
-                            }
-                        }
-                    }
-                    
-                    (*blob_count)++;
-                }
-            }
+            blobs[x+xx+(y+yy)*gs->gw] = *blob_count;
         }
     }
-    
-    // Separate blobs that are not directly together.
-    // Fix up one off mistakes that we made before.
+    (*blob_count)++;
 }
 
 void grid_fill_circle(Uint32 *blobs, Uint32 *blob_count, int obj, int x, int y, int size) {
@@ -407,11 +360,11 @@ void object_generate_blobs(int object_index, int chisel_size) {
             }
         }
         count = 1;
-    } else {
+    } else if (chisel_size == 1) {
         gs->blob_type = BLOB_CIRCLE_B;
-        //blob_generate_circles(object_index, chisel_size, &count);
-        //blob_generate_outlines(object_index, 2, chisel_size, &count);
         blob_generate_pizza(object_index, chisel_size, &count);
+    } else {
+        blob_generate_large(object_index, chisel_size, &count);
     }
     
     obj->blob_data[chisel_size].blob_count = count;

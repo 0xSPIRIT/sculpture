@@ -32,3 +32,4 @@
 #include "undo.h"
 #include "view.h"
 #include "timelapse.h"
+#include "3d.h"

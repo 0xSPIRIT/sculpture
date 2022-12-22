@@ -23,6 +23,7 @@
 #include "popup.c"
 #include "timelapse.c"
 #include "level.c"
+#include "3d.c"
 
 export void game_init(struct Game_State *state, int level) {
     gs = state;
@@ -385,6 +386,9 @@ export void game_run(struct Game_State *state) {
     } else if (level->state != LEVEL_STATE_INTRO) {
         draw_intro();
     }
+    
+    object_draw(NULL);
+    
     SDL_RenderPresent(gs->renderer);
     
     gs->is_mouse_over_any_button = false;
