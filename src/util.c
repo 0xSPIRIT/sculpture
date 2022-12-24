@@ -307,7 +307,37 @@ void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
     }
 }
 
-void draw_line_buffer(Uint32 *pixels, int w, int h, Uint32 color, int x1, int y1, int x2, int y2) {
+void draw_line_in_buffer(Uint32 *pixels, int w, int h, Uint32 color, int x1, int y1, int x2, int y2) {
+    #if 0
+    (void)h;
+    
+    f64 dx=abs(x2-x1);
+    f64 dy=abs(y2-y1);
+    
+    f64 step;
+    
+    if(dx>=dy)
+        step=dx;
+    else
+        step=dy;
+    
+    dx=dx/step;
+    dy=dy/step;
+    
+    f64 x=x1;
+    f64 y=y1;
+    
+    int i=1;
+    while(i<=step)
+    {
+        pixels[(int)x+(int)y*w] = color;
+        x=x+dx;
+        y=y+dy;
+        i++;
+    }
+    #endif
+    
+#if 1
     f64 dx = x2-x1;
     f64 dy = y2-y1;
     f64 len = sqrt(dx*dx+dy*dy);
@@ -334,6 +364,7 @@ void draw_line_buffer(Uint32 *pixels, int w, int h, Uint32 color, int x1, int y1
         yy += uy;
         l = sqrt(xx*xx+yy*yy);
     }
+#endif
 }
 
 void draw_text(TTF_Font *font,
@@ -404,10 +435,57 @@ void fill_circle_in_buffer(Uint32 *buffer, Uint32 value, int x, int y, int w, in
     }
 }
 
+void flood_fill_u32(Uint32 *buffer, Uint32 value, int w, int h, int x, int y, int *fill_stack) {
+    int count = 1;
+    fill_stack[0] = x+y*w;
+    
+    int c=0;
+    
+    while (count > 0) {
+        int idx = fill_stack[--count];
+        int dx = idx%w, dy = idx/w;
+        
+        if (dx < 0 || dy < 0 || dx >= w || dy >= h)
+            continue;
+        if (buffer[idx] == value)
+            continue;
+        
+        buffer[idx] = value;
+        c++;
+        
+        fill_stack[count++] = dx+1 + dy*w;
+        fill_stack[count++] = dx-1 + dy*w;
+        fill_stack[count++] = dx + (dy+1)*w;
+        fill_stack[count++] = dx + (dy-1)*w;
+    }
+}
+
+void fill_polygon_in_buffer(Uint32 *buffer, Uint32 value, int w, int h, vec2 *points, int n, int *fill_stack) {
+    (void)fill_stack;
+    
+    vec2 prev = {-1, -1};
+    vec2 avg = {0, 0};
+    
+    for (int i = 0; i < n; i++) {
+        if (prev.x != -1)
+            draw_line_in_buffer(buffer, w, h, value, prev.x, prev.y, points[i].x, points[i].y);
+        
+        avg.x += points[i].x;
+        avg.y += points[i].y;
+        
+        prev = points[i];
+    }
+    draw_line_in_buffer(buffer, w, h, value, points[n-1].x, points[n-1].y, points[0].x, points[0].y);
+    
+    avg.x /= n;
+    avg.y /= n;
+    
+    flood_fill_u32(buffer, value, w, h, avg.x, avg.y, fill_stack);
+}
+
 // Draw an image given 4 points.
 void draw_image_skew(SDL_Surface *surf, vec2 *p) {
-    LARGE_INTEGER start;
-    QueryPerformanceCounter(&start);
+    (void)surf;
     
     Uint32 *pixels = PushArray(gs->transient_memory, gs->window_width*gs->window_height, sizeof(Uint32));
     
@@ -416,6 +494,8 @@ void draw_image_skew(SDL_Surface *surf, vec2 *p) {
                                             gs->window_height,
                                             32,
                                             0, 0, 0, 0);
+    
+    int *fill_stack = PushArray(gs->transient_memory, out->w*out->h, sizeof(int)); // full of indices
     
     for (int y = 0; y < surf->h; y++) {
         vec2 prev = {-1, -1};
@@ -431,12 +511,6 @@ void draw_image_skew(SDL_Surface *surf, vec2 *p) {
                                    lerp_vec2(p[1], p[3], ty),
                                    tx);
             
-            //int px = point.x, py = point.y;
-            
-            if (prev.x != -1) {
-                draw_line_buffer(pixels, out->w, out->h, col, prev.x, prev.y, point.x, point.y);
-            }
-            
             if (prev.x != -1 && y+1 < surf->h) {
                 ty = (f64)(y+1) / (f64)surf->h;
                 
@@ -444,40 +518,21 @@ void draw_image_skew(SDL_Surface *surf, vec2 *p) {
                                               lerp_vec2(p[1], p[3], ty),
                                               tx);
                 
-                f64 dx = point.x - prev.x;
-                f64 dy = point.y - prev.y;
-                f64 len = sqrt(dx*dx+dy*dy);
+                vec2 pp[] = {
+                    {prev.x, prev.y},
+                    {point.x, point.y},
+                    {bottom_point.x, bottom_point.y},
+                    {bottom_point.x-(point.x-prev.x), bottom_point.y-(point.y-prev.y)},
+                };
                 
-                f64 ux = dx/len;
-                f64 uy = dy/len;
-                
-                f64 l = 0;
-                f64 xx = 0, yy = 0;
-                
-                while (len && l < len) {
-                    // We're applying +xx and +yy to the bottom point even though
-                    // xx and yy only applies to the gradient between point and prev.
-                    // The bottom point has a different gradient, so it will cause
-                    // artifacting.
-                    
-                    draw_line_buffer(pixels,
-                                     out->w,
-                                     out->h,
-                                     col,
-                                     prev.x + xx,
-                                     prev.y + yy,
-                                     bottom_point.x + xx,
-                                     bottom_point.y + yy);
-                    
-                    xx += ux;
-                    yy += uy;
-                    l = sqrt(xx*xx+yy*yy);
-                }
+                fill_polygon_in_buffer(pixels, col, out->w, out->h, pp, 4, fill_stack);
             }
             
             prev = point;
         }
     }
+    
+    //draw_line_in_buffer(pixels, out->w, out->h, SDL_MapRGB(out->format, 255, 255, 255), 10, 10, 200, 100);
     
     SDL_memcpy(out->pixels, pixels, sizeof(Uint32)*out->w*out->h);
     
@@ -487,15 +542,6 @@ void draw_image_skew(SDL_Surface *surf, vec2 *p) {
     SDL_FreeSurface(out);
     SDL_DestroyTexture(texture);
     
-    LARGE_INTEGER end;
-    QueryPerformanceCounter(&end);
-    
-    LARGE_INTEGER frequency;
-    QueryPerformanceFrequency(&frequency);
-    
-    f64 d = (end.QuadPart - start.QuadPart) / (f64) frequency.QuadPart;
-    
-    Log("Function: %f ms\n", d*1000);
 }
 
 void draw_line_225(f32 deg_angle, SDL_Point a, SDL_Point b, f32 size, bool infinite) {
