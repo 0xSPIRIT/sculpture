@@ -485,15 +485,14 @@ void fill_polygon_in_buffer(Uint32 *buffer, Uint32 value, int w, int h, vec2 *po
 
 // Draw an image given 4 points.
 void draw_image_skew(SDL_Surface *surf, vec2 *p) {
+    LARGE_INTEGER start;
+    QueryPerformanceCounter(&start);
+    
     (void)surf;
     
-    Uint32 *pixels = PushArray(gs->transient_memory, gs->window_width*gs->window_height, sizeof(Uint32));
+    SDL_Surface *out = gs->surfaces.out_3d;
     
-    SDL_Surface *out = SDL_CreateRGBSurface(0,
-                                            gs->window_width,
-                                            gs->window_height,
-                                            32,
-                                            0, 0, 0, 0);
+    SDL_memset(out->pixels, 0, sizeof(Uint32)*out->w*out->h);
     
     int *fill_stack = PushArray(gs->transient_memory, out->w*out->h, sizeof(int)); // full of indices
     
@@ -525,23 +524,34 @@ void draw_image_skew(SDL_Surface *surf, vec2 *p) {
                     {bottom_point.x-(point.x-prev.x), bottom_point.y-(point.y-prev.y)},
                 };
                 
-                fill_polygon_in_buffer(pixels, col, out->w, out->h, pp, 4, fill_stack);
+                fill_polygon_in_buffer(out->pixels, col, out->w, out->h, pp, 4, fill_stack);
             }
             
             prev = point;
         }
     }
     
-    //draw_line_in_buffer(pixels, out->w, out->h, SDL_MapRGB(out->format, 255, 255, 255), 10, 10, 200, 100);
+    // Bypassing the textures and just blitting straight to the screen.
     
-    SDL_memcpy(out->pixels, pixels, sizeof(Uint32)*out->w*out->h);
+    SDL_Surface *screen = SDL_GetWindowSurface(gs->window);
     
+#if 0
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, out);
     SDL_RenderCopy(gs->renderer, texture, NULL, NULL);
-    
-    SDL_FreeSurface(out);
     SDL_DestroyTexture(texture);
+#endif
     
+    SDL_BlitSurface(out, NULL, screen, NULL);
+    
+    LARGE_INTEGER end;
+    QueryPerformanceCounter(&end);
+    
+    LARGE_INTEGER frequency;
+    QueryPerformanceFrequency(&frequency);
+    
+    f64 d = (end.QuadPart - start.QuadPart) / (f64) frequency.QuadPart;
+    
+    Log("Function: %f ms\n", d*1000);
 }
 
 void draw_line_225(f32 deg_angle, SDL_Point a, SDL_Point b, f32 size, bool infinite) {

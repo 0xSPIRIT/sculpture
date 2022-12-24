@@ -46,5 +46,5 @@ void object_draw(struct Object3D *obj) {
     
     vec2 *projected = project(points, count);
     
-    draw_image_skew(gs->surfaces.grass_surface, projected);
+    draw_image_skew(gs->surfaces.a, projected);
 }
