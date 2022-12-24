@@ -57,10 +57,13 @@ struct Game_State {
     struct Tutorial_Rect tutorial;
     bool show_tutorials;
     
+    struct Narrator narrator;
+    
     struct View view;
     
     struct Timelapse timelapse;
     
+    struct Audio audio;
     struct Textures textures; // Contains pointers to SDL textures.
     struct Surfaces surfaces;
     struct Fonts fonts;

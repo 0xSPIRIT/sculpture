@@ -2,6 +2,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
+
+#include <windows.h>
 
 #include <time.h>
 #include <stdbool.h>
@@ -16,6 +19,7 @@
 #include "grid.h"
 #include "chisel.h"
 #include "deleter.h"
+#include "narrator.h"
 #include "popup.h"
 #include "placer.h"
 #include "level.h"

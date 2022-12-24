@@ -1,16 +1,14 @@
 TODO :: {
 
-	[x] Make the large chisel much more consistent.
-	[x] Chisel bug: large chisel not destroying when multiple objects. Noticeable in level 5.
-	[ ] Tutorial: When you chisel something, it goes into your inventory.
 	[ ] Write narrator dialogue
+	[ ] Make the 3D fall in "Glass Body"
+	[ ] Make narrator framework.
+	[x] Audio framework setup.
+	[ ] Tutorial: Make use of the chisel's ability to move after you've clicked.
+	[ ] Bug with small chisel not getting cells properly. Noticable in level 4.
 	[ ] The chisels are limited to blobs by object. If a big circle goes
 		over one object of 5 cells, but mostly destroys another object,
 		it only does the small 5 cells. Destroy ALL objects.
-	[ ] Make the 3D fall in "Glass Body"
-	[ ] Make narrator framework.
-	[ ] Audio framework setup.
-	[ ] Bug with small chisel not getting cells properly. Noticable in level 4.
 
 }
 

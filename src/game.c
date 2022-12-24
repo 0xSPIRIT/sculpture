@@ -33,7 +33,7 @@ export void game_init(struct Game_State *state, int level) {
     gs->view.w = gs->window_width;
     gs->view.h = gs->window_height-GUI_H;
     
-    gs->show_tutorials = true;
+    gs->show_tutorials = false;
     
     levels_setup();
     
@@ -67,7 +67,9 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         switch (event->key.keysym.sym) {
             case SDLK_ESCAPE: {
                 struct Placer *placer = get_current_placer();
-                if (placer && placer->state == PLACER_PLACE_RECT_MODE && input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                if (gs->tutorial.active) {
+                    tutorial_rect_close(NULL);
+                } else if (placer && placer->state == PLACER_PLACE_RECT_MODE && input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                     placer->escape_rect = true;
                     placer->rect.x = -1;
                     placer->rect.y = -1;
@@ -125,6 +127,8 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
             case SDLK_g: {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     set_text_field("Goto Level", "", goto_level_string_hook);
+                } else {
+                    Mix_PlayChannel(-1, gs->audio.chisel, 0);
                 }
                 break;
             }

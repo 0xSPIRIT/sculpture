@@ -21,25 +21,30 @@ vec2* project(vec3 *input, int count) {
 void object_draw(struct Object3D *obj) {
     (void)obj;
     
-    bool draw_3d = false;
-    if (!draw_3d) {
-        return;
+    const int count = 4;
+    
+    vec3 *op = PushArray(gs->transient_memory, count, sizeof(vec3));
+    
+    op[0] = (vec3){-0.5, -0.5, 0};
+    op[1] = (vec3){+0.5, -0.5, 0};
+    op[3] = (vec3){+0.5, +0.5, 0};
+    op[2] = (vec3){-0.5, +0.5, 0};
+    
+    vec3 *points = PushArray(gs->transient_memory, count, sizeof(vec3));
+    
+    // Rotation about the Y-axis
+    
+    for (int i = 0; i < count; i++) {
+        f64 t = sin(SDL_GetTicks()/2000.0);
+        
+        points[i].x = cos(t) * op[i].x - sin(t) * op[i].z;
+        points[i].y = op[i].y;
+        points[i].z = sin(t) * op[i].x + cos(t) * op[i].z;
+        
+        points[i].z += 1; // Push it forward on the screen.
     }
     
-    vec3 points[4];
+    vec2 *projected = project(points, count);
     
-    f64 z = 1.5+sin(SDL_GetTicks()/1000.0);
-    
-    points[0] = (vec3){+0.5, 0.5, z};
-    points[1] = (vec3){-0.5, 0.5, z};
-    points[2] = (vec3){+0.5, -0.5, z};
-    points[3] = (vec3){-0.5, -0.5, z};
-    
-    vec2 *projected = project(points, 4);
-    
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
-    
-    for (int i = 0; i < 4; i++) {
-        fill_circle(gs->renderer, projected[i].x, projected[i].y, 5);
-    }
+    draw_image_skew(gs->surfaces.a, projected);
 }

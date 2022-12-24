@@ -50,8 +50,6 @@
 #define TEMP_DLL_NAME "sculpture_temp.dll"
 #define LOCK_NAME     "lock.tmp"
 
-#define ALASKA_USE_SOFTWARE_RENDERER
-
 typedef void (*GameInitProc)(struct Game_State *state, int start_level);
 typedef bool (*GameTickEventProc)(struct Game_State *state, SDL_Event *event);
 typedef void (*GameRunProc)(struct Game_State *state);
@@ -67,6 +65,8 @@ struct Game_Code {
 
 void game_init_sdl(struct Game_State *state, const char *window_title, int w, int h) {
     SDL_Init(SDL_INIT_VIDEO);
+    
+    Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
     
     state->window = SDL_CreateWindow(window_title,
                                      SDL_WINDOWPOS_CENTERED,
@@ -146,9 +146,11 @@ void game_deinit(struct Game_State *state) {
     textures_deinit(&state->textures);
     surfaces_deinit(&state->surfaces);
     fonts_deinit(&state->fonts);
+    audio_deinit(&state->audio);
     
     SDL_DestroyRenderer(state->renderer);
     
+    Mix_Quit();
     TTF_Quit();
     IMG_Quit();
     SDL_Quit();
@@ -273,6 +275,12 @@ int main(int argc, char **argv)
                         game_state->window_width,
                         game_state->levels,
                         &game_state->textures);
+    
+    Assert(Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0);
+    
+    audio_init(&game_state->audio);
+    
+    //Mix_PlayMusic(game_state->audio.music, 0);
     
     bool running = true;
     

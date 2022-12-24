@@ -288,6 +288,54 @@ bool is_point_in_triangle(SDL_Point pt, SDL_Point v1, SDL_Point v2, SDL_Point v3
     return !(has_neg && has_pos);
 }
 
+vec2 lerp_vec2(vec2 a, vec2 b, f64 t) {
+    vec2 result;
+    
+    result.x = a.x + (b.x-a.x)*t;
+    result.y = a.y + (b.y-a.y)*t;
+    
+    return result;
+}
+
+void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
+    for (int yy = -size; yy <= size; yy++) {
+        for (int xx = -size; xx <= size; xx++) {
+            if (xx*xx + yy*yy > size*size) continue;
+            
+            SDL_RenderDrawPoint(renderer, x+xx, y+yy);
+        }
+    }
+}
+
+void draw_line_buffer(Uint32 *pixels, int w, int h, Uint32 color, int x1, int y1, int x2, int y2) {
+    f64 dx = x2-x1;
+    f64 dy = y2-y1;
+    f64 len = sqrt(dx*dx+dy*dy);
+    f64 ux = dx/len;
+    f64 uy = dy/len;
+    
+    f64 xx = 0, yy = 0;
+    f64 l = 0;
+    
+    while (l <= len) {
+        int xxi = x1+xx;
+        int yyi = y1+yy;
+        
+        if (xxi < 0 || yyi < 0 || xxi >= w || yyi >= h) {
+            xx += ux;
+            yy += uy;
+            l = sqrt(xx*xx+yy*yy);
+            continue;
+        }
+        
+        pixels[xxi+yyi*w] = color;
+        
+        xx += ux;
+        yy += uy;
+        l = sqrt(xx*xx+yy*yy);
+    }
+}
+
 void draw_text(TTF_Font *font,
                const char *str,
                SDL_Color col,
@@ -319,17 +367,32 @@ void draw_text(TTF_Font *font,
     SDL_DestroyTexture(texture);
 }
 
-void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
-    for (int yy = -size; yy <= size; yy++) {
-        for (int xx = -size; xx <= size; xx++) {
-            if (xx*xx + yy*yy > size*size) continue;
+#if 0
+void draw_surface(SDL_Surface *surf,
+                  SDL_Rect o,
+                  int x1, int y1,
+                  int x2, int y2,
+                  int x3, int y3,
+                  int x4, int y4) 
+{
+    for (int y = 0; y < o.h; y++) {
+        for (int x = 0; x < o.w; x++) {
+            SDL_Color pixel = get_pixel(surf, x, y);
             
-            SDL_RenderDrawPoint(renderer, x+xx, y+yy);
+            
+            
+            SDL_SetRenderDrawColor(gs->renderer,
+                                   pixel.r,
+                                   pixel.g,
+                                   pixel.b,
+                                   pixel.a);
+            //SDL_RenderDrawPoint(gs->renderer, xx, yy);
         }
     }
 }
+#endif
 
-void fill_circle_in_buffer(int *buffer, int value, int x, int y, int w, int h, int size) {
+void fill_circle_in_buffer(Uint32 *buffer, Uint32 value, int x, int y, int w, int h, int size) {
     for (int yy = -size; yy <= size; yy++) {
         for (int xx = -size; xx <= size; xx++) {
             if (xx*xx + yy*yy > size*size) continue;
@@ -339,6 +402,100 @@ void fill_circle_in_buffer(int *buffer, int value, int x, int y, int w, int h, i
             buffer[x+xx+(y+yy)*w] = value;
         }
     }
+}
+
+// Draw an image given 4 points.
+void draw_image_skew(SDL_Surface *surf, vec2 *p) {
+    LARGE_INTEGER start;
+    QueryPerformanceCounter(&start);
+    
+    Uint32 *pixels = PushArray(gs->transient_memory, gs->window_width*gs->window_height, sizeof(Uint32));
+    
+    SDL_Surface *out = SDL_CreateRGBSurface(0,
+                                            gs->window_width,
+                                            gs->window_height,
+                                            32,
+                                            0, 0, 0, 0);
+    
+    for (int y = 0; y < surf->h; y++) {
+        vec2 prev = {-1, -1};
+        for (int x = 0; x < surf->w; x++) {
+            SDL_Color pixel = get_pixel(surf, x, y);
+            Uint32 col = SDL_MapRGB(out->format, pixel.r, pixel.g, pixel.b);
+            
+            // t-values for x and y axes.
+            f64 ty = (f64)y / (f64)surf->h;
+            f64 tx = (f64)x / (f64)surf->w;
+            
+            vec2 point = lerp_vec2(lerp_vec2(p[0], p[2], ty),
+                                   lerp_vec2(p[1], p[3], ty),
+                                   tx);
+            
+            //int px = point.x, py = point.y;
+            
+            if (prev.x != -1) {
+                draw_line_buffer(pixels, out->w, out->h, col, prev.x, prev.y, point.x, point.y);
+            }
+            
+            if (prev.x != -1 && y+1 < surf->h) {
+                ty = (f64)(y+1) / (f64)surf->h;
+                
+                vec2 bottom_point = lerp_vec2(lerp_vec2(p[0], p[2], ty),
+                                              lerp_vec2(p[1], p[3], ty),
+                                              tx);
+                
+                f64 dx = point.x - prev.x;
+                f64 dy = point.y - prev.y;
+                f64 len = sqrt(dx*dx+dy*dy);
+                
+                f64 ux = dx/len;
+                f64 uy = dy/len;
+                
+                f64 l = 0;
+                f64 xx = 0, yy = 0;
+                
+                while (len && l < len) {
+                    // We're applying +xx and +yy to the bottom point even though
+                    // xx and yy only applies to the gradient between point and prev.
+                    // The bottom point has a different gradient, so it will cause
+                    // artifacting.
+                    
+                    draw_line_buffer(pixels,
+                                     out->w,
+                                     out->h,
+                                     col,
+                                     prev.x + xx,
+                                     prev.y + yy,
+                                     bottom_point.x + xx,
+                                     bottom_point.y + yy);
+                    
+                    xx += ux;
+                    yy += uy;
+                    l = sqrt(xx*xx+yy*yy);
+                }
+            }
+            
+            prev = point;
+        }
+    }
+    
+    SDL_memcpy(out->pixels, pixels, sizeof(Uint32)*out->w*out->h);
+    
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, out);
+    SDL_RenderCopy(gs->renderer, texture, NULL, NULL);
+    
+    SDL_FreeSurface(out);
+    SDL_DestroyTexture(texture);
+    
+    LARGE_INTEGER end;
+    QueryPerformanceCounter(&end);
+    
+    LARGE_INTEGER frequency;
+    QueryPerformanceFrequency(&frequency);
+    
+    f64 d = (end.QuadPart - start.QuadPart) / (f64) frequency.QuadPart;
+    
+    Log("Function: %f ms\n", d*1000);
 }
 
 void draw_line_225(f32 deg_angle, SDL_Point a, SDL_Point b, f32 size, bool infinite) {

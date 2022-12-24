@@ -86,6 +86,9 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
     struct Object *objects = gs->objects;
     Uint32 *curr_blobs = objects[obj].blob_data[chisel->size].blobs;
     
+    memset(chisel->highlights, 0, chisel->highlight_count);
+    chisel->highlight_count = 0;
+    
     bool did_hit_blocker = false;
     f32 px = chisel->x, py = chisel->y;
     

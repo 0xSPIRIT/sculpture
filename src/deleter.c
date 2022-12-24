@@ -32,13 +32,13 @@ void deleter_tick(void) {
 
 void deleter_draw(void) {
     struct Deleter *deleter = &gs->deleter;
-
+    
     const SDL_Rect dst = {
         (int) deleter->x, (int) deleter->y,
         deleter->w, deleter->h
     };
     
-    SDL_SetTextureAlphaMod(deleter->texture, 64);
+    SDL_SetTextureAlphaMod(deleter->texture, 128);
     SDL_RenderCopy(gs->renderer, deleter->texture, NULL, &dst);
     
     SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 64);

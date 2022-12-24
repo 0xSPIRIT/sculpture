@@ -83,7 +83,7 @@ void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
     textures->converter_arrow = load_texture(renderer, RES_DIR "arrow.png");
     textures->convert_button = load_texture(renderer, RES_DIR "buttons/convert.png");
     textures->tutorial_ok_button = load_texture(renderer, RES_DIR "buttons/tutorial_ok.png");
-        
+    
     const char *chisel_files[] = {
         RES_DIR "chisel_small",
         RES_DIR "chisel_medium",
@@ -125,6 +125,7 @@ void textures_deinit(struct Textures *textures) {
 }
 
 void surfaces_init(struct Surfaces *surfaces) {
+    surfaces->a = IMG_Load(RES_DIR "lvl/desired/level 10.png");
     surfaces->bark_surface = IMG_Load(RES_DIR "bark.png");
     surfaces->glass_surface = IMG_Load(RES_DIR "glass.png");
     surfaces->wood_plank_surface = IMG_Load(RES_DIR "plank.png");
@@ -169,4 +170,16 @@ void fonts_deinit(struct Fonts *fonts) {
     for (size_t i = 0; i < font_count; i++) {
         TTF_CloseFont(ttf_fonts[i]);
     }
+}
+
+void audio_init(struct Audio *audio) {
+    audio->music = Mix_LoadMUS(RES_DIR "audio/mus.mp3");
+    //audio->chisel = Mix_LoadWAV(RES_DIR "audio/chisel_1.wav");
+    Assert(audio->music);
+    //Assert(audio->chisel);
+}
+
+void audio_deinit(struct Audio *audio) {
+    Mix_FreeMusic(audio->music);
+    //Mix_FreeChunk(audio->chisel);
 }

@@ -14,6 +14,11 @@ enum {
     RENDER_TARGET_COUNT 
 };
 
+struct Audio {
+    Mix_Music *music;
+    Mix_Chunk *chisel;
+};
+
 // Only contains textures!
 struct Textures {
     // List of render targets for each level
@@ -21,7 +26,7 @@ struct Textures {
     SDL_Texture *render_targets[LEVEL_COUNT][RENDER_TARGET_COUNT];
     
     SDL_Texture *tab;
-
+    
     SDL_Texture *deleter,
         *placer,
         *knife,
@@ -46,6 +51,8 @@ struct Textures {
 };
 
 struct Surfaces {
+    SDL_Surface *a;
+    
     SDL_Surface *bark_surface,
         *glass_surface,
         *wood_plank_surface,

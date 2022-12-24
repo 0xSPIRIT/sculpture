@@ -238,6 +238,7 @@ void blob_generate_large(f64 s, int obj, int chisel_size, Uint32 *blob_count) {
         for (int xx = -s; xx <= s; xx++) {
             if (xx*xx + yy*yy > s*s) continue;
             
+            if (!is_in_bounds(x+xx, y+yy)) continue;
             if (gs->grid[x+xx+(y+yy)*gs->gw].object != obj) continue;
             if (blobs[x+xx+(y+yy)*gs->gw]) continue;
             
@@ -1115,7 +1116,7 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, int blocker_si
             if (gs->blocker.active && gs->blocker.pixels[x+y*gs->gw] != blocker_side) continue;
             if (easy_chiseling && gs->overlay.grid[x+y*gs->gw]) continue;
             
-            if (gs->overlay.grid[x+y*gs->gw] && !gs->did_undo_tutorial) {
+            if (gs->level_current+1 == 1 && gs->overlay.grid[x+y*gs->gw] && !gs->did_undo_tutorial) {
                 gs->tutorial = *tutorial_rect(TUTORIAL_UNDO_STRING,
                                               32,
                                               GUI_H+32,
