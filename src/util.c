@@ -330,7 +330,14 @@ void draw_line_in_buffer(Uint32 *pixels, int w, int h, Uint32 color, int x1, int
     int i=1;
     while(i<=step)
     {
-        pixels[(int)x+(int)y*w] = color;
+        if (!pixels) {
+            SDL_Color c;
+            SDL_GetRGBA(color, gs->surfaces.bark_surface->format, &c.r, &c.g, &c.b, &c.a);
+            SDL_SetRenderDrawColor(gs->renderer, c.r, c.g, c.b, c.a);
+            SDL_RenderDrawPoint(gs->renderer, x, y);
+        } else {
+            pixels[(int)x+(int)y*w] = color;
+        }
         x=x+dx;
         y=y+dy;
         i++;
@@ -493,14 +500,14 @@ void draw_image_skew(SDL_Surface *surf, vec2 *p) {
 #endif
     
     int w = gs->window_width;
-    int h = gs->window_height;
+    int h = gs->window_height-GUI_H;
     
     Uint32 *pixels;
     int pitch;
     if (SDL_LockTexture(RenderTarget(RENDER_TARGET_3D),
-                            NULL,
-                            &pixels,
-                            &pitch) != 0) {
+                        NULL,
+                        &pixels,
+                        &pitch) != 0) {
         Log("%s\n", SDL_GetError());
         Assert(0);
     }

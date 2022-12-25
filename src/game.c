@@ -28,6 +28,8 @@
 export void game_init(struct Game_State *state, int level) {
     gs = state;
     
+    gs->obj.z = 1;
+    
     gs->view.x = 0;
     gs->view.y = 0;
     gs->view.w = gs->window_width;
@@ -392,7 +394,7 @@ export void game_run(struct Game_State *state) {
         draw_intro();
     }
     
-    object_draw(NULL);
+    object_draw(&gs->obj);
     
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, NULL);
     

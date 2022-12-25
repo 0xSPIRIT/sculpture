@@ -36,7 +36,7 @@ void render_targets_init(SDL_Renderer *renderer,
                 continue;
             }
             if (i == RENDER_TARGET_3D) {
-                textures->render_targets[lvl][i] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, gs->window_width, gs->window_height);
+                textures->render_targets[lvl][i] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, gs->window_width, gs->window_height-GUI_H);
                 SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
                 Assert(textures->render_targets[lvl][i]);
                 continue;
@@ -50,6 +50,8 @@ void render_targets_init(SDL_Renderer *renderer,
 
 void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
     SDL_Surface *surf = NULL;
+    
+    memset(textures, 0, sizeof(struct Textures));
     
     // Converter Item Textures || previously item_init()
     for (int i = 0; i < CELL_TYPE_COUNT; i++) {
@@ -121,12 +123,13 @@ void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
 }
 
 void textures_deinit(struct Textures *textures) {
-    SDL_Texture **texs = (SDL_Texture**) textures;
+    int *texs = (int*) textures;
     size_t tex_count = sizeof(struct Textures)/sizeof(SDL_Texture*);
     
     for (int i = 0; i < tex_count; i++) {
-        if (texs[i] != NULL)
-            SDL_DestroyTexture(texs[i]);
+        if ((SDL_Texture*)(texs+i) != NULL) {
+            SDL_DestroyTexture((SDL_Texture*) (texs+i));
+        }
     }
 }
 

@@ -80,7 +80,7 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
     TTF_Init();
     
 #ifdef ALASKA_USE_SOFTWARE_RENDERER
-    const int flags = SDL_RENDERER_SOFTWARE;
+    const int flags = SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC;
 #else
     const int flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 #endif
@@ -141,14 +141,13 @@ void game_init(struct Game_State *state) {
 
 void game_deinit(struct Game_State *state) {
     // Close the window first so it'll feel snappy.
+    SDL_DestroyRenderer(state->renderer);
     SDL_DestroyWindow(state->window);
     
     textures_deinit(&state->textures);
     surfaces_deinit(&state->surfaces);
     fonts_deinit(&state->fonts);
     audio_deinit(&state->audio);
-    
-    SDL_DestroyRenderer(state->renderer);
     
     Mix_Quit();
     TTF_Quit();
@@ -305,7 +304,7 @@ int main(int argc, char **argv)
         // It's only a 5-frame delay so it doesn't matter compared to compilation
         // times anyways.
         FILETIME new_dll_write_time = get_last_write_time(GAME_DLL_NAME);
-            
+        
         if (CompareFileTime(&new_dll_write_time, &game_code.last_write_time) != 0) {
             reload_game_code(&game_code);
         }
@@ -328,12 +327,11 @@ int main(int argc, char **argv)
         transient_memory.cursor = transient_memory.data;
         
         // if (should_stop) {
-            // running = false;
+        // running = false;
         // }
         
         QueryPerformanceCounter(&time_elapsed);
         
-#ifdef ALASKA_USE_SOFTWARE_RENDERER
         Uint64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
         f64 d = (f64)delta / (f64)frequency.QuadPart;
         
@@ -351,7 +349,6 @@ int main(int argc, char **argv)
             fps = 1.0/d;
             time_passed = 0;
         }
-#endif
         
         {
             Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
