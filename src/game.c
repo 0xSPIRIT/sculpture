@@ -394,6 +394,8 @@ export void game_run(struct Game_State *state) {
     
     object_draw(NULL);
     
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, NULL);
+    
     SDL_RenderPresent(gs->renderer);
     
     gs->is_mouse_over_any_button = false;

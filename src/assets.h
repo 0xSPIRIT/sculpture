@@ -11,6 +11,7 @@ enum {
     RENDER_TARGET_CHISEL_BLOCKER,
     RENDER_TARGET_CHISEL, // Use the same render target for each chisel.
     RENDER_TARGET_DELETER, // TODO: Unused
+    RENDER_TARGET_3D,
     RENDER_TARGET_COUNT 
 };
 
@@ -52,8 +53,6 @@ struct Textures {
 
 struct Surfaces {
     SDL_Surface *a;
-    SDL_Surface *out_3d;
-    
     SDL_Surface *bark_surface,
         *glass_surface,
         *wood_plank_surface,

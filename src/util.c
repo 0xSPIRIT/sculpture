@@ -308,7 +308,7 @@ void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
 }
 
 void draw_line_in_buffer(Uint32 *pixels, int w, int h, Uint32 color, int x1, int y1, int x2, int y2) {
-    #if 0
+#if 0
     (void)h;
     
     f64 dx=abs(x2-x1);
@@ -335,7 +335,7 @@ void draw_line_in_buffer(Uint32 *pixels, int w, int h, Uint32 color, int x1, int
         y=y+dy;
         i++;
     }
-    #endif
+#endif
     
 #if 1
     f64 dx = x2-x1;
@@ -483,24 +483,37 @@ void fill_polygon_in_buffer(Uint32 *buffer, Uint32 value, int w, int h, vec2 *po
     flood_fill_u32(buffer, value, w, h, avg.x, avg.y, fill_stack);
 }
 
-// Draw an image given 4 points.
+#define PROFILE 0
+
+// Draw a surface given 4 points.
 void draw_image_skew(SDL_Surface *surf, vec2 *p) {
+#if PROFILE
     LARGE_INTEGER start;
     QueryPerformanceCounter(&start);
+#endif
     
-    (void)surf;
+    int w = gs->window_width;
+    int h = gs->window_height;
     
-    SDL_Surface *out = gs->surfaces.out_3d;
+    Uint32 *pixels;
+    int pitch;
+    if (SDL_LockTexture(RenderTarget(RENDER_TARGET_3D),
+                            NULL,
+                            &pixels,
+                            &pitch) != 0) {
+        Log("%s\n", SDL_GetError());
+        Assert(0);
+    }
     
-    SDL_memset(out->pixels, 0, sizeof(Uint32)*out->w*out->h);
+    ZeroMemory(pixels, pitch*h);
     
-    int *fill_stack = PushArray(gs->transient_memory, out->w*out->h, sizeof(int)); // full of indices
+    int *fill_stack = PushArray(gs->transient_memory, w*h, sizeof(int)); // full of indices
     
     for (int y = 0; y < surf->h; y++) {
         vec2 prev = {-1, -1};
         for (int x = 0; x < surf->w; x++) {
             SDL_Color pixel = get_pixel(surf, x, y);
-            Uint32 col = SDL_MapRGB(out->format, pixel.r, pixel.g, pixel.b);
+            Uint32 col = SDL_MapRGBA(surf->format, pixel.r, pixel.g, pixel.b, pixel.a);
             
             // t-values for x and y axes.
             f64 ty = (f64)y / (f64)surf->h;
@@ -524,25 +537,16 @@ void draw_image_skew(SDL_Surface *surf, vec2 *p) {
                     {bottom_point.x-(point.x-prev.x), bottom_point.y-(point.y-prev.y)},
                 };
                 
-                fill_polygon_in_buffer(out->pixels, col, out->w, out->h, pp, 4, fill_stack);
+                fill_polygon_in_buffer(pixels, col, w, h, pp, 4, fill_stack);
             }
             
             prev = point;
         }
     }
     
-    // Bypassing the textures and just blitting straight to the screen.
+    SDL_UnlockTexture(RenderTarget(RENDER_TARGET_3D));
     
-    SDL_Surface *screen = SDL_GetWindowSurface(gs->window);
-    
-#if 0
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, out);
-    SDL_RenderCopy(gs->renderer, texture, NULL, NULL);
-    SDL_DestroyTexture(texture);
-#endif
-    
-    SDL_BlitSurface(out, NULL, screen, NULL);
-    
+    #if PROFILE
     LARGE_INTEGER end;
     QueryPerformanceCounter(&end);
     
@@ -552,6 +556,7 @@ void draw_image_skew(SDL_Surface *surf, vec2 *p) {
     f64 d = (end.QuadPart - start.QuadPart) / (f64) frequency.QuadPart;
     
     Log("Function: %f ms\n", d*1000);
+    #endif
 }
 
 void draw_line_225(f32 deg_angle, SDL_Point a, SDL_Point b, f32 size, bool infinite) {

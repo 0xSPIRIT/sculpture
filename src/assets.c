@@ -35,6 +35,12 @@ void render_targets_init(SDL_Renderer *renderer,
                 Assert(textures->render_targets[lvl][i]);
                 continue;
             }
+            if (i == RENDER_TARGET_3D) {
+                textures->render_targets[lvl][i] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, gs->window_width, gs->window_height);
+                SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
+                Assert(textures->render_targets[lvl][i]);
+                continue;
+            }
             
             textures->render_targets[lvl][i] = CreateRenderTarget(l->w, l->h);
             Assert(textures->render_targets[lvl][i]);
@@ -125,7 +131,6 @@ void textures_deinit(struct Textures *textures) {
 }
 
 void surfaces_init(struct Surfaces *surfaces) {
-    surfaces->out_3d = SDL_CreateRGBSurface(0, gs->window_width, gs->window_height, 32, 0, 0, 0, 0);
     surfaces->a = IMG_Load(RES_DIR "lvl/desired/level 10.png");
     surfaces->bark_surface = IMG_Load(RES_DIR "bark.png");
     surfaces->glass_surface = IMG_Load(RES_DIR "glass.png");
