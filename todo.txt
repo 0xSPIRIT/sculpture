@@ -1,7 +1,13 @@
 TODO :: {
 
+	[ ] 3D
+		[x] Initial 3D framework
+		[x] Make the fall itself
+		[ ] Add it to the level itself upon [F][N]
+		[ ] Close the game when it's done.
+		[ ] Snow?!
+
 	[ ] Write narrator dialogue
-	[ ] Make the 3D fall in "Glass Body"
 	[ ] Make narrator framework.
 	[x] Audio framework setup.
 	[ ] Tutorial: Make use of the chisel's ability to move after you've clicked.

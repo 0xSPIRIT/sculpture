@@ -1,3 +1,108 @@
+//
+// Simple software renderer.
+//
+
+struct TriangleDrawData {
+    int start_y, end_y;
+    Uint32 *pixels;
+    SDL_Surface *surf;
+    int w;
+    Vertex points[3];
+};
+
+
+// 3 vertices required
+inline void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *p) {
+    const vec2 t[3] = {p[0].p, p[1].p, p[2].p};
+    const SDL_PixelFormat *format = surf->format;
+    
+    for (int x = 0; x < w; x++) {
+        f32 denominator = (t[1].y - t[2].y)*(t[0].x - t[2].x) + (t[2].x - t[1].x)*(t[0].y - t[2].y);
+        
+        f32 w0 = (t[1].y - t[2].y)*(x - t[2].x) + (t[2].x - t[1].x)*(y - t[2].y);
+        w0 /= denominator;
+        
+        if (w0 < 0) continue; // If any weight < 0, the point is not in the triangle
+        
+        f32 w1 = (t[2].y - t[0].y)*(x - t[2].x) + (t[0].x - t[2].x)*(y - t[2].y);
+        w1 /= denominator;
+        
+        if (w1 < 0) continue; // If any weight < 0, the point is not in the triangle
+        
+        f32 w2 = 1 - w0 - w1;
+        
+        if (w2 < 0) continue; // If any weight < 0, the point is not in the triangle
+        
+#if 0
+        vec3 color;
+        color.x = w0 * p[0].col.x + w1 * p[1].col.x + w2 * p[2].col.x;
+        color.y = w0 * p[0].col.y + w1 * p[1].col.y + w2 * p[2].col.y;
+        color.z = w0 * p[0].col.z + w1 * p[1].col.z + w2 * p[2].col.z;
+        
+        Uint32 pixel = SDL_MapRGB(format, color.x, color.y, color.z);
+#endif
+        
+        vec2 tex_coord = vec2_add3(vec2_scale(p[0].tex, w0),
+                                   vec2_scale(p[1].tex, w1),
+                                   vec2_scale(p[2].tex, w2));
+        
+        SDL_Color c = get_pixel(surf, tex_coord.x * surf->w, tex_coord.y * surf->h);
+        Uint32 pixel = SDL_MapRGB(format, c.r, c.g, c.b);
+        
+        pixels[x+y*w] = pixel;
+    }
+}
+
+inline void draw_triangle(void *ptr) {
+    struct TriangleDrawData *data = (struct TriangleDrawData*)ptr;
+    
+    for (int y = data->start_y; y < data->end_y; y++) {
+        draw_triangle_row(data->pixels, data->surf, data->w, y, data->points);
+    }
+}
+
+#define PROFILE 0
+
+// Draw a surface given 4 points.
+void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p) {
+#if PROFILE
+    LARGE_INTEGER start;
+    QueryPerformanceCounter(&start);
+#endif
+    
+    // We must use the vertex array as a set of
+    // two triangles, in order to use classical
+    // interpolation techniques for texture
+    // coordinates and positions.
+    
+    struct TriangleDrawData data = {
+        0, h,
+        pixels,
+        surf,
+        w,
+        {p[0], p[1], p[2]}
+    };
+    draw_triangle(&data);
+    
+#if PROFILE
+    LARGE_INTEGER end;
+    QueryPerformanceCounter(&end);
+    
+    LARGE_INTEGER frequency;
+    QueryPerformanceFrequency(&frequency);
+    
+    f64 d = (end.QuadPart - start.QuadPart) / (f64) frequency.QuadPart;
+    
+    Log("Function: %f ms\n", d*1000);
+#endif
+}
+
+void object_init(struct Object3D *obj) {
+    memset(obj, 0, sizeof(struct Object3D));
+    gs->obj.z = 1;
+    gs->obj.yrot = -0.002;
+}
+
 vec2* project(vec3 *input, int count) {
     vec2 *points = PushArray(gs->transient_memory, count, sizeof(vec2));
     
@@ -15,7 +120,7 @@ vec2* project(vec3 *input, int count) {
 }
 
 void object_draw(struct Object3D *obj) {
-    (void)obj;
+    if (!obj->active) return;
     
     const int count = 4;
     
@@ -31,7 +136,7 @@ void object_draw(struct Object3D *obj) {
     switch (obj->state) {
         case OBJECT_ZOOM: {
             obj->y += dy;
-                
+            
             obj->z += 0.001;
             if (obj->z >= 2) {
                 obj->state = OBJECT_ROTY;
@@ -77,12 +182,13 @@ void object_draw(struct Object3D *obj) {
             }
             case OBJECT_ROTY: {
                 f64 t = obj->yrot;
+                
                 points[i].x = cos(t) * op[i].x - sin(t) * op[i].z;
                 points[i].y = op[i].y;
                 points[i].z = sin(t) * op[i].x + cos(t) * op[i].z;
                 
-                points[i].z += obj->z; // Push it forward on the screen.
                 points[i].y += obj->y;
+                points[i].z += obj->z; // Push it forward on the screen.
                 break;
             }
             case OBJECT_FALL: {
@@ -131,7 +237,6 @@ void object_draw(struct Object3D *obj) {
     final_points[2].col.y = 0;
     final_points[2].col.z = 255;
     
-#if 0
     final_points[0].tex.x = 0;
     final_points[0].tex.y = 0;
     
@@ -143,7 +248,6 @@ void object_draw(struct Object3D *obj) {
     
     final_points[3].tex.x = 1;
     final_points[3].tex.y = 1;
-#endif
 
     
     Uint32 *pixels;
@@ -161,22 +265,10 @@ void object_draw(struct Object3D *obj) {
     
     ZeroMemory(pixels, pitch*h);
     
-    draw_image_skew(w, h, gs->surfaces.a, pixels, final_points);
-    draw_image_skew(w, h, gs->surfaces.a, pixels, final_points+1);
+    draw_image_skew(w, h, gs->surfaces.grass_surface, pixels, final_points);
+    draw_image_skew(w, h, gs->surfaces.grass_surface, pixels, final_points+1);
     
     SDL_UnlockTexture(RenderTarget(RENDER_TARGET_3D));
     
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, NULL);
-    
-    #if 0
-    vec2 prev = {-1, -1};
-    for (int i = 0; i < count; i++) {
-        SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
-        if (prev.x != -1)
-            SDL_RenderDrawLine(gs->renderer, prev.x, prev.y, projected[i].x, projected[i].y);
-        
-        prev = projected[i];
-    }
-    SDL_RenderDrawLine(gs->renderer, projected[count-1].x, projected[count-1].y, projected[0].x, projected[0].y);
-    #endif
 }

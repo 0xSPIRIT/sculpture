@@ -22,13 +22,11 @@
 #include "deleter.c"
 #include "popup.c"
 #include "timelapse.c"
-#include "level.c"
 #include "3d.c"
+#include "level.c"
 
 export void game_init(struct Game_State *state, int level) {
     gs = state;
-    
-    gs->obj.z = 1;
     
     gs->view.x = 0;
     gs->view.y = 0;

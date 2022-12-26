@@ -8,6 +8,7 @@ enum Object3D_State {
 };
 
 struct Object3D {
+    bool active;
     SDL_Texture *texture;
     int state;
     f64 y, z;
@@ -24,6 +25,7 @@ typedef struct vec3 {
 } vec3;
 
 typedef struct Vertex {
-    vec2 p; // Position
-    vec3 col; // Color data per vertex.
+    vec2 p;   // Position
+    vec3 col; // Color data per vertex. (0 to 255)
+    vec2 tex; // Texture coordinates (0 to 1)
 } Vertex;

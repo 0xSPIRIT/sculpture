@@ -6,6 +6,22 @@ bool is_angle_225(f64 deg_angle) {
     return false;
 }
 
+inline vec2 vec2_mult(vec2 a, vec2 b) {
+    return (vec2){a.x*b.x, a.y*b.y};
+}
+
+inline vec2 vec2_scale(vec2 a, f32 scale) {
+    return (vec2){a.x*scale, a.y*scale};
+}
+
+inline vec2 vec2_add(vec2 a, vec2 b) {
+    return (vec2){a.x+b.x, a.y+b.y};
+}
+
+inline vec2 vec2_add3(vec2 a, vec2 b, vec2 c) {
+    return (vec2){a.x+b.x+c.x, a.y+b.y+c.y};
+}
+
 bool is_angle_45(f64 deg_angle) {
     f64 f = fabs(deg_angle);
     if (f == 45 || f == 135 || f == 225 || f == 315) {
@@ -288,114 +304,6 @@ void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
     }
 }
 
-// 3 vertices required
-inline void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *p) {
-    const vec2 t[3] = {p[0].p, p[1].p, p[2].p};
-    const SDL_PixelFormat *format = surf->format;
-    
-    for (int x = 0; x < w; x++) {
-        // Dumb checks to see if point is obviously not in triangle.
-        
-        f32 denominator = (t[1].y - t[2].y)*(t[0].x - t[2].x) + (t[2].x - t[1].x)*(t[0].y - t[2].y);
-        
-        f32 w0 = (t[1].y - t[2].y)*(x - t[2].x) + (t[2].x - t[1].x)*(y - t[2].y);
-        w0 /= denominator;
-        
-        if (w0 < 0) continue;
-        
-        f32 w1 = (t[2].y - t[0].y)*(x - t[2].x) + (t[0].x - t[2].x)*(y - t[2].y);
-        w1 /= denominator;
-        
-        if (w1 < 0) continue;
-        
-        f32 w2 = 1 - w0 - w1;
-        
-        if (w2 < 0) continue;
-        
-        vec3 color;
-        
-        color.x = w0 * p[0].col.x + w1 * p[1].col.x + w2 * p[2].col.x;
-        color.y = w0 * p[0].col.y + w1 * p[1].col.y + w2 * p[2].col.y;
-        color.z = w0 * p[0].col.z + w1 * p[1].col.z + w2 * p[2].col.z;
-        
-        Uint32 pixel = SDL_MapRGB(format, color.x, color.y, color.z);
-        pixels[x+y*w] = pixel;
-    }
-}
-
-void draw_line_in_buffer(Uint32 *pixels, int w, int h, Uint32 color, vec2 a, vec2 b) {
-    const int x1 = a.x;
-    const int y1 = a.y;
-    const int x2 = b.x;
-    const int y2 = b.y;
-    
-#if 0
-    (void)h;
-    
-    
-    f64 dx=abs(x2-x1);
-    f64 dy=abs(y2-y1);
-    
-    f64 step;
-    
-    if(dx>=dy)
-        step=dx;
-    else
-        step=dy;
-    
-    dx=dx/step;
-    dy=dy/step;
-    
-    f64 x=x1;
-    f64 y=y1;
-    
-    int i=1;
-    while(i<=step)
-    {
-        if (!pixels) {
-            SDL_Color c;
-            SDL_GetRGBA(color, gs->surfaces.bark_surface->format, &c.r, &c.g, &c.b, &c.a);
-            SDL_SetRenderDrawColor(gs->renderer, c.r, c.g, c.b, c.a);
-            SDL_RenderDrawPoint(gs->renderer, x, y);
-        } else {
-            pixels[(int)x+(int)y*w] = color;
-        }
-        x=x+dx;
-        y=y+dy;
-        i++;
-    }
-#endif
-    
-#if 1
-    f64 dx = x2-x1;
-    f64 dy = y2-y1;
-    f64 len = sqrt(dx*dx+dy*dy);
-    f64 ux = dx/len;
-    f64 uy = dy/len;
-    
-    f64 xx = 0, yy = 0;
-    f64 l = 0;
-    
-    while (l <= len) {
-        int xxi = x1+xx;
-        int yyi = y1+yy;
-        
-        if (xxi < 0 || yyi < 0 || xxi >= w || yyi >= h) {
-            xx += ux;
-            yy += uy;
-            l = sqrt(xx*xx+yy*yy);
-            continue;
-        }
-        
-        pixels[xxi+yyi*w] = color;
-        
-        xx += ux;
-        yy += uy;
-        l = sqrt(xx*xx+yy*yy);
-    }
-#endif
-}
-
 void draw_text(TTF_Font *font,
                const char *str,
                SDL_Color col,
@@ -437,70 +345,6 @@ void fill_circle_in_buffer(Uint32 *buffer, Uint32 value, int x, int y, int w, in
             buffer[x+xx+(y+yy)*w] = value;
         }
     }
-}
-
-struct TriangleDrawData {
-    int start_y, end_y;
-    Uint32 *pixels;
-    SDL_Surface *surf;
-    int w;
-    Vertex points[3];
-};
-
-inline void draw_triangle(void *ptr) {
-    struct TriangleDrawData *data = (struct TriangleDrawData*)ptr;
-    
-    for (int y = data->start_y; y < data->end_y; y++) {
-        draw_triangle_row(data->pixels, data->surf, data->w, y, data->points);
-    }
-}
-
-#define PROFILE 0
-
-// Draw a surface given 4 points.
-void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p) {
-#if PROFILE
-    LARGE_INTEGER start;
-    QueryPerformanceCounter(&start);
-#endif
-    
-    // Do software rendering on pixel buffer
-    //
-    // We must use the point array as a set of
-    // two triangles, in order to use classical
-    // interpolation techniques for texture
-    // coordinates and positions.
-    
-#if 0
-    draw_line_in_buffer(pixels, w, h, 0xFFFFFFFF, p[0].p, p[1].p);
-    draw_line_in_buffer(pixels, w, h, 0xFFFFFFFF, p[1].p, p[2].p);
-    draw_line_in_buffer(pixels, w, h, 0xFFFFFFFF, p[0].p, p[2].p);
-    
-    draw_line_in_buffer(pixels, w, h, 0xFFFFFFFF, p[1].p, p[2].p);
-    draw_line_in_buffer(pixels, w, h, 0xFFFFFFFF, p[2].p, p[3].p);
-    draw_line_in_buffer(pixels, w, h, 0xFFFFFFFF, p[1].p, p[3].p);
-#endif
-    
-    struct TriangleDrawData data = {
-        0, h,
-        pixels,
-        surf,
-        w,
-        {p[0], p[1], p[2]}
-    };
-    draw_triangle(&data);
-    
-    #if PROFILE
-    LARGE_INTEGER end;
-    QueryPerformanceCounter(&end);
-    
-    LARGE_INTEGER frequency;
-    QueryPerformanceFrequency(&frequency);
-    
-    f64 d = (end.QuadPart - start.QuadPart) / (f64) frequency.QuadPart;
-    
-    Log("Function: %f ms\n", d*1000);
-    #endif
 }
 
 void draw_line_225(f32 deg_angle, SDL_Point a, SDL_Point b, f32 size, bool infinite) {

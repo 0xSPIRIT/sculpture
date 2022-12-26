@@ -245,6 +245,8 @@ void goto_level(int lvl) {
     timelapse_init();
     
     check_for_tutorial();
+    
+    object_init(&gs->obj);
 }
 
 void goto_level_string_hook(const char *string) {
