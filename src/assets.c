@@ -36,7 +36,7 @@ void render_targets_init(SDL_Renderer *renderer,
                 continue;
             }
             if (i == RENDER_TARGET_3D) {
-                textures->render_targets[lvl][i] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, gs->window_width, gs->window_height-GUI_H);
+                textures->render_targets[lvl][i] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCALE_3D*gs->window_width, SCALE_3D*(gs->window_height-GUI_H));
                 SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
                 Assert(textures->render_targets[lvl][i]);
                 continue;

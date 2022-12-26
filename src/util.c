@@ -269,25 +269,6 @@ int sign(int a) {
     return (a > 0) ? 1 : ((a == 0) ? 0 : -1);
 }
 
-// Stolen from https://stackoverflow.com/a/2049593
-f32 sign_triangle(SDL_Point p1, SDL_Point p2, SDL_Point p3) {
-    return (f32)(p1.x - p3.x) * (f32)(p2.y - p3.y) - (f32)(p2.x - p3.x) * (f32)(p1.y - p3.y);
-}
-
-bool is_point_in_triangle(SDL_Point pt, SDL_Point v1, SDL_Point v2, SDL_Point v3) {
-    f32 d1, d2, d3;
-    int has_neg, has_pos;
-    
-    d1 = sign_triangle(pt, v1, v2);
-    d2 = sign_triangle(pt, v2, v3);
-    d3 = sign_triangle(pt, v3, v1);
-    
-    has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
-    has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
-    
-    return !(has_neg && has_pos);
-}
-
 vec2 lerp_vec2(vec2 a, vec2 b, f64 t) {
     vec2 result;
     
@@ -307,9 +288,50 @@ void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
     }
 }
 
-void draw_line_in_buffer(Uint32 *pixels, int w, int h, Uint32 color, int x1, int y1, int x2, int y2) {
+// 3 vertices required
+inline void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *p) {
+    const vec2 t[3] = {p[0].p, p[1].p, p[2].p};
+    const SDL_PixelFormat *format = surf->format;
+    
+    for (int x = 0; x < w; x++) {
+        // Dumb checks to see if point is obviously not in triangle.
+        
+        f32 denominator = (t[1].y - t[2].y)*(t[0].x - t[2].x) + (t[2].x - t[1].x)*(t[0].y - t[2].y);
+        
+        f32 w0 = (t[1].y - t[2].y)*(x - t[2].x) + (t[2].x - t[1].x)*(y - t[2].y);
+        w0 /= denominator;
+        
+        if (w0 < 0) continue;
+        
+        f32 w1 = (t[2].y - t[0].y)*(x - t[2].x) + (t[0].x - t[2].x)*(y - t[2].y);
+        w1 /= denominator;
+        
+        if (w1 < 0) continue;
+        
+        f32 w2 = 1 - w0 - w1;
+        
+        if (w2 < 0) continue;
+        
+        vec3 color;
+        
+        color.x = w0 * p[0].col.x + w1 * p[1].col.x + w2 * p[2].col.x;
+        color.y = w0 * p[0].col.y + w1 * p[1].col.y + w2 * p[2].col.y;
+        color.z = w0 * p[0].col.z + w1 * p[1].col.z + w2 * p[2].col.z;
+        
+        Uint32 pixel = SDL_MapRGB(format, color.x, color.y, color.z);
+        pixels[x+y*w] = pixel;
+    }
+}
+
+void draw_line_in_buffer(Uint32 *pixels, int w, int h, Uint32 color, vec2 a, vec2 b) {
+    const int x1 = a.x;
+    const int y1 = a.y;
+    const int x2 = b.x;
+    const int y2 = b.y;
+    
 #if 0
     (void)h;
+    
     
     f64 dx=abs(x2-x1);
     f64 dy=abs(y2-y1);
@@ -405,31 +427,6 @@ void draw_text(TTF_Font *font,
     SDL_DestroyTexture(texture);
 }
 
-#if 0
-void draw_surface(SDL_Surface *surf,
-                  SDL_Rect o,
-                  int x1, int y1,
-                  int x2, int y2,
-                  int x3, int y3,
-                  int x4, int y4) 
-{
-    for (int y = 0; y < o.h; y++) {
-        for (int x = 0; x < o.w; x++) {
-            SDL_Color pixel = get_pixel(surf, x, y);
-            
-            
-            
-            SDL_SetRenderDrawColor(gs->renderer,
-                                   pixel.r,
-                                   pixel.g,
-                                   pixel.b,
-                                   pixel.a);
-            //SDL_RenderDrawPoint(gs->renderer, xx, yy);
-        }
-    }
-}
-#endif
-
 void fill_circle_in_buffer(Uint32 *buffer, Uint32 value, int x, int y, int w, int h, int size) {
     for (int yy = -size; yy <= size; yy++) {
         for (int xx = -size; xx <= size; xx++) {
@@ -442,116 +439,56 @@ void fill_circle_in_buffer(Uint32 *buffer, Uint32 value, int x, int y, int w, in
     }
 }
 
-void flood_fill_u32(Uint32 *buffer, Uint32 value, int w, int h, int x, int y, int *fill_stack) {
-    int count = 1;
-    fill_stack[0] = x+y*w;
-    
-    int c=0;
-    
-    while (count > 0) {
-        int idx = fill_stack[--count];
-        int dx = idx%w, dy = idx/w;
-        
-        if (dx < 0 || dy < 0 || dx >= w || dy >= h)
-            continue;
-        if (buffer[idx] == value)
-            continue;
-        
-        buffer[idx] = value;
-        c++;
-        
-        fill_stack[count++] = dx+1 + dy*w;
-        fill_stack[count++] = dx-1 + dy*w;
-        fill_stack[count++] = dx + (dy+1)*w;
-        fill_stack[count++] = dx + (dy-1)*w;
-    }
-}
+struct TriangleDrawData {
+    int start_y, end_y;
+    Uint32 *pixels;
+    SDL_Surface *surf;
+    int w;
+    Vertex points[3];
+};
 
-void fill_polygon_in_buffer(Uint32 *buffer, Uint32 value, int w, int h, vec2 *points, int n, int *fill_stack) {
-    (void)fill_stack;
+inline void draw_triangle(void *ptr) {
+    struct TriangleDrawData *data = (struct TriangleDrawData*)ptr;
     
-    vec2 prev = {-1, -1};
-    vec2 avg = {0, 0};
-    
-    for (int i = 0; i < n; i++) {
-        if (prev.x != -1)
-            draw_line_in_buffer(buffer, w, h, value, prev.x, prev.y, points[i].x, points[i].y);
-        
-        avg.x += points[i].x;
-        avg.y += points[i].y;
-        
-        prev = points[i];
+    for (int y = data->start_y; y < data->end_y; y++) {
+        draw_triangle_row(data->pixels, data->surf, data->w, y, data->points);
     }
-    draw_line_in_buffer(buffer, w, h, value, points[n-1].x, points[n-1].y, points[0].x, points[0].y);
-    
-    avg.x /= n;
-    avg.y /= n;
-    
-    flood_fill_u32(buffer, value, w, h, avg.x, avg.y, fill_stack);
 }
 
 #define PROFILE 0
 
 // Draw a surface given 4 points.
-void draw_image_skew(SDL_Surface *surf, vec2 *p) {
+void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p) {
 #if PROFILE
     LARGE_INTEGER start;
     QueryPerformanceCounter(&start);
 #endif
     
-    int w = gs->window_width;
-    int h = gs->window_height-GUI_H;
+    // Do software rendering on pixel buffer
+    //
+    // We must use the point array as a set of
+    // two triangles, in order to use classical
+    // interpolation techniques for texture
+    // coordinates and positions.
     
-    Uint32 *pixels;
-    int pitch;
-    if (SDL_LockTexture(RenderTarget(RENDER_TARGET_3D),
-                        NULL,
-                        &pixels,
-                        &pitch) != 0) {
-        Log("%s\n", SDL_GetError());
-        Assert(0);
-    }
+#if 0
+    draw_line_in_buffer(pixels, w, h, 0xFFFFFFFF, p[0].p, p[1].p);
+    draw_line_in_buffer(pixels, w, h, 0xFFFFFFFF, p[1].p, p[2].p);
+    draw_line_in_buffer(pixels, w, h, 0xFFFFFFFF, p[0].p, p[2].p);
     
-    ZeroMemory(pixels, pitch*h);
+    draw_line_in_buffer(pixels, w, h, 0xFFFFFFFF, p[1].p, p[2].p);
+    draw_line_in_buffer(pixels, w, h, 0xFFFFFFFF, p[2].p, p[3].p);
+    draw_line_in_buffer(pixels, w, h, 0xFFFFFFFF, p[1].p, p[3].p);
+#endif
     
-    int *fill_stack = PushArray(gs->transient_memory, w*h, sizeof(int)); // full of indices
-    
-    for (int y = 0; y < surf->h; y++) {
-        vec2 prev = {-1, -1};
-        for (int x = 0; x < surf->w; x++) {
-            SDL_Color pixel = get_pixel(surf, x, y);
-            Uint32 col = SDL_MapRGBA(surf->format, pixel.r, pixel.g, pixel.b, pixel.a);
-            
-            // t-values for x and y axes.
-            f64 ty = (f64)y / (f64)surf->h;
-            f64 tx = (f64)x / (f64)surf->w;
-            
-            vec2 point = lerp_vec2(lerp_vec2(p[0], p[2], ty),
-                                   lerp_vec2(p[1], p[3], ty),
-                                   tx);
-            
-            if (prev.x != -1 && y+1 < surf->h) {
-                ty = (f64)(y+1) / (f64)surf->h;
-                
-                vec2 bottom_point = lerp_vec2(lerp_vec2(p[0], p[2], ty),
-                                              lerp_vec2(p[1], p[3], ty),
-                                              tx);
-                
-                vec2 pp[] = {
-                    {prev.x, prev.y},
-                    {point.x, point.y},
-                    {bottom_point.x, bottom_point.y},
-                    {bottom_point.x-(point.x-prev.x), bottom_point.y-(point.y-prev.y)},
-                };
-                
-                fill_polygon_in_buffer(pixels, col, w, h, pp, 4, fill_stack);
-            }
-            
-            prev = point;
-        }
-    }
-    
-    SDL_UnlockTexture(RenderTarget(RENDER_TARGET_3D));
+    struct TriangleDrawData data = {
+        0, h,
+        pixels,
+        surf,
+        w,
+        {p[0], p[1], p[2]}
+    };
+    draw_triangle(&data);
     
     #if PROFILE
     LARGE_INTEGER end;

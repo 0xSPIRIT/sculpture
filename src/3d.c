@@ -5,10 +5,10 @@ vec2* project(vec3 *input, int count) {
         if (input[i].z == 0) continue;
         points[i].x = input[i].x / input[i].z;
         points[i].x++; // Make it from 0 to 2
-        points[i].x *= (gs->window_width)/2.0;  // Make it from 0 to W
+        points[i].x *= SCALE_3D * (gs->window_width)/2.0;  // Make it from 0 to W
         points[i].y = input[i].y / input[i].z;
         points[i].y++; // Make it from 0 to 2
-        points[i].y *= (gs->window_height-GUI_H)/2.0; // Make it from 0 to H
+        points[i].y *= SCALE_3D * (gs->window_height-GUI_H)/2.0; // Make it from 0 to H
     }
     
     return points;
@@ -89,8 +89,6 @@ void object_draw(struct Object3D *obj) {
                 f64 ty = -obj->yrot;
                 f64 tx = obj->xrot;
                 
-                points[i].y -= 1;
-                
                 int x = op[i].x;
                 int y = op[i].y;
                 int z = op[i].z;
@@ -99,7 +97,7 @@ void object_draw(struct Object3D *obj) {
                 points[i].y = y*cos(tx) - z*sin(tx);
                 points[i].z = z*cos(tx)*cos(ty) - x*sin(ty) + y*sin(tx)*cos(ty);
                 
-                points[i].y += obj->y+1;
+                points[i].y += obj->y;
                 points[i].z += obj->z; // Push it forward on the screen.
                 break;
             }
@@ -114,7 +112,61 @@ void object_draw(struct Object3D *obj) {
     }
 #endif
     
-    draw_image_skew(gs->surfaces.a, projected);
+    Vertex *final_points = PushArray(gs->transient_memory, 4, sizeof(Vertex));
+    
+    for (int i = 0; i < count; i++) {
+        final_points[i].p.x = projected[i].x;
+        final_points[i].p.y = projected[i].y;
+    }
+    
+    final_points[0].col.x = 255;
+    final_points[0].col.y = 0;
+    final_points[0].col.z = 0;
+    
+    final_points[1].col.x = 0;
+    final_points[1].col.y = 255;
+    final_points[1].col.z = 0;
+    
+    final_points[2].col.x = 0;
+    final_points[2].col.y = 0;
+    final_points[2].col.z = 255;
+    
+#if 0
+    final_points[0].tex.x = 0;
+    final_points[0].tex.y = 0;
+    
+    final_points[1].tex.x = 1;
+    final_points[1].tex.y = 0;
+    
+    final_points[2].tex.x = 0;
+    final_points[2].tex.y = 1;
+    
+    final_points[3].tex.x = 1;
+    final_points[3].tex.y = 1;
+#endif
+
+    
+    Uint32 *pixels;
+    int pitch;
+    if (SDL_LockTexture(RenderTarget(RENDER_TARGET_3D),
+                        NULL,
+                        &pixels,
+                        &pitch) != 0) {
+        Log("%s\n", SDL_GetError());
+        Assert(0);
+    }
+    
+    int w = SCALE_3D * gs->window_width;
+    int h = SCALE_3D * (gs->window_height-GUI_H);
+    
+    ZeroMemory(pixels, pitch*h);
+    
+    draw_image_skew(w, h, gs->surfaces.a, pixels, final_points);
+    draw_image_skew(w, h, gs->surfaces.a, pixels, final_points+1);
+    
+    SDL_UnlockTexture(RenderTarget(RENDER_TARGET_3D));
+    
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, NULL);
     
     #if 0
     vec2 prev = {-1, -1};
