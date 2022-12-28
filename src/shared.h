@@ -59,6 +59,7 @@ struct Game_State {
     
     struct Narrator narrator;
     struct Object3D obj;
+    struct Snow3D snow;
     
     struct View view;
     

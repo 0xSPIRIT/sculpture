@@ -1,3 +1,13 @@
+void chisel_play_sound(int size) {
+    if (size == 0) {
+        Mix_PlayChannel(-1, gs->audio.small_chisel, 0);
+    } else if (size == 1) {
+        Mix_PlayChannel(-1, gs->audio.medium_chisel[rand()%6], 0);
+    } else if (size == 2) {
+        Mix_PlayChannel(-1, gs->audio.large_chisel, 0);
+    }
+}
+
 void chisel_hammer_init(void) {
     struct Chisel_Hammer *hammer = &gs->chisel_hammer;
     struct Chisel *chisel = gs->chisel;
@@ -159,6 +169,7 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
                     int count = cell_count_of_blob(obj, b, chisel->size);
                     enum Cell_Type type = gs->grid[(int)chisel->x + ((int)chisel->y)*gs->gw].type;
                     
+                    chisel_play_sound(chisel->size);
                     object_remove_blob(obj, b, chisel->size, blocker_side, true);
                     
                     move_mouse_to_grid_position(chisel->x, chisel->y);
@@ -208,6 +219,7 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
                 
                 if (blob > 0) {
                     object_remove_blob(obj, blob, chisel->size, blocker_side, true);
+                    chisel_play_sound(chisel->size);
                     chisel->did_remove = true;
                     goto chisel_did_remove;
                 }
@@ -393,20 +405,22 @@ void chisel_set_depth(void) {
     struct Cell *grid = gs->grid;
     
     switch (chisel->size) {
-        case 0:
-        grid[(int)chisel->x + ((int)chisel->y)*gs->gw].depth = 127;
-        break;
-        case 1:
-        for (int y = 0; y < gs->gh; y++) {
-            for (int x = 0; x < gs->gw; x++) {
-                if (chisel->pixels[x+y*gs->gw] == 0x9B9B9B) {
-                    const int amt = 127;
-                    if (grid[x+y*gs->gw].depth > amt)
-                        grid[x+y*gs->gw].depth -= amt;
+        case 0: {
+            grid[(int)chisel->x + ((int)chisel->y)*gs->gw].depth = 127;
+            break;
+        }
+        case 1: {
+            for (int y = 0; y < gs->gh; y++) {
+                for (int x = 0; x < gs->gw; x++) {
+                    if (chisel->pixels[x+y*gs->gw] == 0x9B9B9B) {
+                        const int amt = 127;
+                        if (grid[x+y*gs->gw].depth > amt)
+                            grid[x+y*gs->gw].depth -= amt;
+                    }
                 }
             }
+            break;
         }
-        break;
     }
 }
 

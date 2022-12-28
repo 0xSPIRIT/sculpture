@@ -4,6 +4,8 @@
   #define RES_DIR "../res/"
 #endif
 
+#define ALASKA_PIXELFORMAT SDL_PIXELFORMAT_ABGR8888
+
 // Index into textures.render_targets[]
 enum {
     RENDER_TARGET_GLOBAL, // The main render target
@@ -17,7 +19,8 @@ enum {
 
 struct Audio {
     Mix_Music *music;
-    Mix_Chunk *chisel;
+    Mix_Chunk *medium_chisel[6];
+    Mix_Chunk *small_chisel, *large_chisel;
 };
 
 // Only contains textures!

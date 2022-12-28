@@ -9,11 +9,29 @@
 // This is included only in the platform/SDL layer.
 //
 
-#define CreateRenderTarget(width, height) (SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, width, height))
+#define CreateRenderTarget(width, height) (SDL_CreateTexture(renderer, ALASKA_PIXELFORMAT, SDL_TEXTUREACCESS_TARGET, width, height))
+
+SDL_Surface *pixel_format_surf = NULL;
 
 SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
+    // A temp surface that exists solely to get its format
+    // if surfaces are loaded with a format != ALASKA_PIXELFORMAT.
+    if (!pixel_format_surf) {
+        pixel_format_surf = SDL_CreateRGBSurfaceWithFormat(0, 16, 16, 32,
+                                                           ALASKA_PIXELFORMAT);
+    }
+                                                                           
     SDL_Surface *surf = IMG_Load(fp);
     Assert(surf);
+    
+    if (surf->format->format != ALASKA_PIXELFORMAT) {
+        SDL_Surface *new_surf = SDL_ConvertSurface(surf,
+                                                   pixel_format_surf->format,
+                                                   0);
+        SDL_FreeSurface(surf);
+        surf = new_surf;
+    }
+    
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
     Assert(texture);
     SDL_FreeSurface(surf);
@@ -36,7 +54,7 @@ void render_targets_init(SDL_Renderer *renderer,
                 continue;
             }
             if (i == RENDER_TARGET_3D) {
-                textures->render_targets[lvl][i] = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, SCALE_3D*gs->window_width, SCALE_3D*(gs->window_height-GUI_H));
+                textures->render_targets[lvl][i] = SDL_CreateTexture(renderer, ALASKA_PIXELFORMAT, SDL_TEXTUREACCESS_STREAMING, SCALE_3D*gs->window_width, SCALE_3D*(gs->window_height-GUI_H));
                 SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
                 Assert(textures->render_targets[lvl][i]);
                 continue;
@@ -120,6 +138,8 @@ void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
             }
         }
     }
+    
+    SDL_FreeSurface(pixel_format_surf);
 }
 
 void textures_deinit(struct Textures *textures) {
@@ -183,12 +203,22 @@ void fonts_deinit(struct Fonts *fonts) {
 
 void audio_init(struct Audio *audio) {
     audio->music = Mix_LoadMUS(RES_DIR "audio/mus.mp3");
-    //audio->chisel = Mix_LoadWAV(RES_DIR "audio/chisel_1.wav");
+    for (int i = 0; i < 6; i++) {
+        char name[64];
+        sprintf(name, RES_DIR "audio/chisel_%d.wav", i+1);
+        audio->medium_chisel[i] = Mix_LoadWAV(name);
+        Assert(audio->medium_chisel[i]);
+    }
+    audio->small_chisel = Mix_LoadWAV(RES_DIR "audio/small_chisel.wav");
+    audio->large_chisel = Mix_LoadWAV(RES_DIR "audio/large_chisel.wav");
+    
     Assert(audio->music);
-    //Assert(audio->chisel);
 }
 
 void audio_deinit(struct Audio *audio) {
     Mix_FreeMusic(audio->music);
-    //Mix_FreeChunk(audio->chisel);
+    for (int i = 0; i < 6; i++)
+        Mix_FreeChunk(audio->medium_chisel[i]);
+    Mix_FreeChunk(audio->small_chisel);
+    Mix_FreeChunk(audio->large_chisel);
 }

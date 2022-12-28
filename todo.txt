@@ -7,8 +7,11 @@ TODO :: {
 		[ ] Close the game when it's done.
 		[ ] Snow?!
 
-	[ ] Write narrator dialogue
-	[ ] Make narrator framework.
+	[ ] Narrative: Dialogue.
+
+	[ ] Figure out the way to portray a story. Narrator was the idea, but
+		maybe there's a better way? Images?
+
 	[x] Audio framework setup.
 	[ ] Tutorial: Make use of the chisel's ability to move after you've clicked.
 	[ ] Bug with small chisel not getting cells properly. Noticable in level 4.

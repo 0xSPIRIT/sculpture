@@ -10,49 +10,108 @@ x Tutorialization
 - Title Screen
 - Ending (Fall & Credits)
 
-Problems:
+Something that was part of my original plan but that didn't come to fruition is the idea
+of having levels where you started with an intention and the end product had to be
+different from your initial idea, like it somehow became infeasible to create the idea,
+so you had to change the goalposts.
 
-How do I improve the chisel? Make it easier to show how it works, because I
-actually do like how it is right now.
+If we were creating this level, how would we do it?
 
-- Should the levels have a proper evaluater for each level, or just make it
-  player-based? I think player-based would be more interesting, since we're
-  able to take risks and since it's such a short game. I think finishing
-  the levels based on your own merit is an important part in conveying
-  the themes, because otherwise, it's not you who's judging it, it's
-  "something else". One of the main points is that this is all internal
-  conflict, not some external validation problem.
+"Most times things don't end up how you'd like it.
+ You don't need to be a perfectionist."
 
-- Chisel pattern still needs work.
+You have to ignore the overlay to even complete the level. This is an endgame concept,
+and the concept is paid off when, in the final level, you literally can't complete it.
+So, you must either leave it unfinished, or do a miniature version *which is shittier
+since you don't have the overlay to guide you.* <- Use that last part in the story.
 
-- Predefined overlays are working fine... is it really necessary to
-  need to make your own? Esp. with such a short game... I would
-  really like for the overlay to be user made but also the way it's
-  in the game right now is also great.
+==========
 
-- Add Zoom + WASD Movement to make things easier & more precise when
-  working with the chisel.
+Possibilities:
+	- Dialogue scenes
+	- Solely images
+	- 3rd person prose.
 
-////////////////////////////////
+Narrative - Dialogue scenes in a short story over the period of the levels,
+			all pertaining to different themes each level.
+		  - At the end, it builds to a climax with the themes in the story being
+			the same as the game.
 
-How do I portray having too much ambition & your skill level not being as
-high as you originally thought?
+For the narrative parts, I'd like dialogue elements that are allegories to themes.
+The story itself doesn't have to relate to sculptures at all. My fear is that it
+will clash when you first start up the game; they're talking about something else,
+making you think the game is about what they're talking about and not sculpting.
+So, the first dialogue scene will be relatively short, and afterwards, add a
+screen that goes something like "Use mouse to chisel stone. When you believe you're
+finished, press F."
 
-Answer: As far as I can tell, the final level does this pretty well.
-        Once the player feels like they are able to do this since
-        the other levels are not Dark Souls level difficult, the
-        theme should be set in there.
+In the narrative, make references to objects that are the shapes of the levels
+you're going to do next. Work backwards from the level shapes. Don't do it every
+time because it'll seem weird.
 
-The orb represents a goal, unreachable. It means "SUCCESS", but coming
-only from a wrong definition. It also represents Mavien, the game.
 
-The levels represents the progression of an artist's work; from simple beginnings
-to more and more complex creations, with lots of layers of conversions required
-to convert from inspiration to an actual finished piece. The showpiece is the
-climax of all the complexity that you are able to actually create. The final
-level is literally impossible to create, but you've deluded yourself into
-thinking you can complete it if you nudge it just a *little* bit more. It's
-meant to portray that sense of defeat, like all you've done is invalidated
-because your ambition is too high.
+The story must be an allegory for my personal journey of the creation of games.
+Braid-type thing where you represent the art as some kind of video game-y trope
+like a Princess in a castle, with other ideas from personal life peppered
+throughout. In Braid, the different chapters' books related to that specific
+chapter's gameplay mechanic. Regret, the merging of time and space, etc.
 
-The ending described in one word: ambition.
+1. The start-off. The pureset possible form of creation.
+   No ego, just pure learning. Show the passion and excitement
+   of knowing the possibilities.
+
+2. Show the wonder of daydreaming about creation. Your imagination
+   creates the most wonderful, sprawling sculptures.
+
+3. You start to realize how complex these things can be to make.
+   Even relatively simple things. A simple outline may take
+   lots of preparation unseen.
+
+4. At this point, you aim too high. Your intentions are too
+   ambitious and it is literally impossible to gain the material
+   required to create that. You "learn" a lesson that sometimes
+   you need to temper your ambitions. The creations you daydream
+   may not be possible to make at your skill level. This stings
+   a lot, but you think to yourself to never do this again.
+   What you did was delude yourself into thinking it was possible
+   to create it.
+
+5. Though your creations continue to not totally be what you intended,
+   you gain slight ego and pride in your work. Not in a boastful 
+   way, but a kind of "I can do pretty decently" to creations that
+   are above your level in terms of pure development.
+
+6. You become jealous of others' creations. They're so simple.
+   So small, so insignificant. And they're more popular than yours?
+   But you've spent so much more time on yours. Sure, theirs' is
+   like a very polished little nugget, but yours would be like
+   a huge chunk of gold! If you finish them as intended.
+
+7. You create the bird and the showpiece, which boost your
+   ego a lot. The daydreaming is stil very fun, and you
+   get a great idea after you convinced yourself the
+   bird and showpiece are apt stepping stones. The showpiece
+   really was something impressive, though.
+
+8. You devise a final glass sculpture. It doesn't seem too bad
+   actually! It's not like it's made of diamond or anything-
+   You've made glass all the time before. You believe you've
+   tempered your intentions. But... you can't even get a tenth
+   of the way through when you've ran out. The startling realization.
+   You've done it again. You set your ambitions too high and
+   deluded yourself into thinking what you are doing is possible.
+   Now, you're left sulking in the dirt. Your sculpture is nothing
+   else but paper-thin trash. Your ego is gone.
+
+9. "Alaska" - End on a hopeful note in the story. Something about
+   enjoying the comforting peace of a small creation. Nothing major.
+   Nothing sprawling. A good sculpture doesn't have to be sprawling.
+   But it takes a lot more than meets the eye.
+
+Representations:
+
+1-3. My first ever games
+4. Moonspark
+5. Mega Tile
+7. Bird & Showpiece = Mavien
+8. GUNBLADE.

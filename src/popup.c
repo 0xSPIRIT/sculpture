@@ -14,29 +14,34 @@ void text_field_tick(void) {
     if (!text_field->active) return;
     
     switch (gs->event->type) {
-        case SDL_TEXTINPUT:
-        strcat(text_field->text, gs->event->text.text);
-        break;
-        case SDL_KEYDOWN:
-        switch (gs->event->key.keysym.sym) {
-            case SDLK_RETURN:
-            text_field->on_return(text_field->text);
-            text_field->active = false;
-            memset(text_field->description, 0, 256);
-            memset(text_field->text, 0, 256);
-            break;
-            case SDLK_BACKSPACE:;
-            size_t length = strlen(text_field->text);
-            if (length)
-                text_field->text[length-1] = 0;
-            break;
-            case SDLK_ESCAPE:
-            memset(text_field->description, 0, 256);
-            memset(text_field->text, 0, 256);
-            text_field->active = false;
+        case SDL_TEXTINPUT: {
+            strcat(text_field->text, gs->event->text.text);
             break;
         }
-        break;
+        case SDL_KEYDOWN: {
+            switch (gs->event->key.keysym.sym) {
+                case SDLK_RETURN: {
+                    text_field->on_return(text_field->text);
+                    text_field->active = false;
+                    memset(text_field->description, 0, 256);
+                    memset(text_field->text, 0, 256);
+                    break;
+                }
+                case SDLK_BACKSPACE: {
+                    size_t length = strlen(text_field->text);
+                    if (length)
+                        text_field->text[length-1] = 0;
+                    break;
+                }
+                case SDLK_ESCAPE: {
+                    memset(text_field->description, 0, 256);
+                    memset(text_field->text, 0, 256);
+                    text_field->active = false;
+                    break;
+                }
+            }
+            break;
+        }
     }
 }
 

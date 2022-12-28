@@ -14,7 +14,6 @@ struct TriangleDrawData {
 // 3 vertices required
 inline void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *p) {
     const vec2 t[3] = {p[0].p, p[1].p, p[2].p};
-    const SDL_PixelFormat *format = surf->format;
     
     for (int x = 0; x < w; x++) {
         f32 denominator = (t[1].y - t[2].y)*(t[0].x - t[2].x) + (t[2].x - t[1].x)*(t[0].y - t[2].y);
@@ -42,14 +41,20 @@ inline void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, V
         Uint32 pixel = SDL_MapRGB(format, color.x, color.y, color.z);
 #endif
         
-        vec2 tex_coord = vec2_add3(vec2_scale(p[0].tex, w0),
-                                   vec2_scale(p[1].tex, w1),
-                                   vec2_scale(p[2].tex, w2));
+        //vec2 tex_coord = vec2_add3(vec2_scale(p[0].tex, w0),
+        //                           vec2_scale(p[1].tex, w1),
+        //                           vec2_scale(p[2].tex, w2));
         
-        SDL_Color c = get_pixel(surf, tex_coord.x * surf->w, tex_coord.y * surf->h);
-        Uint32 pixel = SDL_MapRGB(format, c.r, c.g, c.b);
+        f32 tex_coord_x = p[0].tex.x * w0 + p[1].tex.x * w1 + p[2].tex.x * w2;
+        f32 tex_coord_y = p[0].tex.y * w0 + p[1].tex.y * w1 + p[2].tex.y * w2;
         
-        pixels[x+y*w] = pixel;
+        int xx = tex_coord_x * surf->w;
+        int yy = tex_coord_y * surf->h;
+        
+        if (yy >= surf->h) yy = surf->h-1;
+        if (xx >= surf->w) xx = surf->w-1;
+        
+        pixels[x+y*w] = ((Uint32*)(surf->pixels))[xx+yy*surf->w];
     }
 }
 
@@ -64,11 +69,23 @@ inline void draw_triangle(void *ptr) {
 #define PROFILE 0
 
 // Draw a surface given 4 points.
-void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p) {
+void draw_image_skew(int w, int h, SDL_Surface *surf, Vertex *p) {
 #if PROFILE
     LARGE_INTEGER start;
     QueryPerformanceCounter(&start);
 #endif
+    
+    Uint32 *pixels;
+    int pitch;
+    if (SDL_LockTexture(RenderTarget(RENDER_TARGET_3D),
+                        NULL,
+                        &pixels,
+                        &pitch) != 0) {
+        Log("%s\n", SDL_GetError());
+        Assert(0);
+    }
+    
+    ZeroMemory(pixels, pitch*h);
     
     // We must use the vertex array as a set of
     // two triangles, in order to use classical
@@ -83,6 +100,17 @@ void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p)
         {p[0], p[1], p[2]}
     };
     draw_triangle(&data);
+    
+    data = (struct TriangleDrawData){
+        0, h,
+        pixels,
+        surf,
+        w,
+        {p[1], p[2], p[3]}
+    };
+    draw_triangle(&data);
+    
+    SDL_UnlockTexture(RenderTarget(RENDER_TARGET_3D));
     
 #if PROFILE
     LARGE_INTEGER end;
@@ -100,7 +128,24 @@ void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p)
 void object_init(struct Object3D *obj) {
     memset(obj, 0, sizeof(struct Object3D));
     gs->obj.z = 1;
-    gs->obj.yrot = -0.002;
+    gs->obj.active = true;
+    gs->obj.yrot = -0.002f;
+    
+    Uint32 *pixels = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(Uint32));
+    
+    int pitch = 4*gs->gw;
+    SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
+    SDL_RenderReadPixels(gs->renderer, NULL, ALASKA_PIXELFORMAT, pixels, pitch);
+    SDL_SetRenderTarget(gs->renderer, prev);
+    
+    obj->surf = SDL_CreateRGBSurfaceWithFormat(0,
+                                               gs->gw,
+                                               gs->gh,
+                                               32,
+                                               ALASKA_PIXELFORMAT);
+    Assert(obj->surf);
+    memcpy(obj->surf->pixels, pixels, sizeof(Uint32)*gs->gw*gs->gh);
 }
 
 vec2* project(vec3 *input, int count) {
@@ -119,12 +164,11 @@ vec2* project(vec3 *input, int count) {
     return points;
 }
 
-void object_draw(struct Object3D *obj) {
-    if (!obj->active) return;
-    
+void object_draw(void *ptr) {
+    struct Object3D *obj = (struct Object3D*)ptr;
     const int count = 4;
     
-    vec3 *op = PushArray(gs->transient_memory, count, sizeof(vec3));
+    vec3 op[4] = {0};
     
     op[0] = (vec3){-1, -1, obj->z};
     op[1] = (vec3){+1, -1, obj->z};
@@ -137,22 +181,21 @@ void object_draw(struct Object3D *obj) {
         case OBJECT_ZOOM: {
             obj->y += dy;
             
-            obj->z += 0.001;
+            obj->z += 0.01f;
             if (obj->z >= 2) {
                 obj->state = OBJECT_ROTY;
             }
             break;
         }
-        case OBJECT_ROTY: {
+        case OBJECT_ROTY: case OBJECT_DONE: {
             obj->y += dy;
             
             for (int i = 0; i < count; i++)
                 op[i].z = 0;
             
-            obj->yrot -= 0.002;
-            if (obj->yrot <= -0.6) {
-                obj->state = OBJECT_FALL;
-            }
+            const f32 speed = -0.003f;
+            
+            obj->yrot += speed;
             break;
         }
         case OBJECT_FALL: {
@@ -160,7 +203,7 @@ void object_draw(struct Object3D *obj) {
                 op[i].z = 0;
             
             if (obj->xrot > -1.5) {
-                obj->jerk += 0.0000001;
+                obj->jerk += 0.0000001f;
                 obj->acc += obj->jerk;
                 obj->vel += obj->acc;
                 obj->xrot -= obj->vel;
@@ -169,7 +212,7 @@ void object_draw(struct Object3D *obj) {
         }
     }
     
-    vec3 *points = PushArray(gs->transient_memory, count, sizeof(vec3));
+    vec3 points[4] = {0};
     
     // Rotation about the Y-axis
     
@@ -180,7 +223,7 @@ void object_draw(struct Object3D *obj) {
                 points[i].y += obj->y;
                 break;
             }
-            case OBJECT_ROTY: {
+            case OBJECT_ROTY: case OBJECT_DONE: {
                 f64 t = obj->yrot;
                 
                 points[i].x = cos(t) * op[i].x - sin(t) * op[i].z;
@@ -210,6 +253,11 @@ void object_draw(struct Object3D *obj) {
         }
     }
     
+    
+    for (int i = 0; i < 4; i++) {
+        Assert(points[i].z >= 1);
+    }
+    
     vec2 *projected = project(points, count);
     
 #if 0
@@ -218,24 +266,12 @@ void object_draw(struct Object3D *obj) {
     }
 #endif
     
-    Vertex *final_points = PushArray(gs->transient_memory, 4, sizeof(Vertex));
+    Vertex final_points[4] = {0};
     
     for (int i = 0; i < count; i++) {
         final_points[i].p.x = projected[i].x;
         final_points[i].p.y = projected[i].y;
     }
-    
-    final_points[0].col.x = 255;
-    final_points[0].col.y = 0;
-    final_points[0].col.z = 0;
-    
-    final_points[1].col.x = 0;
-    final_points[1].col.y = 255;
-    final_points[1].col.z = 0;
-    
-    final_points[2].col.x = 0;
-    final_points[2].col.y = 0;
-    final_points[2].col.z = 255;
     
     final_points[0].tex.x = 0;
     final_points[0].tex.y = 0;
@@ -248,27 +284,71 @@ void object_draw(struct Object3D *obj) {
     
     final_points[3].tex.x = 1;
     final_points[3].tex.y = 1;
-
     
-    Uint32 *pixels;
-    int pitch;
-    if (SDL_LockTexture(RenderTarget(RENDER_TARGET_3D),
-                        NULL,
-                        &pixels,
-                        &pitch) != 0) {
-        Log("%s\n", SDL_GetError());
-        Assert(0);
-    }
     
     int w = SCALE_3D * gs->window_width;
     int h = SCALE_3D * (gs->window_height-GUI_H);
     
-    ZeroMemory(pixels, pitch*h);
+    Assert(w==h);
     
-    draw_image_skew(w, h, gs->surfaces.grass_surface, pixels, final_points);
-    draw_image_skew(w, h, gs->surfaces.grass_surface, pixels, final_points+1);
+    draw_image_skew(w, h, gs->surfaces.grass_surface, final_points);
+}
+
+void snow_init(struct Snow3D *snow) {
+    for (int i = 0; i < SNOW_3D_PARTICLE_COUNT; i++) {
+        snow->p[i] = (vec3){
+            my_rand_f32(my_rand(my_rand(i))),
+            my_rand_f32(my_rand(i)),
+            1.25+my_rand_f32(my_rand(my_rand(my_rand(i))))
+        };
+        snow->v[i] = (vec3){
+            0.005f,
+            0.005f,
+            0.00f
+        };
+    }
+}
+
+void sinow_draw(struct Snow3D *snow) {
+    struct Object3D *obj = &gs->obj;
     
-    SDL_UnlockTexture(RenderTarget(RENDER_TARGET_3D));
-    
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, NULL);
+    for (int i = 0; i < SNOW_3D_PARTICLE_COUNT; i++) {
+        snow->p[i] = vec3_add(snow->p[i], snow->v[i]);
+        
+        vec3 p = snow->p[i];
+        
+        f64 t = obj->yrot;
+        
+        // Z-values from 1.25 to 2.25.
+        // We want to rotate about the origin,
+        // so we subtract 1.75 from the z-values.
+        // Then, the z-values would be -0.5 to +0.5.
+        
+        p.z -= 1.75;
+        
+        p.x = cos(t) * p.x - sin(t) * p.z;
+        p.y = p.y;
+        p.z = sin(t) * p.x + cos(t) * p.z;
+        
+        // Then, we re-add the 1.75 to get it back to where it was before.
+        p.z += 1.75;
+        
+        vec2 projected = *project(&p, 1);
+        
+        if (projected.x >= gs->window_width) {
+            snow->p[i].x = -snow->p[i].z;
+        }
+        if (projected.y >= gs->window_height) {
+            snow->p[i].y = -snow->p[i].z;
+        }
+        
+        const int size = 3;
+        
+        SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+        f32 z = p.z;
+        z--;
+        z *= size;
+        z = size-z;
+        fill_circle(gs->renderer, projected.x, projected.y, (int)z);
+    }
 }

@@ -18,8 +18,12 @@ inline vec2 vec2_add(vec2 a, vec2 b) {
     return (vec2){a.x+b.x, a.y+b.y};
 }
 
-inline vec2 vec2_add3(vec2 a, vec2 b, vec2 c) {
+inline vec2 vec2_add3(const vec2 a, const vec2 b, const vec2 c) {
     return (vec2){a.x+b.x+c.x, a.y+b.y+c.y};
+}
+
+inline vec3 vec3_add(vec3 a, vec3 b) {
+    return (vec3){a.x+b.x, a.y+b.y, a.z+b.z};
 }
 
 bool is_angle_45(f64 deg_angle) {

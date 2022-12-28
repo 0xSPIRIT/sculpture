@@ -128,7 +128,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     set_text_field("Goto Level", "", goto_level_string_hook);
                 } else {
-                    Mix_PlayChannel(-1, gs->audio.chisel, 0);
+                    //Mix_PlayChannel(-1, gs->audio.chisel[rand()%6], 0);
                 }
                 break;
             }
@@ -148,10 +148,10 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     if (input->keys[SDL_SCANCODE_LSHIFT]) {
                         set_text_field("Go to State", "", set_state_to_string_hook);
-                    } else {
+                    } else
                         undo();
-                    }
-                }
+                } else
+                    undo();
                 break;
             }
             case SDLK_q: {
@@ -369,30 +369,37 @@ export void game_run(struct Game_State *state) {
     
     gs->gui.tooltip.set_this_frame = false;
     
-    view_tick(&gs->view, &gs->input);
-    
-    gui_tick();
-    inventory_tick();
-    all_converters_tick();
-    
-    level_tick();
-    level_draw();
-    
-    if (level->state == LEVEL_STATE_OUTRO) {
-        SDL_Rect dst = {
-            -gs->view.x,
-            -gs->view.y + GUI_H,
-            gs->view.w, gs->view.h
-        };
+    if (gs->obj.active) {
+        SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+        SDL_RenderClear(gs->renderer);
         
-        SDL_SetRenderTarget(gs->renderer, NULL);
-        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
-        draw_outro(level);
-    } else if (level->state != LEVEL_STATE_INTRO) {
-        draw_intro();
+        object_draw(&gs->obj);
+        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, NULL);
+        //snow_draw(&gs->snow);
+    } else {
+        view_tick(&gs->view, &gs->input);
+        
+        gui_tick();
+        inventory_tick();
+        all_converters_tick();
+        
+        level_tick();
+        level_draw();
+        
+        if (level->state == LEVEL_STATE_OUTRO) {
+            SDL_Rect dst = {
+                -gs->view.x,
+                -gs->view.y + GUI_H,
+                gs->view.w, gs->view.h
+            };
+            
+            SDL_SetRenderTarget(gs->renderer, NULL);
+            SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
+            draw_outro(level);
+        } else if (level->state != LEVEL_STATE_INTRO) {
+            draw_intro();
+        }
     }
-    
-    object_draw(&gs->obj);
     
     SDL_RenderPresent(gs->renderer);
     

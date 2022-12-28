@@ -1,21 +1,5 @@
-#define SCALE_3D 0.2
-
-enum Object3D_State {
-    OBJECT_ZOOM,
-    OBJECT_ROTY,
-    OBJECT_FALL,
-    OBJECT_DONE
-};
-
-struct Object3D {
-    bool active;
-    SDL_Texture *texture;
-    int state;
-    f64 y, z;
-    f64 yrot;
-    f64 xrot;
-    f64 acc, vel, jerk;
-};
+#define SCALE_3D 1
+#define SNOW_3D_PARTICLE_COUNT 250
 
 typedef struct vec2 {
     f32 x, y;
@@ -29,3 +13,25 @@ typedef struct Vertex {
     vec3 col; // Color data per vertex. (0 to 255)
     vec2 tex; // Texture coordinates (0 to 1)
 } Vertex;
+
+enum Object3D_State {
+    OBJECT_ZOOM,
+    OBJECT_ROTY,
+    OBJECT_FALL,
+    OBJECT_DONE
+};
+
+struct Snow3D {
+    vec3 p[SNOW_3D_PARTICLE_COUNT]; // Positions
+    vec3 v[SNOW_3D_PARTICLE_COUNT]; // Velocities
+};
+
+struct Object3D {
+    bool active;
+    SDL_Surface *surf;
+    int state;
+    f32 y, z;
+    f32 yrot;
+    f32 xrot;
+    f32 acc, vel, jerk;
+};

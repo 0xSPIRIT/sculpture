@@ -201,7 +201,7 @@ void goto_level(int lvl) {
     gs->level_current = lvl;
     gs->levels[lvl].state = LEVEL_STATE_INTRO;
     
-    gs->tutorial.active = false;
+    gs->tutorial.active = true;
     
     gs->levels[lvl].popup_time_current = 0;
     
@@ -245,8 +245,6 @@ void goto_level(int lvl) {
     timelapse_init();
     
     check_for_tutorial();
-    
-    object_init(&gs->obj);
 }
 
 void goto_level_string_hook(const char *string) {
@@ -266,105 +264,112 @@ void level_tick(void) {
     if (gs->gui.popup) return;
     
     switch (level->state) {
-        case LEVEL_STATE_INTRO:
-        level->popup_time_current++;
-        if (level->popup_time_current >= level->popup_time_max) {
-            level->popup_time_current = 0;
-            level->state = LEVEL_STATE_PLAY;
+        case LEVEL_STATE_INTRO: {
+            level->popup_time_current++;
+            if (level->popup_time_current >= level->popup_time_max) {
+                level->popup_time_current = 0;
+                level->state = LEVEL_STATE_PLAY;
+                
+                // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
+                for (int i = 0; i < gs->gw*gs->gh; i++) {
+                    int id = gs->grid[i].id;
+                    gs->grid[i] = (struct Cell){.type = level->initial_grid[i].type, .rand = rand(), .id = id, .object = -1, .depth = 255};
+                }
+                objects_reevaluate();
+                
+                if (!gs->undo_initialized) {
+                    undo_system_init();
+                } else {
+                    undo_system_reset();
+                    save_state_to_next();
+                }
+            }
+            break;
+        }
+        case LEVEL_STATE_OUTRO: {
+            if (input->keys[SDL_SCANCODE_N]) {
+                if (gs->level_current+1 < 10) {
+                    goto_level(++gs->level_current);
+                } else {
+                    gs->levels[gs->level_current].state = LEVEL_STATE_PLAY;
+                    object_init(&gs->obj);
+                    //snow_init(&gs->snow);
+                }
+            }
             
-            // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
-            for (int i = 0; i < gs->gw*gs->gh; i++) {
-                int id = gs->grid[i].id;
-                gs->grid[i] = (struct Cell){.type = level->initial_grid[i].type, .rand = rand(), .id = id, .object = -1, .depth = 255};
+            if (input->keys_pressed[SDL_SCANCODE_F]) {
+                gs->levels[gs->level_current].state = LEVEL_STATE_PLAY;
+                input->keys[SDL_SCANCODE_F] = 0;
             }
-            objects_reevaluate();
+            break;
+        }
+        case LEVEL_STATE_PLAY: {
+            if (input->keys_pressed[SDL_SCANCODE_F]) {
+                gs->levels[gs->level_current].state = LEVEL_STATE_OUTRO;
+                input->keys[SDL_SCANCODE_F] = 0;
+            }
             
-            if (!gs->undo_initialized) {
-                undo_system_init();
-            } else {
-                undo_system_reset();
-                save_state_to_next();
+            simulation_tick();
+            
+            if (!gs->paused || gs->step_one) {
+                for (int i = 0; i < gs->object_count; i++) {
+                    object_tick(i);
+                }
             }
+            
+            if (gs->step_one) {
+                gs->step_one = 0;
+            }
+            
+            /* if (input->my < 0) { // If the mouse is in the GUI gs->window...
+             *     SDL_ShowCursor(1);
+             *     if (SDL_GetCursor() != gs->normal_cursor) {
+             *         SDL_SetCursor(gs->normal_cursor);
+             *     }
+             *     break;
+             * } else if (gs->current_tool == TOOL_GRABBER) {
+             *     if (SDL_GetCursor() != gs->grabber_cursor) {
+             *         SDL_ShowCursor(1);
+             *         SDL_SetCursor(gs->grabber_cursor);
+             *     }
+             * } else if (SDL_GetCursor() != gs->normal_cursor) {
+             *     SDL_SetCursor(gs->normal_cursor);
+             * } */
+            
+            //chisel_blocker_tick();
+            
+            if (gs->chisel_blocker_mode) break;
+            
+            switch (gs->current_tool) {
+                case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
+                    chisel_tick();
+                    break;
+                }
+                case TOOL_BLOCKER: {
+                    blocker_tick();
+                    break;
+                }
+                case TOOL_OVERLAY: {
+                    //overlay_tick();
+                    break;
+                }
+                case TOOL_DELETER: {
+                    deleter_tick();
+                    break;
+                }
+                case TOOL_PLACER: {
+                    if (!gs->gui.popup) // We'll handle updating it in the converter
+                        placer_tick(&gs->placers[gs->current_placer]);
+                    break;
+                }
+                case TOOL_GRABBER: {
+                    grabber_tick();
+                    break;
+                }
+            }
+            
+            break;
         }
-        break;
-        case LEVEL_STATE_OUTRO:
-        if (input->keys[SDL_SCANCODE_N]) {
-            if (gs->level_current+1 < 10) {
-                goto_level(++gs->level_current);
-            }
-        }
-        
-        if (input->keys_pressed[SDL_SCANCODE_F]) {
-            gs->levels[gs->level_current].state = LEVEL_STATE_PLAY;
-            input->keys[SDL_SCANCODE_F] = 0;
-        }
-        break;
-        case LEVEL_STATE_PLAY:
-        if (input->keys_pressed[SDL_SCANCODE_F]) {
-            gs->levels[gs->level_current].state = LEVEL_STATE_OUTRO;
-            input->keys[SDL_SCANCODE_F] = 0;
-        }
-        
-        simulation_tick();
-        
-        if (!gs->paused || gs->step_one) {
-            for (int i = 0; i < gs->object_count; i++) {
-                object_tick(i);
-            }
-        }
-        
-        if (gs->step_one) {
-            gs->step_one = 0;
-        }
-        
-        /* if (input->my < 0) { // If the mouse is in the GUI gs->window...
-         *     SDL_ShowCursor(1);
-         *     if (SDL_GetCursor() != gs->normal_cursor) {
-         *         SDL_SetCursor(gs->normal_cursor);
-         *     }
-         *     break;
-         * } else if (gs->current_tool == TOOL_GRABBER) {
-         *     if (SDL_GetCursor() != gs->grabber_cursor) {
-         *         SDL_ShowCursor(1);
-         *         SDL_SetCursor(gs->grabber_cursor);
-         *     }
-         * } else if (SDL_GetCursor() != gs->normal_cursor) {
-         *     SDL_SetCursor(gs->normal_cursor);
-         * } */
-        
-        //chisel_blocker_tick();
-        
-        if (gs->chisel_blocker_mode) break;
-        
-        switch (gs->current_tool) {
-            case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-                chisel_tick();
-                break;
-            }
-            case TOOL_BLOCKER: {
-                blocker_tick();
-                break;
-            }
-            case TOOL_OVERLAY: {
-                //overlay_tick();
-                break;
-            }
-            case TOOL_DELETER: {
-                deleter_tick();
-                break;
-            }
-            case TOOL_PLACER: {
-                if (!gs->gui.popup) // We'll handle updating it in the converter
-                    placer_tick(&gs->placers[gs->current_placer]);
-                break;
-            }
-            case TOOL_GRABBER: {
-                grabber_tick();
-                break;
-            }
-        }
-        
-        break;
     }
 }
 
