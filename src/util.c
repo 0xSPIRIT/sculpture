@@ -6,6 +6,12 @@ bool is_angle_225(f64 deg_angle) {
     return false;
 }
 
+inline bool ispunctuation(char c) {
+    if (c == '.' || c == ',' || c == '-' || c == '?') return true;
+    return false;
+}
+
+#if 0
 inline vec2 vec2_mult(vec2 a, vec2 b) {
     return (vec2){a.x*b.x, a.y*b.y};
 }
@@ -25,6 +31,7 @@ inline vec2 vec2_add3(const vec2 a, const vec2 b, const vec2 c) {
 inline vec3 vec3_add(vec3 a, vec3 b) {
     return (vec3){a.x+b.x, a.y+b.y, a.z+b.z};
 }
+#endif
 
 bool is_angle_45(f64 deg_angle) {
     f64 f = fabs(deg_angle);
@@ -289,6 +296,7 @@ int sign(int a) {
     return (a > 0) ? 1 : ((a == 0) ? 0 : -1);
 }
 
+#if 0
 vec2 lerp_vec2(vec2 a, vec2 b, f64 t) {
     vec2 result;
     
@@ -297,6 +305,7 @@ vec2 lerp_vec2(vec2 a, vec2 b, f64 t) {
     
     return result;
 }
+#endif
 
 void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
     for (int yy = -size; yy <= size; yy++) {
@@ -308,17 +317,22 @@ void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
     }
 }
 
-void draw_text(TTF_Font *font,
-               const char *str,
-               SDL_Color col,
-               SDL_Color bg_col,
-               bool align_right,
-               bool align_bottom,
-               int x,
-               int y,
-               int *out_w,
-               int *out_h) 
+inline void draw_text(TTF_Font *font,
+                      const char *str,
+                      SDL_Color col,
+                      SDL_Color bg_col,
+                      bool align_right,
+                      bool align_bottom,
+                      int x,
+                      int y,
+                      int *out_w,
+                      int *out_h) 
 {
+    if (!*str) {
+        TTF_SizeText(font, "+", out_w, out_h);
+        return;
+    }
+    
     SDL_Surface *surf = TTF_RenderText_LCD(font, str, col, bg_col);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     

@@ -1,26 +1,29 @@
 TODO :: {
 
-	[ ] 3D
-		[x] Initial 3D framework
-		[x] Make the fall itself
-		[ ] Add it to the level itself upon [F][N]
-		[ ] Close the game when it's done.
-		[ ] Snow?!
-
-	[ ] Narrative: Dialogue.
-
-	[ ] Figure out the way to portray a story. Narrator was the idea, but
-		maybe there's a better way? Images?
-
-	[x] Audio framework setup.
-	[ ] Tutorial: Make use of the chisel's ability to move after you've clicked.
-	[ ] Bug with small chisel not getting cells properly. Noticable in level 4.
-	[ ] The chisels are limited to blobs by object. If a big circle goes
-		over one object of 5 cells, but mostly destroys another object,
-		it only does the small 5 cells. Destroy ALL objects.
+	[ ] Change level 6 to fit the theme of having too much ambition,
+		and your views of projects shifting over time, since it's
+		above your skill level. Change the overlay over time, slowly
+		scaling it down; at some point start removing major elements
+		such as limbs or whatever. At the end, you end up with a much
+		simpler idea than what you started with.
+	[ ] Narrative - Only do in front of the major levels, not all.
+				  - It gives everything some space in general.
+	[ ] Change some more levels to fit the narrative - make everything
+		have a purpose.
+	[ ] Redo the software renderer
 
 }
 
 Future TODO (Vague) :: {
 	[ ] Dust is still emitted if on blocker.
+
+	[ ] Tutorial: Make use of the chisel's ability to move after you've clicked,
+		perhaps utilize simple video tutorials.
+
+	[ ] Bug with small chisel not getting cells properly. Noticable in level 4.
+
+	[ ] The chisels are limited to blobs by object. If a big circle goes
+		over one object of 5 cells, but mostly destroys another object,
+		it only does the small 5 cells. Destroy ALL objects.
+
 }

@@ -16,6 +16,7 @@
 #include "typedefs.h"
 #include "cursor.h"
 #include "overlay.h"
+#include "sound.h"
 #include "grid.h"
 #include "chisel.h"
 #include "deleter.h"

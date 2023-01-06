@@ -52,6 +52,10 @@ struct Textures {
 
     SDL_Texture *slot_names[TOTAL_SLOT_COUNT];
     SDL_Texture *converter_names[CONVERTER_COUNT];
+    
+    SDL_Texture *narrator;
+    
+    SDL_Texture *text_arrow;
 };
 
 struct Surfaces {
@@ -69,10 +73,13 @@ struct Surfaces {
     // Any temp surfaces you might need to draw text or w/e goes here!
     SDL_Surface *slot_names[TOTAL_SLOT_COUNT];
     SDL_Surface *converter_names[CONVERTER_COUNT];
+    
+    SDL_Surface *narrator;
 };
 
 struct Fonts {
     TTF_Font *font,
+        *font_times,
         *font_consolas,
         *font_courier,
         *font_small,

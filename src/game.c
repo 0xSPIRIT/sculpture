@@ -23,6 +23,7 @@
 #include "popup.c"
 #include "timelapse.c"
 #include "3d.c"
+#include "narrator.c"
 #include "level.c"
 
 export void game_init(struct Game_State *state, int level) {
@@ -33,7 +34,7 @@ export void game_init(struct Game_State *state, int level) {
     gs->view.w = gs->window_width;
     gs->view.h = gs->window_height-GUI_H;
     
-    gs->show_tutorials = false;
+    gs->show_tutorials = true;
     
     levels_setup();
     
@@ -266,34 +267,6 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     return is_running;
 }
 
-void draw_intro(void) {
-    SDL_Rect dst = {
-        -gs->view.x,
-        -gs->view.y + GUI_H,
-        gs->view.w, gs->view.h
-    };
-    
-    SDL_SetRenderTarget(gs->renderer, NULL);
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
-    
-    gui_draw();
-    gui_popup_draw();
-    
-    tutorial_rect_run();
-    
-    //if (gs->current_tool == TOOL_OVERLAY)
-    //overlay_interface_draw();
-    
-    tooltip_draw(&gs->gui.tooltip);
-    
-    if (gs->gui.popup)
-        gui_draw_profile();
-    
-    gui_message_stack_tick_and_draw();
-    
-    text_field_draw();
-}
-
 void draw_outro(struct Level *level) {
     SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
@@ -369,6 +342,7 @@ export void game_run(struct Game_State *state) {
     
     gs->gui.tooltip.set_this_frame = false;
     
+#if 0
     if (gs->obj.active) {
         SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
         SDL_RenderClear(gs->renderer);
@@ -377,6 +351,7 @@ export void game_run(struct Game_State *state) {
         SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, NULL);
         //snow_draw(&gs->snow);
     } else {
+#endif
         view_tick(&gs->view, &gs->input);
         
         gui_tick();
@@ -394,12 +369,36 @@ export void game_run(struct Game_State *state) {
             };
             
             SDL_SetRenderTarget(gs->renderer, NULL);
-            SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
+            SDL_RenderCopy(gs->renderer,
+                           RenderTarget(RENDER_TARGET_GLOBAL),
+                           NULL,
+                           &dst);
             draw_outro(level);
-        } else if (level->state != LEVEL_STATE_INTRO) {
-            draw_intro();
+        } else if (level->state == LEVEL_STATE_PLAY) {
+            SDL_Rect dst = {
+                -gs->view.x,
+                -gs->view.y + GUI_H,
+                gs->view.w, gs->view.h
+            };
+            
+            SDL_SetRenderTarget(gs->renderer, NULL);
+            SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
+            
+            gui_draw();
+            gui_popup_draw();
+            
+            tutorial_rect_run();
+            
+            tooltip_draw(&gs->gui.tooltip);
+            
+            if (gs->gui.popup)
+                gui_draw_profile();
+            
+            gui_message_stack_tick_and_draw();
+            
+            text_field_draw();
         }
-    }
+    //}
     
     SDL_RenderPresent(gs->renderer);
     

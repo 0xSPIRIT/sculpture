@@ -1,6 +1,6 @@
 #define LEVEL_COUNT 10
 #ifdef ALASKA_DEBUG
-  #define POPUP_TIME 45
+  #define POPUP_TIME 90
 #else
   #define POPUP_TIME 120
 #endif
@@ -9,6 +9,7 @@
 
 enum Level_State {
     LEVEL_STATE_INTRO,
+    LEVEL_STATE_NARRATION,
     LEVEL_STATE_PLAY,
     LEVEL_STATE_OUTRO
 };

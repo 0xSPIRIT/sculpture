@@ -49,13 +49,6 @@ In the narrative, make references to objects that are the shapes of the levels
 you're going to do next. Work backwards from the level shapes. Don't do it every
 time because it'll seem weird.
 
-
-The story must be an allegory for my personal journey of the creation of games.
-Braid-type thing where you represent the art as some kind of video game-y trope
-like a Princess in a castle, with other ideas from personal life peppered
-throughout. In Braid, the different chapters' books related to that specific
-chapter's gameplay mechanic. Regret, the merging of time and space, etc.
-
 1. The start-off. The pureset possible form of creation.
    No ego, just pure learning. Show the passion and excitement
    of knowing the possibilities.

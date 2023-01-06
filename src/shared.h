@@ -58,8 +58,8 @@ struct Game_State {
     bool show_tutorials;
     
     struct Narrator narrator;
-    struct Object3D obj;
-    struct Snow3D snow;
+    //struct Object3D obj;
+    //struct Snow3D snow;
     
     struct View view;
     

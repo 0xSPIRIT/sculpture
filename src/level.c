@@ -242,6 +242,8 @@ void goto_level(int lvl) {
         gs->gui.tool_buttons[i]->highlighted = false;
     }
     
+    narrator_init(gs->level_current);
+    
     timelapse_init();
     
     check_for_tutorial();
@@ -264,11 +266,15 @@ void level_tick(void) {
     if (gs->gui.popup) return;
     
     switch (level->state) {
+        case LEVEL_STATE_NARRATION: {
+            narrator_tick();
+            break;
+        }
         case LEVEL_STATE_INTRO: {
             level->popup_time_current++;
             if (level->popup_time_current >= level->popup_time_max) {
                 level->popup_time_current = 0;
-                level->state = LEVEL_STATE_PLAY;
+                level->state = LEVEL_STATE_NARRATION;
                 
                 // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
                 for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -292,7 +298,7 @@ void level_tick(void) {
                     goto_level(++gs->level_current);
                 } else {
                     gs->levels[gs->level_current].state = LEVEL_STATE_PLAY;
-                    object_init(&gs->obj);
+                    //object_init(&gs->obj);
                     //snow_init(&gs->snow);
                 }
             }
@@ -408,54 +414,63 @@ void level_draw_intro(void) {
         surf->w, surf->h
     };
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
-
+    
     SDL_FreeSurface(surf);
     SDL_DestroyTexture(texture);
 }
 
 void level_draw(void) {
     struct Level *level = &gs->levels[gs->level_current];
-
+    
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
     SDL_RenderClear(gs->renderer);
-
+    
     switch (level->state) {
-    case LEVEL_STATE_INTRO:
-        level_draw_intro();
-        break;
-    case LEVEL_STATE_OUTRO: case LEVEL_STATE_PLAY:
-        SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
-
-        SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
-        
-        SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-        SDL_RenderClear(gs->renderer);
-
-        grid_draw();
-
-        effect_draw(&gs->current_effect);
-
-        switch (gs->current_tool) {
-        case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE:
-            chisel_draw();
-            break;
-        case TOOL_DELETER:
-            deleter_draw();
-            break;
-        case TOOL_PLACER:
-            if (!gs->gui.popup) // When gui.popup = true, we draw in converter
-                placer_draw(&gs->placers[gs->current_placer], false);
+        case LEVEL_STATE_NARRATION: {
+            narrator_run();
             break;
         }
-
-        chisel_blocker_draw();
-        blocker_draw();
-
-        draw_blobs();
-        draw_objects();
-
-        SDL_SetRenderTarget(gs->renderer, prev);
-        break;
+        case LEVEL_STATE_INTRO: {
+            level_draw_intro();
+            break;
+        }
+        case LEVEL_STATE_OUTRO: case LEVEL_STATE_PLAY: {
+            SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
+            
+            SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
+            
+            SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+            SDL_RenderClear(gs->renderer);
+            
+            grid_draw();
+            
+            effect_draw(&gs->current_effect);
+            
+            switch (gs->current_tool) {
+                case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
+                    chisel_draw();
+                    break;
+                }
+                case TOOL_DELETER: {
+                    deleter_draw();
+                    break;
+                }
+                case TOOL_PLACER: {
+                    if (!gs->gui.popup) // When gui.popup = true, we draw in converter
+                        placer_draw(&gs->placers[gs->current_placer], false);
+                    break;
+                }
+            }
+            
+            chisel_blocker_draw();
+            blocker_draw();
+            
+            draw_blobs();
+            draw_objects();
+            
+            SDL_SetRenderTarget(gs->renderer, prev);
+            break;
+        }
     }
 }
 

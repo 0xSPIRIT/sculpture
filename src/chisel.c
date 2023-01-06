@@ -1,4 +1,6 @@
 void chisel_play_sound(int size) {
+    (void)size;
+#if PLAY_SOUND
     if (size == 0) {
         Mix_PlayChannel(-1, gs->audio.small_chisel, 0);
     } else if (size == 1) {
@@ -6,6 +8,7 @@ void chisel_play_sound(int size) {
     } else if (size == 2) {
         Mix_PlayChannel(-1, gs->audio.large_chisel, 0);
     }
+#endif
 }
 
 void chisel_hammer_init(void) {
@@ -73,7 +76,11 @@ void chisel_hammer_tick(void) {
         }
         case HAMMER_STATE_IDLE: {
             hammer->dist = hammer->normal_dist;
-            if (!gs->is_mouse_over_any_button && !gs->tutorial.active && input->mouse_pressed[SDL_BUTTON_LEFT]) {
+            if (!gs->is_mouse_over_any_button &&
+                !gs->tutorial.active &&
+                gs->chisel->highlight_count > 0 &&
+                input->mouse_pressed[SDL_BUTTON_LEFT]) 
+            {
                 hammer->state = HAMMER_STATE_WINDUP;
                 save_state_to_next();
             }
@@ -342,7 +349,6 @@ void chisel_draw_target(struct Chisel *chisel, int dx, int dy, int render_target
     int y = (int)chisel->y;
     
     // Disgusting hardcoding to adjust the weird rotation SDL does.
-    // TODO: Clean this up.
     if (!chisel->face_mode) {
         if (chisel->size == 0 || chisel->size == 1) {
             if (chisel->angle == 225) {
