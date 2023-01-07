@@ -1,13 +1,18 @@
 TODO :: {
 
-	[ ] Change level 6 to fit the theme of having too much ambition,
+	[x] Change level 6 to fit the theme of having too much ambition,
 		and your views of projects shifting over time, since it's
 		above your skill level. Change the overlay over time, slowly
 		scaling it down; at some point start removing major elements
 		such as limbs or whatever. At the end, you end up with a much
 		simpler idea than what you started with.
+
+		[x] Make the image loader for the overlay swapper.
+		[x] Make overlay swapping work via keypress.
+		[x] Add actual level in-between frames.
+		[x] Make it change via chisel. Try different cues if that's weird.
+
 	[ ] Narrative - Only do in front of the major levels, not all.
-				  - It gives everything some space in general.
 	[ ] Change some more levels to fit the narrative - make everything
 		have a purpose.
 	[ ] Redo the software renderer

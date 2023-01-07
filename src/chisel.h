@@ -37,4 +37,5 @@ struct Chisel {
     int outside_w, outside_h;
     int *highlights; // List of indices into grid for highlighting the blobs.
     int highlight_count;
+    bool did_chisel_this_frame;
 };

@@ -178,6 +178,7 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
                     
                     chisel_play_sound(chisel->size);
                     object_remove_blob(obj, b, chisel->size, blocker_side, true);
+                    chisel->did_chisel_this_frame = true;
                     
                     move_mouse_to_grid_position(chisel->x, chisel->y);
                     emit_dust_explosion(type, chisel->x, chisel->y, count);
@@ -226,6 +227,8 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
                 
                 if (blob > 0) {
                     object_remove_blob(obj, blob, chisel->size, blocker_side, true);
+                    chisel->did_chisel_this_frame = true;
+                    
                     chisel_play_sound(chisel->size);
                     chisel->did_remove = true;
                     goto chisel_did_remove;
@@ -450,6 +453,8 @@ void chisel_tick(void) {
     struct Object *objects = gs->objects;
     
     bool prev_changing_angle = chisel->is_changing_angle;
+    
+    chisel->did_chisel_this_frame = false;
     
     chisel->is_changing_angle = input->keys[SDL_SCANCODE_LSHIFT];
     

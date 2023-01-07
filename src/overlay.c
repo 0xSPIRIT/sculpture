@@ -1,43 +1,106 @@
 Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     // Type              R    G    B
-    CELL_NONE,            57, 57, 57,
-    CELL_DIRT,          38, 38, 38,
-    CELL_SAND,          109, 9, 121,
-    CELL_WATER,           14, 182, 30,
-    CELL_ICE,           9, 185, 57,
-    CELL_STEAM,         94, 86, 142,
-    CELL_WOOD_LOG,      13, 9, 249,
-    CELL_WOOD_PLANK,    150, 6, 118,
+    CELL_NONE,           57,  57,  57,
+    CELL_DIRT,           38,  38,  38,
+    CELL_SAND,          109,   9, 121,
+    CELL_WATER,          14, 182,  30,
+    CELL_ICE,             9, 185,  57,
+    CELL_STEAM,          94,  86, 142,
+    CELL_WOOD_LOG,       13,   9, 249,
+    CELL_WOOD_PLANK,    150,   6, 118,
     CELL_COBBLESTONE,   255, 255, 255,
     CELL_MARBLE,        100, 139, 101,
-    CELL_SANDSTONE,     230, 60, 0,
-    CELL_CEMENT,        190, 22, 46,
-    CELL_CONCRETE,      9, 57, 185,
-    CELL_QUARTZ,        16, 145, 147,
+    CELL_SANDSTONE,     230,  60,   0,
+    CELL_CEMENT,        190,  22,  46,
+    CELL_CONCRETE,        9,  57, 185,
+    CELL_QUARTZ,         16, 145, 147,
     CELL_GLASS,         173, 137, 249,
-    CELL_GRANITE,       58, 109, 163,
-    CELL_BASALT,         185, 185, 57,
-    CELL_DIAMOND,       70, 230, 134,
-    CELL_UNREFINED_COAL, 45, 9, 121,
-    CELL_REFINED_COAL,   110, 246, 190,
-    CELL_LAVA,          9, 57, 185,
-    CELL_SMOKE,         126, 22, 238,
-    CELL_DUST,          77, 9, 249,
+    CELL_GRANITE,        58, 109, 163,
+    CELL_BASALT,        185, 185,  57,
+    CELL_DIAMOND,        70, 230, 134,
+    CELL_UNREFINED_COAL, 45,   9, 121,
+    CELL_REFINED_COAL,  110, 246, 190,
+    CELL_LAVA,            9,  57, 185,
+    CELL_SMOKE,         126,  22, 238,
+    CELL_DUST,           77,   9, 249,
 };
+
+// name_generic is a formatted printf with a %d for the number, from 0 to num-1.
+struct Overlay_Changes overlay_load_changes(const char *name_generic, int num) {
+    struct Overlay_Changes result = {0};
+    result.count = num;
+    
+    int w = -1, h = -1;
+    
+    for (int i = 0; i < num; i++) {
+        char name[64];
+        sprintf(name, name_generic, i);
+        
+        SDL_Surface *surf = IMG_Load(name);
+        Assert(surf);
+        
+        if (w == -1) {
+            w = surf->w;
+            h = surf->h;
+        } else {
+            Assert(w == surf->w);
+            Assert(h == surf->h); 
+        }
+        
+        Assert(w == gs->gw);
+        Assert(h == gs->gh);
+        
+        result.grids[i] = PushArray(gs->persistent_memory,
+                                    surf->w*surf->h,
+                                    sizeof(int));
+        
+        for (int y = 0; y < surf->h; y++) {
+            for (int x = 0; x < surf->w; x++) {
+                Uint8 r, g, b;
+                
+                Uint32 pixel = ((Uint32*)surf->pixels)[x+y*w];
+                SDL_GetRGB(pixel, surf->format, &r, &g, &b);
+                
+                int cell = 0;
+                
+                for (int j = 0; j < CELL_TYPE_COUNT; j++) {
+                    SDL_Color c = {
+                        type_to_rgb_table[j*4 + 1],
+                        type_to_rgb_table[j*4 + 2],
+                        type_to_rgb_table[j*4 + 3],
+                        255
+                    };
+                    
+                    if (r == c.r && g == c.g && b == c.b) {
+                        cell = j;
+                        break;
+                    }
+                }
+                
+                result.grids[i][x+y*surf->w] = cell;
+                
+            }
+        }
+        
+        SDL_FreeSurface(surf);
+    }
+    
+    return result;
+}
 
 void overlay_init(void) {
     struct Overlay *overlay = &gs->overlay;
     
     overlay->tool = OVERLAY_TOOL_BRUSH;
-
+    
     if (overlay->grid == NULL) {
         overlay->grid = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
         overlay->temp_grid = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
     }
-
+    
     memset(overlay->grid, 0, sizeof(int)*gs->gw*gs->gh);
     memset(overlay->temp_grid, 0, sizeof(int)*gs->gw*gs->gh);
-
+    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             overlay->grid[x+y*gs->gw] =
@@ -54,6 +117,14 @@ void overlay_init(void) {
     overlay->eraser_mode = false;
     
     overlay->r.x = overlay->r.y = -1;
+    
+    switch (gs->level_current+1) {
+        case 6: {
+            overlay->changes = 
+                overlay_load_changes(RES_DIR "lvl/changes/lvl6/%d.png", 4);
+            break;
+        }
+    }
 }
 
 void overlay_set_circle(int x, int y, int r, int value) {
@@ -67,10 +138,6 @@ void overlay_set_circle(int x, int y, int r, int value) {
             overlay->grid[x+xx+(y+yy)*gs->gw] = value;
         }
     }
-}
-
-void overlay_set_spline(void) {//int *grid, int x1, int y1, int x2, int y2, int value) {
-    // TODO
 }
 
 void overlay_set_line(int *grid, int x1, int y1, int x2, int y2, int value) {
@@ -158,7 +225,49 @@ void overlay_set_rectangle(int *grid, SDL_Rect r, int value) {
     }
 }
 
-void gui_message_stack_push(const char *str);
+void overlay_swap_to_next(void) {
+    struct Overlay *overlay = &gs->overlay;
+    
+    if (overlay->changes.count && overlay->changes.index < overlay->changes.count-1) {
+        overlay->changes.index++;
+        memcpy(overlay->grid,
+               overlay->changes.grids[overlay->changes.index],
+               sizeof(int)*gs->gw*gs->gh);
+    }
+}
+
+void overlay_swap_tick(void) {
+    struct Overlay *overlay = &gs->overlay;
+    
+    if (!overlay->changes.was_grid_none) {
+        bool none = true;
+        for (int i = 0; i < gs->gw*gs->gh; i++) {
+            if (gs->grid[i].type) {
+                none = false;
+                break;
+            }
+        }
+        
+        if (none) {
+            overlay->changes.was_grid_none = true;
+        }
+    }
+    
+    if (overlay->changes.was_grid_none) {
+        if (gs->chisel->did_chisel_this_frame) {
+            overlay->changes.temp++;
+        }
+    }
+    
+    const int c = 15;
+    
+    if (overlay->changes.temp >= c) {
+        overlay_swap_to_next();
+        overlay->changes.temp = 0;
+    }
+    
+    overlay->changes.alpha = (f32)overlay->changes.temp/c;
+}
 
 void overlay_tick(void) {
     struct Overlay *overlay = &gs->overlay;
@@ -227,7 +336,7 @@ void overlay_tick(void) {
                                      gs->input.my,
                                      1);
                 } else {
-                    overlay_set_spline();
+                    //overlay_set_spline();
                 }
             } else if (gs->input.mouse_released[SDL_BUTTON_LEFT]) {
                 if (overlay->tool == OVERLAY_TOOL_LINE) {
@@ -238,7 +347,7 @@ void overlay_tick(void) {
                                      gs->input.my,
                                      1);
                 } else {
-                    overlay_set_spline();
+                    //overlay_set_spline();
                 }
                 
                 overlay->temp_x = -1;
@@ -269,33 +378,21 @@ bool int_array_any_neighbours_not_same(int *array, int x, int y) {
     return false;
 }
 
-void overlay_draw(void) {
-    struct Overlay *overlay = &gs->overlay;
-    
-    if (!overlay->show)
-        return;
-    
-    const f32 strobe_speed = 3.5f;
-    
+void overlay_draw_grid(int *grid, f32 alpha_coeff) {
     f32 alpha;
-    alpha = 1 + sinf(strobe_speed * SDL_GetTicks()/2000.0);
-    alpha /= 2;
-    alpha *= 90;
-    alpha += 150;
+    alpha = 180;
+    alpha *= alpha_coeff;
     
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
-            if (overlay->temp_grid[x+y*gs->gw] == 2) continue;
+            if (!grid[x+y*gs->gw]) continue;
             
-            if (!overlay->grid[x+y*gs->gw] && !overlay->temp_grid[x+y*gs->gw]) continue;
-            
-            if (!int_array_any_neighbours_not_same(overlay->grid, x, y)) {
+            if (!int_array_any_neighbours_not_same(grid, x, y)) {
                 continue;
             }
             
-            int t = overlay->grid[x+y*gs->gw];
-            // Generate different color depending on the type
-            //SDL_Color c = { my_rand(t), my_rand(t*t), my_rand(t*t*t), 255 };
+            int t = grid[x+y*gs->gw];
+            
             SDL_Color c = { 
                 type_to_outline_color[t*4 + 1],
                 type_to_outline_color[t*4 + 2],
@@ -304,17 +401,24 @@ void overlay_draw(void) {
             };
             
             SDL_SetRenderDrawColor(gs->renderer, c.r, c.g, c.b, (Uint8)alpha);
-
+            
             SDL_RenderDrawPoint(gs->renderer, x, y);
         }
     }
+}
 
-    // if (gs->current_tool == TOOL_OVERLAY && (overlay->tool == OVERLAY_TOOL_BRUSH || overlay->tool == OVERLAY_TOOL_ERASER_BRUSH)) {
-        // if (overlay->eraser_mode) {
-            // SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 64);
-        // } else {
-            // SDL_SetRenderDrawColor(gs->renderer, 0, 255, 255, 64);
-        // }
-        // fill_circle(gs->renderer, gs->input.mx, gs->input.my, overlay->size);
-    // }
+void overlay_draw(void) {
+    struct Overlay *overlay = &gs->overlay;
+    
+    if (!overlay->show)
+        return;
+    
+    if (overlay->changes.index+1 < overlay->changes.count) {
+        Assert(overlay->changes.alpha < 1);
+        overlay_draw_grid(overlay->grid, 1.0f - overlay->changes.alpha);
+        overlay_draw_grid(overlay->changes.grids[overlay->changes.index+1],
+                          overlay->changes.alpha);
+    } else {
+        overlay_draw_grid(overlay->grid, 1.0f);
+    }
 }

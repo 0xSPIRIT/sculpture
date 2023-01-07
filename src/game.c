@@ -121,6 +121,13 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
+            case SDLK_e: {
+                if (gs->input.keys[SDL_SCANCODE_LCTRL]) {
+                    for (int i = 0; i < gs->gw*gs->gh; i++)
+                        gs->grid[i].type = gs->grid[i].object = 0;
+                }
+                break;
+            }
             case SDLK_b: {
                 gs->do_draw_blobs = !gs->do_draw_blobs;
                 break;

@@ -294,7 +294,13 @@ void gui_draw_profile() {
     struct Level *level = &gs->levels[gs->level_current];
     int count = 0;
     
-    profile_array(level->desired_grid, level->profile_lines, &count);
+    struct Cell *overlay_grid = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
+    
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        overlay_grid[i].type = gs->overlay.grid[i];
+    }
+    
+    profile_array(overlay_grid, level->profile_lines, &count);
     
     int ah = 0;
     draw_text(gs->fonts.font, "Required Amounts:", (SDL_Color){255, 255, 0, 255}, BLACK, false, false, 50, GUI_H+50, NULL, &ah);
