@@ -350,6 +350,7 @@ int main(int argc, char **argv)
             time_passed = 0;
         }
         
+//#ifndef ALASKA_RELEASE_MODE
         {
             Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
             Uint64 size_max = persistent_memory.size;
@@ -366,6 +367,7 @@ int main(int argc, char **argv)
             
             SDL_SetWindowTitle(game_state->window, title);
         }
+//#endif
     }
     
     game_deinit(game_state);

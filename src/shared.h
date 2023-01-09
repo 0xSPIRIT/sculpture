@@ -58,8 +58,7 @@ struct Game_State {
     bool show_tutorials;
     
     struct Narrator narrator;
-    //struct Object3D obj;
-    //struct Snow3D snow;
+    struct Object3D obj;
     
     struct View view;
     
@@ -111,44 +110,44 @@ struct Game_State {
     
     struct Save_State save_states[MAX_UNDO];
     int save_state_count; // Number of states saved.
-
+    
     struct Text_Field text_field;
     
     bool creative_mode;
-
+    
     struct Placer placers[PLACER_COUNT];
     int current_placer;
-
+    
     struct Level levels[LEVEL_COUNT];
     int level_current, level_count, new_level;
-
+    
     struct GUI gui;
     SDL_Texture *gui_texture;
-
+    
     struct Input input;
-
+    
     struct Grabber grabber;
     struct Effect current_effect;
-
+    
     struct Chisel_Blocker chisel_blocker;
     int chisel_blocker_mode; // Edit mode for the points.
-
+    
     struct Blocker blocker;
-
+    
     struct Converter *material_converter, *fuel_converter;
-
+    
     struct Item item_holding;
-
+    
     bool did_chisel_tutorial;
     bool did_undo_tutorial;
     bool did_pressure_tutorial;
     bool did_inventory_tutorial;
     bool did_fuel_converter_tutorial;
     bool did_placer_rectangle_tutorial;
-        
+    
     struct Chisel chisel_small, chisel_medium, chisel_large;
     struct Chisel *chisel;
-
+    
     struct Chisel_Hammer chisel_hammer;
 };
 
@@ -175,7 +174,7 @@ inline void _assert(SDL_Window *window, const char *func, const char *file, cons
     } else {
         __debugbreak();
     }
-
+    
     Error("\n:::: ASSERTION FAILED ::::\n%s", message);
 }
 
@@ -183,9 +182,9 @@ inline void _assert(SDL_Window *window, const char *func, const char *file, cons
 inline allocator void *_push_array(struct Memory_Arena *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
     void *output = NULL;
-
+    
     size = num * size_individual;
-
+    
     const int debug_memory = false;
     
     if (debug_memory && gs) {

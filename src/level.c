@@ -140,7 +140,7 @@ void levels_setup(void) {
               RES_DIR "lvl/desired/level 5.png",
               RES_DIR "lvl/initial/level 5.png",
               EFFECT_RAIN);
-    level_add("Transient Metamorphosis",
+    level_add("Metamorphosis",
               RES_DIR "lvl/desired/level 6.png",
               RES_DIR "lvl/initial/level 6.png",
               EFFECT_NONE);
@@ -205,6 +205,8 @@ void goto_level(int lvl) {
         gs->gui.tool_buttons[i]->highlighted = false;
     }
     
+    //object_activate(&gs->obj);
+    
     narrator_init(gs->level_current);
     
     timelapse_init();
@@ -237,7 +239,12 @@ void level_tick(void) {
             level->popup_time_current++;
             if (level->popup_time_current >= level->popup_time_max) {
                 level->popup_time_current = 0;
-                level->state = LEVEL_STATE_NARRATION;
+                
+                if (gs->narrator.line_count) {
+                    level->state = LEVEL_STATE_NARRATION;
+                } else {
+                    level->state = LEVEL_STATE_PLAY;
+                }
                 
                 // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
                 for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -261,7 +268,7 @@ void level_tick(void) {
                     goto_level(++gs->level_current);
                 } else {
                     gs->levels[gs->level_current].state = LEVEL_STATE_PLAY;
-                    //object_init(&gs->obj);
+                    object_activate(&gs->obj);
                     //snow_init(&gs->snow);
                 }
             }
@@ -366,7 +373,7 @@ void level_draw_intro(void) {
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, NULL);
     
     char name[256] = {0};
-    sprintf(name, "Level %d: %s", level->index+1, level->name);
+    sprintf(name, "%d. %s", level->index+1, level->name);
     
     SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_title,
                                                name,

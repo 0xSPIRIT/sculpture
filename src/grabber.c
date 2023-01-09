@@ -25,7 +25,7 @@ void grabber_tick(void) {
     int gx = (int)grabber->x;
     int gy = (int)grabber->y;
     
-    if (gs->overlay.show && gs->levels[gs->level_current].desired_grid[gx+gy*gs->gw].type) {
+    if (gs->overlay.show && gs->overlay.grid[gx+gy*gs->gw]) {
         tooltip_set_position_to_cursor(&gs->gui.tooltip, TOOLTIP_TYPE_ITEM);
         
         gs->is_mouse_over_any_button = true;
@@ -33,7 +33,7 @@ void grabber_tick(void) {
         char tooltip_text[64];
         char type_name[64];
         
-        get_name_from_type(gs->levels[gs->level_current].desired_grid[gx+gy*gs->gw].type, type_name);
+        get_name_from_type(gs->overlay.grid[gx+gy*gs->gw], type_name);
         sprintf(tooltip_text, "Cell Type: %s", type_name);
         
         memset(gs->gui.tooltip.str, 0, MAX_TOOLTIP_LINE_LEN * MAX_TOOLTIP_LEN);

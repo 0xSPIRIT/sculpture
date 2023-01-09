@@ -349,16 +349,13 @@ export void game_run(struct Game_State *state) {
     
     gs->gui.tooltip.set_this_frame = false;
     
-#if 0
     if (gs->obj.active) {
-        SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
         SDL_RenderClear(gs->renderer);
         
         object_draw(&gs->obj);
         SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, NULL);
-        //snow_draw(&gs->snow);
     } else {
-#endif
         view_tick(&gs->view, &gs->input);
         
         gui_tick();
@@ -405,7 +402,7 @@ export void game_run(struct Game_State *state) {
             
             text_field_draw();
         }
-    //}
+    }
     
     SDL_RenderPresent(gs->renderer);
     

@@ -155,7 +155,9 @@ void textures_deinit(struct Textures *textures) {
 }
 
 void surfaces_init(struct Surfaces *surfaces) {
-    surfaces->a = IMG_Load(RES_DIR "lvl/desired/level 10.png");
+    surfaces->a = NULL;
+    surfaces->renderer_3d = SDL_CreateRGBSurfaceWithFormat(0, gs->window_width, gs->window_height, 32, ALASKA_PIXELFORMAT);
+    //surfaces->a = IMG_Load(RES_DIR "something.png");
     surfaces->bark_surface = IMG_Load(RES_DIR "bark.png");
     surfaces->glass_surface = IMG_Load(RES_DIR "glass.png");
     surfaces->wood_plank_surface = IMG_Load(RES_DIR "plank.png");

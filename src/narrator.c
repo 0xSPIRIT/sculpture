@@ -34,17 +34,11 @@ void narrator_draw_text_blended(TTF_Font *font,
 }
 
 char* get_narration(int level) {
-    level++;
-    if (level == 1)  return NARRATION_LEVEL_1;
-    if (level == 2)  return NARRATION_LEVEL_2;
-    if (level == 3)  return NARRATION_LEVEL_3;
-    if (level == 4)  return NARRATION_LEVEL_4;
-    if (level == 5)  return NARRATION_LEVEL_5;
-    if (level == 6)  return NARRATION_LEVEL_6;
-    if (level == 7)  return NARRATION_LEVEL_7;
-    if (level == 8)  return NARRATION_LEVEL_8;
-    if (level == 9)  return NARRATION_LEVEL_9;
-    if (level == 10) return NARRATION_LEVEL_10;
+    switch (level+1) {
+        case 1: return NARRATION_LEVEL_1;
+        case 2: return NARRATION_LEVEL_2;
+        case 3: return NARRATION_LEVEL_3;
+    }
     return NULL;
 }
 
@@ -55,8 +49,11 @@ void narrator_init(int level) {
     
     narration = get_narration(level);
     
+    if (!narration) return;
+    
     char *c = narration;
     int i = 0;
+    
     while (*c) {
         if (*c == '\n') {
             gs->narrator.line_count++;

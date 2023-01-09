@@ -59,6 +59,8 @@ struct Textures {
 };
 
 struct Surfaces {
+    SDL_Surface *renderer_3d;
+    
     SDL_Surface *a;
     SDL_Surface *bark_surface,
         *glass_surface,
