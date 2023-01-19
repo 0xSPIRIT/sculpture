@@ -1,15 +1,23 @@
 TODO :: {
 
-	[ ] Narrative - Only do in front of the major levels, not all.
-	[ ] Change some more levels to fit the narrative - make everything
-		have a purpose.
-	[ ] Apply the software renderer using the surface from the game world.
+	[ ] It would make more sense if the Glass Body was made out of a
+		material that you literally couldn't create. Your confidence
+		is just too much.
 
+	[ ] Make the writing show the kind of toll those more complex
+		sculptures had on you. How you put yourself through the
+		wringer time and time again because you want to make something
+		great, complex, and sophisticated- like the masterpieces you
+		love by others. The payoff is the serene ending.
+
+	[ ] Make the level 6 overlays change from being REALLY complex
+		to the single flower thing. Make it completely different
+		and only have a passing resemblence to the final product.
+
+	[ ] Make the overlay in level 9 work w/ dirt.
 }
 
 Future TODO (Vague) :: {
-	[ ] Dust is still emitted if on blocker.
-
 	[ ] Tutorial: Make use of the chisel's ability to move after you've clicked,
 		perhaps utilize simple video tutorials.
 

@@ -1,6 +1,6 @@
 Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     // Type              R    G    B
-    CELL_NONE,           57,  57,  57,
+    CELL_NONE,          255,   0,   0,
     CELL_DIRT,           38,  38,  38,
     CELL_SAND,          109,   9, 121,
     CELL_WATER,          14, 182,  30,
@@ -122,6 +122,11 @@ void overlay_init(void) {
         case 6: {
             overlay->changes = 
                 overlay_load_changes(RES_DIR "lvl/changes/lvl6/%d.png", 4);
+            break;
+        }
+        case 9: {
+            overlay->changes = 
+                overlay_load_changes(RES_DIR "lvl/changes/lvl9/%d.png", 2);
             break;
         }
     }

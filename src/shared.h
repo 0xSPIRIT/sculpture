@@ -68,6 +68,7 @@ struct Game_State {
     struct Textures textures; // Contains pointers to SDL textures.
     struct Surfaces surfaces;
     struct Fonts fonts;
+    char texts[TEXT_INDEX_COUNT][128];
     
     bool is_mouse_over_any_button;
     

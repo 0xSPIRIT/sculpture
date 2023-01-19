@@ -26,7 +26,6 @@ void narrator_draw_text_blended(TTF_Font *font,
     if (out_h)
         *out_h = surf->h;
     
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
     
     SDL_FreeSurface(surf);
@@ -36,8 +35,13 @@ void narrator_draw_text_blended(TTF_Font *font,
 char* get_narration(int level) {
     switch (level+1) {
         case 1: return NARRATION_LEVEL_1;
-        case 2: return NARRATION_LEVEL_2;
         case 3: return NARRATION_LEVEL_3;
+        case 6: return NARRATION_LEVEL_6;
+        case 7: return NARRATION_LEVEL_7;
+        case 9: return NARRATION_LEVEL_9;
+        case 10: return NARRATION_LEVEL_10;
+        
+        case 11: return NARRATION_END;
     }
     return NULL;
 }
@@ -103,7 +107,7 @@ void narrator_tick() {
     }
 }
 
-void narrator_run() {
+void narrator_run(SDL_Color col) {
     TTF_Font *font = gs->fonts.font_times;
     struct Narrator *n = &gs->narrator;
     
@@ -133,7 +137,7 @@ void narrator_run() {
     
     narrator_draw_text_blended(font,
                                s,
-                               WHITE,
+                               col,
                                false,
                                false,
                                gs->window_width/2 - w/2, 16,
@@ -146,6 +150,11 @@ void narrator_run() {
             25, 24
         };
         SDL_SetTextureAlphaMod(gs->textures.text_arrow, 192+64*sin(SDL_GetTicks()/250.0));
+        if (col.r == 0) {
+            SDL_SetTextureColorMod(gs->textures.text_arrow, 0, 0, 0);
+        } else {
+            SDL_SetTextureColorMod(gs->textures.text_arrow, 255, 255, 255);
+        }
         SDL_RenderCopy(gs->renderer, gs->textures.text_arrow, NULL, &dst);
     }
 }

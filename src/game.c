@@ -22,8 +22,8 @@
 #include "deleter.c"
 #include "popup.c"
 #include "timelapse.c"
-#include "3d.c"
 #include "narrator.c"
+#include "3d.c"
 #include "level.c"
 
 export void game_init(struct Game_State *state, int level) {
@@ -288,7 +288,9 @@ void draw_outro(struct Level *level) {
         int x = rect.x + margin;
         int y = rect.y + margin;
         
-        draw_text(gs->fonts.font, string, BLACK, WHITE, 0, 0, x, y, NULL, NULL);
+        draw_text_index(TEXT_OUTRO_LEVEL_NAME,
+                        gs->fonts.font,
+                        string, BLACK, WHITE, 0, 0, x, y, NULL, NULL);
     }
     
     
@@ -299,8 +301,12 @@ void draw_outro(struct Level *level) {
     int dx = rect.x + margin;
     int dy = rect.y + 100;
     
-    draw_text(gs->fonts.font, "What you intended", BLACK, WHITE, 0, 0, dx, dy, NULL, NULL);
-    draw_text(gs->fonts.font, "The result", BLACK, WHITE, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL);
+    draw_text_index(TEXT_OUTRO_INTENDED,
+                    gs->fonts.font,
+                    "What you intended", BLACK, WHITE, 0, 0, dx, dy, NULL, NULL);
+    draw_text_index(TEXT_OUTRO_RESULT,
+                    gs->fonts.font,
+                    "The result", BLACK, WHITE, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL);
     
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
@@ -322,24 +328,26 @@ void draw_outro(struct Level *level) {
     
     timelapse_tick_and_draw(dx, dy+32, scale, scale);
     
-    draw_text(gs->fonts.font,
-              "Next Level [n]",
-              (SDL_Color){0, 91, 0, 255},
-              (SDL_Color){255, 255, 255, 255},
-              1, 1,
-              rect.x + rect.w - margin,
-              rect.y + rect.h - margin,
-              NULL,
-              NULL);
-    draw_text(gs->fonts.font,
-              "Close [f]",
-              (SDL_Color){0, 91, 0, 255},
-              (SDL_Color){255, 255, 255, 255}, 
-              0, 1,
-              rect.x + margin,
-              rect.y + rect.h - margin,
-              NULL,
-              NULL);
+    draw_text_index(TEXT_OUTRO_NEXT_LEVEL,
+                    gs->fonts.font,
+                    "Next Level [n]",
+                    (SDL_Color){0, 91, 0, 255},
+                    (SDL_Color){255, 255, 255, 255},
+                    1, 1,
+                    rect.x + rect.w - margin,
+                    rect.y + rect.h - margin,
+                    NULL,
+                    NULL);
+    draw_text_index(TEXT_OUTRO_PREV_LEVEL,
+                    gs->fonts.font,
+                    "Close [f]",
+                    (SDL_Color){0, 91, 0, 255},
+                    (SDL_Color){255, 255, 255, 255}, 
+                    0, 1,
+                    rect.x + margin,
+                    rect.y + rect.h - margin,
+                    NULL,
+                    NULL);
 }
 
 export void game_run(struct Game_State *state) {
@@ -354,7 +362,6 @@ export void game_run(struct Game_State *state) {
         SDL_RenderClear(gs->renderer);
         
         object_draw(&gs->obj);
-        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, NULL);
     } else {
         view_tick(&gs->view, &gs->input);
         

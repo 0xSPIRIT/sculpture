@@ -6,6 +6,15 @@
 
 #define ALASKA_PIXELFORMAT SDL_PIXELFORMAT_ABGR8888
 
+enum {
+    TEXT_OUTRO_LEVEL_NAME,
+    TEXT_OUTRO_INTENDED,
+    TEXT_OUTRO_RESULT,
+    TEXT_OUTRO_NEXT_LEVEL,
+    TEXT_OUTRO_PREV_LEVEL,
+    TEXT_INDEX_COUNT = 64
+};
+
 // Index into textures.render_targets[]
 enum {
     RENDER_TARGET_GLOBAL, // The main render target
@@ -29,6 +38,8 @@ struct Textures {
     // Index into this using enum.
     SDL_Texture *render_targets[LEVEL_COUNT][RENDER_TARGET_COUNT];
     
+    SDL_Texture *text[TEXT_INDEX_COUNT];
+    
     SDL_Texture *tab;
     
     SDL_Texture *deleter,
@@ -47,8 +58,6 @@ struct Textures {
     SDL_Texture *convert_button, *tutorial_ok_button;
 
     // Temp textures for drawing text goes here!
-    // TODO: Perhaps use an array and streamline this process
-    //       by only using calls to draw_text()
 
     SDL_Texture *slot_names[TOTAL_SLOT_COUNT];
     SDL_Texture *converter_names[CONVERTER_COUNT];
@@ -60,6 +69,8 @@ struct Textures {
 
 struct Surfaces {
     SDL_Surface *renderer_3d;
+    
+    SDL_Surface *text[TEXT_INDEX_COUNT];
     
     SDL_Surface *a;
     SDL_Surface *bark_surface,

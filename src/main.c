@@ -140,7 +140,6 @@ void game_init(struct Game_State *state) {
 }
 
 void game_deinit(struct Game_State *state) {
-    // Close the window first so it'll feel snappy.
     SDL_DestroyRenderer(state->renderer);
     SDL_DestroyWindow(state->window);
     

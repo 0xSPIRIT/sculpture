@@ -237,7 +237,7 @@ void level_tick(void) {
         }
         case LEVEL_STATE_INTRO: {
             level->popup_time_current++;
-            if (level->popup_time_current >= level->popup_time_max) {
+            if (gs->input.keys[SDL_SCANCODE_RETURN] || level->popup_time_current >= level->popup_time_max) {
                 level->popup_time_current = 0;
                 
                 if (gs->narrator.line_count) {
@@ -399,7 +399,7 @@ void level_draw(void) {
     
     switch (level->state) {
         case LEVEL_STATE_NARRATION: {
-            narrator_run();
+            narrator_run(WHITE);
             break;
         }
         case LEVEL_STATE_INTRO: {

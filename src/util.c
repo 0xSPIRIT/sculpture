@@ -315,6 +315,53 @@ void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
     }
 }
 
+inline void draw_text_index(int index,
+                            TTF_Font *font,
+                            char *str,
+                            SDL_Color col,
+                            SDL_Color bg_col,
+                            bool align_right,
+                            bool align_bottom,
+                            int x,
+                            int y,
+                            int *out_w,
+                            int *out_h)
+{
+    Assert(index < TEXT_INDEX_COUNT);
+    if (!*str) {
+        TTF_SizeText(font, "+", out_w, out_h);
+        return;
+    }
+    
+    SDL_Surface *surf = NULL;
+    SDL_Texture *texture = NULL;
+    
+    // Only update the texture if it's never been cached before, or
+    // if the text has changed since last time. All the texts are
+    // stored in gs->texts up to 128 chars.
+    if (strcmp(gs->texts[index], str) != 0 || !gs->surfaces.text[index]) {
+        strncpy(gs->texts[index], str, 128);
+        gs->surfaces.text[index] = TTF_RenderText_LCD(font, str, col, bg_col);
+        gs->textures.text[index] = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.text[index]);
+    }
+    
+    surf = gs->surfaces.text[index];
+    texture = gs->textures.text[index];
+    
+    SDL_Rect dst = { x, y, surf->w, surf->h };
+    
+    if (align_right) dst.x -= surf->w;
+    if (align_bottom) dst.y -= surf->h;
+    
+    if (out_w)
+        *out_w = surf->w;
+    if (out_h)
+        *out_h = surf->h;
+    
+    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+    SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
+}
+
 inline void draw_text(TTF_Font *font,
                       const char *str,
                       SDL_Color col,

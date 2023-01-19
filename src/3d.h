@@ -15,6 +15,8 @@ struct Object3D {
     f64 yrot;
     f64 xrot;
     f64 acc, vel, jerk;
+    
+    int timer;
 };
 
 typedef struct vec2 {

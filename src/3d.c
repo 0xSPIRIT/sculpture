@@ -137,6 +137,20 @@ vec2* project(vec3 *input, int count) {
 
 void object_draw(struct Object3D *obj) {
     if (!obj->active) return;
+    if (obj->state == OBJECT_DONE) {
+        if (obj->timer == -1) {
+            narrator_tick();
+            narrator_run(BLACK);
+        } else {
+            obj->timer++;
+        }
+        
+        if (obj->timer >= 6*60) {
+            narrator_init(10);
+            obj->timer = -1;
+        }
+        return;
+    }
     
     const int count = 4;
     
@@ -166,7 +180,7 @@ void object_draw(struct Object3D *obj) {
                 obj->yrot -= 0.002;
             }
             
-            if (obj->yrot <= -1.2) {
+            if (obj->yrot <= -M_PI/2) {
                 obj->state = OBJECT_DONE;
             }
             break;
@@ -290,7 +304,9 @@ void object_draw(struct Object3D *obj) {
     
     SDL_UnlockTexture(RenderTarget(RENDER_TARGET_3D));
     
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, NULL);
+    const SDL_Rect dst = {
+        0, GUI_H,
+        gs->window_width, gs->window_height-GUI_H
+    };
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, &dst);
 }
-
-///////////
