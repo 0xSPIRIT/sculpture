@@ -156,6 +156,7 @@ void object_draw(struct Object3D *obj) {
         if (obj->timer == -1) {
             narrator_tick();
             narrator_run(BLACK);
+            credits_run();
         } else {
             obj->timer++;
         }
@@ -177,6 +178,10 @@ void object_draw(struct Object3D *obj) {
     op[3] = (vec3){+1, +1, obj->z};
     
     f64 dy = 0.0002;
+    
+    if (gs->input.keys[SDL_SCANCODE_SPACE]) {
+        obj->state = OBJECT_DONE;
+    }
     
     switch (obj->state) {
         case OBJECT_ZOOM: {

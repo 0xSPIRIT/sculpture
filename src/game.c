@@ -7,6 +7,7 @@
 #include "conversions.c"
 #include "dust.c"
 #include "grid.c"
+#include "credits.c"
 #include "undo.c"
 #include "chisel_blocker.c"
 #include "spline.c"

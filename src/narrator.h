@@ -60,23 +60,17 @@
     "You've earned a break.\n"\
 
 #define NARRATION_END \
-    "Was any of your accomplishments really worth anything?\n"\
-    "What have you really created that allows you to believe\n"\
-    "you actually had these supposed skills?\n"\
-    "The bare essentials?\n"\
-    "Some pretentiousness?\n"\
-    "Some piece bastardized by compromise?\n"\
-    "Or the showpiece, with the vile insides?\n"\
+    "Fixed in place, you stare out your window.\n"\
+    "You watch as the people go by.\n"\
+    "Life goes on, but you are simply not there.\n"\
+    "With the true thickness of your work in sight,\n"\
+    "you realize you can't create a complex masterpiece;\n"\
+    "yearning to masquerade around as some auteur.\n"\
+    "Maybe that's not such a bad thing.\n"\
     "...\n"\
-    "I'm being too harsh.\n"\
-    "Perhaps your rose-tinted vision makes your work seem\n"\
-    "more detailed and grandiose than it actually is,\n"\
-    "But you've done some truly decent work.\n"\
-    "You should be proud for that.\n"\
-    "Maybe right now you can't create a truly complex masterpiece.\n"\
-    "You might never do.\n"\
-    "But that's not such a bad thing.\n"\
-    "Maybe it doesn't really matter.\n"\
+    "Let's move to Alaska.\n"\
+    "We'd sculpt the little birds and trees.\n"\
+    "And it'll feel good.\n"\
 
 struct Narrator {
     char lines[MAX_LINES][256];
@@ -87,4 +81,5 @@ struct Narrator {
     int time;
     
     bool black;
+    bool off;
 };

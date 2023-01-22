@@ -59,6 +59,7 @@ struct Game_State {
     struct Tutorial_Rect tutorial;
     bool show_tutorials;
     
+    struct Credits credits;
     struct Narrator narrator;
     struct Object3D obj;
     

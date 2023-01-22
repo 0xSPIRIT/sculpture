@@ -80,6 +80,8 @@ void narrator_init(int level) {
 }
 
 void narrator_tick() {
+    if (gs->narrator.off) return;
+    
     if (gs->input.keys_pressed[SDL_SCANCODE_RETURN])  {
         if (gs->input.keys[SDL_SCANCODE_LCTRL]) { // Skip to the end
             gs->narrator.black = true;
@@ -100,7 +102,11 @@ void narrator_tick() {
     
     if (gs->narrator.black) {
         gs->narrator.time++;
-        if (gs->narrator.time > 60) {
+        
+        if (gs->level_current+1 == 10 && gs->obj.active) {
+            gs->narrator.off = true;
+            gs->credits.state = CREDITS_DELAY;
+        } else if (gs->narrator.time > 60) {
             gs->levels[gs->level_current].state = LEVEL_STATE_PLAY;
             effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
             memset(&gs->narrator, 0, sizeof(struct Narrator));
@@ -109,6 +115,8 @@ void narrator_tick() {
 }
 
 void narrator_run(SDL_Color col) {
+    if (gs->narrator.off) return;
+    
     TTF_Font *font = gs->fonts.font_times;
     struct Narrator *n = &gs->narrator;
     
