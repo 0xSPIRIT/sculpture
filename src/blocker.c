@@ -239,15 +239,6 @@ void blocker_draw(void) {
         }
     }
     
-    if (gs->input.keys_pressed[SDL_SCANCODE_RETURN]) {
-        for (int y = 0; y < gs->gh; y++) {
-            for (int x = 0; x < gs->gw; x++) {
-                Log("%d ", blocker->pixels[x+y*gs->gw]);
-            }
-            Log("\n");
-        }
-    }
-    
     SDL_SetRenderTarget(gs->renderer, prev_target);
     
     SDL_SetTextureAlphaMod(RenderTarget(RENDER_TARGET_CHISEL_BLOCKER), 128);

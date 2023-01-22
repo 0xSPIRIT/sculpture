@@ -456,6 +456,7 @@ void gui_popup_draw(void) {
     
     all_converters_draw();
     inventory_draw();
+    conversions_gui_draw();
 }
 
 bool is_cell_stone(int type) {
@@ -762,6 +763,11 @@ int fuel_converter_convert(struct Item *input1, struct Item *input2) {
     
     struct Item *input = NULL;
     
+    // We simply don't allow this.
+    if (input1->type == input2->type) {
+        return 0;
+    }
+    
     if (number_inputs == 1) {
         input = input1->type ? input1 : input2;
     } else if (number_inputs == 2) {
@@ -827,10 +833,12 @@ int material_converter_convert(struct Item *input1, struct Item *input2, struct 
     
     switch (fuel->type) {
         case CELL_NONE: {
-            switch (input->type) {
-                case CELL_WOOD_LOG: result = CELL_WOOD_PLANK; break;
-                case CELL_STEAM:    result = CELL_WATER;      break;
-                case CELL_WATER:    result = CELL_ICE;        break;
+            if (number_inputs == 1) {
+                switch (input->type) {
+                    case CELL_WOOD_LOG: result = CELL_WOOD_PLANK; break;
+                    case CELL_STEAM:    result = CELL_WATER;      break;
+                    case CELL_WATER:    result = CELL_ICE;        break;
+                }
             }
             break;
         }
@@ -1054,12 +1062,21 @@ void converter_tick(struct Converter *converter) {
 void all_converters_tick(void) {
     // Grey out the buttons for each converter
     // if no conversions are possible right now.
+    
     if (0 == material_converter_convert(&gs->material_converter->slots[SLOT_INPUT1].item,
                                         &gs->material_converter->slots[SLOT_INPUT2].item,
                                         &gs->material_converter->slots[SLOT_FUEL].item)) {
         gs->material_converter->go_button->disabled = true;
     } else {
         gs->material_converter->go_button->disabled = false;
+    }
+    
+    if (0 == fuel_converter_convert(&gs->fuel_converter->slots[SLOT_INPUT1].item,
+                                    &gs->fuel_converter->slots[SLOT_INPUT2].item)) 
+    {
+        gs->fuel_converter->go_button->disabled = true;
+    } else {
+        gs->fuel_converter->go_button->disabled = false;
     }
     
     converter_tick(gs->material_converter);

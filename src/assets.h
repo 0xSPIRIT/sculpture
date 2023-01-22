@@ -12,7 +12,8 @@ enum {
     TEXT_OUTRO_RESULT,
     TEXT_OUTRO_NEXT_LEVEL,
     TEXT_OUTRO_PREV_LEVEL,
-    TEXT_INDEX_COUNT = 64
+    TEXT_CONVERTER_CHART_START,
+    TEXT_INDEX_COUNT = 128
 };
 
 // Index into textures.render_targets[]
@@ -21,8 +22,9 @@ enum {
     RENDER_TARGET_GUI_TOOLBAR, // The render target showing the tool buttons
     RENDER_TARGET_CHISEL_BLOCKER,
     RENDER_TARGET_CHISEL, // Use the same render target for each chisel.
-    RENDER_TARGET_DELETER, // TODO: Unused
+    RENDER_TARGET_GRID,
     RENDER_TARGET_3D,
+    RENDER_TARGET_CONVERSION_PANEL,
     RENDER_TARGET_COUNT 
 };
 

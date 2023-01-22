@@ -54,6 +54,8 @@ struct Game_State {
     
     SDL_Event *event;
     
+    struct Conversions conversions;
+        
     struct Tutorial_Rect tutorial;
     bool show_tutorials;
     

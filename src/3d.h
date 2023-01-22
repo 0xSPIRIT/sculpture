@@ -1,4 +1,8 @@
-#define SCALE_3D 0.5
+#ifdef ALASKA_RELEASE_MODE
+    #define SCALE_3D 1
+#else
+    #define SCALE_3D 0.5
+#endif
 
 enum Object3D_State {
     OBJECT_ZOOM,
@@ -28,6 +32,6 @@ typedef struct vec3 {
 
 typedef struct Vertex {
     vec2 p;   // Position
-    vec3 col; // Color data per vertex. (0 to 255)
+    //vec3 col; // Color data per vertex. (0 to 255)
     vec2 tex; // Texture coordinates (0 to 1)
 } Vertex;

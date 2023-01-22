@@ -165,8 +165,11 @@ void levels_setup(void) {
 void goto_level(int lvl) {
     gs->level_current = lvl;
     gs->levels[lvl].state = LEVEL_STATE_INTRO;
+    gs->levels[lvl].popup_time_current = 0;
     
     gs->levels[lvl].popup_time_current = 0;
+    
+    gs->conversions.calculated_render_target = false;
     
     gs->current_tool = TOOL_GRABBER;
     
@@ -194,8 +197,6 @@ void goto_level(int lvl) {
     gui_init();
     all_converters_init();
     overlay_init();
-    
-    effect_set(gs->levels[lvl].effect_type);
     
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         gs->grid[i].type = gs->levels[lvl].desired_grid[i].type;
@@ -242,8 +243,10 @@ void level_tick(void) {
                 
                 if (gs->narrator.line_count) {
                     level->state = LEVEL_STATE_NARRATION;
+                    effect_set(EFFECT_SNOW, gs->window_width, gs->window_height);
                 } else {
                     level->state = LEVEL_STATE_PLAY;
+                    effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
                 }
                 
                 // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
@@ -269,6 +272,7 @@ void level_tick(void) {
                 } else {
                     gs->levels[gs->level_current].state = LEVEL_STATE_PLAY;
                     object_activate(&gs->obj);
+                    effect_set(EFFECT_SNOW, gs->window_width, gs->window_height);
                     //snow_init(&gs->snow);
                 }
             }
@@ -370,7 +374,12 @@ void level_draw_intro(void) {
     }
     
     SDL_SetRenderTarget(gs->renderer, NULL);
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, NULL);
+    
+    const SDL_Rect global_dst = {
+        0, GUI_H,
+        gs->window_width, gs->window_height-GUI_H
+    };
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &global_dst);
     
     char name[256] = {0};
     sprintf(name, "%d. %s", level->index+1, level->name);
@@ -399,6 +408,12 @@ void level_draw(void) {
     
     switch (level->state) {
         case LEVEL_STATE_NARRATION: {
+            SDL_SetRenderDrawColor(gs->renderer, 16, 16, 16, 255);
+            SDL_RenderClear(gs->renderer);
+            
+            if (!gs->narrator.black)
+                effect_draw(&gs->current_effect, false);
+            
             narrator_run(WHITE);
             break;
         }
@@ -416,7 +431,7 @@ void level_draw(void) {
             
             grid_draw();
             
-            effect_draw(&gs->current_effect);
+            effect_draw(&gs->current_effect, true);
             
             switch (gs->current_tool) {
                 case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {

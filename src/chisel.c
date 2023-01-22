@@ -47,6 +47,20 @@ void chisel_hammer_tick(void) {
     hammer->x = chisel->x + hammer->dist * cosf(rad) - dir * off * sinf(rad);
     hammer->y = chisel->y + hammer->dist * sinf(rad) + dir * off * cosf(rad);
     
+    bool click = false;
+    
+    if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
+        click = true;
+        chisel->click_cd = 15;
+    } else if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+        if (chisel->click_cd > 0) {
+            chisel->click_cd--;
+        } else {
+            chisel->click_cd = 3;
+            click = true;
+        }
+    }
+    
     const int stop = 24;
     
     switch (hammer->state) {
@@ -79,7 +93,7 @@ void chisel_hammer_tick(void) {
             if (!gs->is_mouse_over_any_button &&
                 !gs->tutorial.active &&
                 gs->chisel->highlight_count > 0 &&
-                input->mouse_pressed[SDL_BUTTON_LEFT]) 
+                click)
             {
                 hammer->state = HAMMER_STATE_WINDUP;
                 save_state_to_next();

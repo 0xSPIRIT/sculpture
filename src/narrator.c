@@ -34,11 +34,11 @@ void narrator_draw_text_blended(TTF_Font *font,
 
 char* get_narration(int level) {
     switch (level+1) {
-        case 1: return NARRATION_LEVEL_1;
-        case 3: return NARRATION_LEVEL_3;
-        case 6: return NARRATION_LEVEL_6;
-        case 7: return NARRATION_LEVEL_7;
-        case 9: return NARRATION_LEVEL_9;
+        case 1:  return NARRATION_LEVEL_1;
+        case 3:  return NARRATION_LEVEL_3;
+        case 6:  return NARRATION_LEVEL_6;
+        case 7:  return NARRATION_LEVEL_7;
+        case 9:  return NARRATION_LEVEL_9;
         case 10: return NARRATION_LEVEL_10;
         
         case 11: return NARRATION_END;
@@ -100,8 +100,9 @@ void narrator_tick() {
     
     if (gs->narrator.black) {
         gs->narrator.time++;
-        if (gs->narrator.time > 30) {
+        if (gs->narrator.time > 60) {
             gs->levels[gs->level_current].state = LEVEL_STATE_PLAY;
+            effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
             memset(&gs->narrator, 0, sizeof(struct Narrator));
         }
     }

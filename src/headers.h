@@ -15,6 +15,7 @@
 
 #include "typedefs.h"
 #include "cursor.h"
+#include "conversions.h"
 #include "overlay.h"
 #include "sound.h"
 #include "grid.h"

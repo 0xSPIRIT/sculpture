@@ -1,7 +1,7 @@
 Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     // Type              R    G    B
     CELL_NONE,          255,   0,   0,
-    CELL_DIRT,           38,  38,  38,
+    CELL_DIRT,          255,   0,   0,
     CELL_SAND,          109,   9, 121,
     CELL_WATER,          14, 182,  30,
     CELL_ICE,             9, 185,  57,
@@ -117,6 +117,8 @@ void overlay_init(void) {
     overlay->eraser_mode = false;
     
     overlay->r.x = overlay->r.y = -1;
+    
+    memset(&overlay->changes, 0, sizeof(struct Overlay_Changes));
     
     switch (gs->level_current+1) {
         case 6: {

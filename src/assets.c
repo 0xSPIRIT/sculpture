@@ -40,7 +40,7 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
 
 // Creates all render targets for all the levels.
 void render_targets_init(SDL_Renderer *renderer,
-                         int width, // In screen coords, not game coords.
+                         int width, // In screen coords, not game coords. (21.1.23: What's the point of this??? Why not just use gs->window_width??)
                          struct Level *levels,
                          struct Textures *textures) {
     for (int lvl = 0; lvl < LEVEL_COUNT; lvl++) {
@@ -48,6 +48,10 @@ void render_targets_init(SDL_Renderer *renderer,
         Assert(l->w != 0 && l->h != 0);
         
         for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
+            if (i == RENDER_TARGET_CONVERSION_PANEL) {
+                textures->render_targets[lvl][i] = CreateRenderTarget(width, gs->window_height-GUI_H);
+                continue;
+            }
             if (i == RENDER_TARGET_GUI_TOOLBAR) {
                 textures->render_targets[lvl][i] = CreateRenderTarget(width, GUI_H);
                 Assert(textures->render_targets[lvl][i]);

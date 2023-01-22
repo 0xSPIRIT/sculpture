@@ -1,8 +1,13 @@
 TODO :: {
 
-	[ ] It would make more sense if the Glass Body was made out of a
-		material that you literally couldn't create. Your confidence
-		is just too much.
+	[ ] I don't know if the required amounts changing is good or bad
+		when overlays are changing.
+	
+	[ ] Make the level 6 overlays change from being REALLY complex
+		to the single flower thing. Make it completely different
+		and only have a passing resemblence to the final product.
+
+	[x] Add the conversion chart to the game.
 
 	[ ] Make the writing show the kind of toll those more complex
 		sculptures had on you. How you put yourself through the
@@ -10,11 +15,8 @@ TODO :: {
 		great, complex, and sophisticated- like the masterpieces you
 		love by others. The payoff is the serene ending.
 
-	[ ] Make the level 6 overlays change from being REALLY complex
-		to the single flower thing. Make it completely different
-		and only have a passing resemblence to the final product.
+	[ ] With the writing, ensure you portray the confidence boost.
 
-	[ ] Make the overlay in level 9 work w/ dirt.
 }
 
 Future TODO (Vague) :: {

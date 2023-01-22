@@ -4,6 +4,7 @@
 // compilation speed's sake. ("Unity Build")
 #include "util.c"
 #include "overlay.c"
+#include "conversions.c"
 #include "dust.c"
 #include "grid.c"
 #include "undo.c"
@@ -35,6 +36,8 @@ export void game_init(struct Game_State *state, int level) {
     gs->view.h = gs->window_height-GUI_H;
     
     gs->show_tutorials = true;
+    
+    conversions_gui_init();
     
     levels_setup();
     
@@ -288,7 +291,7 @@ void draw_outro(struct Level *level) {
         int x = rect.x + margin;
         int y = rect.y + margin;
         
-        draw_text_index(TEXT_OUTRO_LEVEL_NAME,
+        draw_text_indexed(TEXT_OUTRO_LEVEL_NAME,
                         gs->fonts.font,
                         string, BLACK, WHITE, 0, 0, x, y, NULL, NULL);
     }
@@ -301,10 +304,10 @@ void draw_outro(struct Level *level) {
     int dx = rect.x + margin;
     int dy = rect.y + 100;
     
-    draw_text_index(TEXT_OUTRO_INTENDED,
+    draw_text_indexed(TEXT_OUTRO_INTENDED,
                     gs->fonts.font,
                     "What you intended", BLACK, WHITE, 0, 0, dx, dy, NULL, NULL);
-    draw_text_index(TEXT_OUTRO_RESULT,
+    draw_text_indexed(TEXT_OUTRO_RESULT,
                     gs->fonts.font,
                     "The result", BLACK, WHITE, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL);
     
@@ -328,7 +331,7 @@ void draw_outro(struct Level *level) {
     
     timelapse_tick_and_draw(dx, dy+32, scale, scale);
     
-    draw_text_index(TEXT_OUTRO_NEXT_LEVEL,
+    draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,
                     gs->fonts.font,
                     "Next Level [n]",
                     (SDL_Color){0, 91, 0, 255},
@@ -338,7 +341,7 @@ void draw_outro(struct Level *level) {
                     rect.y + rect.h - margin,
                     NULL,
                     NULL);
-    draw_text_index(TEXT_OUTRO_PREV_LEVEL,
+    draw_text_indexed(TEXT_OUTRO_PREV_LEVEL,
                     gs->fonts.font,
                     "Close [f]",
                     (SDL_Color){0, 91, 0, 255},
@@ -366,6 +369,7 @@ export void game_run(struct Game_State *state) {
         view_tick(&gs->view, &gs->input);
         
         gui_tick();
+        conversions_gui_tick();
         inventory_tick();
         all_converters_tick();
         

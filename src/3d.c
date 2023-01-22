@@ -104,7 +104,21 @@ void object_activate(struct Object3D *obj) {
     gs->obj.active = true;
     
     SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
+    
+#if 0
+    // When taking the pixels directly from the screen, and
+    // memcpying it into the surface's pixel buffer.
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
+#else
+    // Drawing the grid's pixels to a texture, then
+    // memcpying that into the surface's pixel buffer.
+    
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GRID));
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+    SDL_RenderClear(gs->renderer);
+    
+    grid_array_draw(gs->grid, 255);
+#endif
     
     void *pixels = PushArray(gs->transient_memory, gs->gw*gs->gh, 4); // sizeof(Uint32)
     SDL_RenderReadPixels(gs->renderer, NULL, ALASKA_PIXELFORMAT, pixels, gs->gw*4);
@@ -124,6 +138,7 @@ vec2* project(vec3 *input, int count) {
     
     for (int i = 0; i < count; i++) {
         if (input[i].z == 0) continue;
+        
         points[i].x = input[i].x / input[i].z;
         points[i].x++; // Make it from 0 to 2
         points[i].x *= SCALE_3D * (gs->window_width)/2.0;  // Make it from 0 to W
@@ -259,6 +274,7 @@ void object_draw(struct Object3D *obj) {
         final_points[i].p.y = projected[i].y;
     }
     
+#if 0
     final_points[0].col.x = 255;
     final_points[0].col.y = 0;
     final_points[0].col.z = 0;
@@ -270,7 +286,8 @@ void object_draw(struct Object3D *obj) {
     final_points[2].col.x = 0;
     final_points[2].col.y = 0;
     final_points[2].col.z = 255;
-    
+#endif
+
     final_points[0].tex.x = 0;
     final_points[0].tex.y = 0;
     

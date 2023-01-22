@@ -23,6 +23,7 @@ struct Chisel_Hammer {
 struct Chisel {
     int size;
     f32 x, y;
+    int click_cd;
     bool is_changing_angle;
     int click_cooldown;
     bool did_remove;
