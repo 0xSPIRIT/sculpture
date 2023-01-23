@@ -1,22 +1,10 @@
 TODO :: {
 
-	[ ] I don't know if the required amounts changing is good or bad
-		when overlays are changing.
+	[x] For the required amounts, add a ?? if the overlay is not the final.
+
+	[ ] Set up for playtesting.
+		[ ] 
 	
-	[ ] Make the level 6 overlays change from being REALLY complex
-		to the single flower thing. Make it completely different
-		and only have a passing resemblence to the final product.
-
-	[x] Add the conversion chart to the game.
-
-	[ ] Make the writing show the kind of toll those more complex
-		sculptures had on you. How you put yourself through the
-		wringer time and time again because you want to make something
-		great, complex, and sophisticated- like the masterpieces you
-		love by others. The payoff is the serene ending.
-
-	[ ] With the writing, ensure you portray the confidence boost.
-
 }
 
 Future TODO (Vague) :: {

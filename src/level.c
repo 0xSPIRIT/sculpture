@@ -57,34 +57,6 @@ void level_get_cells_from_image(const char *path, struct Cell **out, struct Sour
     SDL_DestroyTexture(texture);
 }
 
-// Gives the amount of each cell type there are
-// in an array of cells.
-void profile_array(struct Cell *desired,
-                   char out[64][CELL_TYPE_COUNT],
-                   int *count) 
-{
-    int counts[CELL_TYPE_COUNT] = {0};
-    
-    for (int i = 0; i < gs->gw*gs->gh; i++) {
-        if (desired[i].type != 0) {
-            counts[desired[i].type]++;
-        }
-    }
-    
-    for (int i = 0; i < CELL_TYPE_COUNT; i++) {
-        if (!counts[i]) continue;
-        
-        char name[64];
-        get_name_from_type(i, name);
-        
-        if (gs->level_current == 10-1) {
-            sprintf(out[(*count)++], "  %-15s???", name);
-        } else{
-            sprintf(out[(*count)++], "  %-15s%d", name, counts[i]);
-        }
-    }
-}
-
 int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
     struct Level *level = &gs->levels[gs->level_count++];
     level->index = gs->level_count-1;

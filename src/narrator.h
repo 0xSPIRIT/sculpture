@@ -63,7 +63,7 @@
     "Fixed in place, you stare out your window.\n"\
     "You watch as the people go by.\n"\
     "Life goes on, but you are simply not there.\n"\
-    "With the true thickness of your work in sight,\n"\
+    "With the true depth of your work in sight,\n"\
     "you realize you can't create a complex masterpiece;\n"\
     "yearning to masquerade around as some auteur.\n"\
     "Maybe that's not such a bad thing.\n"\

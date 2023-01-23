@@ -286,9 +286,35 @@ void gui_tick(void) {
     gui->popup_y = (f32) clamp((int) gui->popup_y, (int) (gs->S*gs->gh - gui->popup_h), gs->window_height);
 }
 
+// Gives the amount of each cell type there are
+// in an array of cells.
 void profile_array(struct Cell *desired,
                    char out[64][CELL_TYPE_COUNT],
-                   int *count);
+                   int *count) 
+{
+    int counts[CELL_TYPE_COUNT] = {0};
+    
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        if (desired[i].type != 0) {
+            counts[desired[i].type]++;
+        }
+    }
+    
+    for (int i = 0; i < CELL_TYPE_COUNT; i++) {
+        if (!counts[i]) continue;
+        
+        char name[64];
+        get_name_from_type(i, name);
+        
+        if (gs->level_current == 10-1) {
+            sprintf(out[(*count)++], "  %-15s???", name);
+        } else if (gs->overlay.changes.index < gs->overlay.changes.count-1) {
+            sprintf(out[(*count)++], "  %-15s%d??", name, counts[i]);
+        } else {
+            sprintf(out[(*count)++], "  %-15s%d", name, counts[i]);
+        }
+    }
+}
 
 void gui_draw_profile() {
     struct Level *level = &gs->levels[gs->level_current];
