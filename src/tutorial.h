@@ -18,7 +18,7 @@
 #define TUTORIAL_UNDO_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Use Ctrl+Z to undo if you make a mistake!"
+    "Use Z to undo if you make a mistake!"
 
 #define TUTORIAL_CHISEL_ROTATE_STRING \
     "Tutorial\n" \
@@ -55,8 +55,8 @@
 #define TUTORIAL_TEXT_FILE_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "To get a full list of conversions, visit the text file\n" \
-    "\"layout_converter.txt\" in the game's top directory."
+    "To get a full list of conversions, press I to toggle the\n" \
+"conversion recipe book."\
 
 #define TUTORIAL_CAREFUL_STRING \
     "Tutorial\n" \

@@ -5,7 +5,13 @@
 // source_cells          - pointer to a bunch of source cells (NULL if don't want). Must not be heap allocated.
 // out_source_cell_count - Pointer to the cell count. Updates in this func.
 // out_w & out_h         - width and height of the image.
-void level_get_cells_from_image(const char *path, struct Cell **out, struct Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h) {
+void level_get_cells_from_image(const char *path,
+                                struct Cell **out,
+                                struct Source_Cell *source_cells,
+                                int *out_source_cell_count,
+                                int *out_w,
+                                int *out_h)
+{
     SDL_Surface *surface = IMG_Load(path);
     Assert(surface);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surface);
@@ -80,6 +86,10 @@ int level_add(const char *name, const char *desired_image, const char *initial_i
                                &w,
                                &h);
     
+    memcpy(&level->default_source_cell,
+           &level->source_cell,
+           sizeof(struct Source_Cell)*SOURCE_CELL_MAX);
+    
     Assert(w > 0);
     Assert(h > 0);
     
@@ -140,6 +150,10 @@ void goto_level(int lvl) {
     gs->levels[lvl].popup_time_current = 0;
     
     gs->levels[lvl].popup_time_current = 0;
+    
+    memcpy(&gs->levels[lvl].source_cell,
+           &gs->levels[lvl].default_source_cell,
+           sizeof(struct Source_Cell)*SOURCE_CELL_MAX);
     
     gs->conversions.calculated_render_target = false;
     
@@ -210,7 +224,7 @@ void level_tick(void) {
         }
         case LEVEL_STATE_INTRO: {
             level->popup_time_current++;
-            if (gs->input.keys[SDL_SCANCODE_RETURN] || level->popup_time_current >= level->popup_time_max) {
+            if (gs->input.keys_pressed[SDL_SCANCODE_SPACE] || level->popup_time_current >= level->popup_time_max) {
                 level->popup_time_current = 0;
                 
                 if (gs->narrator.line_count) {

@@ -179,9 +179,11 @@ void object_draw(struct Object3D *obj) {
     
     f64 dy = 0.0002;
     
+#if 0
     if (gs->input.keys[SDL_SCANCODE_SPACE]) {
         obj->state = OBJECT_DONE;
     }
+#endif
     
     switch (obj->state) {
         case OBJECT_ZOOM: {

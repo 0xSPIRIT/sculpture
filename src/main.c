@@ -80,7 +80,7 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
     TTF_Init();
     
 #ifdef ALASKA_USE_SOFTWARE_RENDERER
-    const int flags = SDL_RENDERER_SOFTWARE | SDL_RENDERER_PRESENTVSYNC;
+    const int flags = SDL_RENDERER_SOFTWARE;
 #else
     const int flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 #endif
@@ -291,8 +291,8 @@ int main(int argc, char **argv)
 #ifdef ALASKA_USE_SOFTWARE_RENDERER
     const f64 target_seconds_per_frame = 1.0/60.0;
     f64 time_passed = 0.0;
-#endif
     f32 fps = 0.f;
+#endif
     
     while (running) {
         LARGE_INTEGER time_elapsed_for_frame;
@@ -331,6 +331,8 @@ int main(int argc, char **argv)
         
         QueryPerformanceCounter(&time_elapsed);
         
+#ifdef ALASKA_USE_SOFTWARE_RENDERER
+        
         Uint64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
         f64 d = (f64)delta / (f64)frequency.QuadPart;
         
@@ -349,7 +351,6 @@ int main(int argc, char **argv)
             time_passed = 0;
         }
         
-//#ifndef ALASKA_RELEASE_MODE
         {
             Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
             Uint64 size_max = persistent_memory.size;
@@ -366,7 +367,7 @@ int main(int argc, char **argv)
             
             SDL_SetWindowTitle(game_state->window, title);
         }
-//#endif
+#endif
     }
     
     game_deinit(game_state);

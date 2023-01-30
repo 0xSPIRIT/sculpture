@@ -9,4 +9,6 @@ struct Save_State {
     // Format: Inventory Slots(5),
     //         Material Converter Slots(4),
     //         Fuel Converter Slots(3)
+    
+    struct Source_Cell source_cell[SOURCE_CELL_MAX];
 };

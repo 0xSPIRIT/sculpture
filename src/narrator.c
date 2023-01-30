@@ -158,7 +158,14 @@ void narrator_run(SDL_Color col) {
             9*gs->window_height/10 - 12,
             25, 24
         };
-        SDL_SetTextureAlphaMod(gs->textures.text_arrow, 192+64*sin(SDL_GetTicks()/250.0));
+        
+        f64 start_value = 0.2;
+        f64 alpha = 1+sin(SDL_GetTicks()/400.0);
+        alpha /= 2.f;
+        alpha = start_value + (1-start_value)*alpha;
+        alpha *= 255;
+        
+        SDL_SetTextureAlphaMod(gs->textures.text_arrow, (Uint8)alpha);
         if (col.r == 0) {
             SDL_SetTextureColorMod(gs->textures.text_arrow, 0, 0, 0);
         } else {

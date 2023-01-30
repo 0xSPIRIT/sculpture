@@ -150,7 +150,7 @@ void button_draw(struct Button *b) {
     };
     
     if (b->disabled) {
-        SDL_SetTextureColorMod(b->texture, 75, 75, 75);
+        SDL_SetTextureColorMod(b->texture, 120, 120, 120);
     } else if (b->active) {
         SDL_SetTextureColorMod(b->texture, 200, 200, 200);
     } else if (b->highlighted) {

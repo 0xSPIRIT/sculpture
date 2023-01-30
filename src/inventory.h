@@ -3,6 +3,10 @@
 struct Item {
     enum Cell_Type type;
     int amount;
+    
+    SDL_Texture *texture;
+    SDL_Surface *surface;
+    int prev_amount; // The amount stored the last time it updated.
 };
 
 // If adding more slots, ensure that the slots

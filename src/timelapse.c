@@ -1,24 +1,37 @@
 void timelapse_init() {
-    gs->timelapse.timer = 0;
-    gs->timelapse.timer_max = 5;
-    gs->timelapse.frame = 0;
+    struct Timelapse *tl = &gs->timelapse;
+    tl->timer = 0;
+    tl->timer_max = 5;
+    tl->frame = 0;
 }
 
 void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
-    if (gs->timelapse.frame < gs->save_state_count) {
-        gs->timelapse.timer++;
-        if (gs->timelapse.timer >= gs->timelapse.timer_max) {
-            gs->timelapse.frame++;
-            if (gs->timelapse.frame >= gs->save_state_count) {
-                gs->timelapse.frame = 0;
+    struct Timelapse *tl = &gs->timelapse;
+    if (tl->sticky > 0) {
+        tl->sticky--;
+    } else if (tl->frame < gs->save_state_count) {
+        tl->timer++;
+        
+        if (tl->timer >= tl->timer_max) {
+            tl->frame++;
+            if (tl->frame >= gs->save_state_count) {
+                tl->sticky = 90;
+                tl->frame = 0;
             }
-            gs->timelapse.timer = 0;
+            tl->timer = 0;
         }
     }
     
     for (int i = 0; i < gs->gw*gs->gh; i++) {
-        struct Save_State *state = &gs->save_states[gs->timelapse.frame];
-        struct Cell *grid = state->grid_layers[0];
+        struct Save_State *state = NULL;
+        struct Cell *grid = NULL;
+        
+        if (tl->sticky && tl->frame == 0) {
+            grid = gs->grid;
+        } else {
+            state = &gs->save_states[tl->frame];
+            grid = state->grid_layers[0];
+        }
         
         int x = i%gs->gw, y = i/gs->gw;
         

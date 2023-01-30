@@ -460,6 +460,7 @@ void set_all_chisel_positions(void) {
     }
 }
 
+void click_gui_tool_button(void *type_ptr);
 void chisel_tick(void) {
     struct Chisel *chisel = gs->chisel;
     struct Chisel_Hammer *hammer = &gs->chisel_hammer;
@@ -471,6 +472,21 @@ void chisel_tick(void) {
     chisel->did_chisel_this_frame = false;
     
     chisel->is_changing_angle = input->keys[SDL_SCANCODE_LSHIFT];
+    
+    int grid_null = true;
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        if (gs->grid[i].type) {
+            grid_null = false;
+            break;
+        }
+    }
+    
+    if (grid_null) {
+        int type = TOOL_GRABBER;
+        
+        click_gui_tool_button(&type);
+        return;
+    }
     
     if (chisel->size == 2) {
         for (int i = 0; i < gs->object_count; i++) {

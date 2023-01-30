@@ -89,25 +89,40 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
     };
     SDL_RenderCopy(gs->renderer, gs->textures.items[item->type], NULL, &r);
     
-    char number[32] = {0};
-    sprintf(number, "%d", item->amount);
+    if (item->prev_amount != item->amount) {
+        item->prev_amount = item->amount;
+        
+        char number[32] = {0};
+        sprintf(number, "%d", item->amount);
+        
+        SDL_Color color = WHITE;
+        
+        // TODO: Memory Leak!
+        //       This whole thing is a hack.
+        //       Make there a proper way to use the indexing functions
+        //       to cache the surfaces like your normal draw_text_indexed()
+        
+        if (item->surface)
+            SDL_FreeSurface(item->surface);
+        if (item->texture)
+            SDL_DestroyTexture(item->texture);
+        
+        item->surface = TTF_RenderText_LCD(gs->fonts.font_bold_small,
+                                           number,
+                                           color,
+                                           (SDL_Color){0, 0, 0, 255});
+        item->texture = SDL_CreateTextureFromSurface(gs->renderer,
+                                                     item->surface);
+    }
     
-    SDL_Color color = WHITE;
-    
-    SDL_Surface *surf = TTF_RenderText_LCD(gs->fonts.font_bold_small, number, color, (SDL_Color){0, 0, 0, 255});
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     
     SDL_Rect dst = {
-        x + w - surf->w - 1,
-        y + h - surf->h - 1,
-        surf->w,
-        surf->h
+        x + w - item->surface->w - 1,
+        y + h - item->surface->h - 1,
+        item->surface->w,
+        item->surface->h
     };
-    
-    SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
-    
-    SDL_FreeSurface(surf);
-    SDL_DestroyTexture(texture);
+    SDL_RenderCopy(gs->renderer, item->texture, NULL, &dst);
 }
 
 // rx, ry are relative values.

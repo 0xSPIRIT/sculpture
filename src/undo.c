@@ -30,6 +30,10 @@ void save_state_to_next(void) {
             for (int j = 0; j < TOTAL_SLOT_COUNT; j++) {
                 gs->save_states[i].placer_items[j] = gs->save_states[i+1].placer_items[j];
             }
+            
+            for (int j = 0; j < SOURCE_CELL_MAX; j++) {
+                gs->save_states[i].source_cell[j] = gs->save_states[i+1].source_cell[j];
+            }
         }
         
         int i = gs->save_state_count;
@@ -72,6 +76,11 @@ void save_state_to_next(void) {
         state->placer_items[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT + i] =
             gs->fuel_converter->slots[i].item;
     }
+    
+    // Source Cells
+    for (int i = 0; i < SOURCE_CELL_MAX; i++) {
+        state->source_cell[i] = gs->levels[gs->level_current].source_cell[i];
+    }
 }
 
 void undo_system_init(void) {
@@ -89,7 +98,13 @@ void undo_system_init(void) {
 }
 
 bool is_current_grid_same_as(struct Save_State *state) {
-    return memcmp(gs->grid_layers[0], state->grid_layers[0], gs->gw*gs->gh*sizeof(struct Cell)) == 0;
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        Assert(gs->grid[i].type != CELL_STEAM);
+    }
+    
+    bool result = memcmp(gs->grid_layers[0], state->grid_layers[0], gs->gw*gs->gh*sizeof(struct Cell)) == 0;
+    Log("%s\n", result ? "true" : "false");
+    return result;
 }
 
 bool is_current_slots_same_as(struct Save_State *state) {
@@ -137,6 +152,10 @@ void set_state(int num) {
     for (int i = 0; i < SLOT_MAX_COUNT-1; i++) {
         gs->fuel_converter->slots[i].item =
             state->placer_items[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT + i];
+    }
+    
+    for (int i = 0; i < SOURCE_CELL_MAX; i++) {
+        gs->levels[gs->level_current].source_cell[i] = state->source_cell[i];
     }
 }
 

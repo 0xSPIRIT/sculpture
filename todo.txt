@@ -1,20 +1,16 @@
 TODO :: {
 
-	[x] For the required amounts, add a ?? if the overlay is not the final.
-
 	[ ] Set up for playtesting.
-		[ ] 
+		[x] Auto set tool to pointer from chisel when no cells on grid.
+		[x] Fix up the timelapse.
+		[x] Add the powergen thing to level 4 properly, and add it to desired.
+
+	[ ] Improve UNDO when placing something in mid-air. Perhaps pause for 0.1s
+		upon undoing?
 	
 }
 
 Future TODO (Vague) :: {
 	[ ] Tutorial: Make use of the chisel's ability to move after you've clicked,
 		perhaps utilize simple video tutorials.
-
-	[ ] Bug with small chisel not getting cells properly. Noticable in level 4.
-
-	[ ] The chisels are limited to blobs by object. If a big circle goes
-		over one object of 5 cells, but mostly destroys another object,
-		it only does the small 5 cells. Destroy ALL objects.
-
 }

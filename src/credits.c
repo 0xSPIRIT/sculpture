@@ -5,7 +5,7 @@ void credits_run(void) {
     
     switch (c->state) {
         case CREDITS_DELAY: {
-            if (c->timer < 180) {
+            if (c->timer < 4*60) {
                 c->timer++;
             } else {
                 c->timer = 0;
@@ -14,7 +14,7 @@ void credits_run(void) {
             break;
         }
         case CREDITS_SHOW: {
-            f64 f = 30.f;
+            f64 f = 20.f;
             
             if (c->timer < f)
                 c->timer++;
@@ -24,14 +24,14 @@ void credits_run(void) {
                 255-co, 255-co, 255-co, 255
             };
             
-            draw_text(gs->fonts.font_times,
+            draw_text(gs->fonts.font_consolas,
                       "Created by spiritwolf",
                       col,
                       WHITE,
                       true,
                       true,
-                      4*gs->window_width/5,
-                      4*gs->window_height/5,
+                      128+gs->window_width/2,
+                      2*gs->window_height/3,
                       NULL,
                       NULL);
             break;

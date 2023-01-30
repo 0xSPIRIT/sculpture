@@ -108,7 +108,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_SPACE: {
-                gs->paused = !gs->paused;
+                //gs->paused = !gs->paused;
                 break;
             }
             case SDLK_n: {
@@ -312,6 +312,8 @@ void draw_outro(struct Level *level) {
                     gs->fonts.font,
                     "The result", BLACK, WHITE, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL);
     
+    // Desired
+    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             SDL_Rect r;
@@ -329,6 +331,8 @@ void draw_outro(struct Level *level) {
     }
     
     dx += rect.w - margin - scale*level->w - margin;
+    
+    // Your grid
     
     timelapse_tick_and_draw(dx, dy+32, scale, scale);
     
@@ -411,11 +415,10 @@ export void game_run(struct Game_State *state) {
                 gui_draw_profile();
             
             gui_message_stack_tick_and_draw();
-            
-            text_field_draw();
         }
     }
     
+    text_field_draw();
     SDL_RenderPresent(gs->renderer);
     
     gs->is_mouse_over_any_button = false;
