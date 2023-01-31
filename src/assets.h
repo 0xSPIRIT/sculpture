@@ -6,6 +6,8 @@
 
 #define ALASKA_PIXELFORMAT SDL_PIXELFORMAT_ABGR8888
 
+#define ITEM_COUNT 32
+
 enum {
     TEXT_OUTRO_LEVEL_NAME,
     TEXT_OUTRO_INTENDED,
@@ -13,6 +15,7 @@ enum {
     TEXT_OUTRO_NEXT_LEVEL,
     TEXT_OUTRO_PREV_LEVEL,
     TEXT_CONVERTER_CHART_START,
+    TEXT_CONVERTER_REQUIRED_START,
     TEXT_INDEX_COUNT = 128
 };
 
@@ -56,6 +59,7 @@ struct Textures {
         *chisel_hammer;
 
     SDL_Texture *items[CELL_TYPE_COUNT];
+    
     SDL_Texture *tool_buttons[TOOL_COUNT];
     SDL_Texture *convert_button, *tutorial_ok_button;
 
@@ -63,6 +67,8 @@ struct Textures {
 
     SDL_Texture *slot_names[TOTAL_SLOT_COUNT];
     SDL_Texture *converter_names[CONVERTER_COUNT];
+    
+    SDL_Texture *item_nums[ITEM_COUNT]; // Refers to the number text on items.
     
     SDL_Texture *narrator;
     
@@ -85,6 +91,8 @@ struct Surfaces {
         *grass_surface,
         *triangle_blob_surface;
 
+    SDL_Surface *item_nums[ITEM_COUNT];
+    
     // Any temp surfaces you might need to draw text or w/e goes here!
     SDL_Surface *slot_names[TOTAL_SLOT_COUNT];
     SDL_Surface *converter_names[CONVERTER_COUNT];

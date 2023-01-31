@@ -329,12 +329,37 @@ void gui_draw_profile() {
     profile_array(overlay_grid, level->profile_lines, &count);
     
     int ah = 0;
-    draw_text(gs->fonts.font, "Required Amounts:", (SDL_Color){255, 255, 0, 255}, BLACK, false, false, 50, GUI_H+50, NULL, &ah);
+    draw_text_indexed(TEXT_CONVERTER_REQUIRED_START,
+                      gs->fonts.font,
+                      "Required Amounts:",
+                      (SDL_Color){
+                          255,
+                          255,
+                          0,
+                          255
+                      },
+                      BLACK,
+                      false,
+                      false,
+                      50,
+                      GUI_H+50,
+                      NULL,
+                      &ah);
     
     int c = ah;
     for (int i = 0; i < count; i++) {
         int h;
-        draw_text(gs->fonts.font, level->profile_lines[i], WHITE, BLACK, false, false, 50, GUI_H+50+c, NULL, &h);
+        draw_text_indexed(TEXT_CONVERTER_REQUIRED_START+1+i,
+                          gs->fonts.font,
+                          level->profile_lines[i],
+                          WHITE,
+                          BLACK,
+                          false,
+                          false,
+                          50,
+                          GUI_H+50+c,
+                          NULL,
+                          &h);
         c += h;
     }
 }
@@ -386,7 +411,7 @@ void converter_draw(struct Converter *converter) {
                        converter->y+GUI_H+converter->h);
     
     for (int i = 0; i < converter->slot_count; i++) {
-        slot_draw(converter->slots[i], converter->x, converter->y);
+        slot_draw(&converter->slots[i], converter->x, converter->y);
     }
     
     SDL_Rect arrow_dst = {
@@ -672,11 +697,6 @@ void all_converters_init(void) {
     gs->material_converter = converter_init(CONVERTER_MATERIAL, allocated);
     gs->fuel_converter = converter_init(CONVERTER_FUEL, allocated);
     
-    switch (gs->level_current) {
-        case 2: {
-            break;
-        }
-    }
 }
 
 int get_number_unique_inputs(struct Item *input1, struct Item *input2) {
@@ -1133,5 +1153,23 @@ void all_converters_tick(void) {
                 tooltip_reset(&gs->gui.tooltip);
             }
         }
+    }
+}
+
+void setup_item_indices() {
+    // Set up the item indices.
+    
+    int mat_slot_count = gs->material_converter->slot_count;
+    int fuel_slot_count = gs->fuel_converter->slot_count;
+    
+    gs->item_holding.index = 0;
+    for (int i = 0; i < mat_slot_count; i++) {
+        gs->material_converter->slots[i].item.index = i+1;
+    }
+    for (int i = 0; i < fuel_slot_count; i++) {
+        gs->material_converter->slots[i].item.index = mat_slot_count+i+1;
+    }
+    for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
+        gs->inventory.slots[i].item.index = mat_slot_count+fuel_slot_count+i+1;
     }
 }

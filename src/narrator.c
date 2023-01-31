@@ -82,11 +82,13 @@ void narrator_init(int level) {
 void narrator_tick() {
     if (gs->narrator.off) return;
     
+    if (gs->input.keys_pressed[SDL_SCANCODE_SPACE]) {
+        gs->narrator.black = true;
+        gs->narrator.time = 0;
+    }
+    
     if (gs->input.keys_pressed[SDL_SCANCODE_RETURN])  {
-        if (gs->input.keys[SDL_SCANCODE_LCTRL]) { // Skip to the end
-            gs->narrator.black = true;
-            gs->narrator.time = 0;
-        } else if (gs->narrator.char_curr >= gs->narrator.curr_len) {
+        if (gs->narrator.char_curr >= gs->narrator.curr_len) {
             gs->narrator.line_curr++;
             gs->narrator.char_curr = 0;
             gs->narrator.curr_len = strlen(gs->narrator.lines[gs->narrator.line_curr]);

@@ -12,6 +12,10 @@
 
 + Material Converter Combinations
 
+   With Fuel: None
+     Steam -> Water
+     Water -> Ice
+
    With Fuel: Unref. Coal
      Cobblestone        -> Marble
      Sand               -> Glass

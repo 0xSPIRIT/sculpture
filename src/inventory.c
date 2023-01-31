@@ -83,55 +83,53 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
         return;
     }
     
+    struct Textures *texs = &gs->textures;
+    struct Surfaces *surfs = &gs->surfaces;
+    
     SDL_Rect r = {
         x, y,
         w, h
     };
-    SDL_RenderCopy(gs->renderer, gs->textures.items[item->type], NULL, &r);
+    SDL_RenderCopy(gs->renderer, texs->items[item->type], NULL, &r);
     
-    if (item->prev_amount != item->amount) {
-        item->prev_amount = item->amount;
+    if (gs->item_prev_amounts[item->index] != item->amount) {
+        gs->item_prev_amounts[item->index] = item->amount;
         
         char number[32] = {0};
         sprintf(number, "%d", item->amount);
         
         SDL_Color color = WHITE;
         
-        // TODO: Memory Leak!
-        //       This whole thing is a hack.
-        //       Make there a proper way to use the indexing functions
-        //       to cache the surfaces like your normal draw_text_indexed()
+        if (surfs->item_nums[item->index])
+            SDL_FreeSurface(surfs->item_nums[item->index]);
+        if (texs->item_nums[item->index])
+            SDL_DestroyTexture(texs->item_nums[item->index]);
         
-        if (item->surface)
-            SDL_FreeSurface(item->surface);
-        if (item->texture)
-            SDL_DestroyTexture(item->texture);
-        
-        item->surface = TTF_RenderText_LCD(gs->fonts.font_bold_small,
-                                           number,
-                                           color,
-                                           (SDL_Color){0, 0, 0, 255});
-        item->texture = SDL_CreateTextureFromSurface(gs->renderer,
-                                                     item->surface);
+        surfs->item_nums[item->index] = TTF_RenderText_LCD(gs->fonts.font_bold_small,
+                                                           number,
+                                                           color,
+                                                           (SDL_Color){0, 0, 0, 255});
+        texs->item_nums[item->index] = SDL_CreateTextureFromSurface(gs->renderer,
+                                                                    surfs->item_nums[item->index]);
     }
     
     
     SDL_Rect dst = {
-        x + w - item->surface->w - 1,
-        y + h - item->surface->h - 1,
-        item->surface->w,
-        item->surface->h
+        x + w - surfs->item_nums[item->index]->w - 1,
+        y + h - surfs->item_nums[item->index]->h - 1,
+        surfs->item_nums[item->index]->w,
+        surfs->item_nums[item->index]->h
     };
-    SDL_RenderCopy(gs->renderer, item->texture, NULL, &dst);
+    SDL_RenderCopy(gs->renderer, texs->item_nums[item->index], NULL, &dst);
 }
 
 // rx, ry are relative values.
-void slot_draw(struct Slot slot, f32 rx, f32 ry) {
+void slot_draw(struct Slot *slot, f32 rx, f32 ry) {
     SDL_Rect bounds = {
-        (int) (rx + slot.x - slot.w/2),
-        (int) (ry + slot.y - slot.h/2),
-        (int) slot.w,
-        (int) slot.h
+        (int) (rx + slot->x - slot->w/2),
+        (int) (ry + slot->y - slot->h/2),
+        (int) slot->w,
+        (int) slot->h
     };
     
     int col = 200;
@@ -154,25 +152,25 @@ void slot_draw(struct Slot slot, f32 rx, f32 ry) {
     bounds.h -= 2;
     
     // Drawing the slot's name.
-    if (*slot.name) {
+    if (*slot->name) {
         // Finding the allocated surface and textures to use for this.
         
-        struct Converter *c = slot.converter;
+        struct Converter *c = slot->converter;
         
         SDL_Surface **surf;
         SDL_Texture **texture;
         
         if (c) {
-            surf = &gs->surfaces.slot_names[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT * c->type + slot.type];
-            texture = &gs->textures.slot_names[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT * c->type + slot.type];
+            surf = &gs->surfaces.slot_names[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT * c->type + slot->type];
+            texture = &gs->textures.slot_names[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT * c->type + slot->type];
         } else {
-            surf = &gs->surfaces.slot_names[slot.inventory_index];
-            texture = &gs->textures.slot_names[slot.inventory_index];
+            surf = &gs->surfaces.slot_names[slot->inventory_index];
+            texture = &gs->textures.slot_names[slot->inventory_index];
         }
         
         if (!*surf) {
             *surf = TTF_RenderText_LCD(gs->fonts.font_small,
-                                       slot.name,
+                                       slot->name,
                                        (SDL_Color){0, 0, 0, 255},
                                        (SDL_Color){235, 235, 235, 255});
         }
@@ -185,7 +183,7 @@ void slot_draw(struct Slot slot, f32 rx, f32 ry) {
         Assert(*texture);
         
         SDL_Rect dst = {
-            (int) (bounds.x + slot.w/2 - (*surf)->w/2),
+            (int) (bounds.x + slot->w/2 - (*surf)->w/2),
             (int) (bounds.y - (*surf)->h - 2),
             (*surf)->w,
             (*surf)->h
@@ -193,7 +191,7 @@ void slot_draw(struct Slot slot, f32 rx, f32 ry) {
         SDL_RenderCopy(gs->renderer, *texture, NULL, &dst);
     }
     
-    item_draw(&slot.item, bounds.x, bounds.y, bounds.w, bounds.h);
+    item_draw(&slot->item, bounds.x, bounds.y, bounds.w, bounds.h);
 }
 
 //////////////////////////////// Inventory Ticking
@@ -251,6 +249,8 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
     if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
         // If they're the same type, just add their amounts.
         if (item->type && gs->item_holding.type == item->type) {
+            save_state_to_next();
+            
             // Add the amount from holding to the item.
             item->amount += gs->item_holding.amount;
             
@@ -262,6 +262,8 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
         // swap them since they're different types.
         else if ((gs->item_holding.type || item->type) && can_place_item) {
             struct Item a = *item;
+            
+            save_state_to_next();
             
             item->type = gs->item_holding.type;
             item->amount = gs->item_holding.amount;
@@ -280,6 +282,8 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
             const int half = item->amount/2;
             
             if (half) {
+                save_state_to_next();
+                
                 item->amount -= half;
                 gs->item_holding.type = item->type;
                 gs->item_holding.amount += half;
@@ -288,6 +292,9 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
             }
         } else if (gs->item_holding.type && (item->type == 0 || item->type == gs->item_holding.type)) {
             // Place only one down at a time.
+            
+            save_state_to_next();
+            
             gs->item_holding.amount--;
             item->type = gs->item_holding.type;
             item->amount++;
@@ -387,7 +394,7 @@ void inventory_draw(void) {
     SDL_RenderFillRect(gs->renderer, &rect);
     
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
-        slot_draw(gs->inventory.slots[i], 0, 0);
+        slot_draw(&gs->inventory.slots[i], 0, 0);
     }
     
     struct Input *input = &gs->input;

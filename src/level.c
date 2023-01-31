@@ -184,6 +184,8 @@ void goto_level(int lvl) {
     all_converters_init();
     overlay_init();
     
+    setup_item_indices();
+    
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         gs->grid[i].type = gs->levels[lvl].desired_grid[i].type;
     }
@@ -347,7 +349,7 @@ void level_draw_intro(void) {
     Assert(RenderTarget(RENDER_TARGET_GLOBAL));
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
     
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
     SDL_RenderClear(gs->renderer);
     
     for (int y = 0; y < gs->gh; y++) {
@@ -389,12 +391,12 @@ void level_draw_intro(void) {
 void level_draw(void) {
     struct Level *level = &gs->levels[gs->level_current];
     
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
     SDL_RenderClear(gs->renderer);
     
     switch (level->state) {
         case LEVEL_STATE_NARRATION: {
-            SDL_SetRenderDrawColor(gs->renderer, 16, 16, 16, 255);
+            SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
             SDL_RenderClear(gs->renderer);
             
             if (!gs->narrator.black)
@@ -412,7 +414,7 @@ void level_draw(void) {
             
             SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
             
-            SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+            SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
             SDL_RenderClear(gs->renderer);
             
             grid_draw();

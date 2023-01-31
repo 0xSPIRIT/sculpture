@@ -1,12 +1,15 @@
 #define INVENTORY_SLOT_COUNT 5
 
+// We store the item's "amount" texture data
+// in textures.item_nums, surfaces.item_nums
+// as well as the last known amount in
+// gs->item_prev_amounts in order
+// to know when we need to update the
+// texture.
 struct Item {
+    int index; // Index into arrays such as gs->item_prev_amounts or the number textures.
     enum Cell_Type type;
     int amount;
-    
-    SDL_Texture *texture;
-    SDL_Surface *surface;
-    int prev_amount; // The amount stored the last time it updated.
 };
 
 // If adding more slots, ensure that the slots

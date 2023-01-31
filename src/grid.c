@@ -1430,7 +1430,7 @@ int clamp_to_grid(int px,
             gs->object_current = get_any_neighbour_object(closest_index%gs->gw, closest_index/gs->gw);
         }
         if (gs->object_current < -1) {
-            Log("Object Current was < -1. You are permitted to panic! D:\n");
+            Error("Object Current was < -1. You are permitted to panic! D:\n");
             gs->object_current = -1;
         }
     }

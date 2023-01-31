@@ -116,7 +116,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_SEMICOLON: {
-                gs->do_draw_objects = !gs->do_draw_objects;
+                //gs->do_draw_objects = !gs->do_draw_objects;
                 break;
             }
             case SDLK_r: {
@@ -176,6 +176,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 if (obj == -1) obj = 0;
                 
                 Assert(obj != -1);
+                
                 
                 Log("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f, Blob: %u\n",
                     input->mx,

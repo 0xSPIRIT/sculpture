@@ -68,6 +68,11 @@ struct Game_State {
     struct Timelapse timelapse;
     
     struct Audio audio;
+    
+    int item_prev_amounts[ITEM_COUNT];
+    // the amount an item has at the time it was last drawn.
+    // (The rendering data is stored in textures.items and surfaces.items)
+    
     struct Textures textures; // Contains pointers to SDL textures.
     struct Surfaces surfaces;
     struct Fonts fonts;

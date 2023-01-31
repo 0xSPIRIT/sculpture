@@ -5,6 +5,17 @@ void timelapse_init() {
     tl->frame = 0;
 }
 
+bool timelapse_is_state_grids_same(int a, int b) {
+    struct Save_State *sa = &gs->save_states[a];
+    struct Save_State *sb = &gs->save_states[b];
+    
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        if (sa->grid_layers[0][i].type != sb->grid_layers[0][i].type) return false;
+    }
+    
+    return true;
+}
+
 void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
     struct Timelapse *tl = &gs->timelapse;
     if (tl->sticky > 0) {
@@ -14,10 +25,16 @@ void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
         
         if (tl->timer >= tl->timer_max) {
             tl->frame++;
+            
+            while (tl->frame < gs->save_state_count && timelapse_is_state_grids_same(tl->frame, tl->frame-1)) {
+                tl->frame++;
+            }
             if (tl->frame >= gs->save_state_count) {
                 tl->sticky = 90;
                 tl->frame = 0;
-            }
+            } 
+            
+            
             tl->timer = 0;
         }
     }
