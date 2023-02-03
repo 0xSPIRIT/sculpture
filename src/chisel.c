@@ -367,30 +367,69 @@ void chisel_draw_target(struct Chisel *chisel, int dx, int dy, int render_target
     
     // Disgusting hardcoding to adjust the weird rotation SDL does.
     if (!chisel->face_mode) {
-        if (chisel->size == 0 || chisel->size == 1) {
-            if (chisel->angle == 225) {
-                y += 2;
-            } else if (chisel->angle == 180) {
-                x++;
-                y++;
-            } else if (chisel->angle == 90) {
-                x++;
-            } else if (chisel->angle == 45) {
-                y--;
-                x++;
-            } else if (chisel->angle == 135) {
-                x += 2;
-                y++;
-            } else if (chisel->angle == 315) {
+        if (gs->use_software_renderer) {
+            if (chisel->size == 0 || chisel->size == 1) {
+                if (chisel->angle == 225) {
+                    y += 2;
+                } else if (chisel->angle == 180) {
+                    x++;
+                    y++;
+                } else if (chisel->angle == 90) {
+                    x++;
+                } else if (chisel->angle == 45) {
+                    y--;
+                    x++;
+                } else if (chisel->angle == 135) {
+                    x += 2;
+                    y++;
+                } else if (chisel->angle == 315) {
+                }
+            } else if (chisel->size == 2) {
+                if (chisel->angle == 225) {
+                    y++;
+                } else if (chisel->angle == 45) {
+                    x++;
+                } else if (chisel->angle == 135) {
+                    x++;
+                    y++;
+                }
             }
-        } else if (chisel->size == 2) {
-            if (chisel->angle == 225) {
-                y++;
-            } else if (chisel->angle == 45) {
-                x++;
-            } else if (chisel->angle == 135) {
-                x++;
-                y++;
+        } else {
+            if (gs->input.keys[SDL_SCANCODE_U])
+                Log("%.2f\n", chisel->angle);
+            if (chisel->size == 0 || chisel->size == 1) {
+                if (chisel->angle == 225) {
+                    y += 2;
+                    x++;
+                } else if (chisel->angle == 180) {
+                    x++;
+                    y++;
+                } else if (chisel->angle == 90) {
+                    x++;
+                } else if (chisel->angle == 45) {
+                    x++;
+                } else if (chisel->angle == 135) {
+                    x += 2;
+                } else if (chisel->angle == 315) {
+                }
+            } else if (chisel->size == 2) {
+                if (chisel->angle == 0) {
+                    x++;
+                } else if (chisel->angle == 225) {
+                    y++;
+                } else if (chisel->angle == 45) {
+                    x++;
+                    y++;
+                } else if (chisel->angle == 135) {
+                    x++;
+                    y++;
+                } else if (chisel->angle == 315) {
+                    x++;
+                } else if (chisel->angle == 180) {
+                    y++;
+                } else if (chisel->angle == 90) {
+                    x++;
+                }
             }
         }
     }

@@ -63,7 +63,7 @@ struct Game_Code {
     GameRunProc game_run;
 };
 
-void game_init_sdl(struct Game_State *state, const char *window_title, int w, int h) {
+void game_init_sdl(struct Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
     SDL_Init(SDL_INIT_VIDEO);
     
     Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
@@ -79,11 +79,12 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
     
-#ifdef ALASKA_USE_SOFTWARE_RENDERER
-    const int flags = SDL_RENDERER_SOFTWARE;
-#else
-    const int flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
-#endif
+    int flags = 0;
+    if (use_software_renderer) {
+        flags = SDL_RENDERER_SOFTWARE;
+    } else {
+        flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+    }
     
     state->renderer = SDL_CreateRenderer(state->window, -1, flags);
     Assert(state->renderer);
@@ -122,7 +123,8 @@ void game_init(struct Game_State *state) {
     game_init_sdl(state,
                   "Alaska", 
                   state->window_width, 
-                  state->window_height);
+                  state->window_height,
+                  state->use_software_renderer);
     
     // Load all assets... except for render targets.
     // We can't create render targets until levels
@@ -140,7 +142,8 @@ void game_init(struct Game_State *state) {
 }
 
 void game_deinit(struct Game_State *state) {
-    SDL_DestroyRenderer(state->renderer);
+    // For some reason this crashes when use_software_renderer is on.
+    //SDL_DestroyRenderer(state->renderer);
     SDL_DestroyWindow(state->window);
     
     textures_deinit(&state->textures);
@@ -242,10 +245,21 @@ int main(int argc, char **argv)
     
     // The level to start on
     int start_level = 0;
+#ifndef ALASKA_RELEASE_MODE
     if (argc == 2) {
         start_level = atoi(argv[1])-1;
         if (start_level < 0) start_level = 0;
         if (start_level >= 10) start_level = 9;
+    }
+#endif
+    
+    bool use_software_renderer = false;
+    if (argc == 2) {
+        if (0==strcmp(argv[1], "-renderer=gpu")) {
+            use_software_renderer = false;
+        } else if (0==strcmp(argv[1], "-renderer=cpu")) {
+            use_software_renderer = true;
+        }
     }
     
     struct Game_Code game_code = {0};
@@ -256,8 +270,9 @@ int main(int argc, char **argv)
     
     // *1.5 in case we add more values at runtime.
     struct Game_State *game_state = PushSize(&persistent_memory, sizeof(struct Game_State));
-    
     gs = game_state; // This is so that our macros can pick up "gs" instead of game_state.
+    
+    game_state->use_software_renderer = use_software_renderer;
     
     game_state->persistent_memory = &persistent_memory;
     game_state->transient_memory = &transient_memory;
@@ -288,11 +303,9 @@ int main(int argc, char **argv)
     QueryPerformanceFrequency(&frequency);
     QueryPerformanceCounter(&time_start);
     
-#ifdef ALASKA_USE_SOFTWARE_RENDERER
     const f64 target_seconds_per_frame = 1.0/60.0;
     f64 time_passed = 0.0;
     f32 fps = 0.f;
-#endif
     
     while (running) {
         LARGE_INTEGER time_elapsed_for_frame;
@@ -331,43 +344,42 @@ int main(int argc, char **argv)
         
         QueryPerformanceCounter(&time_elapsed);
         
-#ifdef ALASKA_USE_SOFTWARE_RENDERER
-        
-        Uint64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
-        f64 d = (f64)delta / (f64)frequency.QuadPart;
-        
-        // Sleep until 16.6ms has passed.
-        while (d < target_seconds_per_frame) {
-            LARGE_INTEGER end;
-            QueryPerformanceCounter(&end);
-            d = (f64)(end.QuadPart - time_elapsed_for_frame.QuadPart) / (f64)frequency.QuadPart;
-        }
-        
-        time_passed += d;
-        
-        // Only update FPS counter every 0.25s.
-        if (time_passed > 0.1) {
-            fps = 1.0/d;
-            time_passed = 0;
-        }
-        
-        {
-            Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
-            Uint64 size_max = persistent_memory.size;
-            f32 percentage = (f32)size_current / (f32)size_max;
-            percentage *= 100.f;
+        if (use_software_renderer) {
+            Uint64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
+            f64 d = (f64)delta / (f64)frequency.QuadPart;
             
-            char title[128] = {0};
-            sprintf(title,
-                    "Alaska | Memory Used: %.2f/%.2f MB [%.2f%%] | FPS: %.2f",
-                    size_current/1024.0/1024.0,
-                    size_max/1024.0/1024.0,
-                    percentage,
-                    fps);
+            // Sleep until 16.6ms has passed.
+            while (d < target_seconds_per_frame) {
+                LARGE_INTEGER end;
+                QueryPerformanceCounter(&end);
+                d = (f64)(end.QuadPart - time_elapsed_for_frame.QuadPart) / (f64)frequency.QuadPart;
+            }
             
-            SDL_SetWindowTitle(game_state->window, title);
+            time_passed += d;
+            
+            // Only update FPS counter every 0.25s.
+            if (time_passed > 0.1) {
+                fps = 1.0/d;
+                time_passed = 0;
+            }
+            
+            {
+                Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
+                Uint64 size_max = persistent_memory.size;
+                f32 percentage = (f32)size_current / (f32)size_max;
+                percentage *= 100.f;
+                
+                char title[128] = {0};
+                sprintf(title,
+                        "Alaska | Memory Used: %.2f/%.2f MB [%.2f%%] | FPS: %.2f",
+                        size_current/1024.0/1024.0,
+                        size_max/1024.0/1024.0,
+                        percentage,
+                        fps);
+                
+                SDL_SetWindowTitle(game_state->window, title);
+            }
         }
-#endif
     }
     
     game_deinit(game_state);

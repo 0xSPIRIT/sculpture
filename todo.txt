@@ -1,14 +1,5 @@
 TODO :: {
 
-	[ ] Set up for playtesting.
-		[x] Auto set tool to pointer from chisel when no cells on grid.
-		[x] Fix up the timelapse.
-		[x] Add the powergen thing to level 4 properly, and add it to desired.
-		[x] When you click on an item in your inventory, save state.
-		[x] When playback in timelapse, remove contiguous states where the
-			grid remains the same.
-		[x] Fix undoing with steam not working properly.
-
 	[ ] Improve UNDO when placing something in mid-air. Perhaps pause for 0.1s
 		upon undoing?
 	

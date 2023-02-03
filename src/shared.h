@@ -49,6 +49,8 @@ struct Memory_Arena {
 struct Game_State {
     struct Memory_Arena *persistent_memory, *transient_memory;
     
+    bool use_software_renderer;
+    
     struct SDL_Window *window;
     struct SDL_Renderer *renderer;
     
