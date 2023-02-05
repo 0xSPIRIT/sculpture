@@ -555,7 +555,8 @@ void chisel_tick(void) {
                                   false,
                                   true,
                                   true);
-        
+        gs->overlay.current_material = get_neighbour_type_in_direction(index%gs->gw, index/gs->gw, chisel->angle);
+            
         if (index != -1) {
             chisel->x = (f32) (index%gs->gw);
             chisel->y = (f32) (index/gs->gw);
@@ -688,6 +689,8 @@ void chisel_tick(void) {
                                       false,
                                       true,
                                       true);
+            gs->overlay.current_material = get_neighbour_type_in_direction(index%gs->gw, index/gs->gw, chisel->angle);
+            
             chisel->x = (f32) (index%gs->gw);
             chisel->y = (f32) (index/gs->gw);
         }
@@ -752,7 +755,7 @@ void chisel_draw(void) {
                         SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 60);
                     }
                 } else {
-                    SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 50);
+                    SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 150);
                 }
             } else {
                 SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 35);

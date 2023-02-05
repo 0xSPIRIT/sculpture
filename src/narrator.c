@@ -158,7 +158,7 @@ void narrator_run(SDL_Color col) {
         SDL_Rect dst = {
             9*gs->window_width/10 - 12,
             9*gs->window_height/10 - 12,
-            25, 24
+            Scale(25), Scale(24)
         };
         
         f64 start_value = 0.2;

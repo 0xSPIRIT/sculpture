@@ -85,6 +85,7 @@ int level_add(const char *name, const char *desired_image, const char *initial_i
                                &level->source_cell_count,
                                &w,
                                &h);
+    level->default_source_cell_count = level->source_cell_count;
     
     memcpy(&level->default_source_cell,
            &level->source_cell,
@@ -154,6 +155,7 @@ void goto_level(int lvl) {
     memcpy(&gs->levels[lvl].source_cell,
            &gs->levels[lvl].default_source_cell,
            sizeof(struct Source_Cell)*SOURCE_CELL_MAX);
+    gs->levels[lvl].source_cell_count = gs->levels[lvl].default_source_cell_count;
     
     gs->conversions.calculated_render_target = false;
     
@@ -289,26 +291,13 @@ void level_tick(void) {
                 gs->step_one = 0;
             }
             
-            /* if (input->my < 0) { // If the mouse is in the GUI gs->window...
-             *     SDL_ShowCursor(1);
-             *     if (SDL_GetCursor() != gs->normal_cursor) {
-             *         SDL_SetCursor(gs->normal_cursor);
-             *     }
-             *     break;
-             * } else if (gs->current_tool == TOOL_GRABBER) {
-             *     if (SDL_GetCursor() != gs->grabber_cursor) {
-             *         SDL_ShowCursor(1);
-             *         SDL_SetCursor(gs->grabber_cursor);
-             *     }
-             * } else if (SDL_GetCursor() != gs->normal_cursor) {
-             *     SDL_SetCursor(gs->normal_cursor);
-             * } */
-            
-            //chisel_blocker_tick();
-            
             overlay_swap_tick();
             
             if (gs->chisel_blocker_mode) break;
+            
+            if (gs->current_tool > TOOL_CHISEL_LARGE) {
+                gs->overlay.current_material = -1;
+            }
             
             switch (gs->current_tool) {
                 case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
@@ -361,7 +350,7 @@ void level_draw_intro(void) {
         }
     }
     
-    SDL_SetRenderTarget(gs->renderer, NULL);
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
     
     const SDL_Rect global_dst = {
         0, GUI_H,
@@ -386,6 +375,8 @@ void level_draw_intro(void) {
     
     SDL_FreeSurface(surf);
     SDL_DestroyTexture(texture);
+    
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
 }
 
 void level_draw(void) {

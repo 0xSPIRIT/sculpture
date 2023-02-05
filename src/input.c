@@ -11,6 +11,10 @@ void input_tick(struct Game_State *state) {
     static Uint32 mouse_previous = {0};
 
     in->mouse = (Uint32) SDL_GetMouseState(&in->real_mx, &in->real_my);
+    
+    in->real_mx -= gs->real_width/2 - gs->window_width/2;
+    in->real_my -= gs->real_height/2 - gs->window_height/2;
+    
     in->keys = (Uint8*) SDL_GetKeyboardState(NULL);
 
     for (int i = 0; i < SDL_NUM_SCANCODES; i++) {

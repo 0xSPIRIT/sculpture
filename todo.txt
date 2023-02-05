@@ -2,7 +2,7 @@ TODO :: {
 
 	[ ] Improve UNDO when placing something in mid-air. Perhaps pause for 0.1s
 		upon undoing?
-	
+
 }
 
 Future TODO (Vague) :: {

@@ -39,12 +39,12 @@ bool was_mouse_in_slot(struct Slot *slot) {
 }
 
 void inventory_setup_slots() {
-    const int startx = (gs->gw*gs->S)/2 - 0.5*INVENTORY_SLOT_COUNT*100;
+    const int startx = (gs->gw*gs->S)/2 - 0.5*INVENTORY_SLOT_COUNT*Scale(100);
     const int starty = GUI_H/2;
     
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
         struct Slot *slot = &gs->inventory.slots[i];
-        slot->x = startx + i * 100 + ITEM_SIZE;
+        slot->x = startx + i * Scale(100) + ITEM_SIZE;
         slot->y = starty;
         slot->w = ITEM_SIZE;
         slot->h = ITEM_SIZE;
@@ -90,6 +90,12 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
         x, y,
         w, h
     };
+    
+    if (y >= GUI_H && y <= gs->gui.popup_y) {
+        SDL_SetTextureColorMod(texs->items[item->type], 255, 0, 0);
+    } else {
+        SDL_SetTextureColorMod(texs->items[item->type], 255, 255, 255);
+    }
     SDL_RenderCopy(gs->renderer, texs->items[item->type], NULL, &r);
     
     if (gs->item_prev_amounts[item->index] != item->amount) {
@@ -120,6 +126,12 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
         surfs->item_nums[item->index]->w,
         surfs->item_nums[item->index]->h
     };
+    
+    if (y >= GUI_H && y <= gs->gui.popup_y) {
+        SDL_SetTextureColorMod(texs->item_nums[item->index], 255, 0, 0);
+    } else {
+        SDL_SetTextureColorMod(texs->item_nums[item->index], 255, 255, 255);
+    }
     SDL_RenderCopy(gs->renderer, texs->item_nums[item->index], NULL, &dst);
 }
 

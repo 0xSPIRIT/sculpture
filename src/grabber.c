@@ -28,6 +28,8 @@ void grabber_tick(void) {
     if (gs->overlay.show && gs->overlay.grid[gx+gy*gs->gw]) {
         tooltip_set_position_to_cursor(&gs->gui.tooltip, TOOLTIP_TYPE_ITEM);
         
+        gs->overlay.current_material = gs->overlay.grid[gx+gy*gs->gw];
+        
         gs->is_mouse_over_any_button = true;
         
         char tooltip_text[64];
@@ -40,6 +42,7 @@ void grabber_tick(void) {
         
         strcpy(gs->gui.tooltip.str[0], tooltip_text);
     } else {
+        gs->overlay.current_material = -1;
         tooltip_reset(&gs->gui.tooltip);
     }
     

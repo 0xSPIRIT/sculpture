@@ -82,8 +82,10 @@ struct Game_State {
     
     bool is_mouse_over_any_button;
     
-    int S;
+    f64 S;
+    bool fullscreen;
     int window_width, window_height;
+    int real_width, real_height;
     f32 delta_time;
     
     int current_tool, previous_tool;

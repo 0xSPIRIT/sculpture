@@ -28,6 +28,12 @@
 #include "3d.c"
 #include "level.c"
 
+void game_resize(int h) {
+    gs->window_height = h;
+    gs->window_width = h;
+    gs->S = round(6.0 * h/1080.0);
+}
+
 export void game_init(struct Game_State *state, int level) {
     gs = state;
     
@@ -54,6 +60,12 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     
     if (event->type == SDL_QUIT) {
         is_running = false;
+    }
+    
+    if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) {
+        gs->real_width = event->window.data1;
+        gs->real_height = event->window.data2;
+        //game_resize(gs->real_height);
     }
     
     if (event->type == SDL_MOUSEWHEEL) {
@@ -84,6 +96,16 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
 #ifdef ALASKA_DEBUG
                     is_running = false; 
 #endif
+                }
+                break;
+            }
+            case SDLK_F11: {
+                if (!gs->fullscreen) {
+                    SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+                    gs->fullscreen = true;
+                } else {
+                    SDL_SetWindowFullscreen(gs->window, 0);
+                    gs->fullscreen = false;
                 }
                 break;
             }
@@ -284,7 +306,7 @@ void draw_outro(struct Level *level) {
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(gs->renderer, &rect);
     
-    const int margin = 36;
+    const int margin = Scale(36);
     
     { // Level name
         char string[256] = {0};
@@ -294,24 +316,24 @@ void draw_outro(struct Level *level) {
         int y = rect.y + margin;
         
         draw_text_indexed(TEXT_OUTRO_LEVEL_NAME,
-                        gs->fonts.font,
-                        string, BLACK, WHITE, 0, 0, x, y, NULL, NULL);
+                          gs->fonts.font,
+                          string, BLACK, WHITE, 0, 0, x, y, NULL, NULL);
     }
     
     
     // Desired and Your grid.
     
-    const int scale = 3;
+    const int scale = Scale(3);
     
     int dx = rect.x + margin;
-    int dy = rect.y + 100;
+    int dy = rect.y + Scale(100);
     
     draw_text_indexed(TEXT_OUTRO_INTENDED,
-                    gs->fonts.font,
-                    "What you intended", BLACK, WHITE, 0, 0, dx, dy, NULL, NULL);
+                      gs->fonts.font,
+                      "What you intended", BLACK, WHITE, 0, 0, dx, dy, NULL, NULL);
     draw_text_indexed(TEXT_OUTRO_RESULT,
-                    gs->fonts.font,
-                    "The result", BLACK, WHITE, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL);
+                      gs->fonts.font,
+                      "The result", BLACK, WHITE, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL);
     
     // Desired
     
@@ -338,25 +360,25 @@ void draw_outro(struct Level *level) {
     timelapse_tick_and_draw(dx, dy+32, scale, scale);
     
     draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,
-                    gs->fonts.font,
-                    "Next Level [n]",
-                    (SDL_Color){0, 91, 0, 255},
-                    (SDL_Color){255, 255, 255, 255},
-                    1, 1,
-                    rect.x + rect.w - margin,
-                    rect.y + rect.h - margin,
-                    NULL,
-                    NULL);
+                      gs->fonts.font,
+                      "Next Level [n]",
+                      (SDL_Color){0, 91, 0, 255},
+                      (SDL_Color){255, 255, 255, 255},
+                      1, 1,
+                      rect.x + rect.w - margin,
+                      rect.y + rect.h - margin,
+                      NULL,
+                      NULL);
     draw_text_indexed(TEXT_OUTRO_PREV_LEVEL,
-                    gs->fonts.font,
-                    "Close [f]",
-                    (SDL_Color){0, 91, 0, 255},
-                    (SDL_Color){255, 255, 255, 255}, 
-                    0, 1,
-                    rect.x + margin,
-                    rect.y + rect.h - margin,
-                    NULL,
-                    NULL);
+                      gs->fonts.font,
+                      "Close [f]",
+                      (SDL_Color){0, 91, 0, 255},
+                      (SDL_Color){255, 255, 255, 255}, 
+                      0, 1,
+                      rect.x + margin,
+                      rect.y + rect.h - margin,
+                      NULL,
+                      NULL);
 }
 
 export void game_run(struct Game_State *state) {
@@ -365,6 +387,8 @@ export void game_run(struct Game_State *state) {
     struct Level *level = &gs->levels[gs->level_current];
     
     gs->gui.tooltip.set_this_frame = false;
+    
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
     
     if (gs->obj.active) {
         SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
@@ -389,12 +413,13 @@ export void game_run(struct Game_State *state) {
                 gs->view.w, gs->view.h
             };
             
-            SDL_SetRenderTarget(gs->renderer, NULL);
             SDL_RenderCopy(gs->renderer,
                            RenderTarget(RENDER_TARGET_GLOBAL),
                            NULL,
                            &dst);
             draw_outro(level);
+            
+            text_field_draw();
         } else if (level->state == LEVEL_STATE_PLAY) {
             SDL_Rect dst = {
                 -gs->view.x,
@@ -402,7 +427,6 @@ export void game_run(struct Game_State *state) {
                 gs->view.w, gs->view.h
             };
             
-            SDL_SetRenderTarget(gs->renderer, NULL);
             SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
             
             gui_draw();
@@ -416,10 +440,23 @@ export void game_run(struct Game_State *state) {
                 gui_draw_profile();
             
             gui_message_stack_tick_and_draw();
+            text_field_draw();
         }
     }
     
-    text_field_draw();
+    SDL_SetRenderTarget(gs->renderer, NULL);
+    
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+    SDL_RenderClear(gs->renderer);
+    
+    SDL_Rect dst = {
+        gs->real_width/2 - gs->window_width/2,
+        gs->real_height/2 - gs->window_height/2,
+        gs->window_width,
+        gs->window_height
+    };
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_MASTER), NULL, &dst);
+    
     SDL_RenderPresent(gs->renderer);
     
     gs->is_mouse_over_any_button = false;

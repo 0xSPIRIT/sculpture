@@ -25,6 +25,8 @@ struct Overlay {
     int *temp_grid;
     enum Overlay_Tool tool;
     
+    int current_material;
+    
     struct Overlay_Changes changes;
     
     SDL_Rect r;

@@ -59,7 +59,7 @@ void _end_timer(const char *func) {
 
 // Moves the mouse to the middle of the grid cell, not the top-left.
 void move_mouse_to_grid_position(f32 x, f32 y) {
-    SDL_WarpMouseInWindow(gs->window, (int)(x*gs->S + gs->S/2 - gs->view.x), GUI_H + (int)(y*gs->S + gs->S/2 - gs->view.y));
+    SDL_WarpMouseInWindow(gs->window, (int)(x*gs->S + gs->S/2 - gs->view.x + (gs->real_width/2 - gs->window_width/2)), GUI_H + (int)(y*gs->S + gs->S/2 - gs->view.y + (gs->real_height/2 - gs->window_height/2)));
 }
 
 void get_filename_from_type(int type, char *out) {

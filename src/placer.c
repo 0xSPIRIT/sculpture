@@ -18,9 +18,9 @@ void placer_init(int num) {
     placer->object_index = -1;
     placer->did_click = 0;
     placer->radius = 4;
-
+    
     placer->placing_solid_time = 0;
-
+    
     placer->rect.x = placer->rect.y = -1;
     
     placer->contains = &gs->inventory.slots[num].item;
@@ -331,7 +331,7 @@ void placer_tick(struct Placer *placer) {
     placer->y = gs->input.my;
     
     if (gs->creative_mode) {
-        placer->contains->amount = gs->gw*gs->gh;
+        placer->contains->amount = 400;
     }
     
     // If the cell type is hard, use rectangle placing, otherwise use brush/circle placing.
@@ -345,6 +345,10 @@ void placer_tick(struct Placer *placer) {
             placer->state = PLACER_PLACE_RECT_MODE;
         } else {
             placer->state = PLACER_PLACE_CIRCLE_MODE;
+        }
+        
+        if (placer->contains->type) { // If statement is redundant?
+            gs->overlay.current_material = placer->contains->type;
         }
     }
     

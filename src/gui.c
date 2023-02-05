@@ -40,6 +40,7 @@ struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, cons
     b->type = type;
     b->texture = texture;
     b->disabled = false;
+    
     SDL_QueryTexture(texture, NULL, NULL, &b->w, &b->h);
     
     strcpy(b->tooltip_text, tooltip_text);
@@ -161,6 +162,7 @@ void button_draw(struct Button *b) {
     } else {
         SDL_SetTextureColorMod(b->texture, 255, 255, 255);
     }
+    
     SDL_RenderCopy(gs->renderer, b->texture, NULL, &dst);
 }
 
@@ -221,6 +223,7 @@ void gui_init(void) {
         
         if (gui->tool_buttons[i] == NULL) {
             gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR, gs->textures.tool_buttons[i], name, click_gui_tool_button);
+            gui->tool_buttons[i]->w = gui->tool_buttons[i]->h = gs->window_width/8;
         }
         
         gui->tool_buttons[i]->x = cum;
@@ -393,7 +396,7 @@ void gui_draw(void) {
             gs->gw*gs->S, GUI_H
         };
         
-        SDL_SetRenderTarget(gs->renderer, NULL);
+        SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
         SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR), NULL, &dst);
     }
     
@@ -487,7 +490,7 @@ void gui_popup_draw(void) {
     
     SDL_Rect bar = {
         0, popup.y,
-        gs->gw*gs->S, (int)36
+        gs->gw*gs->S, Scale(36)
     };
     
     Uint8 r = 200, g = 200, b = 200;
@@ -676,7 +679,10 @@ struct Converter *converter_init(int type, bool allocated) {
     }
     
     converter->arrow.texture = gs->textures.converter_arrow;
+    
     SDL_QueryTexture(converter->arrow.texture, NULL, NULL, &converter->arrow.w, &converter->arrow.h);
+    converter->arrow.w = Scale(converter->arrow.w);
+    converter->arrow.h = Scale(converter->arrow.h);
     
     converter->arrow.x = (int) (converter->w/2);
     converter->arrow.y = (int) (converter->h/2 + 24);
@@ -686,8 +692,8 @@ struct Converter *converter_init(int type, bool allocated) {
     if (converter->go_button == NULL) {
         converter->go_button = button_allocate(BUTTON_TYPE_CONVERTER, gs->textures.convert_button, "Convert", converter_begin_converting);
     }
-    converter->go_button->w = 48;
-    converter->go_button->h = 48;
+    converter->go_button->w = Scale(48);
+    converter->go_button->h = Scale(48);
     
     return converter;
 }
@@ -1066,8 +1072,8 @@ void converter_tick(struct Converter *converter) {
         }
     }
     
-    converter->go_button->x = (int) (converter->x + converter->arrow.x - 128);
-    converter->go_button->y = (int) (gs->gui.popup_y + 240);
+    converter->go_button->x = (int) (converter->x + converter->arrow.x - Scale(128));
+    converter->go_button->y = (int) (gs->gui.popup_y + Scale(250));
     
     if (converter->state == CONVERTER_INACTIVE)
         return;

@@ -48,6 +48,10 @@ void render_targets_init(SDL_Renderer *renderer,
         Assert(l->w != 0 && l->h != 0);
         
         for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
+            if (i == RENDER_TARGET_MASTER) {
+                textures->render_targets[lvl][i] = CreateRenderTarget(gs->window_width, gs->window_height);
+                continue;
+            }
             if (i == RENDER_TARGET_CONVERSION_PANEL) {
                 textures->render_targets[lvl][i] = CreateRenderTarget(width, gs->window_height-GUI_H);
                 continue;
@@ -184,13 +188,13 @@ void surfaces_deinit(struct Surfaces *surfaces) {
 }
 
 void fonts_init(struct Fonts *fonts) {
-    fonts->font          = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", 19);
-    fonts->font_consolas = TTF_OpenFont(RES_DIR "consola.ttf", 24);
-    fonts->font_courier  = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", 20);
-    fonts->font_small    = TTF_OpenFont(RES_DIR "consola.ttf", 16);
-    fonts->font_title    = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", 45);
-    fonts->font_bold_small = TTF_OpenFont(RES_DIR "courbd.ttf", 16);
-    fonts->font_times    = TTF_OpenFont(RES_DIR "times.ttf", 28);
+    fonts->font          = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", Scale(19));
+    fonts->font_consolas = TTF_OpenFont(RES_DIR "consola.ttf", Scale(24));
+    fonts->font_courier  = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", Scale(20));
+    fonts->font_small    = TTF_OpenFont(RES_DIR "consola.ttf", Scale(16));
+    fonts->font_title    = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", Scale(45));
+    fonts->font_bold_small = TTF_OpenFont(RES_DIR "courbd.ttf", Scale(16));
+    fonts->font_times    = TTF_OpenFont(RES_DIR "times.ttf", Scale(28));
     
     TTF_Font **ttf_fonts = (TTF_Font**) fonts;
     size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);

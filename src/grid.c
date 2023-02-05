@@ -125,6 +125,34 @@ void print_blob_data(struct Object *object, int chisel_size) {
     Log("\n\n");
 }
 
+// 249
+
+int get_neighbour_type_in_direction(int x, int y, f32 angle) {
+    angle += 180;
+    
+    f64 len = 2;
+    
+    while (len <= 3) {
+        f32 dx = len * cos(DEGTORAD*angle);
+        f32 dy = len * sin(DEGTORAD*angle);
+        
+        int xx = x+dx;
+        int yy = y+dy;
+        
+        if (!is_in_bounds(xx, yy)) {
+            return -1;
+        }
+        
+        int type = gs->grid[xx+yy*gs->gw].type;
+        
+        if (type) return type;
+        
+        len++;
+    }
+    
+    return -1;
+}
+
 int get_any_neighbour_object(int x, int y) {
     for (int xx = -1; xx <= 1; xx++) {
         for (int yy = -1; yy <= 1; yy++) {
@@ -994,7 +1022,7 @@ void grid_array_draw(struct Cell *array, Uint8 alpha) {
             if (draw_pressure && gs->objects[gs->object_count-1].blob_data[gs->chisel->size].blobs[x+y*gs->gw] && normalized_pressure >= get_pressure_threshold(gs->chisel->size)) {
                 SDL_SetRenderDrawColor(gs->renderer, min((int)col.r * 2.0, 255), col.g, col.b, col.a);
             } else {
-                float a = alpha/255.0;
+                f64 a = alpha/255.0;
                 //a += -0.075f + 0.075f * sin(x/4.0+y*gs->gw/2.0 + SDL_GetTicks()/1000.0);
                 SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, col.a * a);
             }

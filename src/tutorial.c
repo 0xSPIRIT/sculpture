@@ -14,39 +14,48 @@ struct Tutorial_Rect* tutorial_rect(const char *str,
     
     int i = 0;
     
-    int fw, fh;
-    TTF_SizeText(tut->font, "=", &fw, &fh);
-    
     tut->line_count = 0;
     
-    tut->margin = 8;
+    tut->margin = Scale(8);
     
+    int l = 0;
     int largest = 0;
     while (*str) {
         if (*str == '\n') {
             tut->line_count++;
             ++str;
-            if (i > largest) largest = i;
+            if (i > l) {
+                l=i;
+                largest = tut->line_count-1;
+            }
             i = 0;
             continue;
         }
         tut->lines[tut->line_count][i++] = *str;
         ++str;
     }
-    if (i > largest) largest = i;
+    
+    int fw=0, fh=0;
+    TTF_SizeText(tut->font, tut->lines[largest], &fw, &fh);
+    
+    Assert(fw);
+    Assert(fh);
+    
     tut->line_count++;
     
     tut->ok_button = button_allocate(BUTTON_TYPE_TUTORIAL, gs->textures.tutorial_ok_button, "", NULL);
+    tut->ok_button->w = Scale(tut->ok_button->w);
+    tut->ok_button->h = Scale(tut->ok_button->h);
     
     int bw, bh;
     SDL_QueryTexture(gs->textures.tutorial_ok_button, NULL, NULL, &bw, &bh);
     
-    const int space_before_button = 32;
+    const int space_before_button = Scale(32);
     
     tut->rect.x = x;
     tut->rect.y = y;
-    tut->rect.w = fw * largest + tut->margin*2;
-    tut->rect.h = space_before_button + bh + tut->line_count * fh + tut->margin*2;
+    tut->rect.w = fw + tut->margin*2;
+    tut->rect.h = space_before_button + bh + (tut->line_count-1) * fh + tut->margin*2;
     
     tut->ok_button->x = x + tut->rect.w / 2 - bw/2;
     tut->ok_button->y = y + tut->rect.h - bh - tut->margin;

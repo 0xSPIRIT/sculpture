@@ -2,12 +2,12 @@
 #define MAX_TOOLTIP_LINE_LEN 128
 #define CONVERTER_NAME_LEN 32
 
-#define GUI_POPUP_H 336 // window_height/2
-#define GUI_H 96
+#define GUI_POPUP_H (0.4375*gs->window_height) // window_height/2
+#define GUI_H (gs->window_width/8)
 
 #define MAX_MESSAGE_STACK 256
 
-#define ITEM_SIZE 48
+#define ITEM_SIZE (0.0625*gs->window_width)
 
 enum Tooltip_Type {
     TOOLTIP_TYPE_OFF,    // Off state

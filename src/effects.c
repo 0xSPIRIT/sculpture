@@ -36,7 +36,7 @@ void effect_set(int type, int w, int h) {
                 particle->vx = 0.3f + randf(0.5);
                 particle->vy = 0.3f + randf(1.0);
                 
-                float spd = 0.3f;
+                f64 spd = 0.3f;
                 if (w > gs->gw) {
                     spd = EFFECT_SCALE;
                 }
@@ -127,7 +127,7 @@ void effect_draw(struct Effect *effect, bool draw_points) {
                 if (draw_points) {
                     SDL_RenderDrawPoint(gs->renderer, px, py);
                 } else {
-                    fill_circle(gs->renderer, px, py, 6 * (length/max));
+                    fill_circle(gs->renderer, px, py, Scale(6 * (length/max)));
                 }
             }
             break;

@@ -7,7 +7,7 @@ f64 lerp64(f64 a, f64 b, f64 t) {
 }
 
 void view_tick(struct View *view, struct Input *input) {
-    float desired_x = 0;
+    f64 desired_x = 0;
     
     if (input->keys[SDL_SCANCODE_D]) {
         desired_x = 100;
@@ -15,7 +15,7 @@ void view_tick(struct View *view, struct Input *input) {
         desired_x = -100;
     }
     
-    float desired_y = 0;
+    f64 desired_y = 0;
     
     if (input->keys[SDL_SCANCODE_S]) {
         desired_y = 100;

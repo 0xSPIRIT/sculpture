@@ -8,6 +8,11 @@
 
 #define ITEM_COUNT 32
 
+// 768x768 is the benchmark resolution I used so when
+// converting to new resolutions, I just put Scale(...)
+// around all the values working with the old 768x768 res.
+#define Scale(x) ((f64)gs->window_width * (f64)x/768.0)
+
 enum {
     TEXT_OUTRO_LEVEL_NAME,
     TEXT_OUTRO_INTENDED,
@@ -21,7 +26,8 @@ enum {
 
 // Index into textures.render_targets[]
 enum {
-    RENDER_TARGET_GLOBAL, // The main render target
+    RENDER_TARGET_MASTER, // The final full-screen resolution target.
+    RENDER_TARGET_GLOBAL, // The main pixel art render target
     RENDER_TARGET_GUI_TOOLBAR, // The render target showing the tool buttons
     RENDER_TARGET_CHISEL_BLOCKER,
     RENDER_TARGET_CHISEL, // Use the same render target for each chisel.

@@ -73,7 +73,7 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
                                      SDL_WINDOWPOS_CENTERED,
                                      w,
                                      h,
-                                     SDL_WINDOW_SHOWN);
+                                     SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     Assert(state->window);
     
     IMG_Init(IMG_INIT_PNG);
@@ -110,15 +110,35 @@ void make_memory_arena(struct Memory_Arena *persistent_memory, struct Memory_Are
     transient_memory->cursor = transient_memory->data;
 }
 
+f64 calculate_scale() {
+    RECT desktop;
+    HWND hDesktop = GetDesktopWindow();
+    GetWindowRect(hDesktop, &desktop);
+    //int w = desktop.right;
+    int h = desktop.bottom;
+    
+    return (int)round(6.0 * h/1080.0);
+}
+
+bool prefix(const char *pre, const char *str) {
+    return strncmp(pre, str, strlen(pre)) == 0;
+}
+
 void game_init(struct Game_State *state) {
     srand((unsigned int) time(0));
     
-    state->S = 6;
+    // Taken from https://github.com/kumar8600/win32_SetProcessDpiAware
+    win32_SetProcessDpiAware();
+    
+    if (state->S == 0)
+        state->S = calculate_scale();
+    Log("Game Scale: %.2f\n", state->S);
+    
     state->window_width = 128*state->S;
     state->window_height = 128*state->S + GUI_H;
     
-    // Taken from https://github.com/kumar8600/win32_SetProcessDpiAware
-    win32_SetProcessDpiAware();
+    state->real_width = state->window_width;
+    state->real_height = state->window_height;
     
     game_init_sdl(state,
                   "Alaska", 
@@ -253,12 +273,18 @@ int main(int argc, char **argv)
     }
 #endif
     
+    int scale = 0;
+    
     bool use_software_renderer = false;
-    if (argc == 2) {
-        if (0==strcmp(argv[1], "-renderer=gpu")) {
-            use_software_renderer = false;
-        } else if (0==strcmp(argv[1], "-renderer=cpu")) {
-            use_software_renderer = true;
+    if (argc > 1) {
+        for (int i = 1; i < argc; i++) {
+            if (0==strcmp(argv[i], "-renderer=gpu")) {
+                use_software_renderer = false;
+            } else if (0==strcmp(argv[i], "-renderer=cpu")) {
+                use_software_renderer = true;
+            } else if (prefix("-scale=", argv[i])) {
+                scale = atoi(argv[i]+7);
+            }
         }
     }
     
@@ -273,6 +299,7 @@ int main(int argc, char **argv)
     gs = game_state; // This is so that our macros can pick up "gs" instead of game_state.
     
     game_state->use_software_renderer = use_software_renderer;
+    game_state->S = scale;
     
     game_state->persistent_memory = &persistent_memory;
     game_state->transient_memory = &transient_memory;

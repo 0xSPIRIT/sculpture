@@ -6,6 +6,8 @@
 #define GRAV 0.5
 #define MAX_GRAV 4
 
+#define DEGTORAD (2*M_PI / 360.0)
+
 enum Blob_Type {
     BLOB_CIRCLE_A,
     BLOB_CIRCLE_B,

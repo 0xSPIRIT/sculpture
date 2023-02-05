@@ -7,7 +7,10 @@ rem gcc main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lS
 
 if not exist src/main.c goto INVALID_DIR
 
-pushd bin\
+if not exist bin_release\ mkdir bin_release
+if not exist bin_release\obj\ mkdir bin_release\obj\
+
+pushd bin_release\
 
 REM Delete all the sculpture_***.pdb's
 del sculpture_*.pdb >nul 2>nul
@@ -25,6 +28,10 @@ REM Build the SDL layer (.exe)
 cl.exe %Common_Compiler_Flags% ..\src\main.c %Linker_Flags% SDL2main.lib /link /incremental:no /out:win32_sculpture.exe /NODEFAULTLIB:msvcrt /SUBSYSTEM:WINDOWS
 
 if NOT %errorlevel%==0 (set err=%errorlevel%)
+
+if not exist res\ mkdir res
+rem Copy the resources and its subdirectories
+xcopy /q /y /e /k /h /i ..\res\ res\
 
 popd
 goto end

@@ -4,7 +4,7 @@ Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_DIRT,          255,   0,   0,
     CELL_SAND,          109,   9, 121,
     CELL_WATER,          14, 182,  30,
-    CELL_ICE,             9, 185,  57,
+    CELL_ICE,             9,  9,  200,
     CELL_STEAM,          94,  86, 142,
     CELL_WOOD_LOG,       13,   9, 249,
     CELL_WOOD_PLANK,    150,   6, 118,
@@ -407,7 +407,12 @@ void overlay_draw_grid(int *grid, f32 alpha_coeff) {
                 255
             };
             
-            SDL_SetRenderDrawColor(gs->renderer, c.r, c.g, c.b, (Uint8)alpha);
+            Uint8 a = alpha;
+            if (gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
+                a /= 4;
+            }
+            
+            SDL_SetRenderDrawColor(gs->renderer, c.r, c.g, c.b, a);
             
             SDL_RenderDrawPoint(gs->renderer, x, y);
         }

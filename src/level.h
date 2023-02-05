@@ -64,7 +64,7 @@ struct Level {
     char profile_lines[64][CELL_TYPE_COUNT];
     struct Source_Cell source_cell[SOURCE_CELL_MAX];
     struct Source_Cell default_source_cell[SOURCE_CELL_MAX];
-    int source_cell_count;
+    int source_cell_count, default_source_cell_count;
     int w, h;
     int popup_time_current, popup_time_max;
 };
