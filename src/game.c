@@ -10,7 +10,6 @@
 #include "credits.c"
 #include "undo.c"
 #include "chisel_blocker.c"
-#include "spline.c"
 #include "blocker.c"
 #include "chisel.c"
 #include "tooltip.c"
@@ -27,6 +26,7 @@
 #include "narrator.c"
 #include "3d.c"
 #include "level.c"
+#include "titlescreen.c"
 
 void game_resize(int h) {
     gs->window_height = h;
@@ -49,6 +49,17 @@ export void game_init(struct Game_State *state, int level) {
     levels_setup();
     
     goto_level(level);
+    
+    titlescreen_init();
+    
+    gs->gamestate = GAME_STATE_PLAY;
+    
+#if 0
+    if (Mix_PlayMusic(gs->audio.music_title, -1) == -1) {
+        Log("%s\n", SDL_GetError());
+        exit(1);
+    }
+#endif
 }
 
 export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
@@ -301,146 +312,37 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     return is_running;
 }
 
-void draw_outro(struct Level *level) {
-    SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
-    SDL_RenderFillRect(gs->renderer, &rect);
-    
-    const int margin = Scale(36);
-    
-    { // Level name
-        char string[256] = {0};
-        sprintf(string, "Level %d - \"%s\"", gs->level_current+1, level->name);
-        
-        int x = rect.x + margin;
-        int y = rect.y + margin;
-        
-        draw_text_indexed(TEXT_OUTRO_LEVEL_NAME,
-                          gs->fonts.font,
-                          string, BLACK, WHITE, 0, 0, x, y, NULL, NULL);
-    }
-    
-    
-    // Desired and Your grid.
-    
-    const int scale = Scale(3);
-    
-    int dx = rect.x + margin;
-    int dy = rect.y + Scale(100);
-    
-    draw_text_indexed(TEXT_OUTRO_INTENDED,
-                      gs->fonts.font,
-                      "What you intended", BLACK, WHITE, 0, 0, dx, dy, NULL, NULL);
-    draw_text_indexed(TEXT_OUTRO_RESULT,
-                      gs->fonts.font,
-                      "The result", BLACK, WHITE, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL);
-    
-    // Desired
-    
-    for (int y = 0; y < gs->gh; y++) {
-        for (int x = 0; x < gs->gw; x++) {
-            SDL_Rect r;
-            
-            if (!level->desired_grid[x+y*gs->gw].type) {
-                SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-            } else {
-                SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
-                SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
-            }
-            
-            r = (SDL_Rect){ scale*x + dx, scale*y + dy + 32, scale, scale };
-            SDL_RenderFillRect(gs->renderer, &r);
-        }
-    }
-    
-    dx += rect.w - margin - scale*level->w - margin;
-    
-    // Your grid
-    
-    timelapse_tick_and_draw(dx, dy+32, scale, scale);
-    
-    draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,
-                      gs->fonts.font,
-                      "Next Level [n]",
-                      (SDL_Color){0, 91, 0, 255},
-                      (SDL_Color){255, 255, 255, 255},
-                      1, 1,
-                      rect.x + rect.w - margin,
-                      rect.y + rect.h - margin,
-                      NULL,
-                      NULL);
-    draw_text_indexed(TEXT_OUTRO_PREV_LEVEL,
-                      gs->fonts.font,
-                      "Close [f]",
-                      (SDL_Color){0, 91, 0, 255},
-                      (SDL_Color){255, 255, 255, 255}, 
-                      0, 1,
-                      rect.x + margin,
-                      rect.y + rect.h - margin,
-                      NULL,
-                      NULL);
-}
-
 export void game_run(struct Game_State *state) {
     gs = state;
-    
-    struct Level *level = &gs->levels[gs->level_current];
     
     gs->gui.tooltip.set_this_frame = false;
     
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
     
-    if (gs->obj.active) {
-        SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
-        SDL_RenderClear(gs->renderer);
-        
-        object_draw(&gs->obj);
-    } else {
-        view_tick(&gs->view, &gs->input);
-        
-        gui_tick();
-        conversions_gui_tick();
-        inventory_tick();
-        all_converters_tick();
-        
-        level_tick();
-        level_draw();
-        
-        if (level->state == LEVEL_STATE_OUTRO) {
-            SDL_Rect dst = {
-                -gs->view.x,
-                -gs->view.y + GUI_H,
-                gs->view.w, gs->view.h
-            };
-            
-            SDL_RenderCopy(gs->renderer,
-                           RenderTarget(RENDER_TARGET_GLOBAL),
-                           NULL,
-                           &dst);
-            draw_outro(level);
-            
-            text_field_draw();
-        } else if (level->state == LEVEL_STATE_PLAY) {
-            SDL_Rect dst = {
-                -gs->view.x,
-                -gs->view.y + GUI_H,
-                gs->view.w, gs->view.h
-            };
-            
-            SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
-            
-            gui_draw();
-            gui_popup_draw();
-            
-            tutorial_rect_run();
-            
-            tooltip_draw(&gs->gui.tooltip);
-            
-            if (gs->gui.popup)
-                gui_draw_profile();
-            
-            gui_message_stack_tick_and_draw();
-            text_field_draw();
+    switch (gs->gamestate) {
+        case GAME_STATE_TITLESCREEN: {
+            titlescreen_tick();
+            titlescreen_draw();
+            break;
+        }
+        case GAME_STATE_PLAY: {
+            if (gs->obj.active) {
+                SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+                SDL_RenderClear(gs->renderer);
+                
+                object_draw(&gs->obj);
+            } else {
+                view_tick(&gs->view, &gs->input);
+                
+                gui_tick();
+                conversions_gui_tick();
+                inventory_tick();
+                all_converters_tick();
+                
+                level_tick();
+                level_draw();
+            }
+            break;
         }
     }
     

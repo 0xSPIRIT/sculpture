@@ -147,7 +147,8 @@ void levels_setup(void) {
 
 void goto_level(int lvl) {
     gs->level_current = lvl;
-    gs->levels[lvl].state = LEVEL_STATE_INTRO;
+    level_set_state(lvl, LEVEL_STATE_INTRO);
+    
     gs->levels[lvl].popup_time_current = 0;
     
     gs->levels[lvl].popup_time_current = 0;
@@ -205,6 +206,14 @@ void goto_level(int lvl) {
     check_for_tutorial();
 }
 
+void level_set_state(int level, enum Level_State state) {
+    if (state == LEVEL_STATE_PLAY) {
+        //if (!Mix_PlayingMusic())
+            //Mix_PlayMusic(gs->audio.music_a, -1);
+    }
+    gs->levels[level].state = state;
+}
+
 void goto_level_string_hook(const char *string) {
     int lvl = atoi(string) - 1;
     
@@ -260,7 +269,7 @@ void level_tick(void) {
                 if (gs->level_current+1 < 10) {
                     goto_level(++gs->level_current);
                 } else {
-                    gs->levels[gs->level_current].state = LEVEL_STATE_PLAY;
+                    level_set_state(gs->level_current, LEVEL_STATE_PLAY);
                     object_activate(&gs->obj);
                     effect_set(EFFECT_SNOW, gs->window_width, gs->window_height);
                     //snow_init(&gs->snow);
@@ -268,14 +277,14 @@ void level_tick(void) {
             }
             
             if (input->keys_pressed[SDL_SCANCODE_F]) {
-                gs->levels[gs->level_current].state = LEVEL_STATE_PLAY;
+                level_set_state(gs->level_current, LEVEL_STATE_PLAY);
                 input->keys[SDL_SCANCODE_F] = 0;
             }
             break;
         }
         case LEVEL_STATE_PLAY: {
             if (input->keys_pressed[SDL_SCANCODE_F]) {
-                gs->levels[gs->level_current].state = LEVEL_STATE_OUTRO;
+                level_set_state(gs->level_current, LEVEL_STATE_OUTRO);
                 input->keys[SDL_SCANCODE_F] = 0;
             }
             
@@ -379,6 +388,86 @@ void level_draw_intro(void) {
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
 }
 
+void draw_outro(struct Level *level) {
+    SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
+    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+    SDL_RenderFillRect(gs->renderer, &rect);
+    
+    const int margin = Scale(36);
+    
+    { // Level name
+        char string[256] = {0};
+        sprintf(string, "Level %d - \"%s\"", gs->level_current+1, level->name);
+        
+        int x = rect.x + margin;
+        int y = rect.y + margin;
+        
+        draw_text_indexed(TEXT_OUTRO_LEVEL_NAME,
+                          gs->fonts.font,
+                          string, BLACK, WHITE, 0, 0, x, y, NULL, NULL);
+    }
+    
+    
+    // Desired and Your grid.
+    
+    const int scale = Scale(3);
+    
+    int dx = rect.x + margin;
+    int dy = rect.y + Scale(100);
+    
+    draw_text_indexed(TEXT_OUTRO_INTENDED,
+                      gs->fonts.font,
+                      "What you intended", BLACK, WHITE, 0, 0, dx, dy, NULL, NULL);
+    draw_text_indexed(TEXT_OUTRO_RESULT,
+                      gs->fonts.font,
+                      "The result", BLACK, WHITE, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL);
+    
+    // Desired
+    
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            SDL_Rect r;
+            
+            if (!level->desired_grid[x+y*gs->gw].type) {
+                SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+            } else {
+                SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
+                SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
+            }
+            
+            r = (SDL_Rect){ scale*x + dx, scale*y + dy + 32, scale, scale };
+            SDL_RenderFillRect(gs->renderer, &r);
+        }
+    }
+    
+    dx += rect.w - margin - scale*level->w - margin;
+    
+    // Your grid
+    
+    timelapse_tick_and_draw(dx, dy+32, scale, scale);
+    
+    draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,
+                      gs->fonts.font,
+                      "Next Level [n]",
+                      (SDL_Color){0, 91, 0, 255},
+                      (SDL_Color){255, 255, 255, 255},
+                      1, 1,
+                      rect.x + rect.w - margin,
+                      rect.y + rect.h - margin,
+                      NULL,
+                      NULL);
+    draw_text_indexed(TEXT_OUTRO_PREV_LEVEL,
+                      gs->fonts.font,
+                      "Close [f]",
+                      (SDL_Color){0, 91, 0, 255},
+                      (SDL_Color){255, 255, 255, 255}, 
+                      0, 1,
+                      rect.x + margin,
+                      rect.y + rect.h - margin,
+                      NULL,
+                      NULL);
+}
+
 void level_draw(void) {
     struct Level *level = &gs->levels[gs->level_current];
     
@@ -435,6 +524,44 @@ void level_draw(void) {
             draw_objects();
             
             SDL_SetRenderTarget(gs->renderer, prev);
+            
+            
+            if (level->state == LEVEL_STATE_OUTRO) {
+                SDL_Rect dst = {
+                    -gs->view.x,
+                    -gs->view.y + GUI_H,
+                    gs->view.w, gs->view.h
+                };
+                
+                SDL_RenderCopy(gs->renderer,
+                               RenderTarget(RENDER_TARGET_GLOBAL),
+                               NULL,
+                               &dst);
+                draw_outro(level);
+                
+                text_field_draw();
+            } else {
+                SDL_Rect dst = {
+                    -gs->view.x,
+                    -gs->view.y + GUI_H,
+                    gs->view.w, gs->view.h
+                };
+                
+                SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
+                
+                gui_draw();
+                gui_popup_draw();
+                
+                tutorial_rect_run();
+                
+                tooltip_draw(&gs->gui.tooltip);
+                
+                if (gs->gui.popup)
+                    gui_draw_profile();
+                
+                gui_message_stack_tick_and_draw();
+                text_field_draw();
+            }
             break;
         }
     }

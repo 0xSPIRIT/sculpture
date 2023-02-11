@@ -42,6 +42,11 @@ struct Memory_Arena {
     Uint64 size;
 };
 
+enum Game_State_Enum {
+    GAME_STATE_TITLESCREEN,
+    GAME_STATE_PLAY
+};
+
 // Contains the entirety of the game's state.
 // If you're adding values at runtime into the struct, add it
 // to the end, because we have pointers pointing to variables
@@ -53,6 +58,10 @@ struct Game_State {
     
     struct SDL_Window *window;
     struct SDL_Renderer *renderer;
+    
+    enum Game_State_Enum gamestate;
+    
+    struct Titlescreen titlescreen;
     
     SDL_Event *event;
     

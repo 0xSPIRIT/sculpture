@@ -1,11 +1,13 @@
-TODO :: {
+TODO
+
+	[x] Improve the narrative.
+
+	[x] Title Screen
+
+	[x] New item art
+
+	[ ] Pause menu
 
 	[ ] Improve UNDO when placing something in mid-air. Perhaps pause for 0.1s
 		upon undoing?
 
-}
-
-Future TODO (Vague) :: {
-	[ ] Tutorial: Make use of the chisel's ability to move after you've clicked,
-		perhaps utilize simple video tutorials.
-}

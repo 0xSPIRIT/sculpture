@@ -68,3 +68,5 @@ struct Level {
     int w, h;
     int popup_time_current, popup_time_max;
 };
+
+void level_set_state(int level, enum Level_State state);

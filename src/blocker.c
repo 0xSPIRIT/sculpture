@@ -160,6 +160,7 @@ void blocker_draw_line(f64 deg_angle) {
     }
 }
 
+#if 0
 void blocker_draw_curve(void) {
     struct Blocker *blocker = &gs->blocker;
     if (!blocker->point_count) return;
@@ -179,6 +180,7 @@ void blocker_draw_curve(void) {
         SDL_RenderDrawPoint(gs->renderer, p.x, p.y);
     }
 }
+#endif
 
 void flood_fill(Uint32 *pixels, int x, int y, Uint32 value) {
     if (x < 0 || y < 0 || x >= gs->gw || y >= gs->gh || pixels[x+y*gs->gw] != 0) {
@@ -218,7 +220,7 @@ void blocker_draw(void) {
             break;
         }
         case BLOCKER_STATE_CURVE: {
-            blocker_draw_curve();
+            //blocker_draw_curve();
             break;
         }
     }

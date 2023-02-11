@@ -8,6 +8,13 @@
 
 #define ITEM_COUNT 32
 
+#define Volume(x) ((int) ((x) * MIX_MAX_VOLUME))
+
+enum {
+    AUDIO_CHANNEL_CHISEL,
+    AUDIO_CHANNEL_GUI
+};
+
 // 768x768 is the benchmark resolution I used so when
 // converting to new resolutions, I just put Scale(...)
 // around all the values working with the old 768x768 res.
@@ -21,6 +28,7 @@ enum {
     TEXT_OUTRO_PREV_LEVEL,
     TEXT_CONVERTER_CHART_START,
     TEXT_CONVERTER_REQUIRED_START,
+    TEXT_TITLESCREEN,
     TEXT_INDEX_COUNT = 128
 };
 
@@ -38,7 +46,12 @@ enum {
 };
 
 struct Audio {
-    Mix_Music *music;
+    Mix_Music *music_title, *music_a;
+    
+    Mix_Chunk *stinger_a, *stinger_b;
+    
+    Mix_Chunk *accept;
+    
     Mix_Chunk *medium_chisel[6];
     Mix_Chunk *small_chisel, *large_chisel;
 };
@@ -113,5 +126,6 @@ struct Fonts {
         *font_courier,
         *font_small,
         *font_bold_small,
-        *font_title;
+    *font_title,
+    *font_titlescreen;
 };

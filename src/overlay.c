@@ -408,7 +408,7 @@ void overlay_draw_grid(int *grid, f32 alpha_coeff) {
             };
             
             Uint8 a = alpha;
-            if (gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
+            if (gs->level_current+1 != 6 && gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
                 a /= 4;
             }
             

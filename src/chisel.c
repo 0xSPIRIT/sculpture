@@ -1,14 +1,11 @@
 void chisel_play_sound(int size) {
-    (void)size;
-#if PLAY_SOUND
     if (size == 0) {
-        Mix_PlayChannel(-1, gs->audio.small_chisel, 0);
+        Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.small_chisel, 0);
     } else if (size == 1) {
-        Mix_PlayChannel(-1, gs->audio.medium_chisel[rand()%6], 0);
+        Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.medium_chisel[0], 0);
     } else if (size == 2) {
-        Mix_PlayChannel(-1, gs->audio.large_chisel, 0);
+        Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.medium_chisel[rand()%6], 0);
     }
-#endif
 }
 
 void chisel_hammer_init(void) {

@@ -14,7 +14,7 @@ void credits_run(void) {
             break;
         }
         case CREDITS_SHOW: {
-            f64 f = 20.f;
+            f64 f = 18.f;
             
             if (c->timer < f)
                 c->timer++;
@@ -24,14 +24,14 @@ void credits_run(void) {
                 255-co, 255-co, 255-co, 255
             };
             
-            draw_text(gs->fonts.font_consolas,
+            draw_text(gs->fonts.font_times,
                       "Created by spiritwolf",
                       col,
                       WHITE,
                       true,
                       true,
-                      128+gs->window_width/2,
-                      2*gs->window_height/3,
+                      gs->window_width - 128,
+                      gs->window_height - 128,
                       NULL,
                       NULL);
             break;

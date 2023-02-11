@@ -195,6 +195,7 @@ void fonts_init(struct Fonts *fonts) {
     fonts->font_title    = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", Scale(45));
     fonts->font_bold_small = TTF_OpenFont(RES_DIR "courbd.ttf", Scale(16));
     fonts->font_times    = TTF_OpenFont(RES_DIR "times.ttf", Scale(28));
+    fonts->font_titlescreen = TTF_OpenFont(RES_DIR "times.ttf", Scale(135));
     
     TTF_Font **ttf_fonts = (TTF_Font**) fonts;
     size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);
@@ -214,7 +215,9 @@ void fonts_deinit(struct Fonts *fonts) {
 }
 
 void audio_init(struct Audio *audio) {
-    audio->music = Mix_LoadMUS(RES_DIR "audio/mus.mp3");
+    audio->music_title = Mix_LoadMUS(RES_DIR "audio/alaska.ogg");
+    audio->music_a = Mix_LoadMUS(RES_DIR "audio/jazz.ogg");
+    
     for (int i = 0; i < 6; i++) {
         char name[64];
         sprintf(name, RES_DIR "audio/chisel_%d.wav", i+1);
@@ -224,13 +227,23 @@ void audio_init(struct Audio *audio) {
     audio->small_chisel = Mix_LoadWAV(RES_DIR "audio/small_chisel.wav");
     audio->large_chisel = Mix_LoadWAV(RES_DIR "audio/large_chisel.wav");
     
-    Assert(audio->music);
+    audio->stinger_a = Mix_LoadWAV(RES_DIR "audio/sprinkle.ogg");
+    audio->stinger_b = Mix_LoadWAV(RES_DIR "audio/macabre.ogg");
+    
+    audio->accept = Mix_LoadWAV(RES_DIR "audio/accept.ogg");
+    
+    Mix_Volume(AUDIO_CHANNEL_CHISEL, Volume(0.25));
+    Mix_Volume(AUDIO_CHANNEL_GUI, Volume(0.35));
 }
 
 void audio_deinit(struct Audio *audio) {
-    Mix_FreeMusic(audio->music);
+    Mix_FreeMusic(audio->music_title);
+    Mix_FreeMusic(audio->music_a);
     for (int i = 0; i < 6; i++)
         Mix_FreeChunk(audio->medium_chisel[i]);
     Mix_FreeChunk(audio->small_chisel);
     Mix_FreeChunk(audio->large_chisel);
+    
+    Mix_FreeChunk(audio->stinger_a);
+    Mix_FreeChunk(audio->stinger_b);
 }

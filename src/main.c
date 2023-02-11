@@ -79,6 +79,8 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
     
+    Assert(Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0);
+    
     int flags = 0;
     if (use_software_renderer) {
         flags = SDL_RENDERER_SOFTWARE;
@@ -139,7 +141,7 @@ void game_init(struct Game_State *state) {
     
     state->real_width = state->window_width;
     state->real_height = state->window_height;
-    
+
     game_init_sdl(state,
                   "Alaska", 
                   state->window_width, 
@@ -149,6 +151,7 @@ void game_init(struct Game_State *state) {
     // Load all assets... except for render targets.
     // We can't create render targets until levels
     // are initialized.
+    audio_init(&state->audio);
     textures_init(state->renderer, &state->textures);
     surfaces_init(&state->surfaces);
     
@@ -162,18 +165,11 @@ void game_init(struct Game_State *state) {
 }
 
 void game_deinit(struct Game_State *state) {
-    // For some reason this crashes when use_software_renderer is on.
-    //SDL_DestroyRenderer(state->renderer);
-    SDL_DestroyWindow(state->window);
-    
-    textures_deinit(&state->textures);
+    //textures_deinit(&state->textures);
     surfaces_deinit(&state->surfaces);
     fonts_deinit(&state->fonts);
     audio_deinit(&state->audio);
     
-    Mix_Quit();
-    TTF_Quit();
-    IMG_Quit();
     SDL_Quit();
 }
 
@@ -316,11 +312,6 @@ int main(int argc, char **argv)
                         game_state->levels,
                         &game_state->textures);
     
-    Assert(Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0);
-    
-    audio_init(&game_state->audio);
-    
-    //Mix_PlayMusic(game_state->audio.music, 0);
     
     bool running = true;
     

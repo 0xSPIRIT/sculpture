@@ -22,8 +22,27 @@ void deleter_tick(void) {
     
     if (gs->is_mouse_over_any_button) return;
     
-    deleter->x = (f32) input->mx;
-    deleter->y = (f32) input->my;
+    if (!deleter->is_rotating) {
+        deleter->x = (f32) input->mx;
+        deleter->y = (f32) input->my;
+    }
+    
+    deleter->is_rotating = input->keys[SDL_SCANCODE_LSHIFT] != 0;
+    
+    if (deleter->is_rotating) {
+        f32 rmx = (f32)input->real_mx / (f32)gs->S;
+        f32 rmy = (f32)(input->real_my-GUI_H) / (f32)gs->S;
+        deleter->angle = 180 + 360 * atan2f(rmy - deleter->y, rmx - deleter->x) / (f32)(2*M_PI);
+        
+        f32 step = 22.5;
+        deleter->angle /= step;
+        deleter->angle = ((int)deleter->angle) * step;
+    }
+    
+    
+    if (input->mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
+        deleter->is_rotating = false;
+    }
     
     if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
         deleter_delete();
@@ -39,7 +58,15 @@ void deleter_draw(void) {
     };
     
     SDL_SetTextureAlphaMod(deleter->texture, 128);
-    SDL_RenderCopy(gs->renderer, deleter->texture, NULL, &dst);
+    
+    const SDL_Point center = { 0, 0 };
+    SDL_RenderCopyEx(gs->renderer,
+                     deleter->texture,
+                     NULL,
+                     &dst,
+                     deleter->angle,
+                     &center,
+                     SDL_FLIP_NONE);
     
     SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 64);
     SDL_RenderDrawPoint(gs->renderer, (int)deleter->x, (int)deleter->y);

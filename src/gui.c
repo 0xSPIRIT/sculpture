@@ -132,6 +132,8 @@ void button_tick(struct Button *b, void *data) {
             strcpy(gui->tooltip.str[0], b->tooltip_text);
         
         if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
+            Mix_HaltChannel(AUDIO_CHANNEL_GUI);
+            Mix_PlayChannel(AUDIO_CHANNEL_GUI, gs->audio.accept, 0);
             b->on_pressed(data);
         }
     } else if (b->just_had_tooltip) {

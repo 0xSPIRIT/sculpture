@@ -174,8 +174,7 @@ void undo(void) {
         tutorial_rect_close(NULL);
     }
     
-    if (!gs->gui.popup && is_current_grid_same_as(current_state()))
-    {
+    if (!gs->gui.popup && is_current_grid_same_as(current_state())) {
         if (gs->save_state_count == 1) {
             return;
         }

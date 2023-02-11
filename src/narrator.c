@@ -87,7 +87,7 @@ void narrator_tick() {
         gs->narrator.time = 0;
     }
     
-    if (gs->input.keys_pressed[SDL_SCANCODE_RETURN])  {
+    if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.mouse_pressed[SDL_BUTTON_LEFT])  {
         if (gs->narrator.char_curr >= gs->narrator.curr_len) {
             gs->narrator.line_curr++;
             gs->narrator.char_curr = 0;
@@ -109,7 +109,7 @@ void narrator_tick() {
             gs->narrator.off = true;
             gs->credits.state = CREDITS_DELAY;
         } else if (gs->narrator.time > 60) {
-            gs->levels[gs->level_current].state = LEVEL_STATE_PLAY;
+            level_set_state(gs->level_current, LEVEL_STATE_PLAY);
             effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
             memset(&gs->narrator, 0, sizeof(struct Narrator));
         }
@@ -125,7 +125,7 @@ void narrator_run(SDL_Color col) {
     const int text_speed = 1; // more = slower, 0 = scroll every frame.
     
     int delay;
-    if (n->char_curr < 1) {
+    if (n->char_curr < 1 || n->char_curr >= n->curr_len-2) {
         delay = text_speed;
     } else {
         delay = ispunctuation(n->lines[n->line_curr][n->char_curr-1]) ? 15 : text_speed;

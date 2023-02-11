@@ -40,3 +40,4 @@
 #include "view.h"
 #include "timelapse.h"
 #include "3d.h"
+#include "titlescreen.h"
