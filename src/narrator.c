@@ -82,12 +82,12 @@ void narrator_init(int level) {
 void narrator_tick() {
     if (gs->narrator.off) return;
     
-    if (gs->input.keys_pressed[SDL_SCANCODE_SPACE]) {
+    if (gs->input.keys_pressed[SDL_SCANCODE_TAB]) {
         gs->narrator.black = true;
         gs->narrator.time = 0;
     }
     
-    if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.mouse_pressed[SDL_BUTTON_LEFT])  {
+    if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.keys_pressed[SDL_SCANCODE_SPACE] || gs->input.mouse_pressed[SDL_BUTTON_LEFT])  {
         if (gs->narrator.char_curr >= gs->narrator.curr_len) {
             gs->narrator.line_curr++;
             gs->narrator.char_curr = 0;

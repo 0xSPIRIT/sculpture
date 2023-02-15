@@ -90,6 +90,10 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
     
     state->renderer = SDL_CreateRenderer(state->window, -1, flags);
     Assert(state->renderer);
+    
+    if (state->fullscreen) {
+        SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    }
 }
 
 void make_memory_arena(struct Memory_Arena *persistent_memory, struct Memory_Arena *transient_memory) {
@@ -112,14 +116,43 @@ void make_memory_arena(struct Memory_Arena *persistent_memory, struct Memory_Are
     transient_memory->cursor = transient_memory->data;
 }
 
-f64 calculate_scale() {
+int start_fullscreen_popup(void) {
+    int num_buttons = 2;
+    int result;
+    
+    SDL_MessageBoxButtonData buttons[2] = {
+        (SDL_MessageBoxButtonData){SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No"},
+        (SDL_MessageBoxButtonData){SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes"}
+    };
+    
+    SDL_MessageBoxData data = {
+        .flags = SDL_MESSAGEBOX_WARNING,
+        .window = NULL,
+        .title = "Fullscreen?",
+        .message = "Launch the game in fullscreen?",
+        .numbuttons = num_buttons,
+        .buttons = buttons,
+        .colorScheme = NULL
+    };
+    SDL_ShowMessageBox(&data, &result);
+    
+    Log("Result: %d\n", result);
+    
+    return result;
+}
+
+f64 calculate_scale(bool fullscreen) {
     RECT desktop;
     HWND hDesktop = GetDesktopWindow();
     GetWindowRect(hDesktop, &desktop);
     //int w = desktop.right;
     int h = desktop.bottom;
     
-    return (int)round(6.0 * h/1080.0);
+    if (fullscreen) {
+        return (int)round(7.0 * h/1080.0);
+    } else {
+        return (int)round(6.0 * h/1080.0);
+    }
 }
 
 bool prefix(const char *pre, const char *str) {
@@ -129,11 +162,8 @@ bool prefix(const char *pre, const char *str) {
 void game_init(struct Game_State *state) {
     srand((unsigned int) time(0));
     
-    // Taken from https://github.com/kumar8600/win32_SetProcessDpiAware
-    win32_SetProcessDpiAware();
-    
     if (state->S == 0)
-        state->S = calculate_scale();
+        state->S = calculate_scale(false);
     Log("Game Scale: %.2f\n", state->S);
     
     state->window_width = 128*state->S;
@@ -243,7 +273,11 @@ int SDL_main(int argc, char **argv)
 int main(int argc, char **argv)
 #endif
 {
+    // Taken from https://github.com/kumar8600/win32_SetProcessDpiAware
+    win32_SetProcessDpiAware();
+    
 #ifndef ALASKA_RELEASE_MODE
+    
     // Make sure we're running in the right folder.
     {
         char cwd[1024] = {0};
@@ -271,6 +305,15 @@ int main(int argc, char **argv)
     
     int scale = 0;
     
+    int fullscreen = 0;
+    
+#ifdef ALASKA_RELEASE_MODE
+    fullscreen = start_fullscreen_popup();
+    if (fullscreen) {
+        scale = calculate_scale(true);
+    }
+#endif
+    
     bool use_software_renderer = false;
     if (argc > 1) {
         for (int i = 1; i < argc; i++) {
@@ -280,6 +323,8 @@ int main(int argc, char **argv)
                 use_software_renderer = true;
             } else if (prefix("-scale=", argv[i])) {
                 scale = atoi(argv[i]+7);
+            } else if (0==strcmp(argv[i], "-fullscreen")) {
+                fullscreen = 1;
             }
         }
     }
@@ -296,6 +341,8 @@ int main(int argc, char **argv)
     
     game_state->use_software_renderer = use_software_renderer;
     game_state->S = scale;
+    
+    game_state->fullscreen = fullscreen;
     
     game_state->persistent_memory = &persistent_memory;
     game_state->transient_memory = &transient_memory;

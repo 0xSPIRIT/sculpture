@@ -48,6 +48,20 @@ struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, cons
     return b;
 }
 
+void tool_button_set_disabled(int level) {
+    struct Button **tools = gs->gui.tool_buttons;
+    
+    tools[TOOL_BLOCKER]->disabled = true;
+    
+    switch (level+1) {
+        case 1: {
+            tools[TOOL_DELETER]->disabled = true;
+            tools[TOOL_PLACER]->disabled = true;
+            break;
+        }
+    }
+}
+
 void click_gui_tool_button(void *type_ptr) {
     int type = *(int*)type_ptr;
     
@@ -153,11 +167,13 @@ void button_draw(struct Button *b) {
     };
     
     if (b->disabled) {
-        SDL_SetTextureColorMod(b->texture, 120, 120, 120);
+        SDL_SetTextureColorMod(b->texture, 90, 90, 90);
     } else if (b->active) {
         SDL_SetTextureColorMod(b->texture, 200, 200, 200);
     } else if (b->highlighted) {
-        SDL_SetTextureColorMod(b->texture, 128, 128, 255);
+        f64 c = (sin(SDL_GetTicks()/100.0)+1)/2.0;
+        c *= 128;
+        SDL_SetTextureColorMod(b->texture, 255-c, 255, 255-c);
     } else if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
                gui_input_my >= b->y && gui_input_my < b->y+b->h) {
         SDL_SetTextureColorMod(b->texture, 230, 230, 230);
@@ -242,6 +258,8 @@ void gui_init(void) {
 void gui_tick(void) {
     struct GUI *gui = &gs->gui;
     struct Input *input = &gs->input;
+    
+    tool_button_set_disabled(gs->level_current);
     
     if (input->keys_pressed[SDL_SCANCODE_TAB] && 
         gs->levels[gs->level_current].state == LEVEL_STATE_PLAY &&

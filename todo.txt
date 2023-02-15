@@ -1,13 +1,15 @@
 TODO
 
-	[x] Improve the narrative.
+	[ ] Remove the blocker
 
-	[x] Title Screen
+	[ ] Gray out tools when not needed for level.
 
-	[x] New item art
+	[ ] Make overlay more clear about what to do
+
+	[ ] Better tutorialization.
+		[ ] Level 0?
+		[ ] Hovering over tools gives a short video on usage
+
+	[ ] Make levels 7-9 easier on material
 
 	[ ] Pause menu
-
-	[ ] Improve UNDO when placing something in mid-air. Perhaps pause for 0.1s
-		upon undoing?
-

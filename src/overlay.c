@@ -25,6 +25,14 @@ Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_DUST,           77,   9, 249,
 };
 
+void first(int a) {
+    (void)a;
+}
+
+void second(int a) {
+    (void)a;
+}
+
 // name_generic is a formatted printf with a %d for the number, from 0 to num-1.
 struct Overlay_Changes overlay_load_changes(const char *name_generic, int num) {
     struct Overlay_Changes result = {0};
@@ -387,7 +395,7 @@ bool int_array_any_neighbours_not_same(int *array, int x, int y) {
 
 void overlay_draw_grid(int *grid, f32 alpha_coeff) {
     f32 alpha;
-    alpha = 180;
+    alpha = 120;
     alpha *= alpha_coeff;
     
     for (int y = 0; y < gs->gh; y++) {
@@ -408,6 +416,7 @@ void overlay_draw_grid(int *grid, f32 alpha_coeff) {
             };
             
             Uint8 a = alpha;
+            
             if (gs->level_current+1 != 6 && gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
                 a /= 4;
             }

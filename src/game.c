@@ -52,14 +52,12 @@ export void game_init(struct Game_State *state, int level) {
     
     titlescreen_init();
     
-    gs->gamestate = GAME_STATE_PLAY;
+    gs->gamestate = GAME_STATE_TITLESCREEN;
     
-#if 0
     if (Mix_PlayMusic(gs->audio.music_title, -1) == -1) {
         Log("%s\n", SDL_GetError());
         exit(1);
     }
-#endif
 }
 
 export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
@@ -91,7 +89,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     }
     
     int selected_tool = 0;
-    if (event->type == SDL_KEYDOWN && !gs->text_field.active) {
+    if (event->type == SDL_KEYDOWN && gs->gamestate == GAME_STATE_PLAY && !gs->text_field.active) {
         switch (event->key.keysym.sym) {
             case SDLK_ESCAPE: {
                 struct Placer *placer = get_current_placer();
