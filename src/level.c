@@ -69,7 +69,7 @@ int level_add(const char *name, const char *desired_image, const char *initial_i
     strcpy(level->name, name);
     level->popup_time_current = 0;
     level->popup_time_max = POPUP_TIME;
-    level->state = LEVEL_STATE_INTRO;
+    level->state = LEVEL_STATE_NARRATION;
     level->effect_type = effect_type;
     
     int w, h;
@@ -151,7 +151,16 @@ void levels_setup(void) {
 
 void goto_level(int lvl) {
     gs->level_current = lvl;
-    level_set_state(lvl, LEVEL_STATE_INTRO);
+    
+    narrator_init(gs->level_current);
+    
+    if (gs->narrator.line_count) {
+        level_set_state(lvl, LEVEL_STATE_NARRATION);
+        effect_set(EFFECT_SNOW, gs->window_width, gs->window_height);
+    } else {
+        level_set_state(lvl, LEVEL_STATE_INTRO);
+        effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
+    }
     
     gs->levels[lvl].popup_time_current = 0;
     
@@ -201,8 +210,6 @@ void goto_level(int lvl) {
     
     //object_activate(&gs->obj);
     
-    narrator_init(gs->level_current);
-    
     timelapse_init();
     
     check_for_tutorial();
@@ -242,13 +249,8 @@ void level_tick(void) {
             if (gs->input.keys_pressed[SDL_SCANCODE_SPACE] || level->popup_time_current >= level->popup_time_max) {
                 level->popup_time_current = 0;
                 
-                if (gs->narrator.line_count) {
-                    level->state = LEVEL_STATE_NARRATION;
-                    effect_set(EFFECT_SNOW, gs->window_width, gs->window_height);
-                } else {
-                    level->state = LEVEL_STATE_PLAY;
-                    effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
-                }
+                level->state = LEVEL_STATE_PLAY;
+                effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
                 
                 // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
                 for (int i = 0; i < gs->gw*gs->gh; i++) {

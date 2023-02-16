@@ -1,12 +1,6 @@
 TODO
 
-	[x] Remove the blocker
-
-	[x] Gray out tools when not needed for level.
-
-	[x] Make overlay more clear about what to do
-
-	[x] Improve medium chisel to make it more useful
+	[x] At the start go from narration -> title instead of title -> narration
 
 	[ ] With the small chisel, when in corners that
 		you can't destroy, when you click, automatically

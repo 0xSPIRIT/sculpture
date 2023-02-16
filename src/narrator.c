@@ -38,7 +38,7 @@ char* get_narration(int level) {
         case 4:  return NARRATION_LEVEL_4;
         case 7:  return NARRATION_LEVEL_7;
         case 8:  return NARRATION_LEVEL_8;
-        case 10:  return NARRATION_LEVEL_10;
+        case 10: return NARRATION_LEVEL_10;
         case 11: return NARRATION_LEVEL_11;
         
         case 12: return NARRATION_END;
@@ -47,6 +47,8 @@ char* get_narration(int level) {
 }
 
 void narrator_init(int level) {
+    struct Narrator *n = &gs->narrator;
+    
     memset(&gs->narrator, 0, sizeof(struct Narrator));
     
     char *narration = NULL;
@@ -60,56 +62,58 @@ void narrator_init(int level) {
     
     while (*c) {
         if (*c == '\n') {
-            gs->narrator.line_count++;
+            n->line_count++;
             ++c;
             i = 0;
             continue;
         }
         
-        gs->narrator.lines[gs->narrator.line_count][i] = *c;
+        n->lines[n->line_count][i] = *c;
         
         ++i;
         ++c;
     }
     
-    gs->narrator.line_curr = 0;
-    gs->narrator.char_curr = 0;
-    gs->narrator.curr_len = strlen(gs->narrator.lines[gs->narrator.line_curr]);
+    n->line_curr = 0;
+    n->char_curr = 0;
+    n->curr_len = strlen(n->lines[n->line_curr]);
     
-    gs->narrator.time = 0;
+    n->time = 0;
 }
 
 void narrator_tick() {
-    if (gs->narrator.off) return;
+    struct Narrator *n = &gs->narrator;
+    
+    if (n->off) return;
     
     if (gs->input.keys_pressed[SDL_SCANCODE_TAB]) {
-        gs->narrator.black = true;
-        gs->narrator.time = 0;
+        n->black = true;
+        n->time = 0;
     }
     
     if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.keys_pressed[SDL_SCANCODE_SPACE] || gs->input.mouse_pressed[SDL_BUTTON_LEFT])  {
-        if (gs->narrator.char_curr >= gs->narrator.curr_len) {
-            gs->narrator.line_curr++;
-            gs->narrator.char_curr = 0;
-            gs->narrator.curr_len = strlen(gs->narrator.lines[gs->narrator.line_curr]);
+        if (n->char_curr >= n->curr_len) {
+            n->line_curr++;
+            n->char_curr = 0;
+            n->curr_len = strlen(n->lines[n->line_curr]);
             
-            if (gs->narrator.line_curr >= gs->narrator.line_count) {
-                gs->narrator.black = true;
-                gs->narrator.time = 0;
+            if (n->line_curr >= n->line_count) {
+                n->black = true;
+                n->time = 0;
             }
         } else {
-            gs->narrator.char_curr = (int)gs->narrator.curr_len;
+            n->char_curr = (int)n->curr_len;
         }
     }
     
-    if (gs->narrator.black) {
-        gs->narrator.time++;
+    if (n->black) {
+        n->time++;
         
         if (gs->level_current+1 == 11 && gs->obj.active) {
-            gs->narrator.off = true;
+            n->off = true;
             gs->credits.state = CREDITS_DELAY;
-        } else if (gs->narrator.time > 60) {
-            level_set_state(gs->level_current, LEVEL_STATE_PLAY);
+        } else if (n->time > 60) {
+            level_set_state(gs->level_current, LEVEL_STATE_INTRO);
             effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
             memset(&gs->narrator, 0, sizeof(struct Narrator));
         }
@@ -117,10 +121,11 @@ void narrator_tick() {
 }
 
 void narrator_run(SDL_Color col) {
-    if (gs->narrator.off) return;
+    struct Narrator *n = &gs->narrator;
+    
+    if (n->off) return;
     
     TTF_Font *font = gs->fonts.font_times;
-    struct Narrator *n = &gs->narrator;
     
     const int text_speed = 1; // more = slower, 0 = scroll every frame.
     
@@ -131,7 +136,7 @@ void narrator_run(SDL_Color col) {
         delay = ispunctuation(n->lines[n->line_curr][n->char_curr-1]) ? 15 : text_speed;
     }
     
-    if (gs->narrator.black) return;
+    if (n->black) return;
     
     if (n->time > delay && n->char_curr < n->curr_len) {
         n->char_curr++;
