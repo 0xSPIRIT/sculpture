@@ -1,13 +1,5 @@
 TODO
 
-	[x] With the small chisel, when in corners that
-		you can't destroy, when you click, automatically
-		relocate to the nearest blob. Make sure the highlight
-		works with this too.
-
-	[ ] Maybe find a better level 0 setup instead of just shapes.
-		Find something cooler?
-
 	[ ] Video preview for tools.
 		[ ] Figure out a way to save states to file including tool positions.
 		[ ] Load states from file and store in structure
