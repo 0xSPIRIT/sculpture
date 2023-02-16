@@ -146,6 +146,29 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
             //  ^ This is what we want to prevent.
             //
             
+            // If we encounter this however, we want to snap to the closest blob.
+            if (chisel->size == TOOL_CHISEL_SMALL && number_direct_neighbours(gs->grid, (int)chisel->x, (int)chisel->y) == 4) {
+                int ix = (int)chisel->x;
+                int iy = (int)chisel->y;
+                
+                for (int y = -1; y <= 1; y++) {
+                    for (int x = -1; x <= 1; x++) {
+                        if (abs(x) == abs(y)) continue;
+                        
+                        if (number_direct_neighbours(gs->grid, ix+x, iy+y) == 4) continue;
+                        
+                        b = curr_blobs[ix+x+(iy+y)*gs->gw];
+                        if (b) {
+                            chisel->x = ix+x;
+                            chisel->y = iy+y;
+                            break;
+                        }
+                    }
+                    if (b) break;
+                }
+                
+            }
+            
             if (chisel->size != TOOL_CHISEL_SMALL || number_direct_neighbours(gs->grid, (int)chisel->x, (int)chisel->y) < 4) {
                 // We continue at our current direction until we reach
                 // another blob, then backtrack one.

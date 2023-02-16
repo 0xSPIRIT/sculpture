@@ -1,18 +1,12 @@
 TODO
 
-	[x] At the start go from narration -> title instead of title -> narration
-
-	[ ] With the small chisel, when in corners that
+	[x] With the small chisel, when in corners that
 		you can't destroy, when you click, automatically
 		relocate to the nearest blob. Make sure the highlight
 		works with this too.
 
-	[x] Level 1
-		[x] Setup with 3 shapes
-		[x] Limit to one chisel at first, then open up more.
-		[x] Make it required to complete the level perfectly.
-		[x] Add a DONE tool button at top right.
-		[x] Proper highlighting of overlay tool then chisel tool.
+	[ ] Maybe find a better level 0 setup instead of just shapes.
+		Find something cooler?
 
 	[ ] Video preview for tools.
 		[ ] Figure out a way to save states to file including tool positions.
