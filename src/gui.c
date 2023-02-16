@@ -51,13 +51,44 @@ struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, cons
 void tool_button_set_disabled(int level) {
     struct Button **tools = gs->gui.tool_buttons;
     
-    tools[TOOL_BLOCKER]->disabled = true;
+    //tools[TOOL_BLOCKER]->disabled = true;
+    
+    if (compare_cells(gs->grid,
+                      gs->levels[gs->level_current].desired_grid)) {
+        tools[TOOL_FINISH_LEVEL]->highlighted = true;
+    } else {
+        tools[TOOL_FINISH_LEVEL]->highlighted = false;
+    }
     
     switch (level+1) {
         case 1: {
+            if (!gs->gui.tool_buttons[TOOL_OVERLAY]->highlighted) {
+                if (gs->chisel_small.num_times_chiseled == 0)
+                    tools[TOOL_CHISEL_SMALL]->highlighted = true;
+                else
+                    tools[TOOL_CHISEL_SMALL]->highlighted = false;
+            }
+            
+            if (gs->chisel_small.num_times_chiseled < 10) {
+                tools[TOOL_CHISEL_MEDIUM]->disabled = true;
+                tools[TOOL_CHISEL_LARGE]->disabled = true;
+            } else {
+                tools[TOOL_CHISEL_MEDIUM]->disabled = false;
+                tools[TOOL_CHISEL_LARGE]->disabled = false;
+            }
+        }
+        case 2: {
             tools[TOOL_DELETER]->disabled = true;
             tools[TOOL_PLACER]->disabled = true;
             break;
+        }
+        case 3: {
+            tools[TOOL_PLACER]->disabled = true;
+            break;
+        }
+        default: {
+            for (int i = 0; i < TOOL_COUNT; i++)
+                tools[i]->disabled = false;
         }
     }
 }
@@ -72,7 +103,8 @@ void click_gui_tool_button(void *type_ptr) {
     int p_tool = gs->current_tool;
     
     gs->current_tool = type;
-    gs->chisel_blocker_mode = 0;
+    
+    gui->tool_buttons[type]->highlighted = false;
     
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: {
@@ -100,6 +132,15 @@ void click_gui_tool_button(void *type_ptr) {
         case TOOL_OVERLAY: {
             gs->overlay.show = !gs->overlay.show;
             gs->current_tool = p_tool;
+            return;
+        }
+        case TOOL_FINISH_LEVEL: {
+            if (gs->level_current+1 != -1 ||
+                (gs->level_current+1 == 1 &&
+                 compare_cells(gs->grid,
+                               gs->levels[gs->level_current].desired_grid))) {
+                level_set_state(gs->level_current, LEVEL_STATE_OUTRO);
+            }
             return;
         }
     }
@@ -263,7 +304,7 @@ void gui_tick(void) {
     
     if (input->keys_pressed[SDL_SCANCODE_TAB] && 
         gs->levels[gs->level_current].state == LEVEL_STATE_PLAY &&
-        gs->level_current >= 3-1) 
+        gs->level_current >= 4-1) 
     {
         gui->popup = !gui->popup;
         gui->popup_y_vel = 0;
@@ -329,7 +370,7 @@ void profile_array(struct Cell *desired,
         char name[64];
         get_name_from_type(i, name);
         
-        if (gs->level_current == 10-1) {
+        if (gs->level_current == 11-1) {
             sprintf(out[(*count)++], "  %-15s???", name);
         } else if (gs->overlay.changes.index < gs->overlay.changes.count-1) {
             sprintf(out[(*count)++], "  %-15s%d??", name, counts[i]);
@@ -367,7 +408,8 @@ void gui_draw_profile() {
                       50,
                       GUI_H+50,
                       NULL,
-                      &ah);
+                      &ah,
+                      false);
     
     int c = ah;
     for (int i = 0; i < count; i++) {
@@ -382,7 +424,8 @@ void gui_draw_profile() {
                           50,
                           GUI_H+50+c,
                           NULL,
-                          &h);
+                          &h,
+                          false);
         c += h;
     }
 }
@@ -525,7 +568,7 @@ void gui_popup_draw(void) {
     
     SDL_SetTextureAlphaMod(gs->textures.tab, 127);
     
-    if (gs->level_current >= 3-1)
+    if (gs->level_current >= 4-1)
         SDL_RenderCopy(gs->renderer, gs->textures.tab, NULL, &tab_icon);
     
     all_converters_draw();
@@ -576,7 +619,7 @@ void auto_set_material_converter_slots(struct Converter *converter) {
     int level = gs->level_current;
     
     switch (level+1) {
-        case 3: {
+        case 4: {
             converter->slots[SLOT_FUEL].item = (struct Item)
             {
                 .type = CELL_UNREFINED_COAL,
@@ -584,7 +627,7 @@ void auto_set_material_converter_slots(struct Converter *converter) {
             };
             break;
         }
-        case 9: {
+        case 10: {
             converter->slots[SLOT_FUEL].item = (struct Item)
             {
                 .type = CELL_UNREFINED_COAL,

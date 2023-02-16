@@ -129,14 +129,14 @@ void overlay_init(void) {
     memset(&overlay->changes, 0, sizeof(struct Overlay_Changes));
     
     switch (gs->level_current+1) {
-        case 6: {
+        case 7: {
             overlay->changes = 
-                overlay_load_changes(RES_DIR "lvl/changes/lvl6/%d.png", 4);
+                overlay_load_changes(RES_DIR "lvl/changes/lvl7/%d.png", 4);
             break;
         }
-        case 9: {
+        case 10: {
             overlay->changes = 
-                overlay_load_changes(RES_DIR "lvl/changes/lvl9/%d.png", 2);
+                overlay_load_changes(RES_DIR "lvl/changes/lvl10/%d.png", 2);
             break;
         }
     }
@@ -402,9 +402,7 @@ void overlay_draw_grid(int *grid, f32 alpha_coeff) {
         for (int x = 0; x < gs->gw; x++) {
             if (!grid[x+y*gs->gw]) continue;
             
-            if (!int_array_any_neighbours_not_same(grid, x, y)) {
-                continue;
-            }
+            Uint8 a = alpha;
             
             int t = grid[x+y*gs->gw];
             
@@ -415,7 +413,13 @@ void overlay_draw_grid(int *grid, f32 alpha_coeff) {
                 255
             };
             
-            Uint8 a = alpha;
+            if (!int_array_any_neighbours_not_same(grid, x, y)) {
+                f64 f = (sin(SDL_GetTicks()/250.0)+1)/2.0;
+                a = f*90;
+                c.r = c.r*0.8;
+                c.g = c.g*0.8;
+                c.b = c.b*0.8;
+            }
             
             if (gs->level_current+1 != 6 && gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
                 a /= 4;

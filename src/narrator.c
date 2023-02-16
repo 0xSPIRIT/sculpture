@@ -35,13 +35,13 @@ void narrator_draw_text_blended(TTF_Font *font,
 char* get_narration(int level) {
     switch (level+1) {
         case 1:  return NARRATION_LEVEL_1;
-        case 3:  return NARRATION_LEVEL_3;
-        case 6:  return NARRATION_LEVEL_6;
+        case 4:  return NARRATION_LEVEL_4;
         case 7:  return NARRATION_LEVEL_7;
-        case 9:  return NARRATION_LEVEL_9;
-        case 10: return NARRATION_LEVEL_10;
+        case 8:  return NARRATION_LEVEL_8;
+        case 10:  return NARRATION_LEVEL_10;
+        case 11: return NARRATION_LEVEL_11;
         
-        case 11: return NARRATION_END;
+        case 12: return NARRATION_END;
     }
     return NULL;
 }
@@ -105,7 +105,7 @@ void narrator_tick() {
     if (gs->narrator.black) {
         gs->narrator.time++;
         
-        if (gs->level_current+1 == 10 && gs->obj.active) {
+        if (gs->level_current+1 == 11 && gs->obj.active) {
             gs->narrator.off = true;
             gs->credits.state = CREDITS_DELAY;
         } else if (gs->narrator.time > 60) {

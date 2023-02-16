@@ -9,8 +9,6 @@
 #include "grid.c"
 #include "credits.c"
 #include "undo.c"
-#include "chisel_blocker.c"
-#include "blocker.c"
 #include "chisel.c"
 #include "tooltip.c"
 #include "placer.c"
@@ -52,12 +50,14 @@ export void game_init(struct Game_State *state, int level) {
     
     titlescreen_init();
     
-    gs->gamestate = GAME_STATE_TITLESCREEN;
+    gs->gamestate = GAME_STATE_PLAY;
     
+#if 0
     if (Mix_PlayMusic(gs->audio.music_title, -1) == -1) {
         Log("%s\n", SDL_GetError());
         exit(1);
     }
+#endif
 }
 
 export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
@@ -180,6 +180,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                     set_text_field("Output current grid to image:", "../", level_output_to_png);
                 } else {
                     gs->overlay.show = !gs->overlay.show;
+                    gs->gui.tool_buttons[TOOL_OVERLAY]->highlighted = false;
                 }
                 break;
             }
@@ -225,53 +226,61 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_1: {
-                gs->current_tool = TOOL_CHISEL_SMALL;
-                gs->chisel = &gs->chisel_small;
-                for (int i = 0; i < gs->object_count; i++)
-                    object_generate_blobs(i, 0);
-                gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) gs->chisel->w+2;
-                selected_tool = 1;
+                if (!gs->gui.tool_buttons[TOOL_CHISEL_SMALL]->disabled) {
+                    gs->current_tool = TOOL_CHISEL_SMALL;
+                    gs->chisel = &gs->chisel_small;
+                    for (int i = 0; i < gs->object_count; i++)
+                        object_generate_blobs(i, 0);
+                    gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) gs->chisel->w+2;
+                    selected_tool = 1;
+                }
                 break;
             }
             case SDLK_2: {
-                gs->current_tool = TOOL_CHISEL_MEDIUM;
-                gs->chisel = &gs->chisel_medium;
-                for (int i = 0; i < gs->object_count; i++)
-                    object_generate_blobs(i, 1);
-                gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) gs->chisel->w+4;
-                selected_tool = 1;
+                if (!gs->gui.tool_buttons[TOOL_CHISEL_MEDIUM]->disabled) {
+                    gs->current_tool = TOOL_CHISEL_MEDIUM;
+                    gs->chisel = &gs->chisel_medium;
+                    for (int i = 0; i < gs->object_count; i++)
+                        object_generate_blobs(i, 1);
+                    gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) gs->chisel->w+4;
+                    selected_tool = 1;
+                }
                 break;
             }
             case SDLK_3: {
-                gs->current_tool = TOOL_CHISEL_LARGE;
-                gs->chisel = &gs->chisel_large;
-                for (int i = 0; i < gs->object_count; i++)
-                    object_generate_blobs(i, 2);
-                gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) gs->chisel->w+4;
-                selected_tool = 1;
+                if (!gs->gui.tool_buttons[TOOL_CHISEL_LARGE]->disabled) {
+                    gs->current_tool = TOOL_CHISEL_LARGE;
+                    gs->chisel = &gs->chisel_large;
+                    for (int i = 0; i < gs->object_count; i++)
+                        object_generate_blobs(i, 2);
+                    gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) gs->chisel->w+4;
+                    selected_tool = 1;
+                }
                 break;
             }
+#if 0
             case SDLK_4: {
                 gs->current_tool = TOOL_BLOCKER;
                 selected_tool = 1;
                 break;
             }
-            case SDLK_5: {
+#endif
+            case SDLK_4: {
                 gs->current_tool = TOOL_OVERLAY;
                 selected_tool = 1;
                 break;
             }
-            case SDLK_6: {
+            case SDLK_5: {
                 gs->current_tool = TOOL_DELETER;
                 selected_tool = 1;
                 break;
             }
-            case SDLK_7: {
+            case SDLK_6: {
                 gs->current_tool = TOOL_PLACER;
                 selected_tool = 1;
                 break;
             }
-            case SDLK_8: {
+            case SDLK_7: {
                 gs->current_tool = TOOL_GRABBER;
                 selected_tool = 1;
                 break;

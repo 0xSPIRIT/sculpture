@@ -19,11 +19,11 @@ enum Tool_Type {
     TOOL_CHISEL_SMALL,
     TOOL_CHISEL_MEDIUM,
     TOOL_CHISEL_LARGE,
-    TOOL_BLOCKER,
     TOOL_OVERLAY,
     TOOL_DELETER,
     TOOL_PLACER,
     TOOL_GRABBER,
+    TOOL_FINISH_LEVEL,
     TOOL_COUNT
 };
 
@@ -101,4 +101,8 @@ struct Dust_Data {
 struct Object {
     struct Blob_Data blob_data[3]; // 3 Blob sizes for 3 chisels. 
     int cell_count;
+};
+
+struct Line {
+    int x1, y1, x2, y2;
 };

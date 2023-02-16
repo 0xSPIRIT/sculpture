@@ -66,7 +66,7 @@ struct Game_State {
     SDL_Event *event;
     
     struct Conversions conversions;
-        
+    
     struct Tutorial_Rect tutorial;
     bool show_tutorials;
     
@@ -151,10 +151,10 @@ struct Game_State {
     struct Grabber grabber;
     struct Effect current_effect;
     
-    struct Chisel_Blocker chisel_blocker;
-    int chisel_blocker_mode; // Edit mode for the points.
+    //struct Chisel_Blocker chisel_blocker;
+    //int chisel_blocker_mode; // Edit mode for the points.
     
-    struct Blocker blocker;
+    //struct Blocker blocker;
     
     struct Converter *material_converter, *fuel_converter;
     

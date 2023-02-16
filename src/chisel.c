@@ -122,22 +122,12 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
     
     if (obj == -1) return 0;
     
-    f32 current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
+    chisel->num_times_chiseled++;
     
-    int blocker_side = find_blocker_side(chisel->x, chisel->y);
+    f32 current_length = (f32) sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y));
     
     int iterations = 0;
     while (current_length < len && is_in_boundsf(chisel->x, chisel->y)) {
-        // If we hit the chisel blocker, keep that in mind for later.
-        
-        struct Chisel_Blocker *cb = &gs->chisel_blocker;
-        if (gs->current_tool == TOOL_CHISEL_MEDIUM &&
-            cb->state != CHISEL_BLOCKER_OFF &&
-            cb->pixels[(int)chisel->x + ((int)chisel->y)*gs->gw] != cb->side)
-        {
-            did_hit_blocker = true;
-        }
-        
         // If we come into contact with a cell, locate its blob
         // then remove it. We only remove one blob per chisel,
         // so we stop our speed right here.
@@ -188,7 +178,7 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
                     enum Cell_Type type = gs->grid[(int)chisel->x + ((int)chisel->y)*gs->gw].type;
                     
                     chisel_play_sound(chisel->size);
-                    object_remove_blob(obj, b, chisel->size, blocker_side, true);
+                    object_remove_blob(obj, b, chisel->size, true);
                     chisel->did_chisel_this_frame = true;
                     
                     move_mouse_to_grid_position(chisel->x, chisel->y);
@@ -237,7 +227,7 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
                 Uint32 blob = curr_blobs[xx+yy*gs->gw];
                 
                 if (blob > 0) {
-                    object_remove_blob(obj, blob, chisel->size, blocker_side, true);
+                    object_remove_blob(obj, blob, chisel->size, true);
                     chisel->did_chisel_this_frame = true;
                     
                     chisel_play_sound(chisel->size);
@@ -293,6 +283,8 @@ void chisel_init(struct Chisel *type) {
     chisel = gs->chisel;
     
     chisel->angle = 315;
+    
+    chisel->num_times_chiseled = 0;
     
     if (chisel == chisel_small) {
         chisel->size = 0;
@@ -524,9 +516,9 @@ void chisel_tick(void) {
         return;
     }
     
-    if (chisel->size == 2) {
+    if (chisel->size != 0) {
         for (int i = 0; i < gs->object_count; i++) {
-            object_generate_blobs(i, 2);
+            object_generate_blobs(i, chisel->size);
         }
     }
     

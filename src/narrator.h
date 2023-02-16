@@ -2,7 +2,7 @@
 
      ////////////////////////////////////////////////////////////////
 #define NARRATION_LEVEL_1 \
-    "You inch towards the block of stone,\n"\
+    "You inch towards the blocks of stone,\n"\
     "accompanied by an assortment of chisels.\n"\
     "You were always fascinated by them- the sculptures.\n"\
     "Worlds of detail tucked behind the stone,\n"\
@@ -10,7 +10,7 @@
     "Your eyes widen like never before,\n"\
     "a flame previously dormant sparking in you.\n"\
 
-#define NARRATION_LEVEL_3 \
+#define NARRATION_LEVEL_4 \
     "The single flame grows, blossoming into blazing fire.\n"\
     "What whispers of inspiration do you hear?\n"\
     "Which shapes and patterns beg to be sculpted?\n"\
@@ -23,14 +23,14 @@
     "...\n"\
     "The flame flickers for a moment.\n"\
 
-#define NARRATION_LEVEL_6 \
+#define NARRATION_LEVEL_7 \
     "Surely by now you were ready, right?\n"\
     "To do something detailed- important...\n"\
     "You remember the sculptures that once danced in your mind's eye.\n"\
     "Hypnotized by an idea, in reverie, you snap back.\n"\
     "With your expectations tempered, you pick up your chisel.\n"\
 
-#define NARRATION_LEVEL_7 \
+#define NARRATION_LEVEL_8 \
     "At the end you should be proud of it, but how could you?\n"\
     "It's a sudden jolt back to reality-\n"\
     "to the detached and dispassionate.\n"\
@@ -42,7 +42,7 @@
     "\"I'll never make this mistake again,\" you say,\n"\
     "\"I'll never settle for anything less than what is expected.\"\n"\
 
-#define NARRATION_LEVEL_9 \
+#define NARRATION_LEVEL_10 \
     "A thought captures you once again,\n"\
     "condensing wildly into many ideas,\n"\
     "but this time, you're ready for it.\n"\
@@ -52,7 +52,7 @@
     "You can do this.\n"\
     "You know you can do this.\n"\
 
-#define NARRATION_LEVEL_10 \
+#define NARRATION_LEVEL_11 \
     "Armed with your honed artistry, you continue onwards.\n"\
     "You'd sculpt an intricate, sophisticated piece.\n"\
     "In fact, very similar to several of your favorites.\n"\

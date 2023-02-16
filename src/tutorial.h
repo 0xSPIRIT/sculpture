@@ -5,7 +5,8 @@
 #define TUTORIAL_CHISEL_STRING  \
     "Tutorial\n" \
     "--------\n\n" \
-    "Use the chisels to create your sculpture!\n" \
+    "Use the chisels (Click or hold the Left Mouse Button)\n" \
+    "to create your sculpture!\n" \
     "Press F when you're satisfied with a level.\n"
 
 #define TUTORIAL_OVERLAY_STRING \

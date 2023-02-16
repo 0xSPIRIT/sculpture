@@ -340,7 +340,7 @@ void slot_tick(struct Slot *slot) {
 void inventory_tick() {
     if (!gs->gui.popup) return;
     
-    if (gs->level_current == 5-1 && !gs->did_fuel_converter_tutorial) {
+    if (gs->level_current == 6-1 && !gs->did_fuel_converter_tutorial) {
         struct Tutorial_Rect *next = tutorial_rect(TUTORIAL_TEXT_FILE_STRING,
                                                    32,
                                                    GUI_H+128,
@@ -351,7 +351,7 @@ void inventory_tick() {
                                       next);
         gs->did_fuel_converter_tutorial = true;
     } 
-    if (gs->level_current == 3-1 && !gs->did_inventory_tutorial) {
+    if (gs->level_current == 4-1 && !gs->did_inventory_tutorial) {
         gs->tutorial = *tutorial_rect(TUTORIAL_INVENTORY_STRING,
                                       32,
                                       GUI_H+128,

@@ -256,11 +256,15 @@ void blob_generate_large(f64 s, int obj, int chisel_size, Uint32 *blob_count) {
     f32 rad = (gs->chisel->angle) / 360.f;
     rad *= 2 * (f32)M_PI;
     
-    //int x = gs->chisel->x - cos(rad);
-    //int y = gs->chisel->y - sin(rad);
+    int x, y;
     
-    int x = gs->chisel->x;
-    int y = gs->chisel->y;
+    if (chisel_size == 1) {
+        x = gs->chisel->x - cos(rad);
+        y = gs->chisel->y - sin(rad);
+    } else {
+        x = gs->chisel->x;
+        y = gs->chisel->y;
+    }
     
     for (int yy = -s; yy <= s; yy++) {
         for (int xx = -s; xx <= s; xx++) {
@@ -298,6 +302,13 @@ int flood_fill_outlines(Uint32 *blobs, Uint32 *blob_count, int obj, int x, int y
     }
     
     return counter;
+}
+
+bool compare_cells(struct Cell *a, struct Cell *b) {
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        if (a[i].type != b[i].type) return false;
+    }
+    return true;
 }
 
 // Start at an edge blob, and work through neighbours until you get
@@ -395,7 +406,8 @@ void object_generate_blobs(int object_index, int chisel_size) {
         count = 1;
     } else if (chisel_size == 1) {
         gs->blob_type = BLOB_CIRCLE_B;
-        blob_generate_pizza(object_index, chisel_size, &count);
+        //blob_generate_pizza(object_index, chisel_size, &count);
+        blob_generate_large(2, object_index, chisel_size, &count);
     } else {
         blob_generate_large(4, object_index, chisel_size, &count);
     }
@@ -1132,7 +1144,7 @@ int cell_count_of_blob(int object, Uint32 blob, int chisel_size) {
     return count;
 }
 
-bool object_remove_blob(int object, Uint32 blob, int chisel_size, int blocker_side, bool replace_dust) {
+bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_dust) {
     struct Object *obj = &gs->objects[object];
     
     const bool easy_chiseling = false;
@@ -1141,7 +1153,7 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, int blocker_si
         for (int x = 0; x < gs->gw; x++) {
             
             if (obj->blob_data[chisel_size].blobs[x+y*gs->gw] != blob) continue;
-            if (gs->blocker.active && gs->blocker.pixels[x+y*gs->gw] != blocker_side) continue;
+            //if (gs->blocker.active && gs->blocker.pixels[x+y*gs->gw] != blocker_side) continue;
             if (easy_chiseling && gs->overlay.grid[x+y*gs->gw]) continue;
             
             if (gs->level_current+1 == 1 && gs->overlay.grid[x+y*gs->gw] && !gs->did_undo_tutorial) {

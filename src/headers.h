@@ -32,8 +32,6 @@
 #include "input.h"
 #include "grabber.h"
 #include "effects.h"
-#include "chisel_blocker.h"
-#include "blocker.h"
 #include "tutorial.h"
 #include "assets.h"
 #include "undo.h"

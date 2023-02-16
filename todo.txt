@@ -1,14 +1,29 @@
 TODO
 
-	[ ] Remove the blocker
+	[x] Remove the blocker
 
-	[ ] Gray out tools when not needed for level.
+	[x] Gray out tools when not needed for level.
 
-	[ ] Make overlay more clear about what to do
+	[x] Make overlay more clear about what to do
 
-	[ ] Better tutorialization.
-		[ ] Level 0?
-		[ ] Hovering over tools gives a short video on usage
+	[x] Improve medium chisel to make it more useful
+
+	[ ] With the small chisel, when in corners that
+		you can't destroy, when you click, automatically
+		relocate to the nearest blob. Make sure the highlight
+		works with this too.
+
+	[x] Level 1
+		[x] Setup with 3 shapes
+		[x] Limit to one chisel at first, then open up more.
+		[x] Make it required to complete the level perfectly.
+		[x] Add a DONE tool button at top right.
+		[x] Proper highlighting of overlay tool then chisel tool.
+
+	[ ] Video preview for tools.
+		[ ] Figure out a way to save states to file including tool positions.
+		[ ] Load states from file and store in structure
+		[ ] Play back the states in a window.
 
 	[ ] Make levels 7-9 easier on material
 

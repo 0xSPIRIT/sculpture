@@ -103,45 +103,49 @@ int level_add(const char *name, const char *desired_image, const char *initial_i
 }
 
 void levels_setup(void) {
-    level_add("Alaska",
+    level_add("Basics",
               RES_DIR "lvl/desired/level 1.png",
               RES_DIR "lvl/initial/level 1.png",
               EFFECT_SNOW);
-    level_add("Fireplace",
+    level_add("Alaska",
               RES_DIR "lvl/desired/level 2.png",
               RES_DIR "lvl/initial/level 2.png",
-              EFFECT_NONE);
-    level_add("Clearcut Shapes",
+              EFFECT_SNOW);
+    level_add("Fireplace",
               RES_DIR "lvl/desired/level 3.png",
               RES_DIR "lvl/initial/level 3.png",
               EFFECT_NONE);
-    level_add("The Process",
+    level_add("Clearcut Shapes",
               RES_DIR "lvl/desired/level 4.png",
               RES_DIR "lvl/initial/level 4.png",
               EFFECT_NONE);
-    level_add("Lamplight",
+    level_add("The Process",
               RES_DIR "lvl/desired/level 5.png",
               RES_DIR "lvl/initial/level 5.png",
-              EFFECT_RAIN);
-    level_add("Metamorphosis",
+              EFFECT_NONE);
+    level_add("Lamplight",
               RES_DIR "lvl/desired/level 6.png",
               RES_DIR "lvl/initial/level 6.png",
-              EFFECT_NONE);
-    level_add("Procedure Lullaby",
+              EFFECT_RAIN);
+    level_add("Metamorphosis",
               RES_DIR "lvl/desired/level 7.png",
               RES_DIR "lvl/initial/level 7.png",
               EFFECT_NONE);
-    level_add("Yearning",
+    level_add("Procedure Lullaby",
               RES_DIR "lvl/desired/level 8.png",
               RES_DIR "lvl/initial/level 8.png",
               EFFECT_NONE);
-    level_add("Showpiece",
+    level_add("Yearning",
               RES_DIR "lvl/desired/level 9.png",
               RES_DIR "lvl/initial/level 9.png",
               EFFECT_NONE);
-    level_add("Glass Body",
+    level_add("Showpiece",
               RES_DIR "lvl/desired/level 10.png",
               RES_DIR "lvl/initial/level 10.png",
+              EFFECT_NONE);
+    level_add("Glass Body",
+              RES_DIR "lvl/desired/level 11.png",
+              RES_DIR "lvl/initial/level 11.png",
               EFFECT_NONE);
 }
 
@@ -176,8 +180,6 @@ void goto_level(int lvl) {
     chisel_init(&gs->chisel_large);
     gs->chisel = &gs->chisel_small;
     
-    chisel_blocker_init();
-    blocker_init();
     chisel_hammer_init();
     deleter_init();
     for (int i = 0; i < PLACER_COUNT; i++)
@@ -266,13 +268,13 @@ void level_tick(void) {
         }
         case LEVEL_STATE_OUTRO: {
             if (input->keys[SDL_SCANCODE_N]) {
-                if (gs->level_current+1 < 10) {
-                    goto_level(++gs->level_current);
+                if (gs->level_current+1 < 11) {
+                    if (gs->level_current+1 != 1 || (gs->level_current+1 == 1 && compare_cells(gs->grid, level->desired_grid)))
+                        goto_level(++gs->level_current);
                 } else {
                     level_set_state(gs->level_current, LEVEL_STATE_PLAY);
                     object_activate(&gs->obj);
                     effect_set(EFFECT_SNOW, gs->window_width, gs->window_height);
-                    //snow_init(&gs->snow);
                 }
             }
             
@@ -302,8 +304,6 @@ void level_tick(void) {
             
             overlay_swap_tick();
             
-            if (gs->chisel_blocker_mode) break;
-            
             if (gs->current_tool > TOOL_CHISEL_LARGE) {
                 gs->overlay.current_material = -1;
             }
@@ -313,10 +313,12 @@ void level_tick(void) {
                     chisel_tick();
                     break;
                 }
+#if 0
                 case TOOL_BLOCKER: {
                     blocker_tick();
                     break;
                 }
+#endif
                 case TOOL_OVERLAY: {
                     //overlay_tick();
                     break;
@@ -404,7 +406,7 @@ void draw_outro(struct Level *level) {
         
         draw_text_indexed(TEXT_OUTRO_LEVEL_NAME,
                           gs->fonts.font,
-                          string, BLACK, WHITE, 0, 0, x, y, NULL, NULL);
+                          string, BLACK, WHITE, 0, 0, x, y, NULL, NULL, false);
     }
     
     
@@ -417,10 +419,10 @@ void draw_outro(struct Level *level) {
     
     draw_text_indexed(TEXT_OUTRO_INTENDED,
                       gs->fonts.font,
-                      "What you intended", BLACK, WHITE, 0, 0, dx, dy, NULL, NULL);
+                      "What you intended", BLACK, WHITE, 0, 0, dx, dy, NULL, NULL, false);
     draw_text_indexed(TEXT_OUTRO_RESULT,
                       gs->fonts.font,
-                      "The result", BLACK, WHITE, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL);
+                      "The result", BLACK, WHITE, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL, false);
     
     // Desired
     
@@ -446,16 +448,25 @@ void draw_outro(struct Level *level) {
     
     timelapse_tick_and_draw(dx, dy+32, scale, scale);
     
+    SDL_Color color_next_level = (SDL_Color){0, 91, 0, 255};
+    bool update = false;
+    if (gs->level_current+1 == 1) update = true;
+    
+    if (gs->level_current+1 == 1 && !compare_cells(gs->grid, level->desired_grid)) {
+        color_next_level = (SDL_Color){255, 200, 200, 255};
+    }
+    
     draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,
                       gs->fonts.font,
                       "Next Level [n]",
-                      (SDL_Color){0, 91, 0, 255},
+                      color_next_level,
                       (SDL_Color){255, 255, 255, 255},
                       1, 1,
                       rect.x + rect.w - margin,
                       rect.y + rect.h - margin,
                       NULL,
-                      NULL);
+                      NULL,
+                      update);
     draw_text_indexed(TEXT_OUTRO_PREV_LEVEL,
                       gs->fonts.font,
                       "Close [f]",
@@ -465,7 +476,8 @@ void draw_outro(struct Level *level) {
                       rect.x + margin,
                       rect.y + rect.h - margin,
                       NULL,
-                      NULL);
+                      NULL,
+                      false);
 }
 
 void level_draw(void) {
@@ -516,9 +528,6 @@ void level_draw(void) {
                     break;
                 }
             }
-            
-            chisel_blocker_draw();
-            blocker_draw();
             
             draw_blobs();
             draw_objects();

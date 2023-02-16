@@ -1,4 +1,4 @@
-#define LEVEL_COUNT 10
+#define LEVEL_COUNT 11
 #ifdef ALASKA_DEBUG
   #define POPUP_TIME 90
 #else

@@ -141,10 +141,11 @@ void get_name_from_tool(int type, char *out) {
         case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel"); break;
         case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel"); break;
         case TOOL_OVERLAY:       strcpy(out, "Overlay [o]"); break;
-        case TOOL_BLOCKER:       strcpy(out, "Blocker"); break;
+        //case TOOL_BLOCKER:       strcpy(out, "Blocker"); break;
         case TOOL_DELETER:       strcpy(out, "Deleter"); break;
         case TOOL_PLACER:        strcpy(out, "Placer"); break;
         case TOOL_GRABBER:       strcpy(out, "Pointer"); break;
+        case TOOL_FINISH_LEVEL:  strcpy(out, "Finish Level"); break;
     }
 }
 
@@ -153,11 +154,12 @@ void get_file_from_tool(int type, char *out) {
         case TOOL_CHISEL_SMALL:  strcpy(out, "chisel_small.png"); break;
         case TOOL_CHISEL_MEDIUM: strcpy(out, "chisel_medium.png"); break;
         case TOOL_CHISEL_LARGE:  strcpy(out, "chisel_large.png"); break;
-        case TOOL_BLOCKER:       strcpy(out, "blocker.png"); break;
+        //case TOOL_BLOCKER:       strcpy(out, "blocker.png"); break;
         case TOOL_OVERLAY:       strcpy(out, "overlay.png"); break;
         case TOOL_DELETER:       strcpy(out, "deleter.png"); break;
         case TOOL_PLACER:        strcpy(out, "placer.png"); break;
         case TOOL_GRABBER:       strcpy(out, "pointer.png"); break;
+        case TOOL_FINISH_LEVEL:  strcpy(out, "finish_level.png"); break;
     }
 }
 
@@ -370,11 +372,12 @@ inline void draw_text_indexed(int index,
                               int x,
                               int y,
                               int *out_w,
-                              int *out_h)
+                              int *out_h,
+                              bool update)
 {
     Assert(index < TEXT_INDEX_COUNT);
     if (!*str) {
-        TTF_SizeText(font, "+", out_w, out_h);
+        TTF_SizeText(font, "A", out_w, out_h);
         return;
     }
     
@@ -384,7 +387,7 @@ inline void draw_text_indexed(int index,
     // Only update the texture if it's never been cached before, or
     // if the text has changed since last time. All the texts are
     // stored in gs->texts up to 128 chars.
-    if (strcmp(gs->texts[index], str) != 0 || !gs->surfaces.text[index]) {
+    if (update || strcmp(gs->texts[index], str) != 0 || !gs->surfaces.text[index]) {
         strncpy(gs->texts[index], str, 128);
         gs->surfaces.text[index] = TTF_RenderText_LCD(font, str, col, bg_col);
         gs->textures.text[index] = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.text[index]);
@@ -537,4 +540,4 @@ void draw_line(SDL_Point a, SDL_Point b, f32 size, bool infinite) {
             return;
         }
     }
-}
+}
