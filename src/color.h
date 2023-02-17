@@ -12,5 +12,10 @@
 #define Green(x) ((Uint8)((x >> 8) & 0xFF))
 #define Blue(x) ((Uint8)(x & 0xFF))
 
+// When you want to change colors on the fly,
+// uncomment the #define and comment the #undef.
+// That makes it so that text updates every
+// frame, which is really slow.
+
 //#define MODIFYING_COLORS
 #undef MODIFYING_COLORS

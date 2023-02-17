@@ -1,6 +1,6 @@
 @echo off
 
-set Common_Compiler_Flags=/nologo /O2 /GR- /EHa- /MT /FC /Fo:"obj\\" /DALASKA_RELEASE_MODE
+set Common_Compiler_Flags=/nologo /O2 /GR- /GS- /EHa- /MT /FC /Fo:"obj\\" /DALASKA_RELEASE_MODE
 set Linker_Flags=user32.lib shell32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib SDL2_mixer.lib
 
 rem gcc main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -g -o ..\bin\win32_sculpture.exe
