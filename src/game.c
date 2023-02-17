@@ -10,6 +10,7 @@
 #include "credits.c"
 #include "undo.c"
 #include "chisel.c"
+#include "preview.c"
 #include "tooltip.c"
 #include "placer.c"
 #include "inventory.c"
@@ -45,6 +46,8 @@ export void game_init(struct Game_State *state, int level) {
     conversions_gui_init();
     
     levels_setup();
+    
+    previews_load();
     
     goto_level(level);
     
@@ -348,6 +351,10 @@ export void game_run(struct Game_State *state) {
                 
                 level_tick();
                 level_draw();
+                
+                preview_tick();
+                if (gs->current_preview.play)
+                    preview_draw(&gs->current_preview, 0, 0, 6);
             }
             break;
         }

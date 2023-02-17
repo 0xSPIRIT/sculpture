@@ -29,7 +29,7 @@ void conversions_gui_init(void) {
 void conversions_gui_tick(void) {
     struct Conversions *c = &gs->conversions;
     
-    if (gs->input.keys_pressed[SDL_SCANCODE_I]) {
+    if (!gs->text_field.active && gs->input.keys_pressed[SDL_SCANCODE_I]) {
         c->active = !c->active;
     }
 }

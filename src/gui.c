@@ -177,8 +177,11 @@ void button_tick(struct Button *b, void *data) {
     if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
         gui_input_my >= b->y && gui_input_my < b->y+b->h) {
         
-        if (*b->tooltip_text)
+        if (*b->tooltip_text) {
             tooltip_set_position_to_cursor(&gui->tooltip, TOOLTIP_TYPE_BUTTON);
+            gui->tooltip.preview = b->preview;
+        }
+        
         b->just_had_tooltip = true;
         
         gs->is_mouse_over_any_button = true;
@@ -283,6 +286,8 @@ void gui_init(void) {
         if (gui->tool_buttons[i] == NULL) {
             gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR, gs->textures.tool_buttons[i], name, click_gui_tool_button);
             gui->tool_buttons[i]->w = gui->tool_buttons[i]->h = gs->window_width/8;
+            if (gs->tool_previews[i].length)
+                gui->tool_buttons[i]->preview = &gs->tool_previews[i];
         }
         
         gui->tool_buttons[i]->x = cum;

@@ -1,9 +1,12 @@
 TODO
 
-	[ ] Video preview for tools.
-		[ ] Figure out a way to save states to file including tool positions.
-		[ ] Load states from file and store in structure
-		[ ] Play back the states in a window.
+	[x] Video preview for tools.
+		[x] Figure out a way to save states to file including tool positions.
+		[x] Load states from file and store in structure
+		[x] Play back the states in a window.
+		[x] Attach it to the tooltips
+		[x] Add placer support.
+		[x] Make tool per-state so you can switch.
 
 	[ ] Make levels 7-9 easier on material
 

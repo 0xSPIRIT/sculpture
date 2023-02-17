@@ -9,7 +9,7 @@ Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_WOOD_LOG,       13,   9, 249,
     CELL_WOOD_PLANK,    150,   6, 118,
     CELL_COBBLESTONE,   255, 255, 255,
-    CELL_MARBLE,        100, 139, 101,
+    CELL_MARBLE,        255,   0,   0,
     CELL_SANDSTONE,     230,  60,   0,
     CELL_CEMENT,        190,  22,  46,
     CELL_CONCRETE,        9,  57, 185,
@@ -131,7 +131,7 @@ void overlay_init(void) {
     switch (gs->level_current+1) {
         case 7: {
             overlay->changes = 
-                overlay_load_changes(RES_DIR "lvl/changes/lvl7/%d.png", 4);
+                overlay_load_changes(RES_DIR "lvl/changes/lvl7/%d.png", 5);
             break;
         }
         case 10: {
@@ -395,7 +395,7 @@ bool int_array_any_neighbours_not_same(int *array, int x, int y) {
 
 void overlay_draw_grid(int *grid, f32 alpha_coeff) {
     f32 alpha;
-    alpha = 120;
+    alpha = 100;
     alpha *= alpha_coeff;
     
     for (int y = 0; y < gs->gh; y++) {
@@ -413,16 +413,22 @@ void overlay_draw_grid(int *grid, f32 alpha_coeff) {
                 255
             };
             
-            if (!int_array_any_neighbours_not_same(grid, x, y)) {
-                f64 f = (sin(SDL_GetTicks()/250.0)+1)/2.0;
-                a = f*90;
-                c.r = c.r*0.8;
-                c.g = c.g*0.8;
-                c.b = c.b*0.8;
+            if (gs->level_current+1 != 7 && !int_array_any_neighbours_not_same(grid, x, y)) {
+                f64 f = (sin(SDL_GetTicks()/750.0)+1)/2.0;
+                a = max(0, min(255, alpha - f*30));
             }
             
-            if (gs->level_current+1 != 6 && gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
+            if (gs->level_current+1 != 7 && gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
                 a /= 4;
+            } else if (gs->level_current+1 == 7) {
+                if (gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
+                    a *= 0.67;
+                }
+                
+                int add = 100;
+                c.r = min(255, c.r+add);
+                c.g = min(255, c.g+add);
+                c.b = min(255, c.b+add);
             }
             
             SDL_SetRenderDrawColor(gs->renderer, c.r, c.g, c.b, a);

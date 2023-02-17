@@ -42,7 +42,7 @@ struct Memory_Arena {
     Uint64 size;
 };
 
-enum Game_State_Enum {
+enum State_Game {
     GAME_STATE_TITLESCREEN,
     GAME_STATE_PLAY
 };
@@ -59,7 +59,10 @@ struct Game_State {
     struct SDL_Window *window;
     struct SDL_Renderer *renderer;
     
-    enum Game_State_Enum gamestate;
+    struct Preview current_preview;
+    struct Preview tool_previews[TOOL_COUNT];
+    
+    enum State_Game gamestate;
     
     struct Titlescreen titlescreen;
     
@@ -150,11 +153,6 @@ struct Game_State {
     
     struct Grabber grabber;
     struct Effect current_effect;
-    
-    //struct Chisel_Blocker chisel_blocker;
-    //int chisel_blocker_mode; // Edit mode for the points.
-    
-    //struct Blocker blocker;
     
     struct Converter *material_converter, *fuel_converter;
     

@@ -246,7 +246,7 @@ void level_tick(void) {
         }
         case LEVEL_STATE_INTRO: {
             level->popup_time_current++;
-            if (gs->input.keys_pressed[SDL_SCANCODE_SPACE] || level->popup_time_current >= level->popup_time_max) {
+            if (gs->input.keys_pressed[SDL_SCANCODE_TAB] || level->popup_time_current >= level->popup_time_max) {
                 level->popup_time_current = 0;
                 
                 level->state = LEVEL_STATE_PLAY;
@@ -486,6 +486,7 @@ void level_draw(void) {
     struct Level *level = &gs->levels[gs->level_current];
     
     SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
+    
     SDL_RenderClear(gs->renderer);
     
     switch (level->state) {
@@ -508,7 +509,10 @@ void level_draw(void) {
             
             SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
             
-            SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
+            if (gs->current_preview.recording)
+                SDL_SetRenderDrawColor(gs->renderer, 53, 20, 20, 255);
+            else
+                SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
             SDL_RenderClear(gs->renderer);
             
             grid_draw();

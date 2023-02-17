@@ -1,4 +1,7 @@
 void tooltip_reset(struct Tooltip *tooltip) {
+    if (tooltip->preview) {
+        tooltip->preview->index=0;
+    }
     memset(tooltip, 0, sizeof(struct Tooltip));
     tooltip->x = tooltip->y = -1;
 }
@@ -80,6 +83,7 @@ void tooltip_draw(struct Tooltip *tooltip) {
                                          tooltip->str[i],
                                          color,
                                          BLACK);
+        
         Assert(surfaces[i]);
         textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surfaces[i]);
         Assert(textures[i]);
@@ -96,10 +100,19 @@ void tooltip_draw(struct Tooltip *tooltip) {
 
         if (surfaces[i]->w > highest_w) highest_w = surfaces[i]->w;
     }
+    
+    const int s = 5;
+    
+    int old_h = height;
+    
+    if (tooltip->preview) {
+        height += 64*s+margin*2;
+        if (64*s > highest_w) highest_w = 64*s;
+    }
 
     bool clamped = false;
 
-    // Clamp the tooltips if it goes outside the gs->window.
+    // Clamp the tooltips if it goes outside the window.
     if (tooltip->x*gs->S + highest_w >= gs->S*gs->gw) {
         tooltip->x -= highest_w/gs->S;
         for (int i = 0; i < count; i++)
@@ -109,6 +122,11 @@ void tooltip_draw(struct Tooltip *tooltip) {
 
     tooltip_draw_box(tooltip, highest_w + margin*2, height + margin*2);
 
+    if (tooltip->preview)
+        preview_draw(tooltip->preview,
+                 gs->S*tooltip->x+margin,
+                 gs->S*tooltip->y+(old_h)+margin*2, s);
+    
     if (clamped) {
         tooltip->x += highest_w;
     }

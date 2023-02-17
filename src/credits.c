@@ -21,7 +21,7 @@ void credits_run(void) {
             
             Uint8 co = 255 * (c->timer/f);
             SDL_Color col = {
-                255-co, 128-co/2, 128-co/2, 255
+                255-co, 255-co, 255-co, 255
             };
             
             draw_text(gs->fonts.font_times,

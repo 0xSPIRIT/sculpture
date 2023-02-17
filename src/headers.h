@@ -16,6 +16,7 @@
 #include "typedefs.h"
 #include "cursor.h"
 #include "conversions.h"
+#include "preview.h"
 #include "credits.h"
 #include "overlay.h"
 #include "sound.h"

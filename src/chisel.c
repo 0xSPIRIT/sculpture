@@ -366,6 +366,72 @@ void chisel_hammer_draw(int dx, int dy) {
     SDL_RenderCopyEx(gs->renderer, hammer->texture, NULL, &dst, hammer->angle, &center, flip);
 }
 
+void chisel_get_adjusted_positions(int angle, int size, int *x, int *y) {
+    if (gs->use_software_renderer) {
+        if (size == 0 || size == 1) {
+            if (angle == 225) {
+                (*y) += 2;
+            } else if (angle == 180) {
+                (*x)++;
+                (*y)++;
+            } else if (angle == 90) {
+                (*x)++;
+            } else if (angle == 45) {
+                (*y)--;
+                (*x)++;
+            } else if (angle == 135) {
+                (*x) += 2;
+                (*y)++;
+            } else if (angle == 315) {
+            }
+        } else if (size == 2) {
+            if (angle == 225) {
+                (*y)++;
+            } else if (angle == 45) {
+                (*x)++;
+            } else if (angle == 135) {
+                (*x)++;
+                (*y)++;
+            }
+        }
+    } else {
+        if (size == 0 || size == 1) {
+            if (angle == 225) {
+                (*y) += 2;
+                (*x)++;
+            } else if (angle == 180) {
+                (*x)++;
+                (*y)++;
+            } else if (angle == 90) {
+                (*x)++;
+            } else if (angle == 45) {
+                (*x)++;
+            } else if (angle == 135) {
+                (*x) += 2;
+            } else if (angle == 315) {
+            }
+        } else if (size == 2) {
+            if (angle == 0) {
+                (*x)++;
+            } else if (angle == 225) {
+                (*y)++;
+            } else if (angle == 45) {
+                (*x)++;
+                (*y)++;
+            } else if (angle == 135) {
+                (*x)++;
+                (*y)++;
+            } else if (angle == 315) {
+                (*x)++;
+            } else if (angle == 180) {
+                (*y)++;
+            } else if (angle == 90) {
+                (*x)++;
+            }
+        }
+    }
+}
+
 void chisel_draw_target(struct Chisel *chisel, int dx, int dy, int render_target) {
     SDL_Texture *prev_target = SDL_GetRenderTarget(gs->renderer);
     
@@ -379,71 +445,7 @@ void chisel_draw_target(struct Chisel *chisel, int dx, int dy, int render_target
     
     // Disgusting hardcoding to adjust the weird rotation SDL does.
     if (!chisel->face_mode) {
-        if (gs->use_software_renderer) {
-            if (chisel->size == 0 || chisel->size == 1) {
-                if (chisel->angle == 225) {
-                    y += 2;
-                } else if (chisel->angle == 180) {
-                    x++;
-                    y++;
-                } else if (chisel->angle == 90) {
-                    x++;
-                } else if (chisel->angle == 45) {
-                    y--;
-                    x++;
-                } else if (chisel->angle == 135) {
-                    x += 2;
-                    y++;
-                } else if (chisel->angle == 315) {
-                }
-            } else if (chisel->size == 2) {
-                if (chisel->angle == 225) {
-                    y++;
-                } else if (chisel->angle == 45) {
-                    x++;
-                } else if (chisel->angle == 135) {
-                    x++;
-                    y++;
-                }
-            }
-        } else {
-            if (gs->input.keys[SDL_SCANCODE_U])
-                Log("%.2f\n", chisel->angle);
-            if (chisel->size == 0 || chisel->size == 1) {
-                if (chisel->angle == 225) {
-                    y += 2;
-                    x++;
-                } else if (chisel->angle == 180) {
-                    x++;
-                    y++;
-                } else if (chisel->angle == 90) {
-                    x++;
-                } else if (chisel->angle == 45) {
-                    x++;
-                } else if (chisel->angle == 135) {
-                    x += 2;
-                } else if (chisel->angle == 315) {
-                }
-            } else if (chisel->size == 2) {
-                if (chisel->angle == 0) {
-                    x++;
-                } else if (chisel->angle == 225) {
-                    y++;
-                } else if (chisel->angle == 45) {
-                    x++;
-                    y++;
-                } else if (chisel->angle == 135) {
-                    x++;
-                    y++;
-                } else if (chisel->angle == 315) {
-                    x++;
-                } else if (chisel->angle == 180) {
-                    y++;
-                } else if (chisel->angle == 90) {
-                    x++;
-                }
-            }
-        }
+        chisel_get_adjusted_positions(chisel->angle, chisel->size, &x, &y);
     }
     
     const SDL_Rect dst = {

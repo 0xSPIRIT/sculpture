@@ -162,7 +162,7 @@ void object_draw(struct Object3D *obj) {
         }
         
         if (obj->timer >= 6*60) {
-            narrator_init(10);
+            narrator_init(11);
             obj->timer = -1;
         }
         return;

@@ -5,3 +5,5 @@ struct Text_Field {
 
     void (*on_return)(const char *);
 };
+
+void set_text_field(const char *description, const char *initial_text, void (*on_return)(const char *));

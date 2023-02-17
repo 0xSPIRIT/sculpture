@@ -31,6 +31,8 @@ struct Tooltip {
     f32 x, y;
     char str[MAX_TOOLTIP_LEN][MAX_TOOLTIP_LINE_LEN];
     int w, h;
+    
+    struct Preview *preview;
 };
 
 struct Message {
@@ -63,6 +65,7 @@ struct Button {
     bool highlighted;
     bool just_had_tooltip; // Used to disable the GUI tooltip when the mouse goes off me.
     void (*on_pressed)(void*);
+    struct Preview *preview;
 };
 
 enum Converter_Type {

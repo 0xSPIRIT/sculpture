@@ -213,7 +213,7 @@ f32 randf(f32 size) {
 }
 
 int randR(int i) {
-    Assert(i > 0);
+    Assert(i >= 0);
     Assert(i < gs->gw* gs->gh);
     int num = gs->grid[i].rand;
     return my_rand(num*num);

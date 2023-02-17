@@ -403,10 +403,6 @@ int main(int argc, char **argv)
         memset(transient_memory.data, 0, transient_memory.size);
         transient_memory.cursor = transient_memory.data;
         
-        // if (should_stop) {
-        // running = false;
-        // }
-        
         QueryPerformanceCounter(&time_elapsed);
         
         if (use_software_renderer) {
@@ -444,6 +440,20 @@ int main(int argc, char **argv)
                 
                 SDL_SetWindowTitle(game_state->window, title);
             }
+        } else {
+            Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
+            Uint64 size_max = persistent_memory.size;
+            f32 percentage = (f32)size_current / (f32)size_max;
+            percentage *= 100.f;
+            
+            char title[128] = {0};
+            sprintf(title,
+                    "Alaska | Memory Used: %.2f/%.2f MB [%.2f%%]",
+                    size_current/1024.0/1024.0,
+                    size_max/1024.0/1024.0,
+                    percentage);
+            
+            SDL_SetWindowTitle(game_state->window, title);
         }
     }
     
