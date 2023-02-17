@@ -31,27 +31,27 @@ enum Tool_Type {
 // It'll fuck up the table in level.c!
 enum Cell_Type {
     CELL_NONE,
-
+    
     CELL_DIRT,
     CELL_SAND,
-
+    
     CELL_WATER,
     CELL_ICE,
     CELL_STEAM,
-
+    
     CELL_WOOD_LOG,
     CELL_WOOD_PLANK,
-
+    
     CELL_COBBLESTONE,
     CELL_MARBLE,
     CELL_SANDSTONE,
-
+    
     CELL_CEMENT,
     CELL_CONCRETE,
-
+    
     CELL_QUARTZ,
     CELL_GLASS,
-
+    
     CELL_GRANITE,
     CELL_BASALT,
     CELL_DIAMOND,
@@ -59,10 +59,10 @@ enum Cell_Type {
     CELL_UNREFINED_COAL,
     CELL_REFINED_COAL,
     CELL_LAVA,
-
+    
     CELL_SMOKE,
     CELL_DUST,
-
+    
     CELL_TYPE_COUNT
 };
 
@@ -72,7 +72,7 @@ struct Cell {
     int object;           // Object index the cell belongs. -1 for none
     int temp;             // Temporary variable for algorithms
     bool updated;         // Updated for the frame yet?
-    Uint8 depth;          // Z-depth. Controls brightness of the cell.
+    bool is_initial;      // Is this cell unset from the initial position?
     int time;             // Time since set
     f32 vx, vy;           // Velocity
     f32 vx_acc, vy_acc;   // When vel < 1, we need to keep track of that

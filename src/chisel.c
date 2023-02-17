@@ -476,30 +476,6 @@ void chisel_update_texture(void) {
     chisel_draw_target(chisel, 0, 0, RENDER_TARGET_CHISEL);
 }
 
-void chisel_set_depth(void) {
-    struct Chisel *chisel = gs->chisel;
-    struct Cell *grid = gs->grid;
-    
-    switch (chisel->size) {
-        case 0: {
-            grid[(int)chisel->x + ((int)chisel->y)*gs->gw].depth = 127;
-            break;
-        }
-        case 1: {
-            for (int y = 0; y < gs->gh; y++) {
-                for (int x = 0; x < gs->gw; x++) {
-                    if (chisel->pixels[x+y*gs->gw] == 0x9B9B9B) {
-                        const int amt = 127;
-                        if (grid[x+y*gs->gw].depth > amt)
-                            grid[x+y*gs->gw].depth -= amt;
-                    }
-                }
-            }
-            break;
-        }
-    }
-}
-
 void set_all_chisel_positions(void) {
     struct Chisel *chisels = &gs->chisel_small;
     
@@ -684,7 +660,6 @@ void chisel_tick(void) {
                 while (sqrt((px-chisel->x)*(px-chisel->x) + (py-chisel->y)*(py-chisel->y)) < len) {
                     chisel->x += ux;
                     chisel->y += uy;
-                    chisel_set_depth();
                     chisel_update_texture();
                 }
             } else if (!chisel->did_remove && gs->object_current != -1) {

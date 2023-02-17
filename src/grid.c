@@ -433,6 +433,7 @@ void set_array(struct Cell *arr, int x, int y, int val, int object) {
     
     arr[x+y*gs->gw].type = val;
     arr[x+y*gs->gw].time = 0;
+    arr[x+y*gs->gw].is_initial = false;
     
     if (object == -2) {
         arr[x+y*gs->gw].object = -1;
@@ -529,7 +530,7 @@ void grid_init(int w, int h) {
     
     for (int i = 0; i < w*h; i++) {
         for (int j = 0; j < NUM_GRID_LAYERS; j++) {
-            gs->grid_layers[j][i] = (struct Cell){.type = 0, .object = -1, .depth = 255 };
+            gs->grid_layers[j][i] = (struct Cell){.type = 0, .object = -1 };
             gs->grid_layers[j][i].rand = rand();
             gs->grid_layers[j][i].id = i;
         }
@@ -1170,7 +1171,10 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_d
             
             if (replace_dust) {
                 //set_array(gs->pickup_grid, x, y, gs->grid[x+y*gs->gw].type, -2);
-                available = add_item_to_inventory_slot(gs->grid[x+y*gs->gw].type, 1);
+                int amount = 1;
+                //if (gs->grid[x+y*gs->gw].is_initial) amount = (rand()%2 == 0) ? 2 : 1;
+                
+                available = add_item_to_inventory_slot(gs->grid[x+y*gs->gw].type, amount);
             }
             
             if (available) {
@@ -1191,20 +1195,6 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_d
     object_blobs_set_pressure(object, chisel_size);
     
     return false;
-}
-
-void object_darken_blob(struct Object *obj, Uint32 blob, int amt, int chisel_size) {
-    for (int y = 0; y < gs->gh; y++) {
-        for (int x = 0; x < gs->gw; x++) {
-            if (obj->blob_data[chisel_size].blobs[x+y*gs->gw] == blob) {
-                if (gs->grid[x+y*gs->gw].depth <= amt) {
-                    gs->grid[x+y*gs->gw].depth = 0;
-                } else {
-                    gs->grid[x+y*gs->gw].depth -= amt;
-                }
-            }
-        }
-    }
 }
 
 void mark_neighbours(int x, int y, int obj, int pobj, int *cell_count) {

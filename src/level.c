@@ -255,7 +255,7 @@ void level_tick(void) {
                 // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
                 for (int i = 0; i < gs->gw*gs->gh; i++) {
                     int id = gs->grid[i].id;
-                    gs->grid[i] = (struct Cell){.type = level->initial_grid[i].type, .rand = rand(), .id = id, .object = -1, .depth = 255};
+                    gs->grid[i] = (struct Cell){.type = level->initial_grid[i].type, .rand = rand(), .id = id, .object = -1, .is_initial = true};
                 }
                 objects_reevaluate();
                 
