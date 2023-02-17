@@ -11,6 +11,6 @@ struct Overlay_Interface {
 //  so we must do this.)
 
 void click_overlay_interface(void *ptr);
-void overlay_interface_init();
-void overlay_interface_draw();
-void overlay_interface_tick();
+void overlay_interface_init(void);
+void overlay_interface_draw(void);
+void overlay_interface_tick(void);

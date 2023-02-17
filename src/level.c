@@ -206,6 +206,7 @@ void goto_level(int lvl) {
     
     for (int i = 0; i < TOOL_COUNT; i++) {
         gs->gui.tool_buttons[i]->highlighted = false;
+        gs->gui.tool_buttons[i]->disabled = false;
     }
     
     //object_activate(&gs->obj);
@@ -218,7 +219,7 @@ void goto_level(int lvl) {
 void level_set_state(int level, enum Level_State state) {
     if (state == LEVEL_STATE_PLAY) {
         //if (!Mix_PlayingMusic())
-            //Mix_PlayMusic(gs->audio.music_a, -1);
+        //Mix_PlayMusic(gs->audio.music_a, -1);
     }
     gs->levels[level].state = state;
 }
@@ -271,8 +272,15 @@ void level_tick(void) {
         case LEVEL_STATE_OUTRO: {
             if (input->keys[SDL_SCANCODE_N]) {
                 if (gs->level_current+1 < 11) {
-                    if (gs->level_current+1 != 1 || (gs->level_current+1 == 1 && compare_cells(gs->grid, level->desired_grid)))
+                    if (gs->level_current+1 != 1 || (gs->level_current+1 == 1 && compare_cells(gs->grid, level->desired_grid))) {
                         goto_level(++gs->level_current);
+                    } else {
+                        level_set_state(gs->level_current, LEVEL_STATE_PLAY);
+                        gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
+                                                      32,
+                                                      GUI_H+32,
+                                                      NULL);
+                    }
                 } else {
                     level_set_state(gs->level_current, LEVEL_STATE_PLAY);
                     object_activate(&gs->obj);
@@ -394,8 +402,10 @@ void level_draw_intro(void) {
 
 void draw_outro(struct Level *level) {
     SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
     SDL_RenderFillRect(gs->renderer, &rect);
+    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
+    SDL_RenderDrawRect(gs->renderer, &rect);
     
     const int margin = Scale(36);
     
@@ -408,7 +418,7 @@ void draw_outro(struct Level *level) {
         
         draw_text_indexed(TEXT_OUTRO_LEVEL_NAME,
                           gs->fonts.font,
-                          string, BLACK, WHITE, 0, 0, x, y, NULL, NULL, false);
+                          string, WHITE, BLACK, 0, 0, x, y, NULL, NULL, false);
     }
     
     
@@ -421,10 +431,10 @@ void draw_outro(struct Level *level) {
     
     draw_text_indexed(TEXT_OUTRO_INTENDED,
                       gs->fonts.font,
-                      "What you intended", BLACK, WHITE, 0, 0, dx, dy, NULL, NULL, false);
+                      "What you intended", WHITE, BLACK, 0, 0, dx, dy, NULL, NULL, false);
     draw_text_indexed(TEXT_OUTRO_RESULT,
                       gs->fonts.font,
-                      "The result", BLACK, WHITE, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL, false);
+                      "The result", WHITE, BLACK, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL, false);
     
     // Desired
     
@@ -444,25 +454,38 @@ void draw_outro(struct Level *level) {
         }
     }
     
+    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
+    SDL_Rect desired_rect = (SDL_Rect){
+        dx, dy+32,
+        scale*gs->gw, scale*gs->gh
+    };
+    SDL_RenderDrawRect(gs->renderer, &desired_rect);
+    
     dx += rect.w - margin - scale*level->w - margin;
     
     // Your grid
     
     timelapse_tick_and_draw(dx, dy+32, scale, scale);
     
-    SDL_Color color_next_level = (SDL_Color){0, 91, 0, 255};
-    bool update = false;
-    if (gs->level_current+1 == 1) update = true;
+    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
+    desired_rect = (SDL_Rect){
+        dx, dy+32,
+        scale*gs->gw, scale*gs->gh
+    };
+    SDL_RenderDrawRect(gs->renderer, &desired_rect);
+    
+    SDL_Color color_next_level = (SDL_Color){0, 200, 0, 255};
+    bool update = true;
     
     if (gs->level_current+1 == 1 && !compare_cells(gs->grid, level->desired_grid)) {
-        color_next_level = (SDL_Color){255, 200, 200, 255};
+        color_next_level = (SDL_Color){200, 0, 0, 255};
     }
     
     draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,
                       gs->fonts.font,
                       "Next Level [n]",
                       color_next_level,
-                      (SDL_Color){255, 255, 255, 255},
+                      (SDL_Color){0, 0, 0, 255},
                       1, 1,
                       rect.x + rect.w - margin,
                       rect.y + rect.h - margin,
@@ -472,8 +495,8 @@ void draw_outro(struct Level *level) {
     draw_text_indexed(TEXT_OUTRO_PREV_LEVEL,
                       gs->fonts.font,
                       "Close [f]",
-                      (SDL_Color){0, 91, 0, 255},
-                      (SDL_Color){255, 255, 255, 255}, 
+                      (SDL_Color){128, 128, 128, 255},
+                      (SDL_Color){0, 0, 0, 255}, 
                       0, 1,
                       rect.x + margin,
                       rect.y + rect.h - margin,
@@ -498,6 +521,7 @@ void level_draw(void) {
                 effect_draw(&gs->current_effect, false);
             
             narrator_run(WHITE);
+            text_field_draw();
             break;
         }
         case LEVEL_STATE_INTRO: {

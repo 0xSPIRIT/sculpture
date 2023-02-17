@@ -14,6 +14,7 @@
 #include <math.h>
 
 #include "typedefs.h"
+#include "color.h"
 #include "cursor.h"
 #include "conversions.h"
 #include "preview.h"

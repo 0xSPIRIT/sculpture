@@ -9,7 +9,7 @@ Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_WOOD_LOG,       13,   9, 249,
     CELL_WOOD_PLANK,    150,   6, 118,
     CELL_COBBLESTONE,   255, 255, 255,
-    CELL_MARBLE,        255,   0,   0,
+    CELL_MARBLE,        255, 255,   0,
     CELL_SANDSTONE,     230,  60,   0,
     CELL_CEMENT,        190,  22,  46,
     CELL_CONCRETE,        9,  57, 185,
@@ -417,7 +417,7 @@ void overlay_draw_grid(int *grid, f32 alpha_coeff) {
                 f64 f = (sin(SDL_GetTicks()/750.0)+1)/2.0;
                 a = max(0, min(255, alpha - f*30));
             }
-            
+                
             if (gs->level_current+1 != 7 && gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
                 a /= 4;
             } else if (gs->level_current+1 == 7) {

@@ -1,6 +1,16 @@
 TODO
 
-	[x] Make levels 7-9 easier on material (1.5x increase pickup)
-	[ ] Make changes for level 7 & the desired/initials more fit the narrative.
+	[x] Make changes for level 7 & the desired/initials more fit the narrative.
 		Really complex desired idea -> not as good but fine result.
+	[x] Add optional overlay to the previews
 	[ ] Pause menu
+
+
+ALASKA MUSIC
+
+Inspiration:
+	- Chiasm (GRIS)
+	- Smooth Jazz
+	- Minecraft / Ambient
+	- Cellar Door (Michael Andrews) intro
+	- Sorrow (Motoi Sakaruba)

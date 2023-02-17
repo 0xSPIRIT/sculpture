@@ -7,7 +7,7 @@ void conversions_gui_init(void) {
     
     while (fgets(buf, 128, f)) {
         const size_t len = strlen(buf);
-        for (int i = 0; i < len; i++) {
+        for (size_t i = 0; i < len; i++) {
             if (buf[i] == '\n' || buf[i] == '\r') buf[i] = 0;
         }
         strcpy(c->lines[c->line_count++], buf);
@@ -37,7 +37,7 @@ void conversions_gui_tick(void) {
 void conversions_gui_draw(void) {
     struct Conversions *c = &gs->conversions;
     
-    const SDL_Color bg = {0, 0, 32, 200};
+    const SDL_Color bg = {0, 0, 0, 200};
     
     if (!c->active) return;
     

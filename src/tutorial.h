@@ -5,9 +5,9 @@
 #define TUTORIAL_CHISEL_STRING  \
     "Tutorial\n" \
     "--------\n\n" \
-    "Use the chisels (Click or hold the Left Mouse Button)\n" \
+    "Use the chisels (click or hold the left mouse button)\n" \
     "to create your sculpture!\n" \
-    "Press F when you're satisfied with a level.\n"
+    "Click the checkmark when you're satisfied with a level.\n"
 
 #define TUTORIAL_OVERLAY_STRING \
     "Tutorial\n" \
@@ -15,6 +15,15 @@
     "Click the overlay button to show what you want to create.\n\n" \
     "With the POINTER tool selected, show the material type of\n" \
     "a cell by hovering over the overlay.\n"
+
+#define TUTORIAL_COMPLETE_LEVEL \
+    "Tutorial\n" \
+    "--------\n\n" \
+    "For this first level, you must complete it\n"\
+    "perfectly in order to continue.\n\n"\
+    "Subsequent levels can be completed\n"\
+    "at any point, with no restrictions\n"\
+    "except your own discretion.\n"\
 
 #define TUTORIAL_UNDO_STRING \
     "Tutorial\n" \
@@ -24,7 +33,7 @@
 #define TUTORIAL_CHISEL_ROTATE_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "*Hold* SHIFT and move the cursor to rotate the chisel.\n"
+    "Hold SHIFT and move the cursor to rotate the chisel.\n"
 
 #define TUTORIAL_PRESSURE_STRING \
     "Tutorial\n" \

@@ -389,13 +389,15 @@ void gui_draw_profile() {
     struct Level *level = &gs->levels[gs->level_current];
     int count = 0;
     
+#if 0
     struct Cell *overlay_grid = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
     
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         overlay_grid[i].type = gs->overlay.grid[i];
     }
-    
-    profile_array(overlay_grid, level->profile_lines, &count);
+    #endif
+
+    profile_array(level->desired_grid, level->profile_lines, &count);
     
     int ah = 0;
     draw_text_indexed(TEXT_CONVERTER_REQUIRED_START,
@@ -476,7 +478,11 @@ void converter_draw(struct Converter *converter) {
         return;
     
     
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(gs->renderer, 
+                           Red(CONVERTER_LINE_COLOR),
+                           Green(CONVERTER_LINE_COLOR),
+                           Blue(CONVERTER_LINE_COLOR),
+                           255);
     SDL_RenderDrawLine(gs->renderer, converter->x+converter->w,
                        converter->y+GUI_H, converter->x+converter->w,
                        converter->y+GUI_H+converter->h);
@@ -511,17 +517,40 @@ void converter_draw(struct Converter *converter) {
     SDL_Surface **surf = &gs->surfaces.converter_names[converter->type];
     SDL_Texture **tex = &gs->textures.converter_names[converter->type];
     
+#ifndef MODIFYING_COLORS
     if (!*surf) {
+#else
+        if (*surf) SDL_FreeSurface(*surf);
+#endif
+    
         *surf = TTF_RenderText_LCD(gs->fonts.font_courier,
                                    converter->name, 
-                                   (SDL_Color){0, 0, 0, 255},
-                                   (SDL_Color){200, 200, 200, 255});
+                                   (SDL_Color){
+                                       Red(CONVERTER_NAME_COLOR),
+                                       Green(CONVERTER_NAME_COLOR),
+                                       Blue(CONVERTER_NAME_COLOR),
+                                       255
+                                   },
+                                   (SDL_Color){
+                                       Red(INVENTORY_COLOR2),
+                                       Green(INVENTORY_COLOR2), 
+                                       Blue(INVENTORY_COLOR2),
+                                       255
+                                   });
+#ifndef MODIFYING_COLORS
     }
+#endif
     Assert(*surf);
-    
+
+#ifndef MODIFYING_COLORS
     if (!*tex) {
+#else
+    if (*tex) SDL_DestroyTexture(*tex);
+#endif
         *tex = SDL_CreateTextureFromSurface(gs->renderer, *surf);
+#ifndef MODIFYING_COLORS
     }
+#endif
     Assert(*tex);
     
     int margin = 8;
@@ -550,8 +579,21 @@ void gui_popup_draw(void) {
         gs->gw*gs->S, (int)gui->popup_h
     };
     
-    SDL_SetRenderDrawColor(gs->renderer, 235, 235, 235, 255);
+    SDL_SetRenderDrawColor(gs->renderer,
+                           Red(INVENTORY_COLOR),
+                           Green(INVENTORY_COLOR),
+                           Blue(INVENTORY_COLOR),
+                           255);
     SDL_RenderFillRect(gs->renderer, &popup);
+    
+    SDL_SetRenderDrawColor(gs->renderer, 
+                           Red(CONVERTER_LINE_COLOR),
+                           Green(CONVERTER_LINE_COLOR),
+                           Blue(CONVERTER_LINE_COLOR),
+                           255);
+    SDL_RenderDrawLine(gs->renderer,
+                       0, GUI_H+gui->popup_y-1,
+                       gs->window_width, GUI_H+gui->popup_y-1);
     
     int w, h;
     SDL_QueryTexture(gs->textures.tab, NULL, NULL, &w, &h);
@@ -561,9 +603,10 @@ void gui_popup_draw(void) {
         gs->gw*gs->S, Scale(36)
     };
     
-    Uint8 r = 200, g = 200, b = 200;
-    
-    SDL_SetRenderDrawColor(gs->renderer, r, g, b, 255);
+    SDL_SetRenderDrawColor(gs->renderer,
+                           Red(INVENTORY_COLOR2),
+                           Green(INVENTORY_COLOR2), 
+                           Blue(INVENTORY_COLOR2), 255);
     SDL_RenderFillRect(gs->renderer, &bar);
     
     SDL_Rect tab_icon = {

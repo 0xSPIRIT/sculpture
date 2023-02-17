@@ -89,10 +89,12 @@ void tutorial_rect_run() {
         tutorial_rect_close(NULL);
     }
     
-    const SDL_Color bg = (SDL_Color){32, 32, 32, 255};
+    const SDL_Color bg = (SDL_Color){0, 0, 0, 255};
     
     SDL_SetRenderDrawColor(gs->renderer, bg.r, bg.g, bg.b, 255);
     SDL_RenderFillRect(gs->renderer, &tut->rect);
+    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
+    SDL_RenderDrawRect(gs->renderer, &tut->rect);
     
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
     
@@ -135,10 +137,15 @@ void check_for_tutorial() {
     
     switch (l+1) {
         case 1: {
-            struct Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_CHISEL_STRING,
+            struct Tutorial_Rect *t3 = tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
                                                      32,
                                                      GUI_H+32,
                                                      NULL);
+            
+            struct Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_CHISEL_STRING,
+                                                     32,
+                                                     GUI_H+32,
+                                                     t3);
             
             struct Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_OVERLAY_STRING,
                                                      32,

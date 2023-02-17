@@ -144,12 +144,18 @@ void slot_draw(struct Slot *slot, f32 rx, f32 ry) {
         (int) slot->h
     };
     
-    int col = 200;
-    SDL_SetRenderDrawColor(gs->renderer, col, col, col, 255);
+    SDL_SetRenderDrawColor(gs->renderer,
+                           Red(SLOT_COLOR),
+                           Green(SLOT_COLOR),
+                           Blue(SLOT_COLOR),
+                           255);
     SDL_RenderFillRect(gs->renderer, &bounds);
     
-    col = 0;
-    SDL_SetRenderDrawColor(gs->renderer, col, col, col, 255);
+    SDL_SetRenderDrawColor(gs->renderer, 
+                           Red(SLOT_OUTLINE_COLOR),
+                           Green(SLOT_OUTLINE_COLOR),
+                           Blue(SLOT_OUTLINE_COLOR),
+                           255);
     
     bounds.x--;
     bounds.y--;
@@ -180,17 +186,39 @@ void slot_draw(struct Slot *slot, f32 rx, f32 ry) {
             texture = &gs->textures.slot_names[slot->inventory_index];
         }
         
+#ifndef MODIFYING_COLORS
         if (!*surf) {
+#else
+        if (*surf) SDL_FreeSurface(*surf);
+#endif
             *surf = TTF_RenderText_LCD(gs->fonts.font_small,
                                        slot->name,
-                                       (SDL_Color){0, 0, 0, 255},
-                                       (SDL_Color){235, 235, 235, 255});
+                                       (SDL_Color){
+                                           Red(SLOT_TEXT_COLOR), 
+                                           Green(SLOT_TEXT_COLOR), 
+                                           Blue(SLOT_TEXT_COLOR), 
+                                           255
+                                       },
+                                       (SDL_Color){
+                                           Red(INVENTORY_COLOR),
+                                           Green(INVENTORY_COLOR),
+                                           Blue(INVENTORY_COLOR),
+                                           0});
+#ifndef MODIFYING_COLORS
         }
+#else
         Assert(*surf);
+#endif
         
+#ifndef MODIFYING_COLORS
         if (!*texture) {
+#else
+        if (*texture) SDL_DestroyTexture(*texture);
+#endif
             *texture = SDL_CreateTextureFromSurface(gs->renderer, *surf);
+#ifndef MODIFYING_COLORS
         }
+#endif
         
         Assert(*texture);
         
@@ -402,8 +430,24 @@ void inventory_draw(void) {
         0, 0,
         gs->S*gs->gw, GUI_H
     };
-    SDL_SetRenderDrawColor(gs->renderer, 235, 235, 235, 255);
+    SDL_SetRenderDrawColor(gs->renderer, 
+                           Red(INVENTORY_COLOR),
+                           Green(INVENTORY_COLOR),
+                           Blue(INVENTORY_COLOR),
+                           255);
+                           
     SDL_RenderFillRect(gs->renderer, &rect);
+    
+    SDL_SetRenderDrawColor(gs->renderer, 
+                           Red(CONVERTER_LINE_COLOR),
+                           Green(CONVERTER_LINE_COLOR),
+                           Blue(CONVERTER_LINE_COLOR),
+                           255);
+    SDL_RenderDrawLine(gs->renderer,
+                       0,
+                       GUI_H,
+                       gs->window_width,
+                       GUI_H);
     
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
         slot_draw(&gs->inventory.slots[i], 0, 0);

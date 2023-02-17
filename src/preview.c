@@ -15,6 +15,10 @@ void preview_finish_recording(struct Preview *p) {
     p->play = true;
     
     fprintf(fp, "%d\n", p->length);
+    fwrite((const void*)gs->overlay.grid,
+           sizeof(int),
+           PREVIEW_GRID_SIZE,
+           fp);
     fwrite((const void*)p->states,
            sizeof(struct Preview_State),
            p->length,
@@ -30,6 +34,10 @@ void preview_load(struct Preview *p, const char *file) {
     p->recording = false;
     
     fscanf(fp, "%d\n", &p->length);
+    fread(p->overlay,
+          sizeof(int),
+          PREVIEW_GRID_SIZE,
+          fp);
     fread(p->states,
           sizeof(struct Preview_State),
           p->length,
@@ -41,11 +49,11 @@ void preview_load(struct Preview *p, const char *file) {
 void previews_load(void) {
     preview_load(&gs->tool_previews[TOOL_CHISEL_SMALL],
                  RES_DIR "previews/small_chisel.bin");
-#if 0
     preview_load(&gs->tool_previews[TOOL_CHISEL_MEDIUM],
                  RES_DIR "previews/medium_chisel.bin");
     preview_load(&gs->tool_previews[TOOL_CHISEL_LARGE],
                  RES_DIR "previews/large_chisel.bin");
+#if 0
     preview_load(&gs->tool_previews[TOOL_PLACER],
                  RES_DIR "previews/placer.bin");
 #endif
@@ -100,6 +108,16 @@ void preview_draw(struct Preview *p, int dx, int dy, int scale) {
         }
     }
     
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            int t = p->overlay[x+y*gs->gw];
+            if (!t) continue;
+            
+            SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 127);
+            SDL_RenderDrawPoint(gs->renderer, x, y);
+        }
+    }
+                      
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 0, 255);
     
     int tool = p->states[p->index].tool;
@@ -128,6 +146,9 @@ void preview_draw(struct Preview *p, int dx, int dy, int scale) {
             
             // Disgusting hardcoding to adjust the weird rotation SDL does.
             chisel_get_adjusted_positions(angle, tool, &x, &y);
+            if (angle == 270 && tool == TOOL_CHISEL_SMALL) {
+                y++;
+            }
             
             const SDL_Rect dst = {
                 x, y - chisel->h/2,

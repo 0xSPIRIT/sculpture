@@ -500,7 +500,7 @@ void chisel_tick(void) {
     
     chisel->did_chisel_this_frame = false;
     
-    chisel->is_changing_angle = input->keys[SDL_SCANCODE_LSHIFT];
+    chisel->is_changing_angle = input->keys[SDL_SCANCODE_LSHIFT] || input->keys[SDL_SCANCODE_RSHIFT];
     
     int grid_null = true;
     for (int i = 0; i < gs->gw*gs->gh; i++) {

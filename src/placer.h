@@ -1,6 +1,6 @@
 #define PLACER_COUNT 5
 #define MAX_PLACE_SOLID_TIME 45 // Frames until cut off for solids.
-#define PLACER_MINIMUM_AREA 1
+#define PLACER_MINIMUM_AREA 5
 
 enum {
     PLACER_PLACE_RECT_MODE,
@@ -33,4 +33,4 @@ struct Placer {
     int placing_solid_time;
 };
 
-struct Placer *get_current_placer();
+struct Placer *get_current_placer(void);

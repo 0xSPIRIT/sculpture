@@ -253,18 +253,22 @@ void blob_generate_dumb(int obj, int chisel_size, Uint32 *blob_count) {
 void blob_generate_large(f64 s, int obj, int chisel_size, Uint32 *blob_count) {
     Uint32 *blobs = gs->objects[obj].blob_data[chisel_size].blobs;
     
-    f32 rad = (gs->chisel->angle) / 360.f;
+    f32 rad = (gs->chisel->angle-180) / 360.f;
     rad *= 2 * (f32)M_PI;
     
     int x, y;
     
+#if 0
     if (chisel_size == 1) {
-        x = gs->chisel->x - cos(rad);
-        y = gs->chisel->y - sin(rad);
+        x = round(gs->chisel->x - cos(rad));
+        y = round(gs->chisel->y - sin(rad));
     } else {
+#endif
         x = gs->chisel->x;
         y = gs->chisel->y;
+#if 0
     }
+#endif
     
     for (int yy = -s; yy <= s; yy++) {
         for (int xx = -s; xx <= s; xx++) {
@@ -1172,7 +1176,8 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_d
             if (replace_dust) {
                 //set_array(gs->pickup_grid, x, y, gs->grid[x+y*gs->gw].type, -2);
                 int amount = 1;
-                //if (gs->grid[x+y*gs->gw].is_initial) amount = (rand()%2 == 0) ? 2 : 1;
+                if (gs->level_current+1 != 11 && gs->grid[x+y*gs->gw].is_initial)
+                    amount = (rand()%2 == 0) ? 2 : 1;
                 
                 available = add_item_to_inventory_slot(gs->grid[x+y*gs->gw].type, amount);
             }
