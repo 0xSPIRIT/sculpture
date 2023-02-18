@@ -15,7 +15,7 @@ void titlescreen_tick(void) {
 }
 
 void titlescreen_draw(void) {
-    SDL_SetRenderDrawColor(gs->renderer, 26, 26, 26, 26);
+    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
     SDL_RenderClear(gs->renderer);
     
     if (gs->titlescreen.stop) return;
@@ -23,7 +23,7 @@ void titlescreen_draw(void) {
     draw_text_blended_indexed(TEXT_TITLESCREEN,
                               gs->fonts.font_titlescreen,
                               "Alaska",
-                              WHITE,
+                              BLACK,
                               false,
                               false,
                               gs->window_width/2 - gs->titlescreen.text_width/2,
@@ -35,14 +35,13 @@ void titlescreen_draw(void) {
     int w;
     
     f64 a = (1+sin(3*SDL_GetTicks()/1000.0))/2;
-    a *= 255-26;
-    a += 26;
+    a *= 255;
     
     TTF_SizeText(gs->fonts.font_times, string, &w, NULL);
     draw_text( gs->fonts.font_times,
               string,
               (SDL_Color){a, a, a, 255},
-              (SDL_Color){26, 26, 26, 255},
+              (SDL_Color){255, 255, 255, 255},
               false,
               false,
               gs->window_width/2 - w/2,

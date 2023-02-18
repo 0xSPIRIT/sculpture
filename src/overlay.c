@@ -13,7 +13,7 @@ Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_SANDSTONE,     230,  60,   0,
     CELL_CEMENT,        190,  22,  46,
     CELL_CONCRETE,        9,  57, 185,
-    CELL_QUARTZ,         16, 145, 147,
+    CELL_QUARTZ,        100, 164,   0,
     CELL_GLASS,         173, 137, 249,
     CELL_GRANITE,        58, 109, 163,
     CELL_BASALT,        185, 185,  57,
@@ -421,9 +421,11 @@ void overlay_draw_grid(int *grid, f32 alpha_coeff) {
             if (gs->level_current+1 != 7 && gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
                 a /= 4;
             } else if (gs->level_current+1 == 7) {
+#if 0
                 if (gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
                     a *= 0.67;
                 }
+#endif
                 
                 int add = 100;
                 c.r = min(255, c.r+add);

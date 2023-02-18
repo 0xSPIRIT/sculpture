@@ -10,11 +10,21 @@
     "Your eyes widen like never before,\n"\
     "a flame previously dormant sparking in you.\n"\
 
+#define NARRATION_LEVEL_3 \
+    "As you learn the principles of the form,\n"\
+    "your mind's eye fills with crazy, experimental ideas.\n"\
+    "It scratches an itch you never knew you had,\n"\
+    "daydreaming even outside of the workshop.\n"\
+    "It's a kind of simple joy and excitement-\n"\
+    "your single flame steadying into radiance,\n"\
+    "with your mind a fireplace.\n" \
+
 #define NARRATION_LEVEL_4 \
     "The single flame grows, blossoming into blazing fire.\n"\
     "What whispers of inspiration do you hear?\n"\
     "Which shapes and patterns beg to be sculpted?\n"\
-    "Wondrous minutes went by, daydreaming fantastical possibilities.\n"\
+    "Again and again, wondrous minutes went by,\n"\
+    "daydreaming fantastical possibilities.\n"\
     "You can fully picture it.\n"\
     "A beautiful symbolic piece, with endless complex details.\n"\
     "... No.\n"\

@@ -15,6 +15,7 @@ struct Preview {
     int length;
     int index;
     bool recording, play;
+    SDL_Rect placer_rect;
 };
 
 void preview_draw(struct Preview *p, int dx, int dy, int scale);

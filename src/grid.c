@@ -656,7 +656,10 @@ SDL_Color pixel_from_index_grid(struct Cell *grid, enum Cell_Type type, int i) {
         }
         
         case CELL_BASALT: {
-            color = BLACK;
+            color = (SDL_Color){64, 64, 64, 255};
+            color.r += randR(i)%20;
+            color.g += randR(i)%20;
+            color.b += randR(i)%20;
             break;
         }
         

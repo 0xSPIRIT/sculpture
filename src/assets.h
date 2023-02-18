@@ -47,7 +47,7 @@ enum {
 };
 
 struct Audio {
-    Mix_Music *music_title, *music_a;
+    Mix_Music *music_a;
     
     Mix_Chunk *stinger_a, *stinger_b;
     

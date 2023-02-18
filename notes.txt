@@ -4,11 +4,10 @@ https://artdecocollection.com/wp-content/uploads/2019/10/SCREEN-SHOT-2019-10-18-
 Major Milestones:
 
 x Tutorialization
-- Fix levels & gameplay according to playtesting
+? Fix levels & gameplay according to playtesting
 - Sound effects & Music
-- Narrator
-- Title Screen
-- Ending (Fall & Credits)
+x Narrator
+x Ending (Fall & Credits)
 
 Something that was part of my original plan but that didn't come to fruition is the idea
 of having levels where you started with an intention and the end product had to be

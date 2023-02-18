@@ -215,7 +215,6 @@ void fonts_deinit(struct Fonts *fonts) {
 }
 
 void audio_init(struct Audio *audio) {
-    audio->music_title = Mix_LoadMUS(RES_DIR "audio/alaska.ogg");
     audio->music_a = Mix_LoadMUS(RES_DIR "audio/jazz.ogg");
     
     for (int i = 0; i < 6; i++) {
@@ -237,7 +236,6 @@ void audio_init(struct Audio *audio) {
 }
 
 void audio_deinit(struct Audio *audio) {
-    Mix_FreeMusic(audio->music_title);
     Mix_FreeMusic(audio->music_a);
     for (int i = 0; i < 6; i++)
         Mix_FreeChunk(audio->medium_chisel[i]);

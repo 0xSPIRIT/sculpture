@@ -75,6 +75,8 @@ void tool_button_set_disabled(int level) {
             } else {
                 tools[TOOL_CHISEL_MEDIUM]->disabled = false;
                 tools[TOOL_CHISEL_LARGE]->disabled = false;
+                tools[TOOL_CHISEL_MEDIUM]->highlighted = true;
+                tools[TOOL_CHISEL_LARGE]->highlighted = true;
             }
         }
         case 2: {

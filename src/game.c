@@ -57,7 +57,7 @@ export void game_init(struct Game_State *state, int level) {
     gs->gamestate = GAME_STATE_PLAY;
 #else
     gs->gamestate = GAME_STATE_TITLESCREEN;
-    if (Mix_PlayMusic(gs->audio.music_title, -1) == -1) {
+    if (Mix_PlayMusic(gs->audio.music_a, -1) == -1) {
         Log("%s\n", SDL_GetError());
         exit(1);
     }

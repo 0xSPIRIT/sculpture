@@ -53,10 +53,8 @@ void previews_load(void) {
                  RES_DIR "previews/medium_chisel.bin");
     preview_load(&gs->tool_previews[TOOL_CHISEL_LARGE],
                  RES_DIR "previews/large_chisel.bin");
-#if 0
     preview_load(&gs->tool_previews[TOOL_PLACER],
                  RES_DIR "previews/placer.bin");
-#endif
 }
 
 void preview_record(struct Preview *p) {
@@ -75,6 +73,7 @@ void preview_record(struct Preview *p) {
         case TOOL_PLACER: {
             p->states[p->length].x = gs->placers[gs->current_placer].x;
             p->states[p->length].y = gs->placers[gs->current_placer].y;
+            p->states[p->length].angle = gs->placers[gs->current_placer].rect.x != -1;
             break;
         }
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
@@ -126,11 +125,26 @@ void preview_draw(struct Preview *p, int dx, int dy, int scale) {
         case TOOL_PLACER: {
             int x = p->states[p->index].x;
             int y = p->states[p->index].y;
+            bool is_rect = p->states[p->index].angle == 1;
             
             SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 64);
             
             SDL_RenderDrawLine(gs->renderer, 0, y, gs->gw, y);
             SDL_RenderDrawLine(gs->renderer, x, 0, x, gs->gh);
+            
+            if (is_rect) {
+                if (p->placer_rect.x == -1) {
+                    p->placer_rect.x = x;
+                    p->placer_rect.y = y;
+                }
+                p->placer_rect.w = 1+x - p->placer_rect.x;
+                p->placer_rect.h = 1+y - p->placer_rect.y;
+                
+                SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
+                SDL_RenderDrawRect(gs->renderer, &p->placer_rect);
+            } else {
+                p->placer_rect.x = p->placer_rect.y = -1;
+            }
             break;
         }
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {

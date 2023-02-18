@@ -1,10 +1,6 @@
 TODO
 
-	[x] Make changes for level 7 & the desired/initials more fit the narrative.
-		Really complex desired idea -> not as good but fine result.
-	[x] Add optional overlay to the previews
-	[ ] Pause menu
-
+	[x] Make the medium and large chisel highlighted after they're unlocked.
 
 ALASKA MUSIC
 

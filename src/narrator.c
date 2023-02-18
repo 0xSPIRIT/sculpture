@@ -35,6 +35,7 @@ void narrator_draw_text_blended(TTF_Font *font,
 char* get_narration(int level) {
     switch (level+1) {
         case 1:  return NARRATION_LEVEL_1;
+        case 3:  return NARRATION_LEVEL_3;
         case 4:  return NARRATION_LEVEL_4;
         case 7:  return NARRATION_LEVEL_7;
         case 8:  return NARRATION_LEVEL_8;
