@@ -12,7 +12,7 @@ struct TriangleDrawData {
 
 
 // 3 vertices required
-inline void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *p) {
+void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *p) {
     const vec2 t[3] = {p[0].p, p[1].p, p[2].p};
     const SDL_PixelFormat *format = surf->format;
     
@@ -53,7 +53,7 @@ inline void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, V
     }
 }
 
-inline void draw_triangle(void *ptr) {
+void draw_triangle(void *ptr) {
     struct TriangleDrawData *data = (struct TriangleDrawData*)ptr;
     
     for (int y = data->start_y; y < data->end_y; y++) {
@@ -321,7 +321,11 @@ void object_draw(struct Object3D *obj) {
     int w = SCALE_3D * gs->window_width;
     int h = SCALE_3D * (gs->window_height-GUI_H);
     
+#ifdef __EMSCRIPTEN__
+    memset(pixels, 0, pitch*h);
+#else
     ZeroMemory(pixels, pitch*h);
+#endif
     
     draw_image_skew(w, h, gs->surfaces.a, pixels, final_points);
     draw_image_skew(w, h, gs->surfaces.a, pixels, final_points+1);

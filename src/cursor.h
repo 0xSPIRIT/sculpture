@@ -90,7 +90,7 @@ const char *placer_cursor_data[] = {
     "0,0"
 };
 
-inline SDL_Cursor *init_system_cursor(const char **image) {
+SDL_Cursor *init_system_cursor(const char **image) {
     int i, row, col;
     Uint8 data[4*32];
     Uint8 mask[4*32];

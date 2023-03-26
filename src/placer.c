@@ -26,16 +26,6 @@ void placer_init(int num) {
     placer->contains = &gs->inventory.slots[num].item;
     placer->contains->type = 0;
     placer->contains->amount = 0;
-    
-#if 0
-    if (num == 0) {
-        placer->contains->type = CELL_COBBLESTONE;
-        placer->contains->amount = 2500;
-    } else if (num == 1) {
-        placer->contains->type = CELL_SAND;
-        placer->contains->amount = 2500;
-    }
-#endif
 }
 
 void placer_suck_circle(struct Placer *placer) {
@@ -211,7 +201,7 @@ void placer_set_and_resize_rect(struct Placer *placer) {
     c.w = abs(c.w);
     c.h = abs(c.h);
     
-    int area = abs(c.w * c.h);
+    int area = abs((c.w+1) * (c.h+1));
     
     if (area < PLACER_MINIMUM_AREA) {
         return;
@@ -249,7 +239,7 @@ void placer_place_rect(struct Placer *placer) {
     placer->rect.w = abs(placer->rect.w);
     placer->rect.h = abs(placer->rect.h);
     
-    int area = placer->rect.w * placer->rect.h;
+    int area = (1+placer->rect.w) * (1+placer->rect.h);
     if (area < PLACER_MINIMUM_AREA) {
         placer->rect.x = -1;
         placer->rect.y = -1;
@@ -311,13 +301,6 @@ void placer_place_rect(struct Placer *placer) {
     placer->rect.w = 0;
     placer->rect.h = 0;
     
-#if 0
-    if (placer->object_index != -1) {
-        object_generate_blobs(placer->object_index, 0);
-        object_generate_blobs(placer->object_index, 1);
-        object_generate_blobs(placer->object_index, 2);
-    }
-#endif
     objects_reevaluate();
 }
 

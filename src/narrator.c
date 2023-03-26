@@ -141,6 +141,7 @@ void narrator_run(SDL_Color col) {
     
     if (n->time > delay && n->char_curr < n->curr_len) {
         n->char_curr++;
+        Mix_PlayChannel(AUDIO_CHANNEL_NARRATOR, gs->audio.pip, 0);
         n->time = 0;
     }
     n->time++;

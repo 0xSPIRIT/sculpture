@@ -42,7 +42,8 @@ struct Message {
 
 struct GUI {
     bool popup;
-    f32 popup_y, popup_y_vel, popup_h;
+    f32 popup_y, popup_y_vel, popup_h; // For the bottom part
+    f32 popup_inventory_y, popup_inventory_y_vel, popup_inventory_h;
     SDL_Texture *popup_texture;
     struct Tooltip tooltip;
     

@@ -643,7 +643,9 @@ SDL_Color pixel_from_index_grid(struct Cell *grid, enum Cell_Type type, int i) {
         case CELL_GLASS: {
             color = get_pixel(gs->surfaces.glass_surface, i%gs->gw, i/gs->gw);
             const f32 coeff = 0.2f;
+            #ifndef __EMSCRIPTEN__
             color.a = 180 + sin(coeff * (i + sin(gs->frames/200.0)*6))*20;
+            #endif
             break;
         }
         
@@ -736,18 +738,18 @@ void move_by_velocity(struct Cell *arr, int x, int y) {
     }
     
     // If vel < 1, that means we should wait for it to accumulate before moving.
-    if (abs(p->vx) < 1) {
+    if (fabsf(p->vx) < 1) {
         p->vx_acc += p->vx;
     }
-    if (abs(p->vy) < 1) {
+    if (fabsf(p->vy) < 1) {
         p->vy_acc += p->vy;
     }
     
-    if (abs(p->vx_acc) >= 1) {
+    if (fabsf(p->vx_acc) >= 1) {
         p->vx = p->vx_acc;
         p->vx_acc = 0;
     }
-    if (abs(p->vy_acc) >= 1) {
+    if (fabsf(p->vy_acc) >= 1) {
         p->vy = p->vy_acc;
         p->vy_acc = 0;
     }

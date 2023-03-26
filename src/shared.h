@@ -12,6 +12,11 @@
 #define Gigabytes(x) ((Uint64)x*1024*1024*1024)
 #define Terabytes(x) ((Uint64)x*1024*1024*1024*1024)
 
+#ifdef __EMSCRIPTEN__
+#define __debugbreak() (exit(1))
+#define SDL_ShowSimpleMessageBox(a, b, c, d) (puts(b))
+#endif
+
 // Assert using an SDL MessageBox popup. Prints to the console too.
 #define Assert(condition) if(!(condition)) {   _assert(gs->window, __func__, __FILE__, __LINE__), __debugbreak(); }
 // Assert without the popup (no window); use only console instead.
@@ -72,6 +77,8 @@ struct Game_State {
     
     struct Tutorial_Rect tutorial;
     bool show_tutorials;
+    
+    bool level1_set_highlighted;
     
     struct Credits credits;
     struct Narrator narrator;
@@ -173,7 +180,7 @@ struct Game_State {
 
 struct Game_State *gs = NULL;
 
-inline void _assert(SDL_Window *window, const char *func, const char *file, const int line) {
+void _assert(SDL_Window *window, const char *func, const char *file, const int line) {
     char message[64] = {0};
     char line_of_code[2048] = {0};
     
@@ -199,7 +206,7 @@ inline void _assert(SDL_Window *window, const char *func, const char *file, cons
 }
 
 // Gives pointer to zeroed memory.
-inline allocator void *_push_array(struct Memory_Arena *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
+void *_push_array(struct Memory_Arena *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
     void *output = NULL;
     

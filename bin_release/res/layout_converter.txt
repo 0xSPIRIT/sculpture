@@ -1,10 +1,10 @@
 + Fuel Converter Combinations
 
-   Marble       -> Unref. Coal
-   Cobblestone  -> Unref. Coal
-   Sandstone    -> Unref. Coal
-   Dirt         -> Unref. Coal
-   Sand         -> Unref. Coal
+   Marble    -> Unref. Coal
+   Stone     -> Unref. Coal
+   Sandstone -> Unref. Coal
+   Dirt      -> Unref. Coal
+   Sand      -> Unref. Coal
 
    Unref. Coal + Glass -> Refined Coal
 
@@ -17,22 +17,22 @@
      Water -> Ice
 
    With Fuel: Unref. Coal
-     Cobblestone        -> Marble
-     Sand               -> Glass
-     Dirt               -> Cobblestone
-     Cobblestone + Sand -> Sandstone
-     Ice                -> Water
-     Water              -> Steam
+     Stone        -> Marble
+     Sand         -> Glass
+     Dirt         -> Stone
+     Stone + Sand -> Sandstone
+     Ice          -> Water
+     Water        -> Steam
 
    With Fuel: Ref. Coal
-     Cobblestone        -> Marble
+     Stone              -> Marble
      Sandstone + Marble -> Quartz
-     Dirt               -> Cobblestone
+     Dirt               -> Stone
      Ice                -> Steam
      Water + Cobble     -> Cement
 
    With Fuel: Lava
-     Cobblestone      -> Marble
+     Stone            -> Marble
      Any Coal         -> Basalt
      Quartz + Marble  -> Granite
      Basalt + Granite -> Diamond

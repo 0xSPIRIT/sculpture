@@ -12,6 +12,7 @@
 
 enum {
     AUDIO_CHANNEL_CHISEL,
+    AUDIO_CHANNEL_NARRATOR,
     AUDIO_CHANNEL_GUI
 };
 
@@ -47,11 +48,13 @@ enum {
 };
 
 struct Audio {
-    Mix_Music *music_a;
+    Mix_Music *music_titlescreen;
     
     Mix_Chunk *stinger_a, *stinger_b;
     
     Mix_Chunk *accept;
+    
+    Mix_Chunk *pip;
     
     Mix_Chunk *medium_chisel[6];
     Mix_Chunk *small_chisel, *large_chisel;

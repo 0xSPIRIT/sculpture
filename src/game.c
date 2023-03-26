@@ -57,7 +57,7 @@ export void game_init(struct Game_State *state, int level) {
     gs->gamestate = GAME_STATE_PLAY;
 #else
     gs->gamestate = GAME_STATE_TITLESCREEN;
-    if (Mix_PlayMusic(gs->audio.music_a, -1) == -1) {
+    if (Mix_PlayMusic(gs->audio.music_titlescreen, -1) == -1) {
         Log("%s\n", SDL_GetError());
         exit(1);
     }
@@ -160,6 +160,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
+#if ALASKA_DEBUG
             case SDLK_e: {
                 if (gs->input.keys[SDL_SCANCODE_LCTRL]) {
                     for (int i = 0; i < gs->gw*gs->gh; i++)
@@ -167,6 +168,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
+#endif
             case SDLK_b: {
                 gs->do_draw_blobs = !gs->do_draw_blobs;
                 break;
@@ -290,24 +292,8 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 break;
             }
             
-            case SDLK_F1: {
-                gs->current_placer = 0;
-                break;
-            }
-            case SDLK_F2: {
-                gs->current_placer = 1;
-                break;
-            }
-            case SDLK_F3: {
-                gs->current_placer = 2;
-                break;
-            }
-            case SDLK_F4: {
-                gs->current_placer = 3;
-                break;
-            }
-            case SDLK_F5: {
-                gs->current_placer = 4;
+            case SDLK_F1: case SDLK_F2: case SDLK_F3: case SDLK_F4: case SDLK_F5: {
+                gs->current_placer = event->key.keysym.sym - SDLK_F1;
                 break;
             }
         }

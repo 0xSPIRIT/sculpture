@@ -180,6 +180,8 @@ void goto_level(int lvl) {
     gs->S = gs->window_width/gs->gw;
     Assert(gs->gw==gs->gh);
     
+    gs->item_holding = (struct Item){0};
+    gs->current_placer = 0;
     inventory_init();
     
     dust_init();
@@ -526,6 +528,7 @@ void level_draw(void) {
         }
         case LEVEL_STATE_INTRO: {
             level_draw_intro();
+            text_field_draw();
             break;
         }
         case LEVEL_STATE_OUTRO: case LEVEL_STATE_PLAY: {
@@ -564,7 +567,6 @@ void level_draw(void) {
             
             SDL_SetRenderTarget(gs->renderer, prev);
             
-            
             if (level->state == LEVEL_STATE_OUTRO) {
                 SDL_Rect dst = {
                     -gs->view.x,
@@ -576,6 +578,7 @@ void level_draw(void) {
                                RenderTarget(RENDER_TARGET_GLOBAL),
                                NULL,
                                &dst);
+                gui_draw();
                 draw_outro(level);
                 
                 text_field_draw();

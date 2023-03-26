@@ -151,11 +151,19 @@ void slot_draw(struct Slot *slot, f32 rx, f32 ry) {
                            255);
     SDL_RenderFillRect(gs->renderer, &bounds);
     
-    SDL_SetRenderDrawColor(gs->renderer, 
-                           Red(SLOT_OUTLINE_COLOR),
-                           Green(SLOT_OUTLINE_COLOR),
-                           Blue(SLOT_OUTLINE_COLOR),
-                           255);
+    if (slot->inventory_index != -1 && slot->inventory_index == gs->current_placer) {
+        SDL_SetRenderDrawColor(gs->renderer, 
+                               255,
+                               255,
+                               0,
+                               255);
+    } else {
+        SDL_SetRenderDrawColor(gs->renderer, 
+                               Red(SLOT_OUTLINE_COLOR),
+                               Green(SLOT_OUTLINE_COLOR),
+                               Blue(SLOT_OUTLINE_COLOR),
+                               255);
+    }
     
     bounds.x--;
     bounds.y--;
@@ -422,12 +430,16 @@ void inventory_tick() {
 
 // calls from gui_draw()
 void inventory_draw(void) {
-    if (!gs->gui.popup) return;
+    if (gs->gui.popup_inventory_y <= 0) return;
     
-    inventory_setup_slots();
+    struct GUI *gui = &gs->gui;
+    
+    //inventory_setup_slots();
+    
+    const f32 y = -GUI_H + gui->popup_inventory_y;
     
     const SDL_Rect rect = {
-        0, 0,
+        0, y,
         gs->S*gs->gw, GUI_H
     };
     SDL_SetRenderDrawColor(gs->renderer, 
@@ -435,7 +447,7 @@ void inventory_draw(void) {
                            Green(INVENTORY_COLOR),
                            Blue(INVENTORY_COLOR),
                            255);
-                           
+    
     SDL_RenderFillRect(gs->renderer, &rect);
     
     SDL_SetRenderDrawColor(gs->renderer, 
@@ -445,14 +457,18 @@ void inventory_draw(void) {
                            255);
     SDL_RenderDrawLine(gs->renderer,
                        0,
-                       GUI_H,
+                       y+GUI_H,
                        gs->window_width,
-                       GUI_H);
+                       y+GUI_H);
     
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
-        slot_draw(&gs->inventory.slots[i], 0, 0);
+        slot_draw(&gs->inventory.slots[i], 0, y);
     }
     
     struct Input *input = &gs->input;
-    item_draw(&gs->item_holding, input->real_mx - ITEM_SIZE/2, input->real_my - ITEM_SIZE/2, ITEM_SIZE, ITEM_SIZE);
+    item_draw(&gs->item_holding,
+              input->real_mx - ITEM_SIZE/2,
+              y + input->real_my - ITEM_SIZE/2,
+              ITEM_SIZE,
+              ITEM_SIZE);
 }

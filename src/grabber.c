@@ -36,7 +36,11 @@ void grabber_tick(void) {
         char type_name[64];
         
         get_name_from_type(gs->overlay.grid[gx+gy*gs->gw], type_name);
-        sprintf(tooltip_text, "Cell Type: %s", type_name);
+        
+        if (gs->level_current == 0)
+            sprintf(tooltip_text, "Material: %s", type_name);
+        else
+            sprintf(tooltip_text, "Preferred Material: %s", type_name);
         
         memset(gs->gui.tooltip.str, 0, MAX_TOOLTIP_LINE_LEN * MAX_TOOLTIP_LEN);
         

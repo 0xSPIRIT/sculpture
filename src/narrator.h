@@ -29,25 +29,24 @@
     "A beautiful symbolic piece, with endless complex details.\n"\
     "... No.\n"\
     "Only when you've sharpened your skills,\n"\
-    "will you dare to unleash your full potential.\n"\
+    "will you dare to create something real.\n"\
     "...\n"\
     "The flame flickers for a moment.\n"\
 
 #define NARRATION_LEVEL_7 \
     "Surely by now you were ready, right?\n"\
-    "To do something detailed- important...\n"\
+    "To do something detailed- important.\n"\
     "You remember the sculptures that once danced in your mind's eye.\n"\
-    "Hypnotized by an idea, in reverie, you snap back.\n"\
-    "With your expectations tempered, you pick up your chisel.\n"\
+    "In reverie, hypnotized by an idea, you snap back.\n"\
+    "Your expectations probably tempered, you pick up your chisel.\n"\
 
 #define NARRATION_LEVEL_8 \
-    "At the end you should be proud of it, but how could you?\n"\
+    "At the end you should be proud, but how could you?\n"\
     "It's a sudden jolt back to reality-\n"\
-    "to the detached and dispassionate.\n"\
+    "to its detached and dispassionate nature.\n"\
     "With compromise after compromise,\n"\
     "this is all you could settle for?\n"\
-    "A tiny fraction of what it could have been-\n"\
-    "No, SHOULD have been.\n"\
+    "A bastardized fraction of what it should have been?\n"\
     "It's like it was all for nothing.\n"\
     "\"I'll never make this mistake again,\" you say,\n"\
     "\"I'll never settle for anything less than what is expected.\"\n"\

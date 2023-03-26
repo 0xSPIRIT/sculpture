@@ -20,7 +20,7 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
         pixel_format_surf = SDL_CreateRGBSurfaceWithFormat(0, 16, 16, 32,
                                                            ALASKA_PIXELFORMAT);
     }
-                                                                           
+    
     SDL_Surface *surf = IMG_Load(fp);
     Assert(surf);
     
@@ -215,7 +215,9 @@ void fonts_deinit(struct Fonts *fonts) {
 }
 
 void audio_init(struct Audio *audio) {
-    audio->music_a = Mix_LoadMUS(RES_DIR "audio/jazz.ogg");
+    audio->music_titlescreen = Mix_LoadMUS(RES_DIR "audio/titlescreen.ogg");
+    
+    audio->pip = Mix_LoadWAV(RES_DIR "audio/pip.ogg");
     
     for (int i = 0; i < 6; i++) {
         char name[64];
@@ -236,10 +238,11 @@ void audio_init(struct Audio *audio) {
 }
 
 void audio_deinit(struct Audio *audio) {
-    Mix_FreeMusic(audio->music_a);
+    Mix_FreeMusic(audio->music_titlescreen);
     for (int i = 0; i < 6; i++)
         Mix_FreeChunk(audio->medium_chisel[i]);
     Mix_FreeChunk(audio->small_chisel);
+    Mix_FreeChunk(audio->pip);
     Mix_FreeChunk(audio->large_chisel);
     
     Mix_FreeChunk(audio->stinger_a);

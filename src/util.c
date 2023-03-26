@@ -6,28 +6,28 @@ bool is_angle_225(f64 deg_angle) {
     return false;
 }
 
-inline bool ispunctuation(char c) {
+bool ispunctuation(char c) {
     if (c == '.' || c == ',' || c == '-' || c == '?') return true;
     return false;
 }
 
-inline vec2 vec2_mult(vec2 a, vec2 b) {
+vec2 vec2_mult(vec2 a, vec2 b) {
     return (vec2){a.x*b.x, a.y*b.y};
 }
 
-inline vec2 vec2_scale(vec2 a, f32 scale) {
+vec2 vec2_scale(vec2 a, f32 scale) {
     return (vec2){a.x*scale, a.y*scale};
 }
 
-inline vec2 vec2_add(vec2 a, vec2 b) {
+vec2 vec2_add(vec2 a, vec2 b) {
     return (vec2){a.x+b.x, a.y+b.y};
 }
 
-inline vec2 vec2_add3(const vec2 a, const vec2 b, const vec2 c) {
+vec2 vec2_add3(const vec2 a, const vec2 b, const vec2 c) {
     return (vec2){a.x+b.x+c.x, a.y+b.y+c.y};
 }
 
-inline vec3 vec3_add(vec3 a, vec3 b) {
+vec3 vec3_add(vec3 a, vec3 b) {
     return (vec3){a.x+b.x, a.y+b.y, a.z+b.z};
 }
 
@@ -112,7 +112,7 @@ void get_name_from_type(int type, char *out) {
         case CELL_WOOD_LOG:    strcpy(out, "Wood Log"); break;
         case CELL_WOOD_PLANK:  strcpy(out, "Wood Plank"); break;
         
-        case CELL_COBBLESTONE: strcpy(out, "Cobblestone"); break;
+        case CELL_COBBLESTONE: strcpy(out, "Stone"); break;
         case CELL_MARBLE:      strcpy(out, "Marble"); break;
         case CELL_SANDSTONE:   strcpy(out, "Sandstone"); break;
         
@@ -229,11 +229,15 @@ int randB(int i) {
     return my_rand(my_rand(my_rand(num*num)));
 }
 
+#ifdef __EMSCRIPTEN__
+int min(int a, int b) {
+#else
 int minimum(int a, int b) {
+#endif
     if (a < b) return a;
     return b;
 }
-
+    
 f32 lerp(f32 a, f32 b, f32 t) {
     return a + t*(b-a); // or a(1-t) + tb -- same thing.
 }
@@ -317,7 +321,7 @@ void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
     }
 }
 
-inline void draw_text_blended_indexed(int index,
+void draw_text_blended_indexed(int index,
                                       TTF_Font *font,
                                       char *str,
                                       SDL_Color col,
@@ -333,7 +337,7 @@ inline void draw_text_blended_indexed(int index,
         TTF_SizeText(font, "+", out_w, out_h);
         return;
     }
-    
+        
     SDL_Surface *surf = NULL;
     SDL_Texture *texture = NULL;
     
@@ -362,18 +366,18 @@ inline void draw_text_blended_indexed(int index,
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
 }
 
-inline void draw_text_indexed(int index,
-                              TTF_Font *font,
-                              char *str,
-                              SDL_Color col,
-                              SDL_Color bg_col,
-                              bool align_right,
-                              bool align_bottom,
-                              int x,
-                              int y,
-                              int *out_w,
-                              int *out_h,
-                              bool update)
+void draw_text_indexed(int index,
+                           TTF_Font *font,
+                           char *str,
+                           SDL_Color col,
+                           SDL_Color bg_col,
+                           bool align_right,
+                           bool align_bottom,
+                           int x,
+                           int y,
+                           int *out_w,
+                           int *out_h,
+                           bool update)
 {
     Assert(index < TEXT_INDEX_COUNT);
     if (!*str) {
@@ -409,17 +413,17 @@ inline void draw_text_indexed(int index,
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
 }
 
-inline void draw_text(TTF_Font *font,
-                      const char *str,
-                      SDL_Color col,
-                      SDL_Color bg_col,
-                      bool align_right,
-                      bool align_bottom,
-                      int x,
-                      int y,
-                      int *out_w,
-                      int *out_h) 
-{
+void draw_text(TTF_Font *font,
+                   const char *str,
+                   SDL_Color col,
+                   SDL_Color bg_col,
+                   bool align_right,
+                   bool align_bottom,
+                   int x,
+                   int y,
+                   int *out_w,
+                   int *out_h) 
+    {
     if (!*str) {
         TTF_SizeText(font, "+", out_w, out_h);
         return;

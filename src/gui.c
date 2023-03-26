@@ -75,8 +75,11 @@ void tool_button_set_disabled(int level) {
             } else {
                 tools[TOOL_CHISEL_MEDIUM]->disabled = false;
                 tools[TOOL_CHISEL_LARGE]->disabled = false;
-                tools[TOOL_CHISEL_MEDIUM]->highlighted = true;
-                tools[TOOL_CHISEL_LARGE]->highlighted = true;
+                if (!gs->level1_set_highlighted) {
+                    gs->level1_set_highlighted = true;
+                    tools[TOOL_CHISEL_MEDIUM]->highlighted = true;
+                    tools[TOOL_CHISEL_LARGE]->highlighted = true;
+                }
             }
         }
         case 2: {
@@ -304,6 +307,9 @@ void gui_init(void) {
 }
 
 void gui_tick(void) {
+    if (gs->levels[gs->level_current].state != LEVEL_STATE_PLAY)
+        return;
+    
     struct GUI *gui = &gs->gui;
     struct Input *input = &gs->input;
     
@@ -315,17 +321,14 @@ void gui_tick(void) {
     {
         gui->popup = !gui->popup;
         gui->popup_y_vel = 0;
+        gui->popup_inventory_y_vel = 0;
         tooltip_reset(&gui->tooltip);
     }
     
     const f32 speed = 3.0f;
     
+    // For the CONVERTER popup
     if (gui->popup) {
-        if (SDL_GetCursor() != gs->grabber_cursor) {
-            /* SDL_SetCursor(gs->grabber_cursor); */
-            /* SDL_ShowCursor(1); */
-        }
-        
         if (gui->popup_y > gs->S*gs->gh-gui->popup_h) {
             gui->popup_y_vel -= speed;
         } else {
@@ -339,22 +342,32 @@ void gui_tick(void) {
         gui->popup_y_vel = 0;
     }
     
+    // For the INVENTORY popup
+    if (gui->popup) {
+        if (gui->popup_inventory_y < gs->S*GUI_H) {
+            gui->popup_inventory_y_vel += speed/2.5f;
+        } else {
+            gui->popup_inventory_y_vel = 0;
+            gui->popup_inventory_y = gs->S*GUI_H;
+        }
+    } else if (gui->popup_inventory_y > 0) {
+        gui->popup_inventory_y_vel -= speed/2.5f;
+    } else {
+        gui->popup_inventory_y = 0;
+        gui->popup_inventory_y_vel = 0;
+    }
+    
     if (!gui->popup) {
-        /* SDL_SetCursor(normal_cursor); */
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_tick(gui->tool_buttons[i], &i);
-        }
-        
-        //if (gs->current_tool == TOOL_OVERLAY)
-        //overlay_interface_tick();
-        
-        if (input->real_my >= GUI_H) {
-            // tooltip_reset(&gui->tooltip);
         }
     }
     
     gui->popup_y += gui->popup_y_vel;
     gui->popup_y = (f32) clamp((int) gui->popup_y, (int) (gs->S*gs->gh - gui->popup_h), gs->window_height);
+    
+    gui->popup_inventory_y += gui->popup_inventory_y_vel;
+    gui->popup_inventory_y = (f32) clamp((int) gui->popup_inventory_y, 0, GUI_H);
 }
 
 // Gives the amount of each cell type there are
@@ -397,8 +410,8 @@ void gui_draw_profile() {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         overlay_grid[i].type = gs->overlay.grid[i];
     }
-    #endif
-
+#endif
+    
     profile_array(level->desired_grid, level->profile_lines, &count);
     
     int ah = 0;
@@ -454,7 +467,7 @@ void gui_draw(void) {
     SDL_RenderClear(gs->renderer);
     
     // Tool bar
-    if (!gs->gui.popup) {
+    if (gs->gui.popup_inventory_y < GUI_H) {
         SDL_SetRenderDrawColor(gs->renderer, 64, 64, 64, 255);
         SDL_Rect r = { 0, 0, gs->gw, GUI_H/gs->S };
         SDL_RenderFillRect(gs->renderer, &r);
@@ -593,9 +606,11 @@ void gui_popup_draw(void) {
                            Green(CONVERTER_LINE_COLOR),
                            Blue(CONVERTER_LINE_COLOR),
                            255);
-    SDL_RenderDrawLine(gs->renderer,
-                       0, GUI_H+gui->popup_y-1,
-                       gs->window_width, GUI_H+gui->popup_y-1);
+    if (gs->gui.popup_y+GUI_H < gs->window_height) {
+        SDL_RenderDrawLine(gs->renderer,
+                           0, GUI_H+gui->popup_y-1,
+                           gs->window_width, GUI_H+gui->popup_y-1);
+    }
     
     int w, h;
     SDL_QueryTexture(gs->textures.tab, NULL, NULL, &w, &h);
@@ -709,7 +724,7 @@ struct Converter *converter_init(int type, bool allocated) {
     converter->timer_max = 1;
     converter->timer_current = 0;
     
-    if (type == CONVERTER_FUEL && gs->level_current+1 <= 4) {
+    if (type == CONVERTER_FUEL && gs->level_current+1 <= 5) {
         converter->state = CONVERTER_INACTIVE;
     } else {
         converter->state = CONVERTER_OFF;
@@ -789,6 +804,7 @@ struct Converter *converter_init(int type, bool allocated) {
         converter->slots[i].w = ITEM_SIZE;
         converter->slots[i].h = ITEM_SIZE;
         converter->slots[i].converter = converter;
+        converter->slots[i].inventory_index = -1;
     }
     
     converter->arrow.texture = gs->textures.converter_arrow;

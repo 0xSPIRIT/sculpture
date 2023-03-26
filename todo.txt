@@ -1,12 +1,6 @@
 TODO
 
-	[x] Make the medium and large chisel highlighted after they're unlocked.
-
-ALASKA MUSIC
-
-Inspiration:
-	- Chiasm (GRIS)
-	- Smooth Jazz
-	- Minecraft / Ambient
-	- Cellar Door (Michael Andrews) intro
-	- Sorrow (Motoi Sakaruba)
+	[ ] Make the first level hovering objects.
+	[ ] Ensure the final levels are good in terms of material
+		amounts & difficulty. Determine if a nerf is needed.
+	[ ] let escape key be valid at the ending credits.

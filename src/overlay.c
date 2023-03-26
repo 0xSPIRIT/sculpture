@@ -4,21 +4,21 @@ Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_DIRT,          255,   0,   0,
     CELL_SAND,          109,   9, 121,
     CELL_WATER,          14, 182,  30,
-    CELL_ICE,             9,  9,  200,
+    CELL_ICE,            80,  94, 250,
     CELL_STEAM,          94,  86, 142,
     CELL_WOOD_LOG,       13,   9, 249,
     CELL_WOOD_PLANK,    150,   6, 118,
     CELL_COBBLESTONE,   255, 255, 255,
-    CELL_MARBLE,        255, 255,   0,
-    CELL_SANDSTONE,     230,  60,   0,
+    CELL_MARBLE,        255,   0,   0,
+    CELL_SANDSTONE,     255, 255,  0,
     CELL_CEMENT,        190,  22,  46,
     CELL_CONCRETE,        9,  57, 185,
-    CELL_QUARTZ,        100, 164,   0,
-    CELL_GLASS,         173, 137, 249,
-    CELL_GRANITE,        58, 109, 163,
+    CELL_QUARTZ,        100, 220,   0,
+    CELL_GLASS,         200, 137, 255,
+    CELL_GRANITE,        58, 109, 255,
     CELL_BASALT,        185, 185,  57,
     CELL_DIAMOND,        70, 230, 134,
-    CELL_UNREFINED_COAL, 45,   9, 121,
+    CELL_UNREFINED_COAL, 45,   9, 200,
     CELL_REFINED_COAL,  110, 246, 190,
     CELL_LAVA,            9,  57, 185,
     CELL_SMOKE,         126,  22, 238,
@@ -415,7 +415,7 @@ void overlay_draw_grid(int *grid, f32 alpha_coeff) {
             
             if (gs->level_current+1 != 7 && !int_array_any_neighbours_not_same(grid, x, y)) {
                 f64 f = (sin(SDL_GetTicks()/750.0)+1)/2.0;
-                a = max(0, min(255, alpha - f*30));
+                a = fmax(0, min(255, alpha - f*30));
             }
                 
             if (gs->level_current+1 != 7 && gs->overlay.current_material != -1 && t != gs->overlay.current_material) {

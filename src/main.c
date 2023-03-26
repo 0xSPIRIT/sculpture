@@ -67,13 +67,13 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
     SDL_Init(SDL_INIT_VIDEO);
     
     Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
-    
+
     state->window = SDL_CreateWindow(window_title,
                                      SDL_WINDOWPOS_CENTERED,
                                      SDL_WINDOWPOS_CENTERED,
                                      w,
                                      h,
-                                     SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+                                     SDL_WINDOW_SHOWN | SDL_WINDOW_ALWAYS_ON_TOP | SDL_WINDOW_RESIZABLE);
     Assert(state->window);
     
     IMG_Init(IMG_INIT_PNG);
@@ -145,7 +145,6 @@ f64 calculate_scale(bool fullscreen) {
     RECT desktop;
     HWND hDesktop = GetDesktopWindow();
     GetWindowRect(hDesktop, &desktop);
-    //int w = desktop.right;
     int h = desktop.bottom;
     
     if (fullscreen) {
@@ -184,7 +183,7 @@ void game_init(struct Game_State *state) {
     audio_init(&state->audio);
     textures_init(state->renderer, &state->textures);
     surfaces_init(&state->surfaces);
-    
+
     SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
     
     state->normal_cursor = SDL_GetCursor();
@@ -203,7 +202,7 @@ void game_deinit(struct Game_State *state) {
     SDL_Quit();
 }
 
-inline FILETIME get_last_write_time(char *filename) {
+FILETIME get_last_write_time(char *filename) {
     FILETIME result = {0};
     WIN32_FILE_ATTRIBUTE_DATA data;
     
