@@ -295,8 +295,32 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
     if (!gs->item_holding.type) can_place_item = true;
     
     if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
-        // If they're the same type, just add their amounts.
-        if (item->type && gs->item_holding.type == item->type) {
+        
+        // Firstly, if you're shift-clicking, and you're not holding anything,
+        // put it into the correct slot.
+        if (can_place_item && item->type && input->keys[SDL_SCANCODE_LSHIFT]) {
+            if (slot->inventory_index != -1) { // We are on the inventory
+                if (is_cell_fuel(item->type)) {
+                    // Swap into fuel if the fuel cell is empty or the same type as our item.
+                    struct Slot *converter_fuel_slot = &gs->material_converter->slots[SLOT_FUEL];
+                    if (converter_fuel_slot->item.type == 0 || converter_fuel_slot->item.type == item->type) {
+                        converter_fuel_slot->item.type = item->type;
+                        converter_fuel_slot->item.amount += item->amount;
+                        item->type = 0;
+                        item->amount = 0;
+                    }
+                }
+            } else {
+                // We are not in the inventory
+                // Swap into the inventory index if there's a free spot
+                add_item_to_inventory_slot(item->type, item->amount);
+                item->type = 0;
+                item->amount = 0;
+            }
+        }
+        
+        // Otherwise, if they're the same type, just add their amounts.
+        else if (item->type && gs->item_holding.type == item->type) {
             save_state_to_next();
             
             // Add the amount from holding to the item.

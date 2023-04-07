@@ -545,7 +545,10 @@ void chisel_tick(void) {
                                   false,
                                   true,
                                   true);
-        gs->overlay.current_material = get_neighbour_type_in_direction(index%gs->gw, index/gs->gw, chisel->angle);
+        int current_material = get_neighbour_type_in_direction(index%gs->gw, index/gs->gw, chisel->angle);
+        
+        if (current_material != -1)
+            gs->overlay.current_material = current_material;
             
         if (index != -1) {
             chisel->x = (f32) (index%gs->gw);

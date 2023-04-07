@@ -346,7 +346,8 @@ void gui_tick(void) {
     if (gui->popup) {
         if (gui->popup_inventory_y < gs->S*GUI_H) {
             gui->popup_inventory_y_vel += speed/2.5f;
-        } else {
+        }
+        if (gui->popup_inventory_y >= gs->S*GUI_H) {
             gui->popup_inventory_y_vel = 0;
             gui->popup_inventory_y = gs->S*GUI_H;
         }

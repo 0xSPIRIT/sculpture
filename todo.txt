@@ -1,6 +1,8 @@
 TODO
-
-	[ ] Make the first level hovering objects.
-	[ ] Ensure the final levels are good in terms of material
-		amounts & difficulty. Determine if a nerf is needed.
-	[ ] let escape key be valid at the ending credits.
+  - Show when the chisel isn't able to chisel better. It makes it
+    seem like a bug.
+  - Improve the writing
+  - Add a mouse feature for the web version to emulate the movement
+    of the mouse in the desktop version.
+  - Make the first level hovering objects.
+  - Let escape key be valid at the ending credits.

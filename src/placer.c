@@ -169,6 +169,39 @@ void placer_place_circle(struct Placer *placer) {
     placer->did_click = did_set_object;
 }
 
+void fix_rectangle(SDL_Rect *c) {
+    c->w--;
+    c->h--;
+    
+    if (c->w < 0) {
+        c->x += c->w;
+    }
+    if (c->h < 0) {
+        c->y += c->h;
+    }
+    c->w = abs(c->w);
+    c->h = abs(c->h);
+}
+
+bool placer_is_able_to_place(struct Placer *placer, SDL_Rect *c, int *area_out) {
+    Assert(c);
+    
+    fix_rectangle(c);
+    
+    int area;
+    area = abs((c->w+1) * (c->h+1));
+    
+    if (area_out)
+        *area_out = area;
+    
+    if (placer->contains->amount == 0)
+        return false;
+    else if (placer->contains->amount <= PLACER_MINIMUM_AREA)
+        return true;
+    
+    return area >= PLACER_MINIMUM_AREA;
+}
+
 void placer_set_and_resize_rect(struct Placer *placer) {
     struct Input *input = &gs->input;
     
@@ -186,26 +219,13 @@ void placer_set_and_resize_rect(struct Placer *placer) {
     placer->rect.w = mx - placer->rect.x;
     placer->rect.h = my - placer->rect.y;
     
-    // Apply the same operations as when we're placing
-    // to get the proper area.
-    SDL_Rect c = placer->rect;
-    c.w--;
-    c.h--;
+    SDL_Rect copy = placer->rect; // We don't want to actually change the rectangle now.
     
-    if (c.w < 0) {
-        c.x += c.w;
-    }
-    if (c.h < 0) {
-        c.y += c.h;
-    }
-    c.w = abs(c.w);
-    c.h = abs(c.h);
-    
-    int area = abs((c.w+1) * (c.h+1));
-    
-    if (area < PLACER_MINIMUM_AREA) {
+    int area = -1;
+    if (!placer_is_able_to_place(placer, &copy, &area))
         return;
-    }
+    
+    Assert(area != -1);
     
     if (area > placer->contains->amount) {
         placer->rect.h = clamp(placer->rect.h,
@@ -227,20 +247,10 @@ void placer_set_and_resize_rect(struct Placer *placer) {
 void placer_place_rect(struct Placer *placer) {
     if (placer->rect.x == -1) return;
     
-    placer->rect.w--;
-    placer->rect.h--;
+    int area;
+    bool able_to_place = placer_is_able_to_place(placer, &placer->rect, &area);
     
-    if (placer->rect.w < 0) {
-        placer->rect.x += placer->rect.w;
-    }
-    if (placer->rect.h < 0) {
-        placer->rect.y += placer->rect.h;
-    }
-    placer->rect.w = abs(placer->rect.w);
-    placer->rect.h = abs(placer->rect.h);
-    
-    int area = (1+placer->rect.w) * (1+placer->rect.h);
-    if (area < PLACER_MINIMUM_AREA) {
+    if (!able_to_place) {
         placer->rect.x = -1;
         placer->rect.y = -1;
         placer->rect.w = 0;
@@ -251,8 +261,7 @@ void placer_place_rect(struct Placer *placer) {
     int object_index = -1;
     
     // Check if we're intersecting with any other object and
-    // that we have the same material type as them.
-    // If so, then we just join that object with this by
+    // if so, then we just join that object with this by
     // using its object index, not a new one.
     //
     // We check with 1 extra row/column to the rectangle
@@ -260,7 +269,7 @@ void placer_place_rect(struct Placer *placer) {
     for (int y = placer->rect.y-1; y <= placer->rect.y+placer->rect.h+1; y++) {
         for (int x = placer->rect.x-1; x <= placer->rect.x+placer->rect.w+1; x++) {
             if (!is_in_bounds(x, y)) continue;
-            if (gs->grid[x+y*gs->gw].object != -1 && gs->grid[x+y*gs->gw].type == placer->contains->type) {
+            if (gs->grid[x+y*gs->gw].object != -1) {
                 object_index = gs->grid[x+y*gs->gw].object;
                 break;
             }
@@ -314,7 +323,7 @@ void placer_tick(struct Placer *placer) {
     placer->y = gs->input.my;
     
     if (gs->creative_mode) {
-        placer->contains->amount = 400;
+        placer->contains->amount = gs->gw*gs->gh;
     }
     
     // If the cell type is hard, use rectangle placing, otherwise use brush/circle placing.
@@ -509,21 +518,10 @@ void placer_draw(struct Placer *placer, bool full_size) {
     if (placer->rect.x != -1) {
         // Make sure the area is enough before you start drawing the rectangle.
         SDL_Rect c = placer->rect;
-        c.w--;
-        c.h--;
         
-        if (c.w < 0) {
-            c.x += c.w;
-        }
-        if (c.h < 0) {
-            c.y += c.h;
-        }
-        c.w = abs(c.w);
-        c.h = abs(c.h);
+        bool able_to_place = placer_is_able_to_place(placer, &c, NULL);
         
-        int area = abs(c.w * c.h);
-        
-        if (area >= PLACER_MINIMUM_AREA) {
+        if (able_to_place) {
             SDL_SetRenderDrawColor(gs->renderer, 255, 255, 0, 255);
         } else {
             SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);

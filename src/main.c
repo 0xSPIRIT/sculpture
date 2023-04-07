@@ -73,7 +73,7 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
                                      SDL_WINDOWPOS_CENTERED,
                                      w,
                                      h,
-                                     SDL_WINDOW_SHOWN | SDL_WINDOW_ALWAYS_ON_TOP | SDL_WINDOW_RESIZABLE);
+                                     SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     Assert(state->window);
     
     IMG_Init(IMG_INIT_PNG);
