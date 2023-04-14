@@ -185,11 +185,13 @@ void object_draw(struct Object3D *obj) {
     }
 #endif
     
+    const float speed = 1.5f;
+    
     switch (obj->state) {
         case OBJECT_ZOOM: {
             obj->y += dy;
             
-            obj->z += 0.001;
+            obj->z += speed * 0.001;
             if (obj->z >= 2) {
                 obj->state = OBJECT_ROTY;
                 obj->z = 2;
@@ -199,7 +201,7 @@ void object_draw(struct Object3D *obj) {
         case OBJECT_ROTY: case OBJECT_DONE: {
             if (obj->state != OBJECT_DONE) {
                 obj->y += dy;
-                obj->yrot -= 0.002;
+                obj->yrot -= speed * 0.002;
             }
             
             if (obj->yrot <= -M_PI/2) {

@@ -73,6 +73,8 @@ struct Game_State {
     
     SDL_Event *event;
     
+    struct Fade fade;
+    
     struct Conversions conversions;
     
     struct Tutorial_Rect tutorial;

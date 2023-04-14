@@ -20,6 +20,7 @@
 #include "colors.h"
 #include "cursor.h"
 #include "conversions.h"
+#include "fades.h"
 #include "preview.h"
 #include "credits.h"
 #include "overlay.h"

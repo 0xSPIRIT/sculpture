@@ -223,6 +223,12 @@ void level_set_state(int level, enum Level_State state) {
         //if (!Mix_PlayingMusic())
         //Mix_PlayMusic(gs->audio.music_a, -1);
     }
+    
+    if (state == LEVEL_STATE_INTRO)
+        set_fade(FADE_LEVEL_INTRO, 255, 0);
+    if (state == LEVEL_STATE_NARRATION)
+        set_fade(FADE_LEVEL_NARRATION, 255, 0);
+    
     gs->levels[level].state = state;
 }
 
@@ -244,13 +250,16 @@ void level_tick(void) {
     
     switch (level->state) {
         case LEVEL_STATE_NARRATION: {
+            if (gs->fade.active) break;
             narrator_tick();
             break;
         }
         case LEVEL_STATE_INTRO: {
             level->popup_time_current++;
-            if (gs->input.keys_pressed[SDL_SCANCODE_TAB] || level->popup_time_current >= level->popup_time_max) {
-                level->popup_time_current = 0;
+            
+            if (wait_for_fade(FADE_LEVEL_PLAY_IN)) {
+                reset_fade();
+                set_fade(FADE_LEVEL_PLAY_OUT, 255, 0);
                 
                 level->state = LEVEL_STATE_PLAY;
                 effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
@@ -269,13 +278,25 @@ void level_tick(void) {
                     save_state_to_next();
                 }
             }
+            
+            if (gs->input.keys_pressed[SDL_SCANCODE_TAB] || level->popup_time_current >= level->popup_time_max) {
+                level->popup_time_current = 0;
+                
+                reset_fade();
+                set_fade(FADE_LEVEL_PLAY_IN, 0, 255);
+            }
             break;
         }
         case LEVEL_STATE_OUTRO: {
+            if (wait_for_fade(FADE_LEVEL_FINISH)) {
+                reset_fade();
+                goto_level(++gs->level_current);
+            }
+            
             if (input->keys[SDL_SCANCODE_N]) {
                 if (gs->level_current+1 < 11) {
                     if (gs->level_current+1 != 1 || (gs->level_current+1 == 1 && compare_cells(gs->grid, level->desired_grid))) {
-                        goto_level(++gs->level_current);
+                        set_fade(FADE_LEVEL_FINISH, 0, 255);
                     } else {
                         level_set_state(gs->level_current, LEVEL_STATE_PLAY);
                         gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
@@ -297,6 +318,8 @@ void level_tick(void) {
             break;
         }
         case LEVEL_STATE_PLAY: {
+            if (gs->fade.active) break;
+            
             if (input->keys_pressed[SDL_SCANCODE_F]) {
                 level_set_state(gs->level_current, LEVEL_STATE_OUTRO);
                 input->keys[SDL_SCANCODE_F] = 0;
@@ -519,8 +542,7 @@ void level_draw(void) {
             SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
             SDL_RenderClear(gs->renderer);
             
-            if (!gs->narrator.black)
-                effect_draw(&gs->current_effect, false);
+            effect_draw(&gs->current_effect, false);
             
             narrator_run(WHITE);
             text_field_draw();

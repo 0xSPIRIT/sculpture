@@ -3,6 +3,7 @@
 // Include all files to compile in one translation unit for
 // compilation speed's sake. ("Unity Build")
 #include "util.c"
+#include "fades.c"
 #include "overlay.c"
 #include "conversions.c"
 #include "dust.c"
@@ -97,7 +98,9 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         switch (event->key.keysym.sym) {
             case SDLK_ESCAPE: {
                 struct Placer *placer = get_current_placer();
-                if (gs->tutorial.active) {
+                if (gs->credits.state == CREDITS_SHOW) {
+                    is_running = false;
+                } else if (gs->tutorial.active) {
                     tutorial_rect_close(NULL);
                 } else if (placer && placer->state == PLACER_PLACE_RECT_MODE && input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                     placer->escape_rect = true;
@@ -173,6 +176,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 gs->do_draw_blobs = !gs->do_draw_blobs;
                 break;
             }
+#if ALASKA_DEBUG
             case SDLK_g: {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     set_text_field("Goto Level", "", goto_level_string_hook);
@@ -181,6 +185,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
+#endif
             case SDLK_o: {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     set_text_field("Output current grid to image:", "../", level_output_to_png);
@@ -338,6 +343,8 @@ export void game_run(struct Game_State *state) {
                 
                 level_tick();
                 level_draw();
+                
+                fade_draw();
                 
                 preview_tick();
                 if (gs->current_preview.play)

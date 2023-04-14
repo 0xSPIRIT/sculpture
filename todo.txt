@@ -1,4 +1,5 @@
 TODO
+  x Increase the speed at which the ending occurs.
   - Show when the chisel isn't able to chisel better. It makes it
     seem like a bug.
   - Improve the writing
@@ -6,3 +7,16 @@ TODO
     of the mouse in the desktop version.
   - Make the first level hovering objects.
   - Let escape key be valid at the ending credits.
+
+- Rigidity past level 7
+- Button cracking at level 11 (press it multiple times)
+- Update writing, remove some big words.
+- Particle system becomes more violent after level 7. Used for
+  narrative metaphor.
+- Figure out a game mechanic or modification to existing ones
+  (that's preferred) to showcase how perfectionistic the protag
+  is to the point where they're harming themselves mentally.
+
+Music For Alaska Inspiration:
+https://www.youtube.com/watch?v=BK5Yp5FD7C4
+Synth parts from this, not the beat.
