@@ -1,7 +1,8 @@
 #define MAX_LINES 32
 
 #define NARRATOR_EPSILON 0.5
-#define NARRATOR_ALPHA 0.045
+#define NARRATOR_ALPHA 10
+#define NARRATOR_HANG_TIME 14 // Frames
 
      ////////////////////////////////////////////////////////////////
 #define NARRATION_LEVEL_1 \
@@ -87,7 +88,8 @@ struct Narrator {
     
     bool fadeout; // This is for text
     
-    float alpha;
+    f64 alpha;
+    f64 hang_time; // The hang time between each line
     bool first_frame;
     
     bool off;

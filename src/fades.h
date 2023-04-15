@@ -1,4 +1,4 @@
-#define FADE_T 0.05
+#define FADE_T 0.04
 #define FADE_EPSILON 5
 
 enum {
@@ -14,5 +14,6 @@ enum {
 struct Fade {
     int id;
     bool active;
-    float alpha, desired_alpha;
+    f64 alpha, start_alpha, desired_alpha, time;
+    f64 dt;
 };

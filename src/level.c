@@ -295,7 +295,11 @@ void level_tick(void) {
             
             if (input->keys[SDL_SCANCODE_N]) {
                 if (gs->level_current+1 < 11) {
-                    if (gs->level_current+1 != 1 || (gs->level_current+1 == 1 && compare_cells(gs->grid, level->desired_grid))) {
+                    int lvl = gs->level_current+1;
+                    bool same = compare_cells(gs->grid, level->desired_grid);
+                    if ((lvl == 1 || lvl >= 8) && same) {
+                        set_fade(FADE_LEVEL_FINISH, 0, 255);
+                    } else if (lvl > 1 && lvl < 8) {
                         set_fade(FADE_LEVEL_FINISH, 0, 255);
                     } else {
                         level_set_state(gs->level_current, LEVEL_STATE_PLAY);
@@ -502,7 +506,8 @@ void draw_outro(struct Level *level) {
     SDL_Color color_next_level = (SDL_Color){0, 200, 0, 255};
     bool update = true;
     
-    if (gs->level_current+1 == 1 && !compare_cells(gs->grid, level->desired_grid)) {
+    if ((gs->level_current+1 == 1 && !compare_cells(gs->grid, level->desired_grid)) ||
+        gs->level_current+1 >= 8 && gs->level_current+1 <= 10 && !compare_cells(gs->grid, level->desired_grid)) {
         color_next_level = (SDL_Color){200, 0, 0, 255};
     }
     
@@ -528,6 +533,23 @@ void draw_outro(struct Level *level) {
                       NULL,
                       NULL,
                       false);
+    
+    if (gs->level_current+1 >= 8 && !compare_cells(gs->grid, level->desired_grid)) {
+        char comment[128]={0};
+        
+        strcpy(comment, "I cannot settle for this.");
+        
+        draw_text_indexed(TEXT_NOT_GOOD_ENOUGH,
+                          gs->fonts.font,
+                          comment,
+                          (SDL_Color){180, 0, 0, 255},
+                          BLACK,
+                          0, 0,
+                          rect.x + rect.w - 300,
+                          rect.y + rect.h/2 + 64,
+                          NULL, NULL,
+                          false);
+    }
 }
 
 void level_draw(void) {

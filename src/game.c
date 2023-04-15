@@ -333,8 +333,9 @@ export void game_run(struct Game_State *state) {
                 SDL_RenderClear(gs->renderer);
                 
                 object_draw(&gs->obj);
+                fade_draw();
             } else {
-                view_tick(&gs->view, &gs->input);
+                //view_tick(&gs->view, &gs->input);
                 
                 gui_tick();
                 conversions_gui_tick();

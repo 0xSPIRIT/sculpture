@@ -26,7 +26,7 @@ void narrator_draw_text_blended(TTF_Font *font,
     if (out_h)
         *out_h = surf->h;
     
-    SDL_SetTextureAlphaMod(texture, gs->narrator.alpha);
+    SDL_SetTextureAlphaMod(texture, max(min(gs->narrator.alpha, 255), 0));
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
     
     SDL_FreeSurface(surf);
@@ -101,13 +101,13 @@ void narrator_tick() {
         set_fade(FADE_NARRATOR, 0, 255);
     }
     
-    if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.keys_pressed[SDL_SCANCODE_SPACE] || gs->input.mouse_pressed[SDL_BUTTON_LEFT])  {
+    if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.keys_pressed[SDL_SCANCODE_SPACE])  {
         n->fadeout = true;
     }
     
     if (n->fadeout) {
-        n->alpha -= 30;
-        if (n->alpha < 0) {
+        n->alpha -= NARRATOR_ALPHA;
+        if (n->alpha < -NARRATOR_ALPHA*NARRATOR_HANG_TIME) {
             n->alpha = 0;
             n->line_curr++;
             if (n->line_curr >= n->line_count) {
@@ -115,6 +115,12 @@ void narrator_tick() {
             }
             
             n->fadeout = false;
+        }
+    } else {
+        if (gs->narrator.alpha < 255) {
+            gs->narrator.alpha += NARRATOR_ALPHA;
+        } else {
+            gs->narrator.alpha = 255;
         }
     }
 }
@@ -147,8 +153,6 @@ void narrator_run(SDL_Color col) {
     int w, h;
     TTF_SizeText(font, n->lines[n->line_curr], &w, &h);
     
-    gs->narrator.alpha = lerp64(gs->narrator.alpha, 255, NARRATOR_ALPHA);
-        
     int surf_h;
     narrator_draw_text_blended(font,
                                s,

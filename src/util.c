@@ -1,3 +1,19 @@
+int sign(int a) {
+    return (a > 0) ? 1 : ((a == 0) ? 0 : -1);
+}
+
+f64 lerp64(f64 a, f64 b, f64 t) {
+    return a + t*(b-a); // or a(1-t) + tb -- same thing.
+}
+
+// a = start, b = end, t = x-value (0 to 1)
+f64 interpolate64(f64 a, f64 b, f64 t) {
+    if (fabs(b-a) < 50) {
+        return a + 2 * sign(b-a);
+    }
+    return lerp64(a, b, t);
+}
+
 bool is_angle_225(f64 deg_angle) {
     f64 f = fabs(deg_angle);
     if (f == 22.5 || f == 157.5 || f == 112.5 || f == 67.5) {
@@ -294,10 +310,6 @@ SDL_Point closest_point_on_line(SDL_Point a, SDL_Point b, SDL_Point p) {
 
 bool is_point_in_rect(SDL_Point p, SDL_Rect r) {
     return p.x >= r.x && p.x <= r.x+r.w && p.y >= r.y && p.y <= r.y+r.h;
-}
-
-int sign(int a) {
-    return (a > 0) ? 1 : ((a == 0) ? 0 : -1);
 }
 
 #if 0

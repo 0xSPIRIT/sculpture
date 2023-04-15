@@ -185,7 +185,7 @@ void object_draw(struct Object3D *obj) {
     }
 #endif
     
-    const float speed = 1.5f;
+    const f64 speed = 1.5f;
     
     switch (obj->state) {
         case OBJECT_ZOOM: {
