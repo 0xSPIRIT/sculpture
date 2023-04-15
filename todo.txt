@@ -3,9 +3,7 @@ TODO
     seem like a bug.
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.
-  x Rigidity past level 7
   - Button cracking at level 11 (press it multiple times)
-  x Update writing, remove some big words.
   - Particle system becomes more violent after level 7. Used for
     narrative metaphor.
   - Make transition into ending.

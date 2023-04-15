@@ -383,6 +383,7 @@ void draw_text_indexed(int index,
                            char *str,
                            SDL_Color col,
                            SDL_Color bg_col,
+                           Uint8 alpha,
                            bool align_right,
                            bool align_bottom,
                            int x,
@@ -422,6 +423,7 @@ void draw_text_indexed(int index,
     if (out_h)
         *out_h = surf->h;
     
+    SDL_SetTextureAlphaMod(texture, alpha);
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
 }
 

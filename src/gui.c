@@ -426,6 +426,7 @@ void gui_draw_profile() {
                           255
                       },
                       BLACK,
+                      255,
                       false,
                       false,
                       50,
@@ -442,6 +443,7 @@ void gui_draw_profile() {
                           level->profile_lines[i],
                           WHITE,
                           BLACK,
+                          255,
                           false,
                           false,
                           50,

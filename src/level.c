@@ -288,6 +288,10 @@ void level_tick(void) {
             break;
         }
         case LEVEL_STATE_OUTRO: {
+            level->outro_alpha = interpolate64(level->outro_alpha, level->desired_alpha, 0.2);
+            if (fabs(level->outro_alpha - level->desired_alpha) < 15)
+                level->outro_alpha = level->desired_alpha;
+            
             if (wait_for_fade(FADE_LEVEL_FINISH)) {
                 reset_fade();
                 goto_level(++gs->level_current);
@@ -316,8 +320,13 @@ void level_tick(void) {
             }
             
             if (input->keys_pressed[SDL_SCANCODE_F]) {
+                level->off = true;
+                level->desired_alpha = 0;
+            }
+            
+            if (level->off && level->outro_alpha == 0) {
                 level_set_state(gs->level_current, LEVEL_STATE_PLAY);
-                input->keys[SDL_SCANCODE_F] = 0;
+                level->off = false;
             }
             break;
         }
@@ -327,6 +336,9 @@ void level_tick(void) {
             if (input->keys_pressed[SDL_SCANCODE_F]) {
                 level_set_state(gs->level_current, LEVEL_STATE_OUTRO);
                 input->keys[SDL_SCANCODE_F] = 0;
+                
+                level->outro_alpha = 0;
+                level->desired_alpha = 255;
             }
             
             simulation_tick();
@@ -430,10 +442,12 @@ void level_draw_intro(void) {
 }
 
 void draw_outro(struct Level *level) {
+    Uint8 alpha = level->outro_alpha;
+    
     SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, alpha);
     SDL_RenderFillRect(gs->renderer, &rect);
-    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
+    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, alpha);
     SDL_RenderDrawRect(gs->renderer, &rect);
     
     const int margin = Scale(36);
@@ -447,7 +461,7 @@ void draw_outro(struct Level *level) {
         
         draw_text_indexed(TEXT_OUTRO_LEVEL_NAME,
                           gs->fonts.font,
-                          string, WHITE, BLACK, 0, 0, x, y, NULL, NULL, false);
+                          string, WHITE, BLACK, alpha, 0, 0, x, y, NULL, NULL, false);
     }
     
     
@@ -460,10 +474,10 @@ void draw_outro(struct Level *level) {
     
     draw_text_indexed(TEXT_OUTRO_INTENDED,
                       gs->fonts.font,
-                      "What you intended", WHITE, BLACK, 0, 0, dx, dy, NULL, NULL, false);
+                      "What you intended", WHITE, BLACK, alpha, 0, 0, dx, dy, NULL, NULL, false);
     draw_text_indexed(TEXT_OUTRO_RESULT,
                       gs->fonts.font,
-                      "The result", WHITE, BLACK, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL, false);
+                      "The result", WHITE, BLACK, alpha, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL, false);
     
     // Desired
     
@@ -472,10 +486,10 @@ void draw_outro(struct Level *level) {
             SDL_Rect r;
             
             if (!level->desired_grid[x+y*gs->gw].type) {
-                SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+                SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, alpha);
             } else {
                 SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
-                SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
+                SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, alpha); // 255 on this because desired_grid doesn't have depth set.
             }
             
             r = (SDL_Rect){ scale*x + dx, scale*y + dy + 32, scale, scale };
@@ -483,7 +497,7 @@ void draw_outro(struct Level *level) {
         }
     }
     
-    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
+    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, alpha);
     SDL_Rect desired_rect = (SDL_Rect){
         dx, dy+32,
         scale*gs->gw, scale*gs->gh
@@ -496,26 +510,27 @@ void draw_outro(struct Level *level) {
     
     timelapse_tick_and_draw(dx, dy+32, scale, scale);
     
-    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
+    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, alpha);
     desired_rect = (SDL_Rect){
         dx, dy+32,
         scale*gs->gw, scale*gs->gh
     };
     SDL_RenderDrawRect(gs->renderer, &desired_rect);
     
-    SDL_Color color_next_level = (SDL_Color){0, 200, 0, 255};
+    SDL_Color color_next_level = (SDL_Color){0, 200, 0, alpha};
     bool update = true;
     
     if ((gs->level_current+1 == 1 && !compare_cells(gs->grid, level->desired_grid)) ||
         gs->level_current+1 >= 8 && gs->level_current+1 <= 10 && !compare_cells(gs->grid, level->desired_grid)) {
-        color_next_level = (SDL_Color){200, 0, 0, 255};
+        color_next_level = (SDL_Color){200, 0, 0, alpha};
     }
     
     draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,
                       gs->fonts.font,
                       "Next Level [n]",
                       color_next_level,
-                      (SDL_Color){0, 0, 0, 255},
+                      (SDL_Color){0, 0, 0, alpha},
+                      alpha,
                       1, 1,
                       rect.x + rect.w - margin,
                       rect.y + rect.h - margin,
@@ -525,8 +540,9 @@ void draw_outro(struct Level *level) {
     draw_text_indexed(TEXT_OUTRO_PREV_LEVEL,
                       gs->fonts.font,
                       "Close [f]",
-                      (SDL_Color){128, 128, 128, 255},
-                      (SDL_Color){0, 0, 0, 255}, 
+                      (SDL_Color){128, 128, 128, alpha},
+                      (SDL_Color){0, 0, 0, alpha}, 
+                      alpha,
                       0, 1,
                       rect.x + margin,
                       rect.y + rect.h - margin,
@@ -542,8 +558,9 @@ void draw_outro(struct Level *level) {
         draw_text_indexed(TEXT_NOT_GOOD_ENOUGH,
                           gs->fonts.font,
                           comment,
-                          (SDL_Color){180, 0, 0, 255},
+                          (SDL_Color){180, 0, 0, alpha},
                           BLACK,
+                          alpha,
                           0, 0,
                           rect.x + rect.w - 300,
                           rect.y + rect.h/2 + 64,

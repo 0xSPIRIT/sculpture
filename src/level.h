@@ -67,6 +67,9 @@ struct Level {
     int source_cell_count, default_source_cell_count;
     int w, h;
     int popup_time_current, popup_time_max;
+    
+    f64 outro_alpha, desired_alpha;
+    bool off;
 };
 
 void level_set_state(int level, enum Level_State state);

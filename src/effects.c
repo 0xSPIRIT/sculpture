@@ -61,6 +61,8 @@ void effect_set(int type, int w, int h) {
 }
 
 void particle_tick(struct Effect *effect, int i) {
+    if (gs->levels[gs->level_current].state == LEVEL_STATE_OUTRO)
+        return;
     if (gs->paused && !gs->step_one)
         return;
     if (effect->type == EFFECT_NONE)

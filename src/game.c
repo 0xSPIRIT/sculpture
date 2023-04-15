@@ -334,6 +334,14 @@ export void game_run(struct Game_State *state) {
                 
                 object_draw(&gs->obj);
                 fade_draw();
+                
+                SDL_Rect dst = {
+                    0, 0,
+                    gs->gw*gs->S, GUI_H+SCALE_3D
+                };
+                
+                SDL_SetTextureAlphaMod(RenderTarget(RENDER_TARGET_GUI_TOOLBAR), 255 - 255 * min(240,gs->obj.t) / 240.0);
+                SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR), NULL, &dst);
             } else {
                 //view_tick(&gs->view, &gs->input);
                 

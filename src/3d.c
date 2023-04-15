@@ -17,19 +17,19 @@ void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *
     const SDL_PixelFormat *format = surf->format;
     
     for (int x = 0; x < w; x++) {
-        f32 denominator = (t[1].y - t[2].y)*(t[0].x - t[2].x) + (t[2].x - t[1].x)*(t[0].y - t[2].y);
+        f64 denominator = (t[1].y - t[2].y)*(t[0].x - t[2].x) + (t[2].x - t[1].x)*(t[0].y - t[2].y);
         
-        f32 w0 = (t[1].y - t[2].y)*(x - t[2].x) + (t[2].x - t[1].x)*(y - t[2].y);
+        f64 w0 = (t[1].y - t[2].y)*(x - t[2].x) + (t[2].x - t[1].x)*(y - t[2].y);
         w0 /= denominator;
         
         if (w0 < 0) continue; // If any weight < 0, the point is not in the triangle
         
-        f32 w1 = (t[2].y - t[0].y)*(x - t[2].x) + (t[0].x - t[2].x)*(y - t[2].y);
+        f64 w1 = (t[2].y - t[0].y)*(x - t[2].x) + (t[0].x - t[2].x)*(y - t[2].y);
         w1 /= denominator;
         
         if (w1 < 0) continue; // If any weight < 0, the point is not in the triangle
         
-        f32 w2 = 1 - w0 - w1;
+        f64 w2 = 1 - w0 - w1;
         
         if (w2 < 0) continue; // If any weight < 0, the point is not in the triangle
         
@@ -100,7 +100,7 @@ void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p)
 void object_activate(struct Object3D *obj) {
     memset(obj, 0, sizeof(struct Object3D));
     gs->obj.z = 1;
-    gs->obj.yrot = -0.002;
+    gs->obj.yrot = 0;
     gs->obj.active = true;
     
     SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
@@ -185,23 +185,36 @@ void object_draw(struct Object3D *obj) {
     }
 #endif
     
-    const f64 speed = 1.5f;
+    f64 speed = 1.5f;
     
     switch (obj->state) {
         case OBJECT_ZOOM: {
-            obj->y += dy;
+            obj->t++;
             
-            obj->z += speed * 0.001;
-            if (obj->z >= 2) {
-                obj->state = OBJECT_ROTY;
-                obj->z = 2;
+            if (obj->hold == 0 && obj->z >= 2) {
+                obj->hold = 45;
+            } else if (obj->t > 120) {
+                speed = min(1.5f, ((obj->t-120) / 360.0) * speed);
+                obj->z += speed * 0.001;
+                if (obj->z > 2) obj->z = 2;
+                obj->y += dy;
             }
+            
+            if (obj->hold) {
+                obj->hold--;
+                if (obj->hold == 0) {
+                    obj->state = OBJECT_ROTY;
+                    obj->z = 2;
+                }
+            }
+            
             break;
         }
         case OBJECT_ROTY: case OBJECT_DONE: {
             if (obj->state != OBJECT_DONE) {
                 obj->y += dy;
-                obj->yrot -= speed * 0.002;
+                obj->t2++;
+                obj->yrot -= (min(360, obj->t2) / 360.0) * speed * 0.001;
             }
             
             if (obj->yrot <= -M_PI/2) {
@@ -336,7 +349,7 @@ void object_draw(struct Object3D *obj) {
     
     const SDL_Rect dst = {
         0, GUI_H,
-        gs->window_width, gs->window_height-GUI_H
+        gs->window_width, gs->window_width
     };
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, &dst);
 }
