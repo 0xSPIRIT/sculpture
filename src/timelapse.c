@@ -18,7 +18,7 @@ bool timelapse_is_state_grids_same(int a, int b) {
 
 void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
     struct Timelapse *tl = &gs->timelapse;
-    struct Level *level = &gs->levels[gs->level_current];
+    
     if (tl->sticky > 0) {
         tl->sticky--;
     } else if (tl->frame < gs->save_state_count) {
@@ -54,7 +54,7 @@ void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
         int x = i%gs->gw, y = i/gs->gw;
         
         SDL_Color c = pixel_from_index_grid(grid, grid[i].type, i);
-        SDL_SetRenderDrawColor(gs->renderer, c.r, c.g, c.b, level->outro_alpha);
+        SDL_SetRenderDrawColor(gs->renderer, c.r, c.g, c.b, 255);
         SDL_Rect r = { xx + x*cw, yy + y*ch, cw, ch };
         SDL_RenderFillRect(gs->renderer, &r);
     }

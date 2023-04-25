@@ -71,8 +71,11 @@ void particle_tick(struct Effect *effect, int i) {
     switch (effect->type) {
         case EFFECT_SNOW: case EFFECT_RAIN: {
             struct Effect_Particle *particle = &gs->current_effect.particles[i];
-            particle->x += particle->vx;
-            particle->y += particle->vy;
+            
+            int reverse = (gs->level_current+1 >= 8) ? -1 : 1;
+            
+            particle->x += reverse * particle->vx;
+            particle->y += reverse * particle->vy;
             
             if (effect->type == EFFECT_RAIN) {
                 particle->vx += 0.003f * sinf(SDL_GetTicks() / 1000.f);

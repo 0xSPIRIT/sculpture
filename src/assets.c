@@ -52,8 +52,9 @@ void render_targets_init(SDL_Renderer *renderer,
                 textures->render_targets[lvl][i] = CreateRenderTarget(gs->window_width, gs->window_height);
                 continue;
             }
-            if (i == RENDER_TARGET_CONVERSION_PANEL) {
+            if (i == RENDER_TARGET_CONVERSION_PANEL || i == RENDER_TARGET_OUTRO) {
                 textures->render_targets[lvl][i] = CreateRenderTarget(width, gs->window_height-GUI_H);
+                SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
                 continue;
             }
             if (i == RENDER_TARGET_GUI_TOOLBAR) {
@@ -216,6 +217,7 @@ void fonts_deinit(struct Fonts *fonts) {
 
 void audio_init(struct Audio *audio) {
     audio->music_titlescreen = Mix_LoadMUS(RES_DIR "audio/titlescreen.ogg");
+    audio->music_creation = Mix_LoadMUS(RES_DIR "audio/music_creation.ogg");
     
     audio->pip = Mix_LoadWAV(RES_DIR "audio/pip.ogg");
     
@@ -234,11 +236,12 @@ void audio_init(struct Audio *audio) {
     audio->accept = Mix_LoadWAV(RES_DIR "audio/accept.ogg");
     
     Mix_Volume(AUDIO_CHANNEL_CHISEL, Volume(0.25));
-    Mix_Volume(AUDIO_CHANNEL_GUI, Volume(0.35));
+    Mix_Volume(AUDIO_CHANNEL_GUI, Volume(0.20));
 }
 
 void audio_deinit(struct Audio *audio) {
     Mix_FreeMusic(audio->music_titlescreen);
+    Mix_FreeMusic(audio->music_creation);
     for (int i = 0; i < 6; i++)
         Mix_FreeChunk(audio->medium_chisel[i]);
     Mix_FreeChunk(audio->small_chisel);

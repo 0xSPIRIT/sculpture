@@ -106,3 +106,5 @@ struct Object {
 struct Line {
     int x1, y1, x2, y2;
 };
+
+int compare_cells_to_int_count(struct Cell *a, int *b);

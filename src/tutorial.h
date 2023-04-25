@@ -25,6 +25,12 @@
     "at any point, with no restrictions\n"\
     "except your own discretion.\n"\
 
+#define TUTORIAL_COMPLETE_LEVEL_2 \
+    "Tutorial\n" \
+    "--------\n\n" \
+    "For this level, you must complete it\n"\
+    "perfectly in order to continue.\n"\
+
 #define TUTORIAL_UNDO_STRING \
     "Tutorial\n" \
     "--------\n\n" \

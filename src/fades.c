@@ -18,15 +18,7 @@ void reset_fade() {
 void fade_draw() {
     if (!gs->fade.active) return;
     
-#if 0
-    f64 a = gs->fade.start_alpha;
-    f64 b = gs->fade.desired_alpha;
-    gs->fade.alpha = interpolate64(a, b, gs->fade.time);
-    
-    gs->fade.time += 2.0/60.0;
-#endif
-    
-    gs->fade.alpha = interpolate64(gs->fade.alpha, gs->fade.desired_alpha, FADE_T);
+    gs->fade.alpha = goto64(gs->fade.alpha, gs->fade.desired_alpha, 5);
     
     //gs->fade.alpha = lerp64(gs->fade.alpha, gs->fade.desired_alpha, FADE_T);
     if (abs(gs->fade.alpha - gs->fade.desired_alpha) < FADE_EPSILON) {

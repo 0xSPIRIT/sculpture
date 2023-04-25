@@ -53,8 +53,7 @@ void tool_button_set_disabled(int level) {
     
     //tools[TOOL_BLOCKER]->disabled = true;
     
-    if (compare_cells(gs->grid,
-                      gs->levels[gs->level_current].desired_grid)) {
+    if (compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) {
         tools[TOOL_FINISH_LEVEL]->highlighted = true;
     } else {
         tools[TOOL_FINISH_LEVEL]->highlighted = false;
@@ -142,8 +141,8 @@ void click_gui_tool_button(void *type_ptr) {
         case TOOL_FINISH_LEVEL: {
             if (gs->level_current+1 != -1 ||
                 (gs->level_current+1 == 1 &&
-                 compare_cells(gs->grid,
-                               gs->levels[gs->level_current].desired_grid))) {
+                 compare_cells(gs->grid, gs->levels[gs->level_current].desired_grid)))
+            {
                 level_set_state(gs->level_current, LEVEL_STATE_OUTRO);
             }
             return;

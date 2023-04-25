@@ -45,11 +45,13 @@ enum {
     RENDER_TARGET_3D,
     RENDER_TARGET_CONVERSION_PANEL,
     RENDER_TARGET_PREVIEW,
+    RENDER_TARGET_OUTRO,
     RENDER_TARGET_COUNT 
 };
 
 struct Audio {
     Mix_Music *music_titlescreen;
+    Mix_Music *music_creation;
     
     Mix_Chunk *stinger_a, *stinger_b;
     

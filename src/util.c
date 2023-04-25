@@ -14,6 +14,18 @@ f64 interpolate64(f64 a, f64 b, f64 t) {
     return lerp64(a, b, t);
 }
 
+f64 goto64(f64 a, f64 b, f64 t) {
+    int x = sign(b-a);
+    if (x > 0) {
+        if (fabs(a+t*x) > fabs(b))
+            return b;
+    } else if (x < 0) {
+        if (fabs(a+t*x) < fabs(b))
+            return b;
+    }
+    return a + t*x;
+}
+
 bool is_angle_225(f64 deg_angle) {
     f64 f = fabs(deg_angle);
     if (f == 22.5 || f == 157.5 || f == 112.5 || f == 67.5) {
@@ -156,7 +168,7 @@ void get_name_from_tool(int type, char *out) {
         case TOOL_CHISEL_SMALL:  strcpy(out, "Small Chisel"); break;
         case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel"); break;
         case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel"); break;
-        case TOOL_OVERLAY:       strcpy(out, "Overlay [o]"); break;
+        case TOOL_OVERLAY:       strcpy(out, "Overlay [O]"); break;
         //case TOOL_BLOCKER:       strcpy(out, "Blocker"); break;
         case TOOL_DELETER:       strcpy(out, "Deleter"); break;
         case TOOL_PLACER:        strcpy(out, "Placer"); break;

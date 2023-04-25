@@ -152,6 +152,8 @@ void levels_setup(void) {
 void goto_level(int lvl) {
     gs->level_current = lvl;
     
+    gs->levels[lvl].first_frame_compare = false;
+    
     narrator_init(gs->level_current);
     
     if (gs->narrator.line_count) {
@@ -221,7 +223,10 @@ void goto_level(int lvl) {
 void level_set_state(int level, enum Level_State state) {
     if (state == LEVEL_STATE_PLAY) {
         //if (!Mix_PlayingMusic())
-        //Mix_PlayMusic(gs->audio.music_a, -1);
+            //Mix_PlayMusic(gs->audio.music_creation, -1);
+    } else if (state == LEVEL_STATE_OUTRO) {
+        gs->levels[level].outro_alpha = 0;
+        gs->levels[level].desired_alpha = 255;
     }
     
     if (state == LEVEL_STATE_INTRO)
@@ -261,7 +266,7 @@ void level_tick(void) {
                 reset_fade();
                 set_fade(FADE_LEVEL_PLAY_OUT, 255, 0);
                 
-                level->state = LEVEL_STATE_PLAY;
+                level_set_state(gs->level_current, LEVEL_STATE_PLAY);
                 effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
                 
                 // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
@@ -288,7 +293,7 @@ void level_tick(void) {
             break;
         }
         case LEVEL_STATE_OUTRO: {
-            level->outro_alpha = interpolate64(level->outro_alpha, level->desired_alpha, 0.2);
+            level->outro_alpha = goto64(level->outro_alpha, level->desired_alpha, 25);
             if (fabs(level->outro_alpha - level->desired_alpha) < 15)
                 level->outro_alpha = level->desired_alpha;
             
@@ -300,17 +305,24 @@ void level_tick(void) {
             if (input->keys[SDL_SCANCODE_N]) {
                 if (gs->level_current+1 < 11) {
                     int lvl = gs->level_current+1;
-                    bool same = compare_cells(gs->grid, level->desired_grid);
+                    bool same = compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY);
+                    
                     if ((lvl == 1 || lvl >= 8) && same) {
                         set_fade(FADE_LEVEL_FINISH, 0, 255);
                     } else if (lvl > 1 && lvl < 8) {
                         set_fade(FADE_LEVEL_FINISH, 0, 255);
                     } else {
                         level_set_state(gs->level_current, LEVEL_STATE_PLAY);
-                        gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
-                                                      32,
-                                                      GUI_H+32,
-                                                      NULL);
+                        if (lvl != 1)
+                            gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL_2,
+                                                          32,
+                                                          GUI_H+32,
+                                                          NULL);
+                        else
+                            gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
+                                                          32,
+                                                          GUI_H+32,
+                                                          NULL);
                     }
                 } else {
                     level_set_state(gs->level_current, LEVEL_STATE_PLAY);
@@ -336,9 +348,6 @@ void level_tick(void) {
             if (input->keys_pressed[SDL_SCANCODE_F]) {
                 level_set_state(gs->level_current, LEVEL_STATE_OUTRO);
                 input->keys[SDL_SCANCODE_F] = 0;
-                
-                level->outro_alpha = 0;
-                level->desired_alpha = 255;
             }
             
             simulation_tick();
@@ -357,6 +366,11 @@ void level_tick(void) {
             
             if (gs->current_tool > TOOL_CHISEL_LARGE) {
                 gs->overlay.current_material = -1;
+            }
+            
+            if (!level->first_frame_compare && compare_cells_to_int(gs->grid, gs->overlay.grid, 0)) {
+                level->first_frame_compare = true;
+                gs->overlay.show = false;
             }
             
             switch (gs->current_tool) {
@@ -442,7 +456,10 @@ void level_draw_intro(void) {
 }
 
 void draw_outro(struct Level *level) {
-    Uint8 alpha = level->outro_alpha;
+    Uint8 alpha = 255;
+    
+    SDL_Texture *previous = SDL_GetRenderTarget(gs->renderer);
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO));
     
     SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, alpha);
@@ -520,8 +537,8 @@ void draw_outro(struct Level *level) {
     SDL_Color color_next_level = (SDL_Color){0, 200, 0, alpha};
     bool update = true;
     
-    if ((gs->level_current+1 == 1 && !compare_cells(gs->grid, level->desired_grid)) ||
-        gs->level_current+1 >= 8 && gs->level_current+1 <= 10 && !compare_cells(gs->grid, level->desired_grid)) {
+    if ((gs->level_current+1 == 1 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) ||
+        gs->level_current+1 >= 8 && gs->level_current+1 <= 10 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) {
         color_next_level = (SDL_Color){200, 0, 0, alpha};
     }
     
@@ -550,7 +567,7 @@ void draw_outro(struct Level *level) {
                       NULL,
                       false);
     
-    if (gs->level_current+1 >= 8 && !compare_cells(gs->grid, level->desired_grid)) {
+    if (gs->level_current+1 >= 8 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) {
         char comment[128]={0};
         
         strcpy(comment, "I cannot settle for this.");
@@ -567,6 +584,14 @@ void draw_outro(struct Level *level) {
                           NULL, NULL,
                           false);
     }
+    
+    SDL_SetRenderTarget(gs->renderer, previous);
+    SDL_SetTextureAlphaMod(RenderTarget(RENDER_TARGET_OUTRO), level->outro_alpha);
+    SDL_Rect dst = {
+        0, 0,
+        gs->window_width, gs->window_height - GUI_H
+    };
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO), NULL, &dst);
 }
 
 void level_draw(void) {

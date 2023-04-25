@@ -308,6 +308,26 @@ int flood_fill_outlines(Uint32 *blobs, Uint32 *blob_count, int obj, int x, int y
     return counter;
 }
 
+// leeway = number of fails allowed to have before returning false.
+bool compare_cells_to_int(struct Cell *a, int *b, int leeway) {
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        if (a[i].type != b[i]) {
+            leeway--;
+            if (leeway < 0)
+                return false;
+        }
+    }
+    return true;
+}
+
+int compare_cells_to_int_count(struct Cell *a, int *b) {
+    int hits = 0;
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        if (a[i].type != b[i]) hits++;
+    }
+    return hits;
+}
+
 bool compare_cells(struct Cell *a, struct Cell *b) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (a[i].type != b[i].type) return false;
@@ -1161,7 +1181,6 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_d
     
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
-            
             if (obj->blob_data[chisel_size].blobs[x+y*gs->gw] != blob) continue;
             //if (gs->blocker.active && gs->blocker.pixels[x+y*gs->gw] != blocker_side) continue;
             if (easy_chiseling && gs->overlay.grid[x+y*gs->gw]) continue;

@@ -3,10 +3,8 @@ TODO
     seem like a bug.
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.
-  - Button cracking at level 11 (press it multiple times)
   - Particle system becomes more violent after level 7. Used for
     narrative metaphor.
-  - Make transition into ending.
   - Figure out a game mechanic or modification to existing ones
     (that's preferred) to showcase how perfectionistic the protag
     is to the point where they're harming themselves mentally.

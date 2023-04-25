@@ -275,12 +275,12 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 selected_tool = 1;
                 break;
             }
-#endif
             case SDLK_4: {
                 gs->current_tool = TOOL_OVERLAY;
                 selected_tool = 1;
                 break;
             }
+#endif
             case SDLK_5: {
                 gs->current_tool = TOOL_DELETER;
                 selected_tool = 1;

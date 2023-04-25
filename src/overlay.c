@@ -393,6 +393,19 @@ bool int_array_any_neighbours_not_same(int *array, int x, int y) {
     return false;
 }
 
+void overlay_draw_missed_pixels(int *grid) {
+    SDL_SetRenderDrawColor(gs->renderer, 255, 128, 0, 255 * 0.5*(sin(SDL_GetTicks()/500.0)+1));
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            int i = x+y*gs->gw;
+            
+            if (gs->grid[i].type != grid[i]) {
+                SDL_RenderDrawPoint(gs->renderer, x, y);
+            }
+        }
+    }
+}
+
 void overlay_draw_grid(int *grid, f32 alpha_coeff) {
     f32 alpha;
     alpha = 100;
@@ -453,5 +466,9 @@ void overlay_draw(void) {
                           overlay->changes.alpha);
     } else {
         overlay_draw_grid(overlay->grid, 1.0f);
+    }
+    
+    if (compare_cells_to_int_count(gs->grid, overlay->grid) <= 15) {
+        overlay_draw_missed_pixels(overlay->grid);
     }
 }

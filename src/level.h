@@ -7,6 +7,8 @@
 
 #define SOURCE_CELL_MAX 8
 
+#define COMPARE_LEEWAY 1
+
 Uint8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
     // Type              R    G    B
     CELL_NONE,            0,   0,   0,
@@ -67,6 +69,8 @@ struct Level {
     int source_cell_count, default_source_cell_count;
     int w, h;
     int popup_time_current, popup_time_max;
+    
+    bool first_frame_compare;
     
     f64 outro_alpha, desired_alpha;
     bool off;

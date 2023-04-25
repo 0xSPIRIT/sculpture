@@ -43,7 +43,7 @@
 "To the detached, and dispassionate.\n"\
 "With compromise after compromise,\n"\
 "this is all you could settle for?\n"\
-"A bastardized fraction of what it SHOULD have been?\n"\
+"A bastardized fraction of what it should have been?\n"\
 "It was all for nothing.\n"\
 "\"I'll never make this mistake again,\" you say,\n"\
 "\"I'll never settle for anything less than what is expected.\"\n"\

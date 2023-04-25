@@ -2,7 +2,7 @@ void chisel_play_sound(int size) {
     if (size == 0) {
         Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.small_chisel, 0);
     } else if (size == 1) {
-        Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.medium_chisel[0], 0);
+        Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.medium_chisel[rand()%3], 0);
     } else if (size == 2) {
         Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.medium_chisel[rand()%6], 0);
     }
@@ -175,6 +175,9 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
                 while (curr_blobs[(int)chisel->x + (int)chisel->y*gs->gw] == b) {
                     chisel->x += ux;
                     chisel->y += uy;
+                    bool special_level_5_case = gs->level_current+1 == 5 &&
+                        gs->grid[(int)chisel->x + (int)chisel->y * gs->gw].type == CELL_DIAMOND;
+                    if (special_level_5_case) return 0;
                 }
                 
                 chisel->x -= ux;
