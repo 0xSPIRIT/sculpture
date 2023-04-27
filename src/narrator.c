@@ -1,4 +1,5 @@
-void narrator_draw_text_blended(TTF_Font *font,
+void narrator_draw_text_blended(int i, // 0 to 10
+                                TTF_Font *font,
                                 const char *str,
                                 SDL_Color col,
                                 bool align_right,
@@ -6,15 +7,27 @@ void narrator_draw_text_blended(TTF_Font *font,
                                 int x,
                                 int y,
                                 int *out_w,
-                                int *out_h) 
+                                int *out_h,
+                                bool update) 
 {
     if (!*str) {
         TTF_SizeText(font, "+", out_w, out_h);
         return;
     }
     
-    SDL_Surface *surf = TTF_RenderText_Blended(font, str, col);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
+    SDL_Surface *surf = gs->surfaces.narrator_line[i];
+    SDL_Texture *texture = gs->textures.narrator_line[i];
+    
+    if (!surf || update) {
+        if (surf) SDL_FreeSurface(surf);
+        gs->surfaces.narrator_line[i] = TTF_RenderText_Blended(font, str, col);
+    }
+    if (!texture || update) {
+        if (texture) SDL_DestroyTexture(texture);
+        gs->textures.narrator_line[i] = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.narrator_line[i]);
+    }
+    surf = gs->surfaces.narrator_line[i];    
+    texture = gs->textures.narrator_line[i];    
     
     SDL_Rect dst = { x, y + gs->window_height/2 - surf->h/2, surf->w, surf->h };
     
@@ -26,11 +39,8 @@ void narrator_draw_text_blended(TTF_Font *font,
     if (out_h)
         *out_h = surf->h;
     
-    SDL_SetTextureAlphaMod(texture, max(min(gs->narrator.alpha, 255), 0));
-    SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
-    
-    SDL_FreeSurface(surf);
-    SDL_DestroyTexture(texture);
+    SDL_SetTextureAlphaMod(gs->textures.narrator_line[i], max(min(gs->narrator.alpha, 255), 0));
+    SDL_RenderCopy(gs->renderer, gs->textures.narrator_line[i], NULL, &dst);
 }
 
 char* get_narration(int level) {
@@ -81,6 +91,41 @@ void narrator_init(int level) {
     n->fadeout = false;
     n->first_frame = true;
     n->delay = 30;
+    
+    narrator_next_line(true);
+}
+
+void narrator_next_line(bool init) {
+    struct Narrator *n = &gs->narrator;
+    
+    n->update = true; // Gets reset in narrator_run
+    
+    if (!init)
+        n->line_curr++;
+    
+    int a = 0;
+    int i = 0;
+    
+    memset(n->current_lines, 0, 10*256);
+    
+    char *s = n->lines[n->line_curr];
+    while (true) {
+        if (*s == '\r') {
+            a++;
+            ++s;
+            i=0;
+            continue;
+        }
+        if (*s == 0) {
+            a++;
+            ++s;
+            i=0;
+            break;
+        }
+        n->current_lines[a][i++] = *s;
+        ++s;
+    }
+    n->current_line_count = a;
 }
 
 void narrator_tick() {
@@ -109,7 +154,7 @@ void narrator_tick() {
         n->alpha -= NARRATOR_ALPHA;
         if (n->alpha < -NARRATOR_ALPHA*NARRATOR_HANG_TIME) {
             n->alpha = 0;
-            n->line_curr++;
+            narrator_next_line(false);
             if (n->line_curr >= n->line_count) {
                 set_fade(FADE_NARRATOR, 0, 255);
             }
@@ -147,18 +192,28 @@ void narrator_run(SDL_Color col) {
     
     TTF_Font *font = gs->fonts.font_times;
     
-    char *s = PushArray(gs->transient_memory, n->curr_len, sizeof(char));
-    strcpy(s, n->lines[n->line_curr]);
+    for (int i = 0; i < n->current_line_count; i++) {
+        char *s = PushArray(gs->transient_memory, n->curr_len, sizeof(char));
+        strcpy(s, n->current_lines[i]);
+        
+        int w, h;
+        TTF_SizeText(font, s, &w, &h);
+        
+        const int pad = 8;
+        
+        int surf_h;
+        narrator_draw_text_blended(i,
+                                   font,
+                                   s,
+                                   col,
+                                   false,
+                                   false,
+                                   gs->window_width/2 - w/2,
+                                   16 + i*(h+pad) - (h+pad)*n->current_line_count/2,
+                                   NULL,
+                                   &surf_h,
+                                   n->update);
+    }
     
-    int w, h;
-    TTF_SizeText(font, n->lines[n->line_curr], &w, &h);
-    
-    int surf_h;
-    narrator_draw_text_blended(font,
-                               s,
-                               col,
-                               false,
-                               false,
-                               gs->window_width/2 - w/2, 16,
-                               NULL, &surf_h);
+    n->update = false;
 }

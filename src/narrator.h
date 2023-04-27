@@ -4,74 +4,94 @@
 #define NARRATOR_ALPHA 10
 #define NARRATOR_HANG_TIME 14 // Frames
 
-     ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 #define NARRATION_LEVEL_1 \
-"You inch towards three blocks of stone,\n"\
+"Max inches towards three blocks of stone,\r"\
 "accompanied by an array of chisels.\n"\
-"As your gaze intensifies,"
-"a spark previously dormant ignites in you.\n"\
+"His gaze intensifies at the marble curiously, longing for\r"\
+"something hidden, locked away.\n"\
+"A glimmer previously dormant ignites in him.\n"\
 
 #define NARRATION_LEVEL_3 \
-"As you acquaint yourself with the basics,\n"\
-"your imagination fills with exotic new ideas.\n"\
-"It scratches an itch you never knew you had,\n"\
+"Max's imagination fills with exotic new ideas\r"\
+"as he acquainted himself with the basics.\n"\
+"It scratched an itch previously unknown,\r"\
 "daydreaming even outside of the workshop.\n"\
-"Your single flame glares with bliss.\n"\
+"His single flame glares in bliss.\n"\
 
 #define NARRATION_LEVEL_4 \
 "Which shapes and patterns beg to be sculpted?\n"\
-"Wondrous minutes went by,\n"\
-"daydreaming fantastical possibilities.\n"\
-"You can fully picture it:\n"\
-"A symbolic piece with endless complex details.\n"\
+"Wondrous minutes went by, with Max daydreaming\r"\
+"fantastical possibilities.\n"\
+"He could fully picture it: A symbolic piece with\r"\
+"endless complex details.\n"\
 "... No.\n"\
-"Only when you've sharpened your skills,\n"\
-"will you dare to create something real.\n"\
-"\n"\
-"The flame flickers for a moment.\n"\
+"Only when he'd sharpened his skills will he\r"\
+"dare create something real.\n"\
+"His flame flickers for a moment.\n"\
 
 #define NARRATION_LEVEL_7 \
-"Surely by now you were ready, right?\n"\
-"To do something detailed- important.\n"\
-"You recall the sculptures that you once loved.\n"\
-"Hypnotized by an idea, you return.\n"\
-"Your expectations surely tempered, you pick up your chisel.\n"\
+"Surely by now he must be ready.\n"\
+"To do something real-- important.\n"\
+"Max recalled the sculptures he had once loved;\r"\
+"They swirled around his head in a moment of inspiration.\n"\
+"Too, his mind spun with other hypnotic notions that\r"\
+"would surely never come to pass--\n"\
+"Though, he'd never tell anyone\r"\
+"what he thought to be foolish fantasies.\n"\
+"In reverie, he returned to the here and now.\n"\
+"His expectations surely tempered, he picked up his chisel.\n"\
 
 #define NARRATION_LEVEL_8 \
-"At the end you should be proud, but how could you?\n"\
-"It's a sudden jolt back to reality-\n"\
-"To the detached, and dispassionate.\n"\
-"With compromise after compromise,\n"\
-"this is all you could settle for?\n"\
-"A bastardized fraction of what it should have been?\n"\
-"It was all for nothing.\n"\
-"\"I'll never make this mistake again,\" you say,\n"\
-"\"I'll never settle for anything less than what is expected.\"\n"\
+"At the end he should be proud, but how could he?\n"\
+"Max turned away pointedly, his chisel clattering\r"\
+"to the hardwood floor in contempt.\n"\
+"His eyes flinched in an instinctual repulsion,\r"\
+"understanding what he had done.\n"\
+"He'd never thought that something like this would have\r"\
+"affected him so deeply-- but it did.\n"\
+"It's a sudden jolt back to reality- to the detached\r"\
+"and dispassionate.\n"\
+"He thought, with compromise after compromise,\r"\
+"this \"thing\" is all he could have settled for?\n"\
+"A bastardized fraction of what it could have been-- no,\r"\
+"SHOULD have been?\n"\
+"Max, in a fit of rage, clasps the single flower in hands\r"\
+"and smashes it to the floor, chucking shards of marble\r"\
+"and quartz across his workshop.\n"\
+"\"I'll never make this mistake again,\" he declared.\n"\
 
 #define NARRATION_LEVEL_10 \
-"A thought captures you once again,\n"\
-"liquifying boldly into many ideas,\n"\
-"but this time, you're ready.\n"\
-"Glaring white radiates from your imagination,\n"\
+"A thought captures him once again,\r"\
+"condensing wildly into many ideas,\r"\
+"but this time, he's ready.\n"\
+"A glittering white radiates from Max's imagination,\r"\
 "outlining an object with layers of diamond and ice.\n"\
-"The prize taunts you. It aches for you to reveal it.\n"\
-"You can do this.\n"\
-"You know you can.\n"\
-"You have to.\n"\
+"The prize taunts him, aching for him to reveal it.\n"\
+"Max says,\r"\
+"\"I can do this.\"\n"\
+"\"I know I can do this.\"\n"\
+"\"I have to.\"\n"\
 
 #define NARRATION_LEVEL_11 \
-"With your perfected craftsmanship, you continue on.\n"\
-"You'd sculpt an intricate, sophisticated piece-\n"\
-"In fact, very similar to several of your favorites.\n"\
-"Your expertise should clean this one up nicely.\n"\
-"You've earned a break.\n"\
+"Max collapses into his chair, debilitated,\r"\
+"the floorboards creaking in response.\n"\
+"Little emotion seemed to shine through his demeanor,\r"\
+"as he carefully places his finished piece next the others.\n"\
+"With his seemingly perfected craftsmanship,\r"\
+"without a moment's rest, nor hesitation,\r"\
+"he continues on.\n"\
+"He'd sculpt an intricate, sophisticated piece, yes.\r"\
+"In fact, very similar to some of his favorites.\n"\
+"His new expertise should clean this one nicely;\r"\
+"he's earned a break.\n"\
 
 #define NARRATION_END \
-"Fixed in place, you stare out your window.\n"\
-"You watch as the people go by.\n"\
-"Life goes on, but you are simply not there.\n"\
-"With the true depth of your work in sight,\n"\
-"you realize you can't do what they did;\n"\
+"Fixed in place, Max stares out his window.\n"\
+"He watches as the people go by.\n"\
+"Life goes on, but he is simply not there.\n"\
+"With the true depth of his work in sight,\r"\
+"he realizes he can't do what they did;\n"\
 "yearning to masquerade around as some auteur.\n"\
 "Maybe that's not such a bad thing.\n"\
 "...\n"\
@@ -80,11 +100,15 @@
 "And it'd feel good.\n"\
 
 struct Narrator {
+    char current_lines[10][256];
+    int current_line_count;
+    
     char lines[MAX_LINES][256];
     int line_curr, line_count;
     size_t curr_len;
     
     int delay;
+    bool update; // Should we update the narrations text surface? narrator_next_line
     
     bool fadeout; // This is for text
     
@@ -94,3 +118,5 @@ struct Narrator {
     
     bool off;
 };
+
+void narrator_next_line(bool init);

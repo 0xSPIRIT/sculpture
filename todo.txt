@@ -1,5 +1,5 @@
 TODO
-  - Change the narration to have multiple lines per thing. Upon
+  x Change the narration to have multiple lines per thing. Upon
     each enter press, it adds a new line. Perhaps newlines within
     a thing is marked by \r's whereas proper new lines are marked
     by \n's.

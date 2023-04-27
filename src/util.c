@@ -345,16 +345,7 @@ void fill_circle(SDL_Renderer *renderer, int x, int y, int size) {
     }
 }
 
-void draw_text_blended_indexed(int index,
-                                      TTF_Font *font,
-                                      char *str,
-                                      SDL_Color col,
-                                      bool align_right,
-                                      bool align_bottom,
-                                      int x,
-                                      int y,
-                                      int *out_w,
-                                      int *out_h)
+void draw_text_blended_indexed(int index, TTF_Font *font, char *str, SDL_Color col, bool align_right, bool align_bottom, int x, int y, int *out_w, int *out_h)
 {
     Assert(index < TEXT_INDEX_COUNT);
     if (!*str) {

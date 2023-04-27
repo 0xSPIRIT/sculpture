@@ -390,7 +390,9 @@ void profile_array(struct Cell *desired,
         char name[64];
         get_name_from_type(i, name);
         
-        if (gs->level_current == 11-1) {
+        if (gs->level_current+1 == 7) {
+            sprintf(out[(*count)++], "  %-15s???", name);
+        } else if (gs->level_current == 11-1) {
             sprintf(out[(*count)++], "  %-15s???", name);
         } else if (gs->overlay.changes.index < gs->overlay.changes.count-1) {
             sprintf(out[(*count)++], "  %-15s%d??", name, counts[i]);

@@ -220,6 +220,8 @@ void audio_init(struct Audio *audio) {
     audio->music_titlescreen = Mix_LoadMUS(RES_DIR "audio/titlescreen.ogg");
     audio->music_creation = Mix_LoadMUS(RES_DIR "audio/music_creation.ogg");
     
+    Mix_VolumeMusic(3 * MIX_MAX_VOLUME / 4);
+
     audio->pip = Mix_LoadWAV(RES_DIR "audio/pip.ogg");
     
     for (int i = 0; i < 6; i++) {

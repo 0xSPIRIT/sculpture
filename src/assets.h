@@ -97,6 +97,7 @@ struct Textures {
     SDL_Texture *item_nums[ITEM_COUNT]; // Refers to the number text on items.
     
     SDL_Texture *narrator;
+    SDL_Texture *narrator_line[10];
     
     SDL_Texture *text_arrow;
 };
@@ -122,6 +123,7 @@ struct Surfaces {
     // Any temp surfaces you might need to draw text or w/e goes here!
     SDL_Surface *slot_names[TOTAL_SLOT_COUNT];
     SDL_Surface *converter_names[CONVERTER_COUNT];
+    SDL_Surface *narrator_line[10];
     
     SDL_Surface *narrator;
 };

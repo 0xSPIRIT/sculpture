@@ -1,66 +1,53 @@
 Max inches towards three blocks of stone,
 accompanied by an array of chisels.
-His gaze intensifies, longing for something
-unknown, locked away.
+His gaze intensifies at the marble curiously, longing for
+something hidden, locked away.
 A glimmer previously dormant ignites in him.
-
------------------------------------
 
 Max's imagination fills with exotic new ideas
 as he acquainted himself with the basics.
-It scratched an itch previously hidden,
+It scratched an itch previously unknown,
 daydreaming even outside of the workshop.
 His single flame glares in bliss.
 
------------------------------------
-
 Which shapes and patterns beg to be sculpted?
-Wondrous minutes went by, as Max daydreams
+Wondrous minutes went by, with Max daydreaming
 fantastical possibilities.
 He could fully picture it: A symbolic piece with
 endless complex details.
-...
-No.
+... No.
 Only when he'd sharpened his skills will he
 dare create something real.
 His flame flickers for a moment.
 
------------------------------------
-
-Surely by now he was ready, right?
+Surely by now he must be ready.
 To do something real-- important.
-Max remembered the sculptures he had once loved.
+Max recalled the sculptures he had once loved;
 They swirled around his head in a moment of inspiration.
-His mind spun with hypnotic notions that would surely
-never come to pass. 
-Though, he'd never tell anyone of what he thought
-to be foolish fantasies.
+Too, his mind spun with other hypnotic notions that
+would surely never come to pass--
+Though, he'd never tell anyone
+what he thought to be foolish fantasies.
 In reverie, he returned to the here and now.
 His expectations surely tempered, he picked up his chisel.
-
------------------------------------
 
 At the end he should be proud, but how could he?
 Max turned away pointedly, his chisel clattering
 to the hardwood floor in contempt.
 His eyes flinched in an instinctual repulsion,
-just understanding what he had done.
+understanding what he had done.
 He'd never thought that something like this would have
 affected him so deeply-- but it did.
 It's a sudden jolt back to reality- to the detached
 and dispassionate.
 He thought, with compromise after compromise,
-this thing is all he could have settled for?
+this "thing" is all he could have settled for?
 A bastardized fraction of what it could have been-- no,
 SHOULD have been?
 Max, in a fit of rage, clasps the single flower in hands
-and smashes it to the floor, chucking shards of Marble
-and Quartz all across his workshop.
-Max says:
-"I'll never make this mistake again,"
-"I'll never settle for anything less than what is expected."
-
------------------------------------
+and smashes it to the floor, chucking shards of marble
+and quartz across his workshop.
+"I'll never make this mistake again," he declared.
 
 A thought captures him once again,
 condensing wildly into many ideas,
@@ -68,25 +55,23 @@ but this time, he's ready.
 A glittering white radiates from Max's imagination,
 outlining an object with layers of diamond and ice.
 The prize taunts him, aching for him to reveal it.
-Max says:
+Max says,
 "I can do this."
 "I know I can do this."
 "I have to."
 
------------------------------------
-
-Max collapses into his chair, the floorboards creaking
-in response. 
+#define NARRATION_LEVEL_11 
+Max collapses into his chair, debilitated,
+the floorboards creaking in response.
 Little emotion seemed to shine through his demeanor,
-as he carefully places his finished piece with the others.
-With his seemingly perfected craftsmanship, he continues on, 
-without a moment's rest, nor hesitation.
+as he carefully places his finished piece next the others.
+With his seemingly perfected craftsmanship,
+without a moment's rest, nor hesitation,
+he continues on.
 He'd sculpt an intricate, sophisticated piece, yes.
 In fact, very similar to some of his favorites.
-His new expertise should clean this one nicely; he's earned
-a break.
-
------------------------------------
+His new expertise should clean this one nicely;
+he's earned a break.
 
 Fixed in place, Max stares out his window.
 He watches as the people go by.
