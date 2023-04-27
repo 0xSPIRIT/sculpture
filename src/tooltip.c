@@ -79,10 +79,9 @@ void tooltip_draw(struct Tooltip *tooltip) {
         }
 
         // @Performance
-        surfaces[i] = TTF_RenderText_LCD(gs->fonts.font,
+        surfaces[i] = TTF_RenderText_Blended(gs->fonts.font,
                                          tooltip->str[i],
-                                         color,
-                                         BLACK);
+                                             color);
         
         Assert(surfaces[i]);
         textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surfaces[i]);

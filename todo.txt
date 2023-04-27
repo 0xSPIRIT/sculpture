@@ -3,11 +3,9 @@ TODO
     seem like a bug.
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.
-  - Particle system becomes more violent after level 7. Used for
-    narrative metaphor.
-  - Figure out a game mechanic or modification to existing ones
-    (that's preferred) to showcase how perfectionistic the protag
-    is to the point where they're harming themselves mentally.
+  - Debug crash that happens when you Ctrl+G through many levels
+    until you end up at level 7. Something with the memory gets messed
+    up which first manifests as the snow being less in the opening. Very curious.
 
 Music For Alaska Inspiration:
 https://www.youtube.com/watch?v=BK5Yp5FD7C4

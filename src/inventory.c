@@ -114,7 +114,7 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
         surfs->item_nums[item->index] = TTF_RenderText_LCD(gs->fonts.font_bold_small,
                                                            number,
                                                            color,
-                                                           (SDL_Color){0, 0, 0, 255});
+                                                           BLACK);
         texs->item_nums[item->index] = SDL_CreateTextureFromSurface(gs->renderer,
                                                                     surfs->item_nums[item->index]);
     }
@@ -199,19 +199,21 @@ void slot_draw(struct Slot *slot, f32 rx, f32 ry) {
 #else
         if (*surf) SDL_FreeSurface(*surf);
 #endif
-            *surf = TTF_RenderText_LCD(gs->fonts.font_small,
+            *surf = TTF_RenderText_Blended(gs->fonts.font_small,
                                        slot->name,
                                        (SDL_Color){
                                            Red(SLOT_TEXT_COLOR), 
                                            Green(SLOT_TEXT_COLOR), 
                                            Blue(SLOT_TEXT_COLOR), 
                                            255
-                                       },
+                                           });
+#if 0
                                        (SDL_Color){
                                            Red(INVENTORY_COLOR),
                                            Green(INVENTORY_COLOR),
                                            Blue(INVENTORY_COLOR),
                                            0});
+#endif
 #ifndef MODIFYING_COLORS
         }
 #else

@@ -134,5 +134,6 @@ struct Fonts {
         *font_small,
         *font_bold_small,
     *font_title,
+    *font_title_2,
     *font_titlescreen;
 };

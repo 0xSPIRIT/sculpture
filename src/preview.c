@@ -206,6 +206,7 @@ void preview_load_current(const char *name) {
 }
 
 void preview_tick() {
+#ifndef ALASKA_RELEASE_MODE
     if (gs->input.keys_pressed[SDL_SCANCODE_END]) {
         set_text_field("Load Preview File:", "", preview_load_current);
     } else if (gs->input.keys_pressed[SDL_SCANCODE_HOME]) {
@@ -222,4 +223,5 @@ void preview_tick() {
     if (gs->current_preview.recording) {
         preview_record(&gs->current_preview);
     }
+#endif
 }

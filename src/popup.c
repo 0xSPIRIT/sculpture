@@ -56,9 +56,9 @@ void text_field_draw(void) {
     SDL_Rect field_rect = {0}, text_field_rect = {0}, description_rect = {0};
     
     if (*text_field->description)
-        description_surf = TTF_RenderText_LCD(gs->fonts.font_consolas, text_field->description, (SDL_Color){180,180,180,255}, BLACK);
+        description_surf = TTF_RenderText_Blended(gs->fonts.font_consolas, text_field->description, (SDL_Color){180,180,180,255});
     if (*text_field->text)
-        text_surf = TTF_RenderText_LCD(gs->fonts.font_consolas, text_field->text, WHITE, BLACK);
+        text_surf = TTF_RenderText_Blended(gs->fonts.font_consolas, text_field->text, WHITE);
 
     if (text_surf) {
         field_rect = (SDL_Rect){

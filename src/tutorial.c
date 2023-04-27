@@ -111,7 +111,8 @@ void tutorial_rect_run() {
         }
         
         if (!tut->textures[i]) {
-            SDL_Surface *surf = TTF_RenderText_LCD(tut->font, tut->lines[i], WHITE, bg);
+            (void)bg;
+            SDL_Surface *surf = TTF_RenderText_Blended(tut->font, tut->lines[i], WHITE);
             tut->textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surf);
             SDL_FreeSurface(surf);
         }

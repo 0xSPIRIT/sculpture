@@ -8,8 +8,8 @@
 #define NARRATION_LEVEL_1 \
 "You inch towards three blocks of stone,\n"\
 "accompanied by an array of chisels.\n"\
-"As your gaze deepens and your eyes gape,\n"\
-"a glimmer previously dormant sparks in you.\n"\
+"As your gaze intensifies,"
+"a spark previously dormant ignites in you.\n"\
 
 #define NARRATION_LEVEL_3 \
 "As you acquaint yourself with the basics,\n"\

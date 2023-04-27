@@ -540,20 +540,22 @@ void converter_draw(struct Converter *converter) {
         if (*surf) SDL_FreeSurface(*surf);
 #endif
     
-        *surf = TTF_RenderText_LCD(gs->fonts.font_courier,
+        *surf = TTF_RenderText_Blended(gs->fonts.font_courier,
                                    converter->name, 
                                    (SDL_Color){
                                        Red(CONVERTER_NAME_COLOR),
                                        Green(CONVERTER_NAME_COLOR),
                                        Blue(CONVERTER_NAME_COLOR),
                                        255
-                                   },
+                                       });
+#if 0
                                    (SDL_Color){
                                        Red(INVENTORY_COLOR2),
                                        Green(INVENTORY_COLOR2), 
                                        Blue(INVENTORY_COLOR2),
                                        255
                                    });
+#endif
 #ifndef MODIFYING_COLORS
     }
 #endif

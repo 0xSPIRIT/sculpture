@@ -103,7 +103,7 @@ int level_add(const char *name, const char *desired_image, const char *initial_i
 }
 
 void levels_setup(void) {
-    level_add("Basics",
+    level_add("Marrow",
               RES_DIR "lvl/desired/level 1.png",
               RES_DIR "lvl/initial/level 1.png",
               EFFECT_SNOW);
@@ -115,7 +115,7 @@ void levels_setup(void) {
               RES_DIR "lvl/desired/level 3.png",
               RES_DIR "lvl/initial/level 3.png",
               EFFECT_NONE);
-    level_add("Clearcut Shapes",
+    level_add("Bliss",
               RES_DIR "lvl/desired/level 4.png",
               RES_DIR "lvl/initial/level 4.png",
               EFFECT_NONE);
@@ -123,7 +123,7 @@ void levels_setup(void) {
               RES_DIR "lvl/desired/level 5.png",
               RES_DIR "lvl/initial/level 5.png",
               EFFECT_NONE);
-    level_add("Lamplight",
+    level_add("Premonition",
               RES_DIR "lvl/desired/level 6.png",
               RES_DIR "lvl/initial/level 6.png",
               EFFECT_RAIN);
@@ -154,6 +154,10 @@ void goto_level(int lvl) {
     
     gs->levels[lvl].first_frame_compare = false;
     
+    grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
+    
+    tooltip_reset(&gs->gui.tooltip);
+    
     narrator_init(gs->level_current);
     
     if (gs->narrator.line_count) {
@@ -176,8 +180,6 @@ void goto_level(int lvl) {
     gs->conversions.calculated_render_target = false;
     
     gs->current_tool = TOOL_GRABBER;
-    
-    grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
     
     gs->S = gs->window_width/gs->gw;
     Assert(gs->gw==gs->gh);
@@ -437,14 +439,18 @@ void level_draw_intro(void) {
     char name[256] = {0};
     sprintf(name, "%d. %s", level->index+1, level->name);
     
-    SDL_Surface *surf = TTF_RenderText_Blended(gs->fonts.font_title,
+    TTF_Font *font = gs->fonts.font_title;
+    if (gs->level_current+1 == 8)
+        font = gs->fonts.font_title_2;
+    
+    SDL_Surface *surf = TTF_RenderText_Blended(font,
                                                name,
                                                WHITE);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     
     SDL_Rect dst = {
         gs->S*gs->gw/2 - surf->w/2,
-        surf->h * 1.5,
+        surf->h * .5,
         surf->w, surf->h
     };
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
@@ -464,7 +470,7 @@ void draw_outro(struct Level *level) {
     SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, alpha);
     SDL_RenderFillRect(gs->renderer, &rect);
-    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, alpha);
+    SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
     SDL_RenderDrawRect(gs->renderer, &rect);
     
     const int margin = Scale(36);
@@ -514,7 +520,7 @@ void draw_outro(struct Level *level) {
         }
     }
     
-    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, alpha);
+    SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
     SDL_Rect desired_rect = (SDL_Rect){
         dx, dy+32,
         scale*gs->gw, scale*gs->gh
@@ -527,7 +533,7 @@ void draw_outro(struct Level *level) {
     
     timelapse_tick_and_draw(dx, dy+32, scale, scale);
     
-    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, alpha);
+    SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
     desired_rect = (SDL_Rect){
         dx, dy+32,
         scale*gs->gw, scale*gs->gh

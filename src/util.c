@@ -390,20 +390,9 @@ void draw_text_blended_indexed(int index,
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
 }
 
-void draw_text_indexed(int index,
-                           TTF_Font *font,
-                           char *str,
-                           SDL_Color col,
-                           SDL_Color bg_col,
-                           Uint8 alpha,
-                           bool align_right,
-                           bool align_bottom,
-                           int x,
-                           int y,
-                           int *out_w,
-                           int *out_h,
-                           bool update)
+void draw_text_indexed(int index, TTF_Font *font, char *str, SDL_Color col, SDL_Color bg_col, Uint8 alpha, bool align_right, bool align_bottom, int x, int y, int *out_w, int *out_h, bool update)
 {
+        (void)bg_col;
     Assert(index < TEXT_INDEX_COUNT);
     if (!*str) {
         TTF_SizeText(font, "A", out_w, out_h);
@@ -418,7 +407,8 @@ void draw_text_indexed(int index,
     // stored in gs->texts up to 128 chars.
     if (update || strcmp(gs->texts[index], str) != 0 || !gs->surfaces.text[index]) {
         strncpy(gs->texts[index], str, 128);
-        gs->surfaces.text[index] = TTF_RenderText_LCD(font, str, col, bg_col);
+        //gs->surfaces.text[index] = TTF_RenderText_LCD(font, str, col, bg_col);
+            gs->surfaces.text[index] = TTF_RenderText_Blended(font, str, col);
         gs->textures.text[index] = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.text[index]);
     }
     
@@ -455,7 +445,9 @@ void draw_text(TTF_Font *font,
         return;
     }
     
-    SDL_Surface *surf = TTF_RenderText_LCD(font, str, col, bg_col);
+    //SDL_Surface *surf = TTF_RenderText_LCD(font, str, col, bg_col);
+        (void)bg_col;
+        SDL_Surface *surf = TTF_RenderText_Blended(font, str, col);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     
     SDL_Rect dst = { x, y, surf->w, surf->h };
