@@ -1,4 +1,11 @@
 TODO
+  - Change the narration to have multiple lines per thing. Upon
+    each enter press, it adds a new line. Perhaps newlines within
+    a thing is marked by \r's whereas proper new lines are marked
+    by \n's.
+
+  - Add the 3rd person narration in, and see how it works.
+
   - Show when the chisel isn't able to chisel better. It makes it
     seem like a bug.
   - Add a mouse feature for the web version to emulate the movement
