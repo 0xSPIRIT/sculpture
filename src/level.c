@@ -229,6 +229,8 @@ void level_set_state(int level, enum Level_State state) {
     } else if (state == LEVEL_STATE_OUTRO) {
         gs->levels[level].outro_alpha = 0;
         gs->levels[level].desired_alpha = 255;
+        gs->timelapse.frame = 0;
+        gs->timelapse.sticky = 0;
     }
     
     if (state == LEVEL_STATE_INTRO)

@@ -19,9 +19,7 @@ bool timelapse_is_state_grids_same(int a, int b) {
 void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
     struct Timelapse *tl = &gs->timelapse;
     
-    if (tl->sticky > 0) {
-        tl->sticky--;
-    } else if (tl->frame < gs->save_state_count) {
+    if (tl->frame < gs->save_state_count) {
         tl->timer++;
         
         if (tl->timer >= tl->timer_max) {
@@ -31,10 +29,8 @@ void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
                 tl->frame++;
             }
             if (tl->frame >= gs->save_state_count) {
-                tl->sticky = 90;
-                tl->frame = 0;
+                tl->sticky = 1;
             } 
-            
             
             tl->timer = 0;
         }
@@ -44,7 +40,7 @@ void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
         struct Save_State *state = NULL;
         struct Cell *grid = NULL;
         
-        if (tl->sticky && tl->frame == 0) {
+        if (tl->sticky) {
             grid = gs->grid;
         } else {
             state = &gs->save_states[tl->frame];

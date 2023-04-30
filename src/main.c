@@ -141,6 +141,44 @@ int start_fullscreen_popup(void) {
     return result;
 }
 
+int scale_popup() {
+    SDL_Init(SDL_INIT_VIDEO);
+    
+    SDL_Window *w = SDL_CreateWindow("Scale",
+                                     SDL_WINDOWPOS_CENTERED,
+                                     SDL_WINDOWPOS_CENTERED,
+                                     600, 600,
+                                     SDL_WINDOW_SHOWN);
+    SDL_Renderer *r = SDL_CreateRenderer(w, -1, 0);
+    
+    SDL_Surface *s = SDL_LoadBMP(RES_DIR"sdf.bmp");
+    Assert(s);
+    SDL_Texture *t = SDL_CreateTextureFromSurface(r, s);
+    
+    bool running=true;
+    while (running) {
+        SDL_Event e;
+        while (SDL_PollEvent(&e)) {
+            if (e.type == SDL_QUIT) running=false;
+            if (e.type == SDL_KEYDOWN) {
+                int d = e.key.keysym.sym - SDLK_0;
+                if (d > 0 && d <= 9) {
+                    SDL_DestroyWindow(w);
+                    return d;
+                }
+            }
+        }
+        
+        SDL_SetRenderDrawColor(r, 0, 0, 0, 255);
+        SDL_RenderClear(r);
+        SDL_RenderCopy(r, t, 0, 0);
+        SDL_RenderPresent(r);
+    }
+    
+    SDL_DestroyWindow(w);
+    return 6;
+}
+
 f64 calculate_scale(bool fullscreen) {
     RECT desktop;
     HWND hDesktop = GetDesktopWindow();
@@ -337,6 +375,8 @@ int main(int argc, char **argv)
     // *1.5 in case we add more values at runtime.
     struct Game_State *game_state = PushSize(&persistent_memory, sizeof(struct Game_State));
     gs = game_state; // This is so that our macros can pick up "gs" instead of game_state.
+    
+    //scale = scale_popup();
     
     game_state->use_software_renderer = use_software_renderer;
     game_state->S = scale;

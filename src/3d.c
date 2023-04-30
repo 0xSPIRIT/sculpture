@@ -29,7 +29,7 @@ void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *
         
         if (w1 < 0) continue; // If any weight < 0, the point is not in the triangle
         
-        f64 w2 = 1 - w0 - w1;
+        f64 w2 = 1.00001 - w0 - w1; // Hack
         
         if (w2 < 0) continue; // If any weight < 0, the point is not in the triangle
         
@@ -213,8 +213,8 @@ void object_draw(struct Object3D *obj) {
         case OBJECT_ROTY: case OBJECT_DONE: {
             if (obj->state != OBJECT_DONE) {
                 obj->y += dy;
-                obj->t2++;
-                obj->yrot -= (min(360, obj->t2) / 360.0) * speed * 0.001;
+                obj->t2 += 0.2;
+                obj->yrot -= (min(360, obj->t2) / 360.0) * speed * 0.016;
             }
             
             if (obj->yrot <= -M_PI/2) {

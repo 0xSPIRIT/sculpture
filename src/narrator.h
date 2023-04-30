@@ -50,7 +50,7 @@
 "understanding what he had done.\n"\
 "He'd never thought that something like this would have\r"\
 "affected him so deeply-- but it did.\n"\
-"It's a sudden jolt back to reality- to the detached\r"\
+"It's a sudden jolt back to reality, to the detached\r"\
 "and dispassionate.\n"\
 "He thought, with compromise after compromise,\r"\
 "this \"thing\" is all he could have settled for?\n"\

@@ -21,7 +21,8 @@ struct Object3D {
     f64 xrot;
     f64 acc, vel, jerk;
     
-    int t, t2, hold;
+    int t, hold;
+    f64 t2;
     int timer;
 };
 

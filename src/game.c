@@ -93,6 +93,16 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
         }
     }
     
+    if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_F11) {
+        if (!gs->fullscreen) {
+            SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+            gs->fullscreen = true;
+        } else {
+            SDL_SetWindowFullscreen(gs->window, 0);
+            gs->fullscreen = false;
+        }
+    }
+    
     int selected_tool = 0;
     if (event->type == SDL_KEYDOWN && gs->gamestate == GAME_STATE_PLAY && !gs->text_field.active) {
         switch (event->key.keysym.sym) {
@@ -112,16 +122,6 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
 #ifdef ALASKA_DEBUG
                     is_running = false; 
 #endif
-                }
-                break;
-            }
-            case SDLK_F11: {
-                if (!gs->fullscreen) {
-                    SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-                    gs->fullscreen = true;
-                } else {
-                    SDL_SetWindowFullscreen(gs->window, 0);
-                    gs->fullscreen = false;
                 }
                 break;
             }
@@ -154,7 +154,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_SEMICOLON: {
-                //gs->do_draw_objects = !gs->do_draw_objects;
+                gs->do_draw_objects = !gs->do_draw_objects;
                 break;
             }
             case SDLK_r: {
@@ -176,7 +176,6 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 gs->do_draw_blobs = !gs->do_draw_blobs;
                 break;
             }
-#if ALASKA_DEBUG
             case SDLK_g: {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     set_text_field("Goto Level", "", goto_level_string_hook);
@@ -185,7 +184,6 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
-#endif
             case SDLK_o: {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     set_text_field("Output current grid to image:", "../", level_output_to_png);

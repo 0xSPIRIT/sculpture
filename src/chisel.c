@@ -273,6 +273,7 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
         
         bool did_remove = false;
         
+#if 0
         const bool CHISEL_REMOVE_SMALL_OBJECTS = false;
         if (CHISEL_REMOVE_SMALL_OBJECTS) {
             for (int i = 0; i < gs->object_count; i++) {
@@ -289,7 +290,8 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
                 }
             }
         }
-        
+        #endif
+
         if (did_remove) {
             objects_reevaluate();
         }
