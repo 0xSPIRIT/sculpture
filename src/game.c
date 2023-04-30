@@ -45,7 +45,7 @@ void game_resize(int h) {
     
     gs->resized = true;
     
-    Log("Reiszed to %d, %d!\n", gs->window_width, gs->window_height);
+    Log("Reiszed to %d, %d! Scale: %.3f\n", gs->window_width, gs->window_height, gs->S);
 }
 
 export void game_init(struct Game_State *state, int level) {
@@ -351,9 +351,13 @@ export void game_run(struct Game_State *state) {
                     0, 0,
                     gs->gw*gs->S, GUI_H+SCALE_3D
                 };
+                SDL_Rect src = {
+                    0, 0,
+                    gs->window_width, GUI_H
+                };
                 
                 SDL_SetTextureAlphaMod(RenderTarget(RENDER_TARGET_GUI_TOOLBAR), 255 - 255 * min(240,gs->obj.t) / 240.0);
-                SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR), NULL, &dst);
+                SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR), &src, &dst);
             } else {
                 //view_tick(&gs->view, &gs->input);
                 
@@ -380,13 +384,19 @@ export void game_run(struct Game_State *state) {
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
     SDL_RenderClear(gs->renderer);
     
+    SDL_Rect src = {
+        0, 0,
+        gs->window_width, gs->window_height
+    };
+    
     SDL_Rect dst = {
         gs->real_width/2 - gs->window_width/2,
         gs->real_height/2 - gs->window_height/2,
         gs->window_width,
         gs->window_height
     };
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_MASTER), NULL, &dst);
+    Log("%d, %d, %d\n", gs->window_width, (int)(gs->S*gs->gw), gs->real_width);
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_MASTER), &src, &dst);
     
     SDL_RenderPresent(gs->renderer);
     

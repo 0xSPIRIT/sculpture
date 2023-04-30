@@ -179,13 +179,15 @@ int scale_popup() {
     return 6;
 }
 
-f64 calculate_scale(bool fullscreen) {
+f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     RECT desktop;
     HWND hDesktop = GetDesktopWindow();
     GetWindowRect(hDesktop, &desktop);
+    int w = desktop.right;
     int h = desktop.bottom;
     
-    Log("Desktop Height: %d\n", h);
+    if (dw) *dw=w;
+    if (dh) *dh=h;
     
     if (fullscreen) {
         return h/144.0;
@@ -203,7 +205,7 @@ void game_init(struct Game_State *state) {
     srand((unsigned int) time(0));
     
     if (state->S == 0)
-        state->S = calculate_scale(false);
+        state->S = calculate_scale(false, &state->desktop_w, &state->desktop_h);
     
     state->window_width = (int)(128.0*state->S);
     state->window_height = (int)(128.0*state->S + GUI_H);
@@ -350,8 +352,10 @@ int main(int argc, char **argv)
     fullscreen = start_fullscreen_popup();
 #endif
     
+    int dw=0, dh=0;
+    
     if (fullscreen) {
-        scale = calculate_scale(true);
+        scale = calculate_scale(true, &dw, &dh);
     }
     
     bool use_software_renderer = false;
@@ -381,6 +385,9 @@ int main(int argc, char **argv)
     
     //scale = scale_popup();
     
+    game_state->desktop_w = dw;
+    game_state->desktop_h = dh;
+    
     game_state->use_software_renderer = use_software_renderer;
     game_state->S = scale;
     
@@ -397,7 +404,6 @@ int main(int argc, char **argv)
     // on each level's width/height)
     
     render_targets_init(game_state->renderer,
-                        game_state->window_width,
                         game_state->levels,
                         &game_state->textures);
     

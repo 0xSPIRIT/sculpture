@@ -97,10 +97,14 @@ void conversions_gui_draw(void) {
         SDL_SetRenderTarget(gs->renderer, prev);
     }
     
+    SDL_Rect src = {
+        0, 0,
+        gs->window_width, gs->window_height-GUI_H
+    };
     SDL_Rect dst = {
         0, GUI_H,
         gs->window_width, gs->window_height-GUI_H
     };
     SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CONVERSION_PANEL), SDL_BLENDMODE_BLEND);
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_CONVERSION_PANEL), NULL, &dst);
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_CONVERSION_PANEL), &src, &dst);
 }

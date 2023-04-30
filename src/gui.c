@@ -41,6 +41,8 @@ struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, cons
     b->texture = texture;
     b->disabled = false;
     
+    b->index=-1;
+    
     SDL_QueryTexture(texture, NULL, NULL, &b->w, &b->h);
     
     strcpy(b->tooltip_text, tooltip_text);
@@ -209,6 +211,11 @@ void button_draw(struct Button *b) {
     
     int gui_input_mx = input->real_mx;// / gs->S;
     int gui_input_my = input->real_my;// / gs->S;
+    
+    if (b->index != -1) {
+        b->w = b->h = GUI_H;
+        b->x = b->index * b->w;
+    }
     
     SDL_Rect dst = {
         b->x, b->y, b->w, b->h
@@ -482,11 +489,15 @@ void gui_draw(void) {
         
         SDL_Rect dst = {
             0, 0,
-            gs->gw*gs->S, GUI_H
+            2*gs->gw*gs->S, GUI_H
+        };
+        SDL_Rect src = {
+            0, 0,
+            2*gs->gw*gs->S, GUI_H
         };
         
         SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
-        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR), NULL, &dst);
+        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR), &src, &dst);
     }
     
     SDL_SetRenderTarget(gs->renderer, old);

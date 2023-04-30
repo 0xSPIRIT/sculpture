@@ -599,7 +599,11 @@ void draw_outro(struct Level *level) {
         0, 0,
         gs->window_width, gs->window_height - GUI_H
     };
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO), NULL, &dst);
+    SDL_Rect src = {
+        0, 0,
+        gs->window_width, gs->window_height - GUI_H
+    };
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO), &src, &dst);
 }
 
 void level_draw(void) {

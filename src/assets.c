@@ -40,9 +40,11 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
 
 // Creates all render targets for all the levels.
 void render_targets_init(SDL_Renderer *renderer,
-                         int width, // In screen coords, not game coords. (21.1.23: What's the point of this??? Why not just use gs->window_width??)
                          struct Level *levels,
                          struct Textures *textures) {
+    int width = gs->desktop_w;
+    int height = gs->desktop_h;
+    
     for (int lvl = 0; lvl < LEVEL_COUNT; lvl++) {
         struct Level *l = &levels[lvl];
         Assert(l->w != 0 && l->h != 0);
@@ -53,17 +55,17 @@ void render_targets_init(SDL_Renderer *renderer,
                 continue;
             }
             if (i == RENDER_TARGET_CONVERSION_PANEL || i == RENDER_TARGET_OUTRO) {
-                textures->render_targets[lvl][i] = CreateRenderTarget(width, gs->window_height-GUI_H);
+                textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
                 SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
                 continue;
             }
             if (i == RENDER_TARGET_GUI_TOOLBAR) {
-                textures->render_targets[lvl][i] = CreateRenderTarget(width, GUI_H);
+                textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
                 Assert(textures->render_targets[lvl][i]);
                 continue;
             }
             if (i == RENDER_TARGET_3D) {
-                textures->render_targets[lvl][i] = SDL_CreateTexture(renderer, ALASKA_PIXELFORMAT, SDL_TEXTUREACCESS_STREAMING, SCALE_3D*gs->window_width, SCALE_3D*(gs->window_height-GUI_H));
+                textures->render_targets[lvl][i] = SDL_CreateTexture(renderer, ALASKA_PIXELFORMAT, SDL_TEXTUREACCESS_STREAMING, SCALE_3D*width, SCALE_3D*height);
                 SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
                 Assert(textures->render_targets[lvl][i]);
                 continue;

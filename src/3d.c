@@ -351,5 +351,10 @@ void object_draw(struct Object3D *obj) {
         0, GUI_H,
         gs->window_width, gs->window_width
     };
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), NULL, &dst);
+    const SDL_Rect src = {
+        0, 0,
+        SCALE_3D*gs->window_width,
+        SCALE_3D*gs->window_height
+    };
+    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), &src, &dst);
 }

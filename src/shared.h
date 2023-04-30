@@ -106,6 +106,7 @@ struct Game_State {
     f64 S;
     bool fullscreen;
     int window_width, window_height;
+    int desktop_w, desktop_h;
     int real_width, real_height;
     f32 delta_time;
     
