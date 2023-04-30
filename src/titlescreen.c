@@ -48,4 +48,14 @@ void titlescreen_draw(void) {
               2*gs->window_height/3,
               NULL,
               NULL);
+    draw_text(gs->fonts.font_times,
+              "F11 - Fullscreen",
+              BLACK,
+              WHITE,
+              true,
+              true,
+              gs->window_width-8,
+              gs->window_height-8,
+              NULL,
+              NULL);
 }

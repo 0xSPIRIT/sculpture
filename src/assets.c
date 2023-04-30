@@ -51,7 +51,7 @@ void render_targets_init(SDL_Renderer *renderer,
         
         for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
             if (i == RENDER_TARGET_MASTER) {
-                textures->render_targets[lvl][i] = CreateRenderTarget(gs->window_width, gs->window_height);
+                textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
                 continue;
             }
             if (i == RENDER_TARGET_CONVERSION_PANEL || i == RENDER_TARGET_OUTRO) {
@@ -65,7 +65,11 @@ void render_targets_init(SDL_Renderer *renderer,
                 continue;
             }
             if (i == RENDER_TARGET_3D) {
-                textures->render_targets[lvl][i] = SDL_CreateTexture(renderer, ALASKA_PIXELFORMAT, SDL_TEXTUREACCESS_STREAMING, SCALE_3D*width, SCALE_3D*height);
+                textures->render_targets[lvl][i] = SDL_CreateTexture(renderer,
+                                                                     ALASKA_PIXELFORMAT,
+                                                                     SDL_TEXTUREACCESS_STREAMING,
+                                                                     SCALE_3D*gs->window_width,
+                                                                     SCALE_3D*gs->window_height);
                 SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
                 Assert(textures->render_targets[lvl][i]);
                 continue;
@@ -167,7 +171,7 @@ void textures_deinit(struct Textures *textures) {
 
 void surfaces_init(struct Surfaces *surfaces) {
     surfaces->a = NULL;
-    surfaces->renderer_3d = SDL_CreateRGBSurfaceWithFormat(0, gs->window_width, gs->window_height, 32, ALASKA_PIXELFORMAT);
+    surfaces->renderer_3d = SDL_CreateRGBSurfaceWithFormat(0, gs->desktop_w, gs->desktop_h, 32, ALASKA_PIXELFORMAT);
     //surfaces->a = IMG_Load(RES_DIR "something.png");
     surfaces->bark_surface = IMG_Load(RES_DIR "bark.png");
     surfaces->glass_surface = IMG_Load(RES_DIR "glass.png");

@@ -181,7 +181,7 @@ void goto_level(int lvl) {
     
     gs->current_tool = TOOL_GRABBER;
     
-    gs->S = gs->window_width/gs->gw;
+    //gs->S = (f64)gs->window_width/(f64)gs->gw;
     Assert(gs->gw==gs->gh);
     
     gs->item_holding = (struct Item){0};
@@ -451,7 +451,7 @@ void level_draw_intro(void) {
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     
     SDL_Rect dst = {
-        gs->S*gs->gw/2 - surf->w/2,
+        gs->window_width/2 - surf->w/2,
         surf->h * .5,
         surf->w, surf->h
     };

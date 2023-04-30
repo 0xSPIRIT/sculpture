@@ -29,23 +29,45 @@
 #include "titlescreen.c"
 
 void game_resize(int h) {
-    gs->S = h / 144.0;
+    gs->gui.popup_y /= gs->gh*gs->S;
     
-    gs->window_width = gs->S*128.0;
-    gs->window_height = gs->S*128.0 + GUI_H;
+    gs->S = h / 72.0;
+    
+    gs->window_width = gs->S*64.0;
+    gs->window_height = gs->S*64.0 + GUI_H;
+    
+#if 0
+    gs->gui.popup_y = gs->gh*gs->S;
+    gs->gui.popup = false;
+    gs->gui.popup_y_vel = 0;
+    gs->gui.popup_inventory_y_vel = 0;
+#endif
+    
+    gs->gui.popup_y *= gs->gh*gs->S;
+    
+    gs->view.x = 0;
+    gs->view.y = 0;
+    gs->view.w = gs->window_width;
+    gs->view.h = gs->window_height-GUI_H;
     
     struct Fonts *fonts = &gs->fonts;
     TTF_Font **ttf_fonts = (TTF_Font**) fonts;
     size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);
     
     for (size_t i = 0; i < font_count; i++) {
-        //TTF_SetFontHinting(ttf_fonts[i], TTF_HINTING_LIGHT_SUBPIXEL);
         TTF_SetFontSize(ttf_fonts[i], Scale(font_sizes[i]));
     }
     
     gs->resized = true;
     
-    Log("Reiszed to %d, %d! Scale: %.3f\n", gs->window_width, gs->window_height, gs->S);
+    int lvl = 10;
+    SDL_DestroyTexture(gs->textures.render_targets[lvl][RENDER_TARGET_3D]);
+    gs->textures.render_targets[lvl][RENDER_TARGET_3D] = SDL_CreateTexture(gs->renderer,
+                                                                           ALASKA_PIXELFORMAT,
+                                                                           SDL_TEXTUREACCESS_STREAMING,
+                                                                           SCALE_3D*gs->window_width,
+                                                                           SCALE_3D*(gs->window_height-GUI_H));
+    SDL_SetTextureBlendMode(gs->textures.render_targets[lvl][RENDER_TARGET_3D], SDL_BLENDMODE_BLEND);
 }
 
 export void game_init(struct Game_State *state, int level) {
@@ -366,6 +388,8 @@ export void game_run(struct Game_State *state) {
                 inventory_tick();
                 all_converters_tick();
                 
+                //Log("gs->gw: %d, gs->S: %.2f, gs->window_width: %.2f, gs->gw*gs->S = %.2f\n", gs->gw, gs->S, (f64)gs->window_width, (f64)(gs->gw*gs->S));
+                
                 level_tick();
                 level_draw();
                 
@@ -395,7 +419,7 @@ export void game_run(struct Game_State *state) {
         gs->window_width,
         gs->window_height
     };
-    Log("%d, %d, %d\n", gs->window_width, (int)(gs->S*gs->gw), gs->real_width);
+    //Log("%d, %d, %d\n", gs->window_width, (int)(gs->S*gs->gw), gs->real_width);
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_MASTER), &src, &dst);
     
     SDL_RenderPresent(gs->renderer);

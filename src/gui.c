@@ -282,7 +282,6 @@ void gui_init(void) {
     
     gui->popup_y = (f32) (gs->gh*gs->S);
     gui->popup_y_vel = 0;
-    gui->popup_h = GUI_POPUP_H;
     gui->popup = 0;
     gui->popup_texture = gs->textures.popup;
     
@@ -335,16 +334,16 @@ void gui_tick(void) {
     
     // For the CONVERTER popup
     if (gui->popup) {
-        if (gui->popup_y > gs->S*gs->gh-gui->popup_h) {
+        if (gui->popup_y > 1+round(gs->S*gs->gh)-GUI_POPUP_H) {
             gui->popup_y_vel -= speed;
         } else {
             gui->popup_y_vel = 0;
-            gui->popup_y = gs->S*gs->gh-gui->popup_h;
+            gui->popup_y = 1+round(gs->S*gs->gh)-GUI_POPUP_H;
         }
-    } else if (gui->popup_y < gs->S*gs->gh) {
+    } else if (gui->popup_y < round(gs->S*gs->gh)) {
         gui->popup_y_vel += speed;
     } else {
-        gui->popup_y = (f32) (gs->S*gs->gh);
+        gui->popup_y = (f32) round(gs->S*gs->gh);
         gui->popup_y_vel = 0;
     }
     
@@ -371,7 +370,7 @@ void gui_tick(void) {
     }
     
     gui->popup_y += gui->popup_y_vel;
-    gui->popup_y = (f32) clamp((int) gui->popup_y, (int) (gs->S*gs->gh - gui->popup_h), gs->window_height);
+    gui->popup_y = (f32) clamp((int) gui->popup_y, (int) (1 + round(gs->S*gs->gh) - GUI_POPUP_H), gs->window_height);
     
     gui->popup_inventory_y += gui->popup_inventory_y_vel;
     gui->popup_inventory_y = (f32) clamp((int) gui->popup_inventory_y, 0, GUI_H);
@@ -489,15 +488,11 @@ void gui_draw(void) {
         
         SDL_Rect dst = {
             0, 0,
-            2*gs->gw*gs->S, GUI_H
-        };
-        SDL_Rect src = {
-            0, 0,
-            2*gs->gw*gs->S, GUI_H
+            gs->window_width, GUI_H
         };
         
         SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
-        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR), &src, &dst);
+        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR), &dst, &dst);
     }
     
     SDL_SetRenderTarget(gs->renderer, old);
@@ -507,6 +502,8 @@ void converter_draw(struct Converter *converter) {
     if (converter->state == CONVERTER_INACTIVE)
         return;
     
+    converter->w = (f32) (gs->window_width/2);
+    converter->h = GUI_POPUP_H;
     
     SDL_SetRenderDrawColor(gs->renderer, 
                            Red(CONVERTER_LINE_COLOR),
@@ -548,7 +545,7 @@ void converter_draw(struct Converter *converter) {
     SDL_Texture **tex = &gs->textures.converter_names[converter->type];
     
 #ifndef MODIFYING_COLORS
-    if (!*surf) {
+    if (!*surf || gs->resized) {
 #else
         if (*surf) SDL_FreeSurface(*surf);
 #endif
@@ -575,7 +572,7 @@ void converter_draw(struct Converter *converter) {
     Assert(*surf);
 
 #ifndef MODIFYING_COLORS
-    if (!*tex) {
+    if (!*tex || gs->resized) {
 #else
     if (*tex) SDL_DestroyTexture(*tex);
 #endif
@@ -608,7 +605,7 @@ void gui_popup_draw(void) {
     
     SDL_Rect popup = {
         0, (int)(GUI_H + gui->popup_y),
-        gs->gw*gs->S, (int)gui->popup_h
+        gs->gw*gs->S, (int)GUI_POPUP_H
     };
     
     SDL_SetRenderDrawColor(gs->renderer,
@@ -722,6 +719,53 @@ void auto_set_material_converter_slots(struct Converter *converter) {
     }
 }
 
+void converter_setup_position(struct Converter *converter) {
+    converter->slots[SLOT_INPUT1].x = converter->w/3.f;
+    converter->slots[SLOT_INPUT1].y = GUI_H + converter->h/4.f;
+    strcpy(converter->slots[SLOT_INPUT1].name, "Inp. 1");
+    
+    converter->slots[SLOT_INPUT2].x = 2.f*converter->w/3.f;
+    converter->slots[SLOT_INPUT2].y = GUI_H + converter->h/4.f;
+    strcpy(converter->slots[SLOT_INPUT2].name, "Inp. 2");
+    
+    if (converter->type == CONVERTER_MATERIAL) {
+        converter->slots[SLOT_FUEL].x = 3.f*converter->w/4.f;
+        converter->slots[SLOT_FUEL].y = GUI_H + converter->h/2.f;
+        strcpy(converter->slots[SLOT_FUEL].name, "Fuel");
+    }
+    
+    converter->slots[SLOT_OUTPUT].x = converter->w/2.f;
+    converter->slots[SLOT_OUTPUT].y = GUI_H + 4.f*converter->h/5.f;
+    strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
+    
+    // Indices line up with Slot_Type enum
+    // even though slot_count is variable.
+    for (int i = 0; i < converter->slot_count; i++) {
+        converter->slots[i].type = i;
+        converter->slots[i].w = ITEM_SIZE;
+        converter->slots[i].h = ITEM_SIZE;
+        converter->slots[i].converter = converter;
+        converter->slots[i].inventory_index = -1;
+    }
+    
+    converter->arrow.texture = gs->textures.converter_arrow;
+    
+    SDL_QueryTexture(converter->arrow.texture, NULL, NULL, &converter->arrow.w, &converter->arrow.h);
+    converter->arrow.w = Scale(converter->arrow.w);
+    converter->arrow.h = Scale(converter->arrow.h);
+    
+    converter->arrow.x = (int) (converter->w/2);
+    converter->arrow.y = (int) (converter->h/2 + 24);
+    converter->speed = 8;
+    
+    // Both X and Y-coordinates are updated in converter_tick.
+    if (converter->go_button == NULL) {
+        converter->go_button = button_allocate(BUTTON_TYPE_CONVERTER, gs->textures.convert_button, "Convert", converter_begin_converting);
+    }
+    converter->go_button->w = Scale(48);
+    converter->go_button->h = Scale(48);
+}
+
 struct Converter *converter_init(int type, bool allocated) {
     struct Converter *converter = NULL;
     
@@ -764,21 +808,7 @@ struct Converter *converter_init(int type, bool allocated) {
             //       but the converter itself isn't. Yes, it's
             //       unnecessarily confusing.
             
-            converter->slots[SLOT_INPUT1].x = converter->w/3.f;
-            converter->slots[SLOT_INPUT1].y = GUI_H + converter->h/4.f;
-            strcpy(converter->slots[SLOT_INPUT1].name, "Inp. 1");
-            
-            converter->slots[SLOT_INPUT2].x = 2.f*converter->w/3.f;
-            converter->slots[SLOT_INPUT2].y = GUI_H + converter->h/4.f;
-            strcpy(converter->slots[SLOT_INPUT2].name, "Inp. 2");
-            
-            converter->slots[SLOT_FUEL].x = 3.f*converter->w/4.f;
-            converter->slots[SLOT_FUEL].y = GUI_H + converter->h/2.f;
-            strcpy(converter->slots[SLOT_FUEL].name, "Fuel");
-            
-            converter->slots[SLOT_OUTPUT].x = converter->w/2.f;
-            converter->slots[SLOT_OUTPUT].y = GUI_H + 4.f*converter->h/5.f;
-            strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
+            converter_setup_position(converter);
             
             strcpy(converter->name, "Material Converter");
             
@@ -797,49 +827,12 @@ struct Converter *converter_init(int type, bool allocated) {
                 memset(&converter->slots[SLOT_OUTPUT], 0, sizeof(struct Slot));
             }
             
-            converter->slots[SLOT_INPUT1].x = converter->w/3.f;
-            converter->slots[SLOT_INPUT1].y = GUI_H + converter->h/4.f;
-            strcpy(converter->slots[SLOT_INPUT1].name, "Inp. 1");
-            
-            converter->slots[SLOT_INPUT2].x = 2.f*converter->w/3.f;
-            converter->slots[SLOT_INPUT2].y = GUI_H + converter->h/4.f;
-            strcpy(converter->slots[SLOT_INPUT2].name, "Inp. 2");
-            
-            converter->slots[SLOT_OUTPUT].x = converter->w/2.f;
-            converter->slots[SLOT_OUTPUT].y = GUI_H + 4.f*converter->h/5.f;
-            strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
+            converter_setup_position(converter);
             
             strcpy(converter->name, "Fuel Converter");
             break;
         }
     }
-    
-    // Indices line up with Slot_Type enum
-    // even though slot_count is variable.
-    for (int i = 0; i < converter->slot_count; i++) {
-        converter->slots[i].type = i;
-        converter->slots[i].w = ITEM_SIZE;
-        converter->slots[i].h = ITEM_SIZE;
-        converter->slots[i].converter = converter;
-        converter->slots[i].inventory_index = -1;
-    }
-    
-    converter->arrow.texture = gs->textures.converter_arrow;
-    
-    SDL_QueryTexture(converter->arrow.texture, NULL, NULL, &converter->arrow.w, &converter->arrow.h);
-    converter->arrow.w = Scale(converter->arrow.w);
-    converter->arrow.h = Scale(converter->arrow.h);
-    
-    converter->arrow.x = (int) (converter->w/2);
-    converter->arrow.y = (int) (converter->h/2 + 24);
-    converter->speed = 8;
-    
-    // Both X and Y-coordinates are updated in converter_tick.
-    if (converter->go_button == NULL) {
-        converter->go_button = button_allocate(BUTTON_TYPE_CONVERTER, gs->textures.convert_button, "Convert", converter_begin_converting);
-    }
-    converter->go_button->w = Scale(48);
-    converter->go_button->h = Scale(48);
     
     return converter;
 }
@@ -1205,6 +1198,8 @@ bool converter_convert(struct Converter *converter) {
 void converter_tick(struct Converter *converter) {
     converter->arrow.y = (int) (converter->h/2 + 18);
     
+    converter_setup_position(converter);
+            
     switch (converter->type) {
         case CONVERTER_MATERIAL: {
             converter->x = 0;

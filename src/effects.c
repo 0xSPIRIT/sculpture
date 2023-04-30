@@ -103,6 +103,16 @@ void effect_draw(struct Effect *effect, bool draw_points) {
     if (effect->type == EFFECT_NONE)
         return;
     
+#if 0
+    if (gs->levels[gs->level_current].state == LEVEL_STATE_NARRATION) {
+        effect->w = gs->window_width;
+        effect->h = gs->window_height;
+    } else {
+        effect->w = gs->gw;
+        effect->h = gs->gh;
+    }
+#endif
+
     switch (effect->type) {
         case EFFECT_SNOW: {
             for (int i = 0; i < effect->particle_count; i++) {
@@ -132,7 +142,13 @@ void effect_draw(struct Effect *effect, bool draw_points) {
                 if (draw_points) {
                     SDL_RenderDrawPoint(gs->renderer, px, py);
                 } else {
-                    fill_circle(gs->renderer, px, py, Scale(6 * (length/max)));
+                    
+                    if (gs->levels[gs->level_current].state == LEVEL_STATE_NARRATION) {
+                        fill_circle(gs->renderer,
+                                    gs->window_width * px/effect->w,
+                                    gs->window_height * py/effect->h,
+                                    Scale(6 * (length/max)));
+                    }
                 }
             }
             break;

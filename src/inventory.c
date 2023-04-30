@@ -460,7 +460,7 @@ void inventory_draw(void) {
     
     struct GUI *gui = &gs->gui;
     
-    //inventory_setup_slots();
+    inventory_setup_slots();
     
     const f32 y = -GUI_H + gui->popup_inventory_y;
     

@@ -118,6 +118,7 @@ void make_memory_arena(struct Memory_Arena *persistent_memory, struct Memory_Are
     transient_memory->cursor = transient_memory->data;
 }
 
+#if 0
 int start_fullscreen_popup(void) {
     int num_buttons = 2;
     int result;
@@ -140,44 +141,7 @@ int start_fullscreen_popup(void) {
     
     return result;
 }
-
-int scale_popup() {
-    SDL_Init(SDL_INIT_VIDEO);
-    
-    SDL_Window *w = SDL_CreateWindow("Scale",
-                                     SDL_WINDOWPOS_CENTERED,
-                                     SDL_WINDOWPOS_CENTERED,
-                                     600, 600,
-                                     SDL_WINDOW_SHOWN);
-    SDL_Renderer *r = SDL_CreateRenderer(w, -1, 0);
-    
-    SDL_Surface *s = SDL_LoadBMP(RES_DIR"sdf.bmp");
-    Assert(s);
-    SDL_Texture *t = SDL_CreateTextureFromSurface(r, s);
-    
-    bool running=true;
-    while (running) {
-        SDL_Event e;
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) running=false;
-            if (e.type == SDL_KEYDOWN) {
-                int d = e.key.keysym.sym - SDLK_0;
-                if (d > 0 && d <= 9) {
-                    SDL_DestroyWindow(w);
-                    return d;
-                }
-            }
-        }
-        
-        SDL_SetRenderDrawColor(r, 0, 0, 0, 255);
-        SDL_RenderClear(r);
-        SDL_RenderCopy(r, t, 0, 0);
-        SDL_RenderPresent(r);
-    }
-    
-    SDL_DestroyWindow(w);
-    return 6;
-}
+#endif
 
 f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     RECT desktop;
@@ -190,10 +154,10 @@ f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     if (dh) *dh=h;
     
     if (fullscreen) {
-        return h/144.0;
+        return h/72.0;
         //return (int)round(7.0 * h/1080.0);
     } else {
-        return (int)round(6.0 * h/1080.0);
+        return (int)round(12.0 * h/1080.0);
     }
 }
 
@@ -207,8 +171,8 @@ void game_init(struct Game_State *state) {
     if (state->S == 0)
         state->S = calculate_scale(false, &state->desktop_w, &state->desktop_h);
     
-    state->window_width = (int)(128.0*state->S);
-    state->window_height = (int)(128.0*state->S + GUI_H);
+    state->window_width = (int)(64*state->S);
+    state->window_height = (int)(64*state->S + GUI_H);
     
     state->real_width = state->window_width;
     state->real_height = state->window_height;
@@ -347,10 +311,6 @@ int main(int argc, char **argv)
     f64 scale = 0;
     
     int fullscreen = ALASKA_START_FULLSCREEN;
-    
-#ifdef ALASKA_RELEASE_MODE
-    fullscreen = start_fullscreen_popup();
-#endif
     
     int dw=0, dh=0;
     

@@ -1,16 +1,4 @@
 TODO
-  - Improve resizeable window. Make it work.
-    - Apparently gs->gw*gs->gh is 2x smaller than the actual
-      width that the screen is supposed to be..? why?!
-    - So I had to multiply or divide shit by 2 randomly.
-    - When the initial screen is smaller, the text doesn't scale properly,
-      when the screen is largened. Perhaps a stray render target being
-      initialized to window_width and window_height instead of the maximum
-      desktop_w and desktop_h (these are to overcompensate for the possibility
-      that the targets may become that size upon resize)
-
-  - Put F11 prompt on the title screen.
-
   - Show when the chisel isn't able to chisel better. It makes it
     seem like a bug.
   - Add a mouse feature for the web version to emulate the movement
