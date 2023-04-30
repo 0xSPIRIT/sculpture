@@ -130,12 +130,25 @@ struct Surfaces {
 
 struct Fonts {
     TTF_Font *font,
-        *font_times,
-        *font_consolas,
-        *font_courier,
-        *font_small,
-        *font_bold_small,
+    *font_times,
+    *font_consolas,
+    *font_courier,
+    *font_small,
+    *font_bold_small,
     *font_title,
     *font_title_2,
     *font_titlescreen;
 };
+
+int font_sizes[100] = {
+    20,
+    30,
+    24,
+    20,
+    16,
+    16,
+    100,
+    80,
+    135
+};
+

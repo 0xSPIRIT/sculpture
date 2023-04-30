@@ -15,6 +15,11 @@ void narrator_draw_text_blended(int i, // 0 to 10
         return;
     }
     
+    if (gs->resized) {
+        update=true;
+        Log("Happened\n");
+    }
+    
     SDL_Surface *surf = gs->surfaces.narrator_line[i];
     SDL_Texture *texture = gs->textures.narrator_line[i];
     
@@ -30,6 +35,7 @@ void narrator_draw_text_blended(int i, // 0 to 10
     texture = gs->textures.narrator_line[i];    
     
     SDL_Rect dst = { x, y + gs->window_height/2 - surf->h/2, surf->w, surf->h };
+    Log("%d\n", dst.y);
     
     if (align_right) dst.x -= surf->w;
     if (align_bottom) dst.y -= surf->h;

@@ -122,6 +122,8 @@ struct Game_State {
     // grid = regular everyday grid
     // gas_grid = only used for gases
     
+    bool resized;
+    
     int gw, gh; // Grid width, grid height
     int grid_show_ghost;
     

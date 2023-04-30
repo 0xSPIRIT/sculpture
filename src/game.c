@@ -29,9 +29,23 @@
 #include "titlescreen.c"
 
 void game_resize(int h) {
-    gs->window_height = h;
-    gs->window_width = h;
-    gs->S = round(6.0 * h/1080.0);
+    gs->S = h / 144.0;
+    
+    gs->window_width = gs->S*128.0;
+    gs->window_height = gs->S*128.0 + GUI_H;
+    
+    struct Fonts *fonts = &gs->fonts;
+    TTF_Font **ttf_fonts = (TTF_Font**) fonts;
+    size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);
+    
+    for (size_t i = 0; i < font_count; i++) {
+        //TTF_SetFontHinting(ttf_fonts[i], TTF_HINTING_LIGHT_SUBPIXEL);
+        TTF_SetFontSize(ttf_fonts[i], Scale(font_sizes[i]));
+    }
+    
+    gs->resized = true;
+    
+    Log("Reiszed to %d, %d!\n", gs->window_width, gs->window_height);
 }
 
 export void game_init(struct Game_State *state, int level) {
@@ -79,7 +93,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) {
         gs->real_width = event->window.data1;
         gs->real_height = event->window.data2;
-        //game_resize(gs->real_height);
+        game_resize(gs->real_height);
     }
     
     if (event->type == SDL_MOUSEWHEEL) {

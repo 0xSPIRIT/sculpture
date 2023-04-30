@@ -50,6 +50,8 @@
 #define TEMP_DLL_NAME "sculpture_temp.dll"
 #define LOCK_NAME     "lock.tmp"
 
+#define ALASKA_START_FULLSCREEN 0
+
 typedef void (*GameInitProc)(struct Game_State *state, int start_level);
 typedef bool (*GameTickEventProc)(struct Game_State *state, SDL_Event *event);
 typedef void (*GameRunProc)(struct Game_State *state);
@@ -136,8 +138,6 @@ int start_fullscreen_popup(void) {
     };
     SDL_ShowMessageBox(&data, &result);
     
-    Log("Result: %d\n", result);
-    
     return result;
 }
 
@@ -185,8 +185,11 @@ f64 calculate_scale(bool fullscreen) {
     GetWindowRect(hDesktop, &desktop);
     int h = desktop.bottom;
     
+    Log("Desktop Height: %d\n", h);
+    
     if (fullscreen) {
-        return (int)round(7.0 * h/1080.0);
+        return h/144.0;
+        //return (int)round(7.0 * h/1080.0);
     } else {
         return (int)round(6.0 * h/1080.0);
     }
@@ -201,10 +204,9 @@ void game_init(struct Game_State *state) {
     
     if (state->S == 0)
         state->S = calculate_scale(false);
-    Log("Game Scale: %.2f\n", state->S);
     
-    state->window_width = 128*state->S;
-    state->window_height = 128*state->S + GUI_H;
+    state->window_width = (int)(128.0*state->S);
+    state->window_height = (int)(128.0*state->S + GUI_H);
     
     state->real_width = state->window_width;
     state->real_height = state->window_height;
@@ -340,16 +342,17 @@ int main(int argc, char **argv)
     }
 #endif
     
-    int scale = 0;
+    f64 scale = 0;
     
-    int fullscreen = 0;
+    int fullscreen = ALASKA_START_FULLSCREEN;
     
 #ifdef ALASKA_RELEASE_MODE
     fullscreen = start_fullscreen_popup();
+#endif
+    
     if (fullscreen) {
         scale = calculate_scale(true);
     }
-#endif
     
     bool use_software_renderer = false;
     if (argc > 1) {
@@ -429,6 +432,7 @@ int main(int argc, char **argv)
         
         SDL_Event event;
         
+        game_state->resized = false;
         while (SDL_PollEvent(&event)) {
             bool should_continue = game_code.game_tick_event(game_state, &event);
             if (!should_continue) {

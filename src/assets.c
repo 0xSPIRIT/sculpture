@@ -189,15 +189,16 @@ void surfaces_deinit(struct Surfaces *surfaces) {
 }
 
 void fonts_init(struct Fonts *fonts) {
-    fonts->font          = TTF_OpenFont(RES_DIR "Courier Prime.ttf", Scale(20));
-    fonts->font_consolas = TTF_OpenFont(RES_DIR "consola.ttf", Scale(24));
-    fonts->font_courier  = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", Scale(20));
-    fonts->font_small    = TTF_OpenFont(RES_DIR "consola.ttf", Scale(16));
-    fonts->font_title    = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(100));
-    fonts->font_title_2  = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(80));
-    fonts->font_bold_small = TTF_OpenFont(RES_DIR "courbd.ttf", Scale(16));
-    fonts->font_times    = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(30));
-    fonts->font_titlescreen = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(135));
+    // THESE MUST BE IN ORDER IN THE FONT STRUCT
+    fonts->font          = TTF_OpenFont(RES_DIR "Courier Prime.ttf", Scale(font_sizes[0]));
+    fonts->font_times    = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(font_sizes[1]));
+    fonts->font_consolas = TTF_OpenFont(RES_DIR "consola.ttf", Scale(font_sizes[2]));
+    fonts->font_courier  = TTF_OpenFont(RES_DIR "LiberationMono-Regular.ttf", Scale(font_sizes[3]));
+    fonts->font_small    = TTF_OpenFont(RES_DIR "consola.ttf", Scale(font_sizes[4]));
+    fonts->font_bold_small = TTF_OpenFont(RES_DIR "courbd.ttf", Scale(font_sizes[5]));
+    fonts->font_title    = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(font_sizes[6]));
+    fonts->font_title_2  = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(font_sizes[7]));
+    fonts->font_titlescreen = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(font_sizes[8]));
     
     TTF_Font **ttf_fonts = (TTF_Font**) fonts;
     size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);

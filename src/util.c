@@ -359,7 +359,7 @@ void draw_text_blended_indexed(int index, TTF_Font *font, char *str, SDL_Color c
     // Only update the texture if it's never been cached before, or
     // if the text has changed since last time. All the texts are
     // stored in gs->texts up to 128 chars.
-    if (strcmp(gs->texts[index], str) != 0 || !gs->surfaces.text[index]) {
+    if (gs->resized || strcmp(gs->texts[index], str) != 0 || !gs->surfaces.text[index]) {
         strncpy(gs->texts[index], str, 128);
         gs->surfaces.text[index] = TTF_RenderText_Blended(font, str, col);
         gs->textures.text[index] = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.text[index]);
@@ -389,6 +389,8 @@ void draw_text_indexed(int index, TTF_Font *font, char *str, SDL_Color col, SDL_
         TTF_SizeText(font, "A", out_w, out_h);
         return;
     }
+        
+    if (gs->resized) update=true;
     
     SDL_Surface *surf = NULL;
     SDL_Texture *texture = NULL;
