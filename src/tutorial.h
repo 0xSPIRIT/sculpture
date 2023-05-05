@@ -98,6 +98,7 @@ struct Tutorial_Rect {
     
     TTF_Font *font;
     SDL_Texture *textures[MAX_TUTORIAL_LINES];
+    SDL_Rect texture_rects[MAX_TUTORIAL_LINES];
     
     int margin;
     
@@ -106,6 +107,7 @@ struct Tutorial_Rect {
     
     int line_count;
     
+    f64 x, y; // 0 to 1
     SDL_Rect rect;
     
     struct Button *ok_button;
@@ -114,7 +116,7 @@ struct Tutorial_Rect {
 };
 
 struct Tutorial_Rect* tutorial_rect(const char *str,
-                                    int x,
-                                    int y,
+                                    f64 x,
+                                    f64 y,
                                     struct Tutorial_Rect *next);
 void tutorial_rect_close(void*);

@@ -1,6 +1,44 @@
+void calculate_tutorial_rect_size(struct Tutorial_Rect *tut) {
+    tut->margin = Scale(8);
+    
+    int fw=0, fh=0;
+    int largest = 0, idx=0;
+    for (int i = 0; i < tut->line_count; i++) {
+        if (strlen(tut->lines[i]) > largest) {
+            largest = (int)strlen(tut->lines[i]);
+            idx = i;
+        }
+    }
+    TTF_SizeText(tut->font, tut->lines[idx], &fw, &fh);
+    
+    Assert(fw);
+    Assert(fh);
+    
+#if 0
+    int w, h;
+    SDL_QueryTexture(gs->textures.tutorial_ok_button, NULL, NULL, &w, &h);
+    tut->ok_button->w = w;
+    tut->ok_button->h = h;
+#endif
+    
+    const int space_before_button = Scale(32);
+    
+    tut->rect.x = tut->x * gs->window_width;
+    tut->rect.y = tut->y * gs->window_height;
+    tut->rect.w = fw + tut->margin*2;
+    tut->rect.h = space_before_button + tut->ok_button->h + (tut->line_count-1) * fh + tut->margin*2;
+    
+    // For debugging
+    SDL_Rect r = tut->rect;
+    (void)r;
+    
+    tut->ok_button->x = tut->rect.x + tut->rect.w / 2 - tut->ok_button->w/2;
+    tut->ok_button->y = tut->rect.y + tut->rect.h - tut->ok_button->h - tut->margin;
+}
+
 struct Tutorial_Rect* tutorial_rect(const char *str,
-                                    int x,
-                                    int y,
+                                    f64 x,
+                                    f64 y,
                                     struct Tutorial_Rect *next)
 {
     struct Tutorial_Rect *tut = PushSize(gs->persistent_memory, sizeof(struct Tutorial_Rect));
@@ -12,22 +50,18 @@ struct Tutorial_Rect* tutorial_rect(const char *str,
     strcpy(tut->str, str);
     memset(tut->lines, 0, MAX_TUTORIAL_LINES*64);
     
+    tut->ok_button = button_allocate(BUTTON_TYPE_TUTORIAL, gs->textures.tutorial_ok_button, "", NULL);
+    tut->ok_button->w = Scale(tut->ok_button->w);
+    tut->ok_button->h = Scale(tut->ok_button->h);
+    
     int i = 0;
     
     tut->line_count = 0;
     
-    tut->margin = Scale(8);
-    
-    int l = 0;
-    int largest = 0;
     while (*str) {
         if (*str == '\n') {
             tut->line_count++;
             ++str;
-            if (i > l) {
-                l=i;
-                largest = tut->line_count-1;
-            }
             i = 0;
             continue;
         }
@@ -35,30 +69,10 @@ struct Tutorial_Rect* tutorial_rect(const char *str,
         ++str;
     }
     
-    int fw=0, fh=0;
-    TTF_SizeText(tut->font, tut->lines[largest], &fw, &fh);
+    tut->x = x;
+    tut->y = y;
     
-    Assert(fw);
-    Assert(fh);
-    
-    tut->line_count++;
-    
-    tut->ok_button = button_allocate(BUTTON_TYPE_TUTORIAL, gs->textures.tutorial_ok_button, "", NULL);
-    tut->ok_button->w = Scale(tut->ok_button->w);
-    tut->ok_button->h = Scale(tut->ok_button->h);
-    
-    int bw, bh;
-    SDL_QueryTexture(gs->textures.tutorial_ok_button, NULL, NULL, &bw, &bh);
-    
-    const int space_before_button = Scale(32);
-    
-    tut->rect.x = x;
-    tut->rect.y = y;
-    tut->rect.w = fw + tut->margin*2;
-    tut->rect.h = space_before_button + bh + (tut->line_count-1) * fh + tut->margin*2;
-    
-    tut->ok_button->x = x + tut->rect.w / 2 - bw/2;
-    tut->ok_button->y = y + tut->rect.h - bh - tut->margin;
+    calculate_tutorial_rect_size(tut);
     
     return tut;
 }
@@ -89,6 +103,8 @@ void tutorial_rect_run() {
         tutorial_rect_close(NULL);
     }
     
+    calculate_tutorial_rect_size(tut);
+        
     const SDL_Color bg = (SDL_Color){0, 0, 0, 255};
     
     SDL_SetRenderDrawColor(gs->renderer, bg.r, bg.g, bg.b, 255);
@@ -114,11 +130,13 @@ void tutorial_rect_run() {
             (void)bg;
             SDL_Surface *surf = TTF_RenderText_Blended(tut->font, tut->lines[i], WHITE);
             tut->textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surf);
+            tut->texture_rects[i].w = surf->w;
+            tut->texture_rects[i].h = surf->h;
             SDL_FreeSurface(surf);
         }
         
-        SDL_QueryTexture(tut->textures[i], NULL, NULL, &dst.w, &dst.h);
-        
+        dst.w = tut->texture_rects[i].w;
+        dst.h = tut->texture_rects[i].h;
         dst.x = tut->rect.x + tut->margin;
         dst.y = tut->rect.y + c + tut->margin;
         
@@ -139,18 +157,18 @@ void check_for_tutorial() {
     switch (l+1) {
         case 1: {
             struct Tutorial_Rect *t3 = tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
-                                                     32,
-                                                     GUI_H+32,
+                                                     NormX(32),
+                                                     NormY((768.8/8.0)+32),
                                                      NULL);
             
             struct Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_CHISEL_STRING,
-                                                     32,
-                                                     GUI_H+32,
+                                                     NormX(32),
+                                                     NormY((768.8/8.0)+32),
                                                      t3);
             
             struct Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_OVERLAY_STRING,
-                                                     32,
-                                                     GUI_H+32,
+                                                     NormX(32),
+                                                     NormY((768.8/8.0)+32),
                                                      t2);
             gs->tutorial = *t1;
             
@@ -159,22 +177,22 @@ void check_for_tutorial() {
         }
         case 4: {
             gs->tutorial = *tutorial_rect(TUTORIAL_PLACER_STRING,
-                                          32,
-                                          GUI_H+32,
+                                          NormX(32),
+                                          NormY((768.8/8.0)+32),
                                           NULL);
             break;
         }
         case 6: {
             gs->tutorial = *tutorial_rect(TUTORIAL_CHISEL_INVENTORY_STRING,
-                                          32,
-                                          GUI_H+32,
+                                          NormX(32),
+                                          NormY((768.8/8.0)+32),
                                           NULL);
             break;
         }
         case 8: {
             gs->tutorial = *tutorial_rect(TUTORIAL_CAREFUL_STRING,
-                                          32,
-                                          GUI_H+32,
+                                          NormX(32),
+                                          NormY((768.8/8.0)+32),
                                           NULL);
         }
     }

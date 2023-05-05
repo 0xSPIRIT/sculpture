@@ -110,6 +110,8 @@ void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
     textures->popup = load_texture(renderer, RES_DIR "popup.png");
     textures->text_arrow = load_texture(renderer, RES_DIR "text_arrow.png");
     
+    textures->level_backgrounds[0] = load_texture(renderer, RES_DIR "bg0.png");
+    
     for (enum Tool_Type i = 0; i < TOOL_COUNT; i++) {
         char filename[128] = {0};
         char path[128] = {0};

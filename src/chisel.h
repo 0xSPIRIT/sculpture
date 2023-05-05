@@ -21,6 +21,7 @@ struct Chisel_Hammer {
 };
 
 struct Chisel {
+    Uint32 ticks;
     int size;
     f32 x, y;
     int click_cd;

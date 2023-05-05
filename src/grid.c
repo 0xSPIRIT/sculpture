@@ -1187,8 +1187,8 @@ bool object_remove_blob(int object, Uint32 blob, int chisel_size, bool replace_d
             
             if (gs->level_current+1 == 1 && gs->overlay.grid[x+y*gs->gw] && !gs->did_undo_tutorial) {
                 gs->tutorial = *tutorial_rect(TUTORIAL_UNDO_STRING,
-                                              32,
-                                              GUI_H+32,
+                                              NormX(32),
+                                              NormY((768.8/8.0)+32),
                                               NULL);
                 gs->did_undo_tutorial = true;
             }

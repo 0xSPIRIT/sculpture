@@ -404,19 +404,19 @@ void inventory_tick() {
     
     if (gs->level_current == 6-1 && !gs->did_fuel_converter_tutorial) {
         struct Tutorial_Rect *next = tutorial_rect(TUTORIAL_TEXT_FILE_STRING,
-                                                   32,
-                                                   GUI_H+128,
+                                                   NormX(32),
+                                                   NormY((768.8/8.0)+128),
                                                    NULL);
         gs->tutorial = *tutorial_rect(TUTORIAL_FUEL_CONVERTER_STRING,
-                                      32,
-                                      GUI_H+128,
+                                      NormX(32),
+                                      NormY((768.8/8.0)+128),
                                       next);
         gs->did_fuel_converter_tutorial = true;
     } 
     if (gs->level_current == 4-1 && !gs->did_inventory_tutorial) {
         gs->tutorial = *tutorial_rect(TUTORIAL_INVENTORY_STRING,
-                                      32,
-                                      GUI_H+128,
+                                      NormX(32),
+                                      NormY((768.8/8.0)+128),
                                       NULL);
         gs->did_inventory_tutorial = true;
     }

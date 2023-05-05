@@ -1,5 +1,6 @@
 void chisel_play_sound(int size) {
     if (size == 0) {
+        gs->chisel->ticks = SDL_GetTicks();
         Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.small_chisel, 0);
     } else if (size == 1) {
         Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.medium_chisel[rand()%3], 0);
@@ -53,7 +54,7 @@ void chisel_hammer_tick(void) {
         if (chisel->click_cd > 0) {
             chisel->click_cd--;
         } else {
-            chisel->click_cd = 3;
+            chisel->click_cd = 10;
             click = true;
         }
     }
@@ -187,8 +188,8 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
                 
                 if (!can_destroy && remove && !gs->did_pressure_tutorial) {
                     gs->tutorial = *tutorial_rect(TUTORIAL_PRESSURE_STRING,
-                                                  32,
-                                                  GUI_H+32,
+                                                  NormX(32),
+                                                  NormY((768.8/8.0)+32),
                                                   NULL);
                     gs->did_pressure_tutorial = true;
                 }
@@ -290,7 +291,7 @@ Uint32 chisel_goto_blob(int obj, bool remove, f32 ux, f32 uy, f32 len) {
                 }
             }
         }
-        #endif
+        #endif
 
         if (did_remove) {
             objects_reevaluate();
@@ -530,8 +531,8 @@ void chisel_tick(void) {
     
     if (!gs->did_chisel_tutorial) {
         struct Tutorial_Rect *t = tutorial_rect(TUTORIAL_CHISEL_ROTATE_STRING,
-                                                32,
-                                                GUI_H+32,
+                                                NormX(32),
+                                                NormY((768.8/8.0)+32),
                                                 NULL);
         gs->tutorial = *t;
         gs->did_chisel_tutorial = true;
@@ -570,22 +571,26 @@ void chisel_tick(void) {
             f32 uy = dy/len;
             
             switch ((int)chisel->angle) {
-                case 135:
-                ux = 1;
-                uy = -1;
-                break;
-                case 225:
-                ux = 1;
-                uy = 1;
-                break;
-                case 270:
-                ux = 0;
-                uy = 1;
-                break;
-                case 315:
-                ux = -1;
-                uy = 1;
-                break;
+                case 135: {
+                    ux = 1;
+                    uy = -1;
+                    break;
+                } 
+                case 225: {
+                    ux = 1;
+                    uy = 1;
+                    break;
+                }
+                case 270: {
+                    ux = 0;
+                    uy = 1;
+                    break;
+                }
+                case 315: {
+                    ux = -1;
+                    uy = 1;
+                    break;
+                }
             }
             
             struct Chisel copy = *chisel;
@@ -599,14 +604,11 @@ void chisel_tick(void) {
             memset(chisel->highlights, 0, chisel->highlight_count);
             chisel->highlight_count = 0;
             
-            if (blob_highlight > 0) {
-                if (blob_can_destroy(obj, chisel->size, blob_highlight)) {
-                    for (int i = 0; i < gs->gw*gs->gh; i++) {
-                        Uint32 b = objects[obj].blob_data[chisel->size].blobs[i];
-                        if (b == blob_highlight) {
-                            chisel->highlights[chisel->highlight_count++] = i;
-                        }
-                    }
+            if (blob_highlight > 0 && blob_can_destroy(obj, chisel->size, blob_highlight)) {
+                for (int i = 0; i < gs->gw*gs->gh; i++) {
+                    Uint32 b = objects[obj].blob_data[chisel->size].blobs[i];
+                    if (b == blob_highlight)
+                        chisel->highlights[chisel->highlight_count++] = i;
                 }
             }
         }

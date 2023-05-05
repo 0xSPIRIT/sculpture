@@ -1,5 +1,4 @@
 void titlescreen_init(void) {
-    TTF_SizeText(gs->fonts.font_titlescreen, "Alaska", &gs->titlescreen.text_width, NULL);
 }
 
 void titlescreen_goto_next(void) {
@@ -20,6 +19,7 @@ void titlescreen_draw(void) {
     
     if (gs->titlescreen.stop) return;
     
+    TTF_SizeText(gs->fonts.font_titlescreen, "Alaska", &gs->titlescreen.text_width, NULL);
     draw_text_blended_indexed(TEXT_TITLESCREEN,
                               gs->fonts.font_titlescreen,
                               "Alaska",

@@ -408,8 +408,8 @@ void placer_tick(struct Placer *placer) {
             
             if (!gs->did_placer_rectangle_tutorial) {
                 struct Tutorial_Rect *t = tutorial_rect(TUTORIAL_RECTANGLE_PLACE,
-                                                        32,
-                                                        GUI_H+32,
+                                                        NormX(32),
+                                                        NormY((768.8/8.0)+32),
                                                         NULL);
                 gs->tutorial = *t;
                 gs->did_placer_rectangle_tutorial = true;

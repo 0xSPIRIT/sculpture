@@ -19,7 +19,9 @@ enum {
 // 768x768 is the benchmark resolution I used so when
 // converting to new resolutions, I just put Scale(...)
 // around all the values working with the old 768x768 res.
-#define Scale(x) ((f64)gs->window_width * (f64)x/768.0)
+#define Scale(x) ((f64)gs->window_width * (f64)(x)/768.0)
+#define NormX(x) ((f64)(x)/768.0)
+#define NormY(x) (NormX(x))
 
 enum {
     TEXT_OUTRO_LEVEL_NAME,
@@ -68,6 +70,8 @@ struct Textures {
     // List of render targets for each level
     // Index into this using enum.
     SDL_Texture *render_targets[LEVEL_COUNT][RENDER_TARGET_COUNT];
+    
+    SDL_Texture *level_backgrounds[LEVEL_COUNT];
     
     SDL_Texture *text[TEXT_INDEX_COUNT];
     

@@ -63,7 +63,7 @@
 
 #define NARRATION_LEVEL_10 \
 "A thought captures him once again,\r"\
-"condensing wildly into many ideas,\r"\
+"crystallizing wildly into many ideas,\r"\
 "but this time, he's ready.\n"\
 "A glittering white radiates from Max's imagination,\r"\
 "outlining an object with layers of diamond and ice.\n"\

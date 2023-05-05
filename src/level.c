@@ -319,13 +319,13 @@ void level_tick(void) {
                         level_set_state(gs->level_current, LEVEL_STATE_PLAY);
                         if (lvl != 1)
                             gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL_2,
-                                                          32,
-                                                          GUI_H+32,
+                                                          NormX(32),
+                                                      NormY((768.8/8.0)+32),
                                                           NULL);
                         else
                             gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
-                                                          32,
-                                                          GUI_H+32,
+                                                          NormX(32),
+                                                      NormY((768.8/8.0)+32),
                                                           NULL);
                     }
                 } else {
@@ -606,6 +606,10 @@ void draw_outro(struct Level *level) {
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO), &src, &dst);
 }
 
+void level_draw_background() {
+    SDL_RenderCopy(gs->renderer, gs->textures.
+}
+
 void level_draw(void) {
     struct Level *level = &gs->levels[gs->level_current];
     
@@ -629,7 +633,7 @@ void level_draw(void) {
             break;
         }
         case LEVEL_STATE_OUTRO: case LEVEL_STATE_PLAY: {
-            SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
+            SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
             SDL_RenderClear(gs->renderer);
             
             SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
@@ -639,8 +643,10 @@ void level_draw(void) {
             if (gs->current_preview.recording)
                 SDL_SetRenderDrawColor(gs->renderer, 53, 20, 20, 255);
             else
-                SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
+                SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
             SDL_RenderClear(gs->renderer);
+            
+            level_draw_background();
             
             grid_draw();
             
