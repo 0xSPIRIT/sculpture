@@ -1,44 +1,25 @@
-#define CHISEL_TIME 0 /* The amount of frames the chisel moves. 0 = instant */
-#define CHISEL_COOLDOWN 3
-#define CHISEL_FORGIVING_AIM false // Do we check for surrounding cells?
-#define DRAW_CHISEL_HIGHLIGHTS true
-
-enum Hammer_State {
-    HAMMER_STATE_IDLE,
-    HAMMER_STATE_WINDUP,
-    HAMMER_STATE_SWING,
-    HAMMER_STATE_AFTERSWING // Unused for chisel hammer
+enum Chisel_Size {
+    CHISEL_SMALL = 0,
+    CHISEL_MEDIUM,
+    CHISEL_LARGE,
 };
 
-struct Chisel_Hammer {
-	int state;
-    f32 x, y;
-	f32 dist, normal_dist;
-    int time;
-    f32 angle;
-    SDL_Texture *texture;
-    int w, h;
+enum Chisel_State {
+    CHISEL_STATE_IDLE = 0,
+    CHISEL_STATE_ROTATING,
+    CHISEL_STATE_CHISELING
 };
 
 struct Chisel {
-    Uint32 ticks;
-    int size;
-    f32 x, y;
-    int click_cd;
-    bool is_changing_angle;
-    int click_cooldown;
+    enum Chisel_State state;
+    enum Chisel_Size size;
+    int x, y, w, h;
+    f64 angle;
+    SDL_Texture *texture;
+    
+    // Legacy members
+    int did_chisel_this_frame;
     int num_times_chiseled;
-    bool did_remove;
-    bool face_mode;
-    struct Line *line;
-    f32 spd;
-    f32 angle;
-    Uint32 *pixels;
-    SDL_Texture *texture, *outside_texture, *face_texture;
-    int w, h;
-    int face_w, face_h;
-    int outside_w, outside_h;
-    int *highlights; // List of indices into grid for highlighting the blobs.
-    int highlight_count;
-    bool did_chisel_this_frame;
 };
+
+void chisel_get_adjusted_positions(int angle, int size, int *x, int *y);

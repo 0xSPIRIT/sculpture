@@ -179,8 +179,6 @@ struct Game_State {
     
     struct Chisel chisel_small, chisel_medium, chisel_large;
     struct Chisel *chisel;
-    
-    struct Chisel_Hammer chisel_hammer;
 };
 
 struct Game_State *gs = NULL;

@@ -159,7 +159,9 @@ void preview_draw(struct Preview *p, int dx, int dy, int scale) {
             Assert(chisel);
             
             // Disgusting hardcoding to adjust the weird rotation SDL does.
-            chisel_get_adjusted_positions(angle, tool, &x, &y);
+            
+            // @ChiselChange
+            //chisel_get_adjusted_positions(angle, tool, &x, &y);
             if (angle == 270 && tool == TOOL_CHISEL_SMALL) {
                 y++;
             }

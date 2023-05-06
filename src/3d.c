@@ -29,7 +29,7 @@ void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *
         
         if (w1 < 0) continue; // If any weight < 0, the point is not in the triangle
         
-        f64 w2 = 1.00001 - w0 - w1; // Hack
+        f64 w2 = 1.00001 - w0 - w1; // Hack. Should be 1 -, but weird glitches
         
         if (w2 < 0) continue; // If any weight < 0, the point is not in the triangle
         

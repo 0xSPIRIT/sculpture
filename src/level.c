@@ -190,12 +190,12 @@ void goto_level(int lvl) {
     
     dust_init();
     
-    chisel_init(&gs->chisel_small);
-    chisel_init(&gs->chisel_medium);
-    chisel_init(&gs->chisel_large);
+    gs->chisel_small = chisel_init(CHISEL_SMALL);
+    gs->chisel_medium = chisel_init(CHISEL_MEDIUM);
+    gs->chisel_large = chisel_init(CHISEL_LARGE);
     gs->chisel = &gs->chisel_small;
     
-    chisel_hammer_init();
+    //chisel_hammer_init();
     deleter_init();
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_init(i);
@@ -379,7 +379,7 @@ void level_tick(void) {
             
             switch (gs->current_tool) {
                 case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-                    chisel_tick();
+                    chisel_tick(gs->chisel);
                     break;
                 }
 #if 0
@@ -607,7 +607,6 @@ void draw_outro(struct Level *level) {
 }
 
 void level_draw_background() {
-    SDL_RenderCopy(gs->renderer, gs->textures.
 }
 
 void level_draw(void) {
@@ -654,7 +653,7 @@ void level_draw(void) {
             
             switch (gs->current_tool) {
                 case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-                    chisel_draw();
+                    chisel_draw(gs->chisel);
                     break;
                 }
                 case TOOL_DELETER: {

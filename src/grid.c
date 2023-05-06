@@ -54,17 +54,6 @@ int number_neighbours(struct Cell *array, int x, int y, int r) {
     return c;
 }
 
-int number_direct_neighbours(struct Cell *array, int x, int y) {
-    int count = 0;
-    
-    if (array[x-1 + (y  ) * gs->gw].type) count++;
-    if (array[x+1 + (y  ) * gs->gw].type) count++;
-    if (array[x   + (y-1) * gs->gw].type) count++;
-    if (array[x   + (y+1) * gs->gw].type) count++;
-    
-    return count;
-}
-
 int is_any_neighbour_hard(int x, int y) {
     int r = 1;
     for (int xx = -r; xx <= r; xx++) {
