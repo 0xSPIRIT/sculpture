@@ -115,23 +115,17 @@ void click_gui_tool_button(void *type_ptr) {
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: {
             gs->chisel = &gs->chisel_small;
-            for (int i = 0; i < gs->object_count; i++)
-                object_generate_blobs(i, 0);
             //gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+2);
             break;
         }
         case TOOL_CHISEL_MEDIUM: {
             gs->chisel = &gs->chisel_medium;
-            for (int i = 0; i < gs->object_count; i++)
-                object_generate_blobs(i, 1);
             //gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+4);
             break;
         }
         case TOOL_CHISEL_LARGE: {
             gs->current_tool = TOOL_CHISEL_LARGE;
             gs->chisel = &gs->chisel_large;
-            for (int i = 0; i < gs->object_count; i++)
-                object_generate_blobs(i, 2);
             //gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+4);
             break;
         }

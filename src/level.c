@@ -667,7 +667,6 @@ void level_draw(void) {
                 }
             }
             
-            draw_blobs();
             draw_objects();
             
             SDL_SetRenderTarget(gs->renderer, prev);

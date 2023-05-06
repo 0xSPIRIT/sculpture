@@ -128,7 +128,6 @@ struct Game_State {
     int gw, gh; // Grid width, grid height
     int grid_show_ghost;
     
-    struct Object objects[MAX_OBJECTS];
     int object_count, object_current;
     int do_draw_blobs, do_draw_objects;
     

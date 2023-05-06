@@ -157,11 +157,6 @@ void placer_place_circle(struct Placer *placer) {
     
     // Stop drawing / reset everything if we stopped.
     if (!placer->did_set_new) {
-        if (placer->object_index != -1) {
-            object_generate_blobs(placer->object_index, 0);
-            object_generate_blobs(placer->object_index, 1);
-            object_generate_blobs(placer->object_index, 2);
-        }
         placer->did_click = 0;
         return;
     }
@@ -390,11 +385,6 @@ void placer_tick(struct Placer *placer) {
             if (placer->contains->amount > 0 && !gs->gui.popup && (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
                 placer_place_circle(placer);
             } else if (placer->did_click) {
-                if (placer->object_index != -1) {
-                    object_generate_blobs(placer->object_index, 0);
-                    object_generate_blobs(placer->object_index, 1);
-                    object_generate_blobs(placer->object_index, 2);
-                }
                 placer->placing_solid_time = 0;
                 placer->did_click = 0;
             }

@@ -80,12 +80,6 @@ struct Cell {
     int rand;             // Random value per cell
 };
 
-struct Blob_Data {
-    Uint32 *blobs; // Grid (gs->gw, gs->gh) with blob IDs as ints
-    int *blob_pressures; // Index into this using the blob index.
-    int blob_count;
-};
-
 // Provides higher fidelity X and Y values
 // SOA not AOS for simplicity.
 struct Dust_Data {
@@ -96,11 +90,6 @@ struct Dust_Data {
     f64 *vys;
     int *timers;
     int count;
-};
-
-struct Object {
-    struct Blob_Data blob_data[3]; // 3 Blob sizes for 3 chisels. 
-    int cell_count;
 };
 
 struct Line {
