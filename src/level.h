@@ -9,6 +9,8 @@
 
 #define COMPARE_LEEWAY 1
 
+#define SHOW_NARRATION 0
+
 Uint8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
     // Type              R    G    B
     CELL_NONE,            0,   0,   0,

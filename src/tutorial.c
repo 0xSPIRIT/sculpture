@@ -97,6 +97,12 @@ void tutorial_rect_close(void *ptr) {
 void tutorial_rect_run() {
     struct Tutorial_Rect *tut = &gs->tutorial;
     
+    if (!SHOW_TUTORIAL) {
+        while (tut->active)
+            tutorial_rect_close(NULL);
+        return;
+    }
+    
     if (!tut->active) return;
     
     if (gs->input.keys_pressed[SDL_SCANCODE_RETURN]) {

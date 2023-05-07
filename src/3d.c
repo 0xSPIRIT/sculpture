@@ -33,15 +33,6 @@ void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *
         
         if (w2 < 0) continue; // If any weight < 0, the point is not in the triangle
         
-#if 0
-        vec3 color;
-        color.x = w0 * p[0].col.x + w1 * p[1].col.x + w2 * p[2].col.x;
-        color.y = w0 * p[0].col.y + w1 * p[1].col.y + w2 * p[2].col.y;
-        color.z = w0 * p[0].col.z + w1 * p[1].col.z + w2 * p[2].col.z;
-        
-        Uint32 pixel = SDL_MapRGB(format, color.x, color.y, color.z);
-#endif
-        
         vec2 tex_coord = vec2_add3(vec2_scale(p[0].tex, w0),
                                    vec2_scale(p[1].tex, w1),
                                    vec2_scale(p[2].tex, w2));

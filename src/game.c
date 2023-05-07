@@ -10,6 +10,7 @@
 #include "grid.c"
 #include "credits.c"
 #include "undo.c"
+#include "hammer.c"
 #include "chisel.c"
 #include "preview.c"
 #include "tooltip.c"

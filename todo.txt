@@ -1,21 +1,32 @@
 TODO
   - Redo Chiseling
-     - Re-add tutorial strings where necessary in chisel.c.
-     - Large chisel doesn't feel quite as before.
-     - Do medium chisel behaviour
-     - Do large chisel behaviour
-     - Add the hammer animation; make it nice and succulent
-     - Don't chisel between gaps. eg. in Level 1 you can chisel between
+     x Don't chisel between gaps. eg. in Level 1 you can chisel between
        objects.
          To do this, perhaps use a flood fill first.
-     - Hand-make sprites for each rotation
+
+     x Small inconsistency with hovering over a cell.
+       The chisel doesn't go where you want it to.
+
+     - Add the hammer animation; make it nice and succulent
+         => Make a render target for the hammer.
+            Do the normal rotation on that texture.
+            Then, position and rotate that texture around the chisel.
+
+     - Re-add chisel pressure.
+
+     - Re-add tutorial strings where necessary in chisel.c.
+
+     - Hand-make sprites for each rotation.
+
+  - Add water to one of the intial states!
 
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.
 
   - Debug crash that happens when you Ctrl+G through many levels
     until you end up at level 7. Something with the memory gets messed
-    up which first manifests as the snow being less in the opening. Very curious.
+    up which first manifests as the snow being less in the opening.
+    Very curious.
 
 Music For Alaska Inspiration:
 https://www.youtube.com/watch?v=BK5Yp5FD7C4

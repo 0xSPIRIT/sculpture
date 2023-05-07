@@ -63,6 +63,15 @@ void level_get_cells_from_image(const char *path,
     SDL_DestroyTexture(texture);
 }
 
+void level_setup_initial_grid() {
+    // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        int id = gs->grid[i].id;
+        gs->grid[i] = (struct Cell){.type = gs->levels[gs->level_current].initial_grid[i].type, .rand = rand(), .id = id, .object = -1, .is_initial = true};
+    }
+    objects_reevaluate();
+}
+
 int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
     struct Level *level = &gs->levels[gs->level_count++];
     level->index = gs->level_count-1;
@@ -160,16 +169,6 @@ void goto_level(int lvl) {
     
     narrator_init(gs->level_current);
     
-    if (gs->narrator.line_count) {
-        level_set_state(lvl, LEVEL_STATE_NARRATION);
-        effect_set(EFFECT_SNOW, gs->window_width, gs->window_height);
-    } else {
-        level_set_state(lvl, LEVEL_STATE_INTRO);
-        effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
-    }
-    
-    gs->levels[lvl].popup_time_current = 0;
-    
     gs->levels[lvl].popup_time_current = 0;
     
     memcpy(&gs->levels[lvl].source_cell,
@@ -195,6 +194,8 @@ void goto_level(int lvl) {
     gs->chisel_large = chisel_init(CHISEL_LARGE);
     gs->chisel = &gs->chisel_small;
     
+    gs->hammer = hammer_init();
+    
     //chisel_hammer_init();
     deleter_init();
     for (int i = 0; i < PLACER_COUNT; i++)
@@ -206,31 +207,50 @@ void goto_level(int lvl) {
     
     setup_item_indices();
     
-    for (int i = 0; i < gs->gw*gs->gh; i++) {
-        gs->grid[i].type = gs->levels[lvl].desired_grid[i].type;
+#if SHOW_NARRATION
+    if (gs->narrator.line_count) {
+        level_set_state(lvl, LEVEL_STATE_NARRATION);
+        effect_set(EFFECT_SNOW, gs->window_width, gs->window_height);
+    } else {
+        level_set_state(lvl, LEVEL_STATE_INTRO);
+        effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
     }
+#else
+    level_set_state(lvl, LEVEL_STATE_PLAY);
+    level_setup_initial_grid();
+#endif
     
     for (int i = 0; i < TOOL_COUNT; i++) {
         gs->gui.tool_buttons[i]->highlighted = false;
         gs->gui.tool_buttons[i]->disabled = false;
     }
     
-    //object_activate(&gs->obj);
-    
     timelapse_init();
     
     check_for_tutorial();
+    
 }
 
 void level_set_state(int level, enum Level_State state) {
+    struct Level *l = &gs->levels[level];
+    
     if (state == LEVEL_STATE_PLAY) {
-        //if (!Mix_PlayingMusic())
-            //Mix_PlayMusic(gs->audio.music_creation, -1);
+        effect_set(l->effect_type, gs->gw, gs->gh);
+        if (!gs->undo_initialized) {
+            undo_system_init();
+        } else {
+            undo_system_reset();
+            save_state_to_next();
+        }
     } else if (state == LEVEL_STATE_OUTRO) {
-        gs->levels[level].outro_alpha = 0;
-        gs->levels[level].desired_alpha = 255;
+        l->outro_alpha = 0;
+        l->desired_alpha = 255;
         gs->timelapse.frame = 0;
         gs->timelapse.sticky = 0;
+    } else {
+        for (int i = 0; i < gs->gw*gs->gh; i++) {
+            gs->grid[i].type = l->desired_grid[i].type;
+        }
     }
     
     if (state == LEVEL_STATE_INTRO)
@@ -238,7 +258,7 @@ void level_set_state(int level, enum Level_State state) {
     if (state == LEVEL_STATE_NARRATION)
         set_fade(FADE_LEVEL_NARRATION, 255, 0);
     
-    gs->levels[level].state = state;
+    l->state = state;
 }
 
 void goto_level_string_hook(const char *string) {
@@ -271,21 +291,7 @@ void level_tick(void) {
                 set_fade(FADE_LEVEL_PLAY_OUT, 255, 0);
                 
                 level_set_state(gs->level_current, LEVEL_STATE_PLAY);
-                effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
-                
-                // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
-                for (int i = 0; i < gs->gw*gs->gh; i++) {
-                    int id = gs->grid[i].id;
-                    gs->grid[i] = (struct Cell){.type = level->initial_grid[i].type, .rand = rand(), .id = id, .object = -1, .is_initial = true};
-                }
-                objects_reevaluate();
-                
-                if (!gs->undo_initialized) {
-                    undo_system_init();
-                } else {
-                    undo_system_reset();
-                    save_state_to_next();
-                }
+                level_setup_initial_grid();
             }
             
             if (gs->input.keys_pressed[SDL_SCANCODE_TAB] || level->popup_time_current >= level->popup_time_max) {
@@ -406,6 +412,8 @@ void level_tick(void) {
                     break;
                 }
             }
+            
+            hammer_tick(&gs->hammer);
             
             break;
         }
@@ -666,6 +674,8 @@ void level_draw(void) {
                     break;
                 }
             }
+            
+            hammer_draw(&gs->hammer);
             
             draw_objects();
             

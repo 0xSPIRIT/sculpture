@@ -1,4 +1,4 @@
-// Tutorial Strings
+#define SHOW_TUTORIAL 0
 
 #define MAX_TUTORIAL_LINES 10
 

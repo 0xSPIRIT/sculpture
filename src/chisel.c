@@ -45,8 +45,24 @@ bool chisel_is_facing_cell(int i, f64 angle, int lookahead) {
 
 // Finds a position closest to (x, y) that is on the grid
 // Returns: The index of the position
-int chisel_clamp_to_grid(int xx, int yy) {
+int chisel_clamp_to_grid(f64 angle, int xx, int yy) {
     f64 closest_distance = gs->gw*gs->gh;
+    
+    bool is_mouse_on_cell = (gs->grid[xx+yy*gs->gw].type != CELL_NONE);
+    
+    // Special case for when mouse is on a cell
+    
+    if (is_mouse_on_cell) {
+        f64 rad_angle = M_PI * angle / 180.0;
+        int dir_x = round(cos(rad_angle));
+        int dir_y = round(sin(rad_angle));
+        
+        int nx = xx - dir_x;
+        int ny = yy - dir_y;
+        
+        if (gs->grid[nx+ny*gs->gw].type == CELL_NONE)
+            return nx+ny*gs->gw;
+    }
     
     int closest_idx = -1;
     
@@ -152,10 +168,31 @@ void chisel_move_mouse_until_cell(struct Chisel *chisel, int x, int y, f64 angle
     move_mouse_to_grid_position((int)round(xx), (int)round(yy));
 }
 
+void flood_fill(Uint8 *grid, int x, int y, Uint8 value) {
+    if (!is_in_bounds(x, y)) return;
+    if (gs->grid[x+y*gs->gw].type == CELL_NONE) return;
+    if (grid[x+y*gs->gw] == value) return;
+    
+    grid[x+y*gs->gw] = value;
+    
+    flood_fill(grid, x+1, y, value);
+    flood_fill(grid, x-1, y, value);
+    flood_fill(grid, x, y-1, value);
+    flood_fill(grid, x, y+1, value);
+}
+
 // dx and dy represent any offset you want in the circle placement.
 void chisel_destroy_circle(struct Chisel *chisel, int x, int y, int dx, int dy, int size) {
     if (!chisel->is_calculating_highlight)
         save_state_to_next();
+    
+    // We want to only destroy the flood-filled object.
+    
+    Uint8 *grid = PushArray(gs->transient_memory,
+                            gs->gw * gs->gh,
+                            sizeof(Uint8));
+    
+    flood_fill(grid, x, y, 1);
     
     if (size == 0) {
         set(x, y, 0, -1);
@@ -164,25 +201,31 @@ void chisel_destroy_circle(struct Chisel *chisel, int x, int y, int dx, int dy, 
     } else {
         // Destroy in a circle.
         int type = 0;
-        int count = 0;
         
         x -= dx;
         y -= dy;
         
+        //x = chisel->x;
+        //y = chisel->y;
+
         for (int yy = -size; yy <= size; yy++) {
             for (int xx = -size; xx <= size; xx++) {
+                if (xx*xx + yy*yy > size*size) continue;
                 if (!is_in_bounds(x+xx, y+yy)) continue;
-                if (xx*xx+yy*yy > size*size)   continue;
+                if (grid[x+xx+(y+yy)*gs->gw] != 1) continue;
                 
                 if (gs->grid[x+xx+(y+yy)*gs->gw].type != 0)
                     type = gs->grid[x+xx+(y+yy)*gs->gw].type;
+                
                 set(x+xx, y+yy, 0, -1);
-                count++;
+                
+                if (!chisel->is_calculating_highlight) {
+                    f64 vx = randf(2.0)-1;
+                    f64 vy = randf(2.0)-1;
+                    emit_dust(type, x+xx, y+yy, vx, vy);
+                }
             }
         }
-        
-        if (!chisel->is_calculating_highlight)
-            emit_dust_explosion(type, x+dx, y+dy, count);
     }
     chisel->x = x;
     chisel->y = y;
@@ -229,7 +272,7 @@ bool chisel_chisel_circle(struct Chisel *chisel, int size) {
         {
             xx = round(xx);
             yy = round(yy);
-            chisel_destroy_circle(chisel, xx, yy, 0, 0, size);
+            chisel_destroy_circle(chisel, xx, yy, dir_x, dir_y, size);
             return true;
         }
         
@@ -248,11 +291,11 @@ bool chisel_chisel_small(struct Chisel *chisel) {
 }
     
 bool chisel_chisel_medium(struct Chisel *chisel) {
-    return chisel_chisel_circle(chisel, 1);
+    return chisel_chisel_circle(chisel, 2);
 }
 
 bool chisel_chisel_large(struct Chisel *chisel) {
-    return chisel_chisel_circle(chisel, 3);
+    return chisel_chisel_circle(chisel, 4);
 }
 
 bool chisel_chisel(struct Chisel *chisel) {
@@ -333,7 +376,7 @@ void chisel_tick(struct Chisel *chisel) {
     
     switch (chisel->state) {
         case CHISEL_STATE_IDLE: {
-            int idx = chisel_clamp_to_grid(gs->input.mx, gs->input.my);
+            int idx = chisel_clamp_to_grid(chisel->angle, gs->input.mx, gs->input.my);
             if (idx == -1) {
                 chisel->x = -1;
                 chisel->y = -1;
@@ -349,6 +392,7 @@ void chisel_tick(struct Chisel *chisel) {
             
             chisel_calculate_highlights(chisel);
             
+#if 0
             if (gs->input.real_my > GUI_H &&
                 !gs->tutorial.active &&
                 !gs->gui.popup &&
@@ -356,6 +400,7 @@ void chisel_tick(struct Chisel *chisel) {
             {
                 chisel->state = CHISEL_STATE_CHISELING;
             }
+#endif
             break;
         }
         case CHISEL_STATE_ROTATING: {
