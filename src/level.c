@@ -6,8 +6,8 @@
 // out_source_cell_count - Pointer to the cell count. Updates in this func.
 // out_w & out_h         - width and height of the image.
 void level_get_cells_from_image(const char *path,
-                                struct Cell **out,
-                                struct Source_Cell *source_cells,
+                                Cell **out,
+                                Source_Cell *source_cells,
                                 int *out_source_cell_count,
                                 int *out_w,
                                 int *out_h)
@@ -23,7 +23,7 @@ void level_get_cells_from_image(const char *path,
     *out_w = w;
     *out_h = h;
     
-    *out = PushArray(gs->persistent_memory, w*h, sizeof(struct Cell));
+    *out = PushArray(gs->persistent_memory, w*h, sizeof(Cell));
     
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
@@ -35,7 +35,7 @@ void level_get_cells_from_image(const char *path,
             int cell = 0;
             
             if (r == 255 && g == 0 && b == 0) {
-                struct Source_Cell *s = &source_cells[(*out_source_cell_count)++];
+                Source_Cell *s = &source_cells[(*out_source_cell_count)++];
                 s->x = x;
                 s->y = y;
                 s->type = CELL_STEAM;
@@ -67,13 +67,13 @@ void level_setup_initial_grid() {
     // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         int id = gs->grid[i].id;
-        gs->grid[i] = (struct Cell){.type = gs->levels[gs->level_current].initial_grid[i].type, .rand = rand(), .id = id, .object = -1, .is_initial = true};
+        gs->grid[i] = (Cell){.type = gs->levels[gs->level_current].initial_grid[i].type, .rand = rand(), .id = id, .object = -1, .is_initial = true};
     }
     objects_reevaluate();
 }
 
 int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
-    struct Level *level = &gs->levels[gs->level_count++];
+    Level *level = &gs->levels[gs->level_count++];
     level->index = gs->level_count-1;
     strcpy(level->name, name);
     level->popup_time_current = 0;
@@ -98,7 +98,7 @@ int level_add(const char *name, const char *desired_image, const char *initial_i
     
     memcpy(&level->default_source_cell,
            &level->source_cell,
-           sizeof(struct Source_Cell)*SOURCE_CELL_MAX);
+           sizeof(Source_Cell)*SOURCE_CELL_MAX);
     
     Assert(w > 0);
     Assert(h > 0);
@@ -173,7 +173,7 @@ void goto_level(int lvl) {
     
     memcpy(&gs->levels[lvl].source_cell,
            &gs->levels[lvl].default_source_cell,
-           sizeof(struct Source_Cell)*SOURCE_CELL_MAX);
+           sizeof(Source_Cell)*SOURCE_CELL_MAX);
     gs->levels[lvl].source_cell_count = gs->levels[lvl].default_source_cell_count;
     
     gs->conversions.calculated_render_target = false;
@@ -183,7 +183,7 @@ void goto_level(int lvl) {
     //gs->S = (f64)gs->window_width/(f64)gs->gw;
     Assert(gs->gw==gs->gh);
     
-    gs->item_holding = (struct Item){0};
+    gs->item_holding = (Item){0};
     gs->current_placer = 0;
     inventory_init();
     
@@ -232,7 +232,7 @@ void goto_level(int lvl) {
 }
 
 void level_set_state(int level, enum Level_State state) {
-    struct Level *l = &gs->levels[level];
+    Level *l = &gs->levels[level];
     
     if (state == LEVEL_STATE_PLAY) {
         effect_set(l->effect_type, gs->gw, gs->gh);
@@ -271,8 +271,8 @@ void goto_level_string_hook(const char *string) {
 }
 
 void level_tick(void) {
-    struct Level *level = &gs->levels[gs->level_current];
-    struct Input *input = &gs->input;
+    Level *level = &gs->levels[gs->level_current];
+    Input *input = &gs->input;
     
     if (gs->text_field.active) return;
     if (gs->gui.popup) return;
@@ -421,7 +421,7 @@ void level_tick(void) {
 }
 
 void level_draw_intro(void) {
-    struct Level *level = &gs->levels[gs->level_current];
+    Level *level = &gs->levels[gs->level_current];
     
     Assert(RenderTarget(RENDER_TARGET_GLOBAL));
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
@@ -471,7 +471,7 @@ void level_draw_intro(void) {
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
 }
 
-void draw_outro(struct Level *level) {
+void draw_outro(Level *level) {
     Uint8 alpha = 255;
     
     SDL_Texture *previous = SDL_GetRenderTarget(gs->renderer);
@@ -614,11 +614,8 @@ void draw_outro(struct Level *level) {
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO), &src, &dst);
 }
 
-void level_draw_background() {
-}
-
 void level_draw(void) {
-    struct Level *level = &gs->levels[gs->level_current];
+    Level *level = &gs->levels[gs->level_current];
     
     switch (level->state) {
         case LEVEL_STATE_NARRATION: {
@@ -653,8 +650,6 @@ void level_draw(void) {
                 SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
             SDL_RenderClear(gs->renderer);
             
-            level_draw_background();
-            
             grid_draw();
             
             effect_draw(&gs->current_effect, true);
@@ -662,6 +657,7 @@ void level_draw(void) {
             switch (gs->current_tool) {
                 case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
                     chisel_draw(gs->chisel);
+                    hammer_draw(&gs->hammer);
                     break;
                 }
                 case TOOL_DELETER: {
@@ -674,8 +670,6 @@ void level_draw(void) {
                     break;
                 }
             }
-            
-            hammer_draw(&gs->hammer);
             
             draw_objects();
             

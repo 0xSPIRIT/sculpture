@@ -53,21 +53,21 @@ enum Level_State {
     LEVEL_STATE_OUTRO
 };
 
-struct Source_Cell {
+typedef struct Source_Cell {
     int x, y;
     int type;
-};
+} Source_Cell;
 
-struct Level {
+typedef struct Level {
     enum Level_State state;
     int index;
     char name[256];
     int effect_type;
-    struct Cell *desired_grid; // What the inspiration is
-    struct Cell *initial_grid; // Starting state of grid
+    Cell *desired_grid; // What the inspiration is
+    Cell *initial_grid; // Starting state of grid
     char profile_lines[64][CELL_TYPE_COUNT];
-    struct Source_Cell source_cell[SOURCE_CELL_MAX];
-    struct Source_Cell default_source_cell[SOURCE_CELL_MAX];
+    Source_Cell source_cell[SOURCE_CELL_MAX];
+    Source_Cell default_source_cell[SOURCE_CELL_MAX];
     int source_cell_count, default_source_cell_count;
     int w, h;
     int popup_time_current, popup_time_max;
@@ -76,6 +76,6 @@ struct Level {
     
     f64 outro_alpha, desired_alpha;
     bool off;
-};
+} Level;
 
 void level_set_state(int level, enum Level_State state);

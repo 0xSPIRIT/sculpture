@@ -1,11 +1,11 @@
-struct Placer *get_current_placer(void) {
-    struct Placer *placers = gs->placers;
+Placer *get_current_placer(void) {
+    Placer *placers = gs->placers;
     if (gs->current_tool != TOOL_PLACER) return NULL;
     return &placers[gs->current_placer];
 }
 
 void placer_init(int num) {
-    struct Placer *placer = &gs->placers[num];
+    Placer *placer = &gs->placers[num];
     
     placer->state = PLACER_PLACE_CIRCLE_MODE;
     placer->index = num;
@@ -28,8 +28,8 @@ void placer_init(int num) {
     placer->contains->amount = 0;
 }
 
-void placer_suck_circle(struct Placer *placer) {
-    struct Input *input = &gs->input;
+void placer_suck_circle(Placer *placer) {
+    Input *input = &gs->input;
     
     f32 x = (f32) placer->px;
     f32 y = (f32) placer->py;
@@ -47,7 +47,7 @@ void placer_suck_circle(struct Placer *placer) {
         uy = dy/len;
     }
     
-    struct Cell *arr = gs->grid;
+    Cell *arr = gs->grid;
     
     while (arr == gs->grid || arr == gs->gas_grid) {
         while (distance(x, y, (f32)placer->px, (f32)placer->py) < len) {
@@ -92,7 +92,7 @@ void placer_suck_circle(struct Placer *placer) {
 }
 
 // Places a circle down.
-void placer_place_circle(struct Placer *placer) {
+void placer_place_circle(Placer *placer) {
     f32 dx = (f32) (placer->x - placer->px);
     f32 dy = (f32) (placer->y - placer->py);
     f32 len = sqrtf(dx*dx + dy*dy);
@@ -178,7 +178,7 @@ void fix_rectangle(SDL_Rect *c) {
     c->h = abs(c->h);
 }
 
-bool placer_is_able_to_place(struct Placer *placer, SDL_Rect *c, int *area_out) {
+bool placer_is_able_to_place(Placer *placer, SDL_Rect *c, int *area_out) {
     Assert(c);
     
     fix_rectangle(c);
@@ -197,8 +197,8 @@ bool placer_is_able_to_place(struct Placer *placer, SDL_Rect *c, int *area_out) 
     return area >= PLACER_MINIMUM_AREA;
 }
 
-void placer_set_and_resize_rect(struct Placer *placer) {
-    struct Input *input = &gs->input;
+void placer_set_and_resize_rect(Placer *placer) {
+    Input *input = &gs->input;
     
     int mx = input->mx;
     int my = input->my;
@@ -239,7 +239,7 @@ void placer_set_and_resize_rect(struct Placer *placer) {
     }
 }
 
-void placer_place_rect(struct Placer *placer) {
+void placer_place_rect(Placer *placer) {
     if (placer->rect.x == -1) return;
     
     int area;
@@ -308,8 +308,8 @@ void placer_place_rect(struct Placer *placer) {
     objects_reevaluate();
 }
 
-void placer_tick(struct Placer *placer) {
-    struct Input *input = &gs->input;
+void placer_tick(Placer *placer) {
+    Input *input = &gs->input;
     
     placer->px = placer->x;
     placer->py = placer->y;
@@ -397,7 +397,7 @@ void placer_tick(struct Placer *placer) {
             if (skip) break;
             
             if (!gs->did_placer_rectangle_tutorial) {
-                struct Tutorial_Rect *t = tutorial_rect(TUTORIAL_RECTANGLE_PLACE,
+                Tutorial_Rect *t = tutorial_rect(TUTORIAL_RECTANGLE_PLACE,
                                                         NormX(32),
                                                         NormY((768.8/8.0)+32),
                                                         NULL);
@@ -452,7 +452,7 @@ void placer_tick(struct Placer *placer) {
     }
 }
 
-void placer_draw(struct Placer *placer, bool full_size) {
+void placer_draw(Placer *placer, bool full_size) {
     const int scale = full_size ? gs->S : 1;
     int y_off = full_size ? GUI_H : 0;
     
@@ -528,8 +528,8 @@ void placer_draw(struct Placer *placer, bool full_size) {
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
 }
 
-bool is_mouse_in_placer(struct Placer *placer) {
-    struct Input *input = &gs->input;
+bool is_mouse_in_placer(Placer *placer) {
+    Input *input = &gs->input;
 
     SDL_Point mouse = {input->mx, input->my};
     SDL_Rect rectangle = {

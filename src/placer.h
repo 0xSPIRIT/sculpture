@@ -8,7 +8,7 @@ enum {
     PLACER_SUCK_MODE,
 };
 
-struct Placer {
+typedef struct Placer {
     int index;
     
     int state;
@@ -28,9 +28,9 @@ struct Placer {
     int did_click;    // Did we actually place down any material?
     int did_set_new;
 
-    struct Item *contains;
+    Item *contains;
 
     int placing_solid_time;
-};
+} Placer;
 
-struct Placer *get_current_placer(void);
+Placer *get_current_placer(void);

@@ -1,8 +1,8 @@
 void click_overlay_interface(void *ptr) {
     int button_index = *(int*)ptr;
     
-    struct Overlay *overlay = &gs->overlay;
-    struct Overlay_Interface *interf = &gs->gui.overlay_interface;
+    Overlay *overlay = &gs->overlay;
+    Overlay_Interface *interf = &gs->gui.overlay_interface;
     
     if (button_index == OVERLAY_INTERFACE_CLEAR_ALL) {
         for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -68,7 +68,7 @@ void click_overlay_interface(void *ptr) {
 }
 
 void overlay_interface_init(void) {
-    struct Overlay_Interface *interf = &gs->gui.overlay_interface;
+    Overlay_Interface *interf = &gs->gui.overlay_interface;
 
     const char overlay_interface_names[OVERLAY_INTERFACE_BUTTONS][64] = {
         "Brush Tool",
@@ -84,7 +84,7 @@ void overlay_interface_init(void) {
     int ypad = 10;
 
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
-        struct Button *b = 0;
+        Button *b = 0;
 
         SDL_Texture *texture = gs->textures.tool_buttons[TOOL_GRABBER];
 
@@ -108,7 +108,7 @@ void overlay_interface_init(void) {
 }
 
 void overlay_interface_tick(void) {
-    struct Overlay_Interface *interf = &gs->gui.overlay_interface;
+    Overlay_Interface *interf = &gs->gui.overlay_interface;
 
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
         button_tick(interf->buttons[i], (void*)&i);
@@ -116,7 +116,7 @@ void overlay_interface_tick(void) {
 }
 
 void overlay_interface_draw(void) {
-    struct Overlay_Interface *interf = &gs->gui.overlay_interface;
+    Overlay_Interface *interf = &gs->gui.overlay_interface;
 
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
         button_draw(interf->buttons[i]);

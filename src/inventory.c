@@ -1,5 +1,5 @@
-bool is_mouse_in_slot(struct Slot *slot) {
-    struct Input *input = &gs->input;
+bool is_mouse_in_slot(Slot *slot) {
+    Input *input = &gs->input;
     
     int dx = 0;
     int dy = 0;
@@ -18,8 +18,8 @@ bool is_mouse_in_slot(struct Slot *slot) {
                             });
 }
 
-bool was_mouse_in_slot(struct Slot *slot) {
-    struct Input *input = &gs->input;
+bool was_mouse_in_slot(Slot *slot) {
+    Input *input = &gs->input;
     
     int dx = 0;
     int dy = 0;
@@ -43,7 +43,7 @@ void inventory_setup_slots() {
     const int starty = GUI_H/2;
     
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
-        struct Slot *slot = &gs->inventory.slots[i];
+        Slot *slot = &gs->inventory.slots[i];
         slot->x = startx + i * Scale(100) + ITEM_SIZE;
         slot->y = starty;
         slot->w = ITEM_SIZE;
@@ -58,7 +58,7 @@ void inventory_setup_slots() {
 
 bool add_item_to_inventory_slot(enum Cell_Type type, int amount) {
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
-        struct Slot *slot = &gs->inventory.slots[i];
+        Slot *slot = &gs->inventory.slots[i];
         if (slot->item.type == 0 ||
             slot->item.type == type)
         {
@@ -72,19 +72,19 @@ bool add_item_to_inventory_slot(enum Cell_Type type, int amount) {
 }
 
 void inventory_init(void) {
-    memset(&gs->inventory, 0, sizeof(struct Inventory));
+    memset(&gs->inventory, 0, sizeof(Inventory));
     inventory_setup_slots();
 }
 
-void item_draw(struct Item *item, int x, int y, int w, int h) {
+void item_draw(Item *item, int x, int y, int w, int h) {
     if (!item->type) return;
     if (!item->amount) {
         item->type = 0;
         return;
     }
     
-    struct Textures *texs = &gs->textures;
-    struct Surfaces *surfs = &gs->surfaces;
+    Textures *texs = &gs->textures;
+    Surfaces *surfs = &gs->surfaces;
     
     SDL_Rect r = {
         x, y,
@@ -136,7 +136,7 @@ void item_draw(struct Item *item, int x, int y, int w, int h) {
 }
 
 // rx, ry are relative values.
-void slot_draw(struct Slot *slot, f32 rx, f32 ry) {
+void slot_draw(Slot *slot, f32 rx, f32 ry) {
     SDL_Rect bounds = {
         (int) (rx + slot->x - slot->w/2),
         (int) (ry + slot->y - slot->h/2),
@@ -181,7 +181,7 @@ void slot_draw(struct Slot *slot, f32 rx, f32 ry) {
     if (*slot->name) {
         // Finding the allocated surface and textures to use for this.
         
-        struct Converter *c = slot->converter;
+        Converter *c = slot->converter;
         
         SDL_Surface **surf;
         SDL_Texture **texture;
@@ -270,8 +270,8 @@ bool can_place_item_in_slot(int type, enum Slot_Type slot) {
 
 // Slot may be NULL if the item doesn't belong to any slot.
 // This function mostly just handles interactions with items and the mouse.
-void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h) {
-    struct Input *input = &gs->input;
+void item_tick(Item *item, Slot *slot, int x, int y, int w, int h) {
+    Input *input = &gs->input;
     
     if (item == &gs->item_holding) {
         if (input->real_my < gs->gui.popup_y && 
@@ -304,7 +304,7 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
             if (slot->inventory_index != -1) { // We are on the inventory
                 if (is_cell_fuel(item->type)) {
                     // Swap into fuel if the fuel cell is empty or the same type as our item.
-                    struct Slot *converter_fuel_slot = &gs->material_converter->slots[SLOT_FUEL];
+                    Slot *converter_fuel_slot = &gs->material_converter->slots[SLOT_FUEL];
                     if (converter_fuel_slot->item.type == 0 || converter_fuel_slot->item.type == item->type) {
                         converter_fuel_slot->item.type = item->type;
                         converter_fuel_slot->item.amount += item->amount;
@@ -335,7 +335,7 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
         // Otherwise if we're either holding an item or have an item in slot,
         // swap them since they're different types.
         else if ((gs->item_holding.type || item->type) && can_place_item) {
-            struct Item a = *item;
+            Item a = *item;
             
             save_state_to_next();
             
@@ -378,7 +378,7 @@ void item_tick(struct Item *item, struct Slot *slot, int x, int y, int w, int h)
     }
 }
 
-void slot_tick(struct Slot *slot) {
+void slot_tick(Slot *slot) {
     int rx = 0, ry = 0;
     
     if (slot->converter) {
@@ -403,7 +403,7 @@ void inventory_tick() {
     if (!gs->gui.popup) return;
     
     if (gs->level_current == 6-1 && !gs->did_fuel_converter_tutorial) {
-        struct Tutorial_Rect *next = tutorial_rect(TUTORIAL_TEXT_FILE_STRING,
+        Tutorial_Rect *next = tutorial_rect(TUTORIAL_TEXT_FILE_STRING,
                                                    NormX(32),
                                                    NormY((768.8/8.0)+128),
                                                    NULL);
@@ -426,7 +426,7 @@ void inventory_tick() {
     }
     
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
-        struct Slot *slot = &gs->inventory.slots[i];
+        Slot *slot = &gs->inventory.slots[i];
         if (slot->item.type && is_mouse_in_slot(slot)) {
             tooltip_set_position_to_cursor(&gs->gui.tooltip, TOOLTIP_TYPE_ITEM);
             
@@ -450,7 +450,7 @@ void inventory_tick() {
     }
     
     
-    struct Input *input = &gs->input;
+    Input *input = &gs->input;
     item_tick(&gs->item_holding, NULL, input->real_mx, input->real_my, ITEM_SIZE, ITEM_SIZE);
 }
 
@@ -458,7 +458,7 @@ void inventory_tick() {
 void inventory_draw(void) {
     if (gs->gui.popup_inventory_y <= 0) return;
     
-    struct GUI *gui = &gs->gui;
+    GUI *gui = &gs->gui;
     
     inventory_setup_slots();
     
@@ -491,7 +491,7 @@ void inventory_draw(void) {
         slot_draw(&gs->inventory.slots[i], 0, y);
     }
     
-    struct Input *input = &gs->input;
+    Input *input = &gs->input;
     item_draw(&gs->item_holding,
               input->real_mx - ITEM_SIZE/2,
               y + input->real_my - ITEM_SIZE/2,

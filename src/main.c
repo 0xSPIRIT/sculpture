@@ -52,22 +52,22 @@
 
 #define ALASKA_START_FULLSCREEN 0
 
-typedef void (*GameInitProc)(struct Game_State *state, int start_level);
-typedef bool (*GameTickEventProc)(struct Game_State *state, SDL_Event *event);
-typedef void (*GameRunProc)(struct Game_State *state);
+typedef void (*GameInitProc)(Game_State *state, int start_level);
+typedef bool (*GameTickEventProc)(Game_State *state, SDL_Event *event);
+typedef void (*GameRunProc)(Game_State *state);
 
-struct Game_Code {
+typedef struct Game_Code {
     HMODULE dll;
     FILETIME last_write_time;
     
     GameInitProc game_init;
     GameTickEventProc game_tick_event;
     GameRunProc game_run;
-};
+} Game_Code;
 
-void game_init_sdl(struct Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
+void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
     SDL_Init(SDL_INIT_VIDEO);
-    
+
     Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
     
     state->window = SDL_CreateWindow(window_title,
@@ -98,11 +98,11 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
     }
 }
 
-void make_memory_arena(struct Memory_Arena *persistent_memory, struct Memory_Arena *transient_memory) {
+void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_memory) {
     persistent_memory->size = Megabytes(1024);
     transient_memory->size = Megabytes(8);
     
-    AssertNW(persistent_memory->size >= sizeof(struct Game_State));
+    AssertNW(persistent_memory->size >= sizeof(Game_State));
     
     LPVOID base_address = (LPVOID) Terabytes(2);
     
@@ -117,31 +117,6 @@ void make_memory_arena(struct Memory_Arena *persistent_memory, struct Memory_Are
     transient_memory->data = persistent_memory->data + persistent_memory->size;
     transient_memory->cursor = transient_memory->data;
 }
-
-#if 0
-int start_fullscreen_popup(void) {
-    int num_buttons = 2;
-    int result;
-    
-    SDL_MessageBoxButtonData buttons[2] = {
-        (SDL_MessageBoxButtonData){SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 0, "No"},
-        (SDL_MessageBoxButtonData){SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "Yes"}
-    };
-    
-    SDL_MessageBoxData data = {
-        .flags = SDL_MESSAGEBOX_WARNING,
-        .window = NULL,
-        .title = "Fullscreen?",
-        .message = "Launch the game in fullscreen?",
-        .numbuttons = num_buttons,
-        .buttons = buttons,
-        .colorScheme = NULL
-    };
-    SDL_ShowMessageBox(&data, &result);
-    
-    return result;
-}
-#endif
 
 f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     RECT desktop;
@@ -165,7 +140,7 @@ bool prefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
 }
 
-void game_init(struct Game_State *state) {
+void game_init(Game_State *state) {
     srand((unsigned int) time(0));
     
     if (state->S == 0)
@@ -176,9 +151,9 @@ void game_init(struct Game_State *state) {
     
     state->real_width = state->window_width;
     state->real_height = state->window_height;
-
+    
     game_init_sdl(state,
-                  "Alaska", 
+                  "Alaska",
                   state->window_width, 
                   state->window_height,
                   state->use_software_renderer);
@@ -189,7 +164,7 @@ void game_init(struct Game_State *state) {
     audio_init(&state->audio);
     textures_init(state->renderer, &state->textures);
     surfaces_init(&state->surfaces);
-
+    
     SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
     
     state->normal_cursor = SDL_GetCursor();
@@ -199,7 +174,7 @@ void game_init(struct Game_State *state) {
     fonts_init(&state->fonts);
 }
 
-void game_deinit(struct Game_State *state) {
+void game_deinit(Game_State *state) {
     //textures_deinit(&state->textures);
     surfaces_deinit(&state->surfaces);
     fonts_deinit(&state->fonts);
@@ -219,7 +194,7 @@ FILETIME get_last_write_time(char *filename) {
     return result;
 }
 
-void load_game_code(struct Game_Code *code) {
+void load_game_code(Game_Code *code) {
     code->last_write_time = get_last_write_time(GAME_DLL_NAME);
     
     // Copy File may fail the first few times ..?
@@ -255,7 +230,7 @@ void load_game_code(struct Game_Code *code) {
     }
 }
 
-void reload_game_code(struct Game_Code *code) {
+void reload_game_code(Game_Code *code) {
     WIN32_FILE_ATTRIBUTE_DATA ignored;
     if (GetFileAttributesExA(LOCK_NAME, GetFileExInfoStandard, &ignored)) {
         return;
@@ -333,14 +308,14 @@ int main(int argc, char **argv)
         }
     }
     
-    struct Game_Code game_code = {0};
+    Game_Code game_code = {0};
     load_game_code(&game_code);
     
-    struct Memory_Arena persistent_memory, transient_memory;
+    Memory_Arena persistent_memory, transient_memory;
     make_memory_arena(&persistent_memory, &transient_memory);
     
     // *1.5 in case we add more values at runtime.
-    struct Game_State *game_state = PushSize(&persistent_memory, sizeof(struct Game_State));
+    Game_State *game_state = PushSize(&persistent_memory, sizeof(Game_State));
     gs = game_state; // This is so that our macros can pick up "gs" instead of game_state.
     
     //scale = scale_popup();

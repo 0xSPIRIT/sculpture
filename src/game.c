@@ -51,9 +51,9 @@ void game_resize(int h) {
     gs->view.w = gs->window_width;
     gs->view.h = gs->window_height-GUI_H;
     
-    struct Fonts *fonts = &gs->fonts;
+    Fonts *fonts = &gs->fonts;
     TTF_Font **ttf_fonts = (TTF_Font**) fonts;
-    size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);
+    size_t font_count = sizeof(Fonts)/sizeof(TTF_Font*);
     
     for (size_t i = 0; i < font_count; i++) {
         TTF_SetFontSize(ttf_fonts[i], Scale(font_sizes[i]));
@@ -71,7 +71,7 @@ void game_resize(int h) {
     SDL_SetTextureBlendMode(gs->textures.render_targets[lvl][RENDER_TARGET_3D], SDL_BLENDMODE_BLEND);
 }
 
-export void game_init(struct Game_State *state, int level) {
+export void game_init(Game_State *state, int level) {
     gs = state;
     
     gs->view.x = 0;
@@ -102,12 +102,12 @@ export void game_init(struct Game_State *state, int level) {
 #endif
 }
 
-export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
+export bool game_tick_event(Game_State *state, SDL_Event *event) {
     gs = state;
     gs->event = event;
     
     bool is_running = true;
-    struct Input *input = &gs->input;
+    Input *input = &gs->input;
     
     if (event->type == SDL_QUIT) {
         is_running = false;
@@ -121,7 +121,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     
     if (event->type == SDL_MOUSEWHEEL) {
         if (gs->current_tool == TOOL_PLACER) {
-            struct Placer *placer = &gs->placers[gs->current_placer];
+            Placer *placer = &gs->placers[gs->current_placer];
             if (input->keys[SDL_SCANCODE_LCTRL] && gs->creative_mode) {
                 placer->contains->type += event->wheel.y;
                 if (placer->contains->type < CELL_NONE+1) placer->contains->type = CELL_NONE+1;
@@ -144,7 +144,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     if (event->type == SDL_KEYDOWN && gs->gamestate == GAME_STATE_PLAY && !gs->text_field.active) {
         switch (event->key.keysym.sym) {
             case SDLK_ESCAPE: {
-                struct Placer *placer = get_current_placer();
+                Placer *placer = get_current_placer();
                 if (gs->credits.state == CREDITS_SHOW) {
                     is_running = false;
                 } else if (gs->tutorial.active) {
@@ -245,7 +245,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_q: {
-                struct Cell *c;
+                Cell *c;
                 c = &gs->grid[input->mx+input->my*gs->gw];
                 char name[256] = {0};
                 get_name_from_type(c->type, name);
@@ -342,7 +342,7 @@ export bool game_tick_event(struct Game_State *state, SDL_Event *event) {
     return is_running;
 }
 
-export void game_run(struct Game_State *state) {
+export void game_run(Game_State *state) {
     gs = state;
     
     gs->gui.tooltip.set_this_frame = false;

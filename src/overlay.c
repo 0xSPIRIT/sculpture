@@ -34,8 +34,8 @@ void second(int a) {
 }
 
 // name_generic is a formatted printf with a %d for the number, from 0 to num-1.
-struct Overlay_Changes overlay_load_changes(const char *name_generic, int num) {
-    struct Overlay_Changes result = {0};
+Overlay_Changes overlay_load_changes(const char *name_generic, int num) {
+    Overlay_Changes result = {0};
     result.count = num;
     
     int w = -1, h = -1;
@@ -97,7 +97,7 @@ struct Overlay_Changes overlay_load_changes(const char *name_generic, int num) {
 }
 
 void overlay_init(void) {
-    struct Overlay *overlay = &gs->overlay;
+    Overlay *overlay = &gs->overlay;
     
     overlay->tool = OVERLAY_TOOL_BRUSH;
     
@@ -126,7 +126,7 @@ void overlay_init(void) {
     
     overlay->r.x = overlay->r.y = -1;
     
-    memset(&overlay->changes, 0, sizeof(struct Overlay_Changes));
+    memset(&overlay->changes, 0, sizeof(Overlay_Changes));
     
     switch (gs->level_current+1) {
         case 7: {
@@ -143,7 +143,7 @@ void overlay_init(void) {
 }
 
 void overlay_set_circle(int x, int y, int r, int value) {
-    struct Overlay *overlay = &gs->overlay;
+    Overlay *overlay = &gs->overlay;
     
     for (int yy = -r; yy <= r; yy++) {
         for (int xx = -r; xx <= r; xx++) {
@@ -241,7 +241,7 @@ void overlay_set_rectangle(int *grid, SDL_Rect r, int value) {
 }
 
 void overlay_swap_to_next(void) {
-    struct Overlay *overlay = &gs->overlay;
+    Overlay *overlay = &gs->overlay;
     
     if (overlay->changes.count && overlay->changes.index < overlay->changes.count-1) {
         overlay->changes.index++;
@@ -252,7 +252,7 @@ void overlay_swap_to_next(void) {
 }
 
 void overlay_swap_tick(void) {
-    struct Overlay *overlay = &gs->overlay;
+    Overlay *overlay = &gs->overlay;
     
     if (!overlay->changes.was_grid_none) {
         bool none = true;
@@ -285,7 +285,7 @@ void overlay_swap_tick(void) {
 }
 
 void overlay_tick(void) {
-    struct Overlay *overlay = &gs->overlay;
+    Overlay *overlay = &gs->overlay;
     
     memset(overlay->temp_grid, 0, sizeof(int)*gs->gw*gs->gh);
     
@@ -454,7 +454,7 @@ void overlay_draw_grid(int *grid, f32 alpha_coeff) {
 }
 
 void overlay_draw(void) {
-    struct Overlay *overlay = &gs->overlay;
+    Overlay *overlay = &gs->overlay;
     
     if (!overlay->show)
         return;

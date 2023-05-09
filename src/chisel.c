@@ -1,5 +1,5 @@
-struct Chisel chisel_init(enum Chisel_Size size) {
-    struct Chisel chisel = {0};
+Chisel chisel_init(enum Chisel_Size size) {
+    Chisel chisel = {0};
     
     chisel.size = size;
     chisel.texture = gs->textures.chisel_outside[size];
@@ -8,6 +8,23 @@ struct Chisel chisel_init(enum Chisel_Size size) {
     SDL_QueryTexture(chisel.texture, NULL, NULL, &chisel.w, &chisel.h);
     
     return chisel;
+}
+
+void chisel_play_sound(int size) {
+    switch (size) {
+        case CHISEL_SMALL: {
+            Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.small_chisel, 0);
+            break;
+        }
+        case CHISEL_MEDIUM: {
+            Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.medium_chisel[rand()%3], 0);
+            break;
+        }
+        case CHISEL_LARGE: {
+            Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.medium_chisel[rand()%6], 0);
+            break;
+        }
+    }
 }
 
 int chisel_get_distance_from_facing_cell(int i, f64 angle) {
@@ -87,7 +104,7 @@ int chisel_clamp_to_grid(f64 angle, int xx, int yy) {
     return closest_idx;
 }
 
-bool is_bad_corner(struct Chisel *chisel, int x, int y) {
+bool is_bad_corner(Chisel *chisel, int x, int y) {
     if (chisel->size != CHISEL_SMALL) return false;
     
     int nx, ny;
@@ -142,7 +159,7 @@ bool is_bad_corner(struct Chisel *chisel, int x, int y) {
     return false;
 }
 
-void chisel_move_mouse_until_cell(struct Chisel *chisel, int x, int y, f64 angle, f64 max_length) {
+void chisel_move_mouse_until_cell(Chisel *chisel, int x, int y, f64 angle, f64 max_length) {
     angle = M_PI * angle / 180.0;
     f64 dir_x = cos(angle);
     f64 dir_y = sin(angle);
@@ -182,7 +199,7 @@ void flood_fill(Uint8 *grid, int x, int y, Uint8 value) {
 }
 
 // dx and dy represent any offset you want in the circle placement.
-void chisel_destroy_circle(struct Chisel *chisel, int x, int y, int dx, int dy, int size) {
+void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int size) {
     if (!chisel->is_calculating_highlight)
         save_state_to_next();
     
@@ -193,6 +210,8 @@ void chisel_destroy_circle(struct Chisel *chisel, int x, int y, int dx, int dy, 
                             sizeof(Uint8));
     
     flood_fill(grid, x, y, 1);
+    
+    if (!chisel->is_calculating_highlight) chisel_play_sound(chisel->size);
     
     if (size == 0) {
         set(x, y, 0, -1);
@@ -207,7 +226,7 @@ void chisel_destroy_circle(struct Chisel *chisel, int x, int y, int dx, int dy, 
         
         //x = chisel->x;
         //y = chisel->y;
-
+        
         for (int yy = -size; yy <= size; yy++) {
             for (int xx = -size; xx <= size; xx++) {
                 if (xx*xx + yy*yy > size*size) continue;
@@ -236,7 +255,7 @@ void chisel_destroy_circle(struct Chisel *chisel, int x, int y, int dx, int dy, 
 }
 
 // Returns if succesful
-bool chisel_handle_bad_corner(struct Chisel *chisel, int ix, int iy,  int dir_x, int size) {
+bool chisel_handle_bad_corner(Chisel *chisel, int ix, int iy,  int dir_x, int size) {
     int y = 0;
     int x = dir_x;
     
@@ -249,7 +268,7 @@ bool chisel_handle_bad_corner(struct Chisel *chisel, int ix, int iy,  int dir_x,
 }
 
 // Returns if the chisel was successful.
-bool chisel_chisel_circle(struct Chisel *chisel, int size) {
+bool chisel_chisel_circle(Chisel *chisel, int size) {
     f64 angle = M_PI * chisel->angle / 180.0;
     
     f64 dir_x = round(cos(angle));
@@ -286,19 +305,19 @@ bool chisel_chisel_circle(struct Chisel *chisel, int size) {
     return false;
 }
 
-bool chisel_chisel_small(struct Chisel *chisel) {
+bool chisel_chisel_small(Chisel *chisel) {
     return chisel_chisel_circle(chisel, 0);
 }
-    
-bool chisel_chisel_medium(struct Chisel *chisel) {
+
+bool chisel_chisel_medium(Chisel *chisel) {
     return chisel_chisel_circle(chisel, 2);
 }
 
-bool chisel_chisel_large(struct Chisel *chisel) {
+bool chisel_chisel_large(Chisel *chisel) {
     return chisel_chisel_circle(chisel, 4);
 }
 
-bool chisel_chisel(struct Chisel *chisel) {
+bool chisel_chisel(Chisel *chisel) {
     switch (chisel->size) {
         case CHISEL_SMALL:  return chisel_chisel_small(chisel);
         case CHISEL_MEDIUM: return chisel_chisel_medium(chisel);
@@ -308,12 +327,12 @@ bool chisel_chisel(struct Chisel *chisel) {
     return false;
 }
 
-void chisel_calculate_highlights(struct Chisel *chisel) {
+void chisel_calculate_highlights(Chisel *chisel) {
     // Store some copies so we could roll back afterwards.
-    struct Cell *grid_copy = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
-    memcpy(grid_copy, gs->grid, gs->gw*gs->gh*sizeof(struct Cell));
+    Cell *grid_copy = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(Cell));
+    memcpy(grid_copy, gs->grid, gs->gw*gs->gh*sizeof(Cell));
     
-    struct Chisel chisel_copy = *chisel;
+    Chisel chisel_copy = *chisel;
     
     chisel->is_calculating_highlight = true;
     
@@ -328,8 +347,8 @@ void chisel_calculate_highlights(struct Chisel *chisel) {
         }
     }
     
-    memcpy(chisel, &chisel_copy, sizeof(struct Chisel));
-    memcpy(gs->grid, grid_copy, gs->gw*gs->gh*sizeof(struct Cell));
+    memcpy(chisel, &chisel_copy, sizeof(Chisel));
+    memcpy(gs->grid, grid_copy, gs->gw*gs->gh*sizeof(Cell));
     
     memcpy(chisel->highlights, highlights, sizeof(int)*HIGHLIGHT_MAX);
     chisel->highlight_count = count;
@@ -371,7 +390,7 @@ void chisel_draw_highlights(int *highlights, int count) {
     }
 }
 
-void chisel_tick(struct Chisel *chisel) {
+void chisel_tick(Chisel *chisel) {
     chisel->did_chisel_this_frame = false;
     
     switch (chisel->state) {
@@ -392,15 +411,6 @@ void chisel_tick(struct Chisel *chisel) {
             
             chisel_calculate_highlights(chisel);
             
-#if 0
-            if (gs->input.real_my > GUI_H &&
-                !gs->tutorial.active &&
-                !gs->gui.popup &&
-                gs->input.mouse_pressed[SDL_BUTTON_LEFT])
-            {
-                chisel->state = CHISEL_STATE_CHISELING;
-            }
-#endif
             break;
         }
         case CHISEL_STATE_ROTATING: {
@@ -441,43 +451,8 @@ void chisel_tick(struct Chisel *chisel) {
     }
 }
 
-void chisel_draw(struct Chisel *chisel) {
-    int x, y;
-    
-    x = chisel->x;
-    y = chisel->y;
-    
-    if (chisel->x == -1 || chisel->y == -1) {
-        SDL_SetTextureColorMod(chisel->texture, 127, 127, 127);
-        x = gs->input.mx;
-        y = gs->input.my;
-    } else {
-        SDL_SetTextureColorMod(chisel->texture, 255, 255, 255);
-    }
-    
-    SDL_Rect dst = {
-        x, y - chisel->h/2,
-        chisel->w, chisel->h
-    };
-    chisel_get_adjusted_positions(chisel->angle, chisel->size, &dst.x, &dst.y);
-    
-    SDL_Point center = { 0, chisel->h/2 };
-    
-    SDL_RenderCopyEx(gs->renderer,
-                     chisel->texture,
-                     NULL,
-                     &dst,
-                     180+chisel->angle,
-                     &center,
-                     SDL_FLIP_NONE);
-    
-    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
-    SDL_RenderDrawPoint(gs->renderer, (int)chisel->x, (int)chisel->y);
-    
-    if (chisel->state == CHISEL_STATE_IDLE)
-        chisel_draw_highlights(chisel->highlights, chisel->highlight_count);
-}
-
+// Don't worry, we'll remove this later when we
+// make sprites for each rotation.
 void chisel_get_adjusted_positions(int angle, int size, int *x, int *y) {
     angle += 180;
     
@@ -516,4 +491,41 @@ void chisel_get_adjusted_positions(int angle, int size, int *x, int *y) {
             (*x)++;
         }
     }
+}
+
+void chisel_draw(Chisel *chisel) {
+    int x, y;
+    
+    x = chisel->x;
+    y = chisel->y;
+    
+    if (chisel->x == -1 || chisel->y == -1) {
+        SDL_SetTextureColorMod(chisel->texture, 127, 127, 127);
+        x = gs->input.mx;
+        y = gs->input.my;
+    } else {
+        SDL_SetTextureColorMod(chisel->texture, 255, 255, 255);
+    }
+    
+    SDL_Rect dst = {
+        x, y - chisel->h/2,
+        chisel->w, chisel->h
+    };
+    chisel_get_adjusted_positions(chisel->angle, chisel->size, &dst.x, &dst.y);
+    
+    SDL_Point center = { 0, chisel->h/2 };
+    
+    SDL_RenderCopyEx(gs->renderer,
+                     chisel->texture,
+                     NULL,
+                     &dst,
+                     180+chisel->angle,
+                     &center,
+                     SDL_FLIP_NONE);
+    
+    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
+    SDL_RenderDrawPoint(gs->renderer, (int)chisel->x, (int)chisel->y);
+    
+    if (chisel->state == CHISEL_STATE_IDLE)
+        chisel_draw_highlights(chisel->highlights, chisel->highlight_count);
 }

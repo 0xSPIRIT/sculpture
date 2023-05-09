@@ -6,11 +6,11 @@
 // gs->item_prev_amounts in order
 // to know when we need to update the
 // texture.
-struct Item {
+typedef struct Item {
     int index; // Index into arrays such as gs->item_prev_amounts or the number textures.
     enum Cell_Type type;
     int amount;
-};
+} Item;
 
 // If adding more slots, ensure that the slots
 // every converter has is at the top.
@@ -24,11 +24,13 @@ enum Slot_Type {
 
 #define TOTAL_SLOT_COUNT (SLOT_MAX_COUNT * CONVERTER_COUNT + INVENTORY_SLOT_COUNT - 1)
 
+typedef struct Converter Converter;
+
 // A generic slot.
-struct Slot {
-    struct Converter *converter; // Pointer to a converter if needed.
+typedef struct {
+    Converter *converter; // Pointer to a converter if needed.
     int inventory_index; // 0 to INVENTORY_SLOT_COUNT
-    struct Item item;
+    Item item;
     
     enum Slot_Type type;
     
@@ -36,10 +38,10 @@ struct Slot {
     int dx, dy;                  // Orientation of the name string.
     
     f32 x, y, w, h;              // If it's in a converter, this is relative to that.
-};
+} Slot;
 
-struct Inventory {
-    struct Slot slots[INVENTORY_SLOT_COUNT];
-};
+typedef struct Inventory {
+    Slot slots[INVENTORY_SLOT_COUNT];
+} Inventory;
 
 bool add_item_to_inventory_slot(enum Cell_Type type, int amount);

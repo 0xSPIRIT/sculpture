@@ -1,6 +1,6 @@
 #define MAX_CONVERSION_LINES 100
 
-struct Conversions {
+typedef struct Conversions {
     bool active; // Is the panel active?
     
     char *string;
@@ -10,4 +10,4 @@ struct Conversions {
     bool calculated_render_target;
     
     SDL_Rect r; // The panel position and size.
-};
+} Conversions;

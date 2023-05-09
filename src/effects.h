@@ -6,15 +6,15 @@ enum Effect_Type {
     EFFECT_RAIN
 };
 
-struct Effect_Particle {
+typedef struct Effect_Particle {
     f32 x, y;
     f32 vx, vy;
-};
+} Effect_Particle;
 
-struct Effect {
+typedef struct Effect {
     enum Effect_Type type;
-    struct Effect_Particle *particles;
+    Effect_Particle *particles;
     int particle_count;
     
     int w, h;
-};
+} Effect;

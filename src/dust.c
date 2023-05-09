@@ -47,10 +47,10 @@ void emit_dust_explosion(enum Cell_Type type, int x, int y, int count) {
     }
 }
 
-void swap_array(struct Cell *arr, int x1, int y1, int x2, int y2);
+void swap_array(Cell *arr, int x1, int y1, int x2, int y2);
 
 void dust_grid_tick(void) {
-    struct Dust_Data *data = &gs->dust_data;
+    Dust_Data *data = &gs->dust_data;
     
     for (int i = 0; i < data->count; i++) {
         const f64 gravity = 0.2f;
@@ -78,7 +78,7 @@ void dust_grid_tick(void) {
 SDL_Color pixel_from_index(enum Cell_Type type, int i);
 
 void dust_grid_draw(void) {
-    struct Dust_Data *data = &gs->dust_data;
+    Dust_Data *data = &gs->dust_data;
     
     for (int i = 0; i < data->count; i++) {
         SDL_Color c = pixel_from_index(data->types[i], (int)data->xs[i] + (int)data->ys[i]*gs->gw);

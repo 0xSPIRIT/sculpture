@@ -1,4 +1,4 @@
-void converter_set_state(struct Converter *converter, enum Converter_State state) {
+void converter_set_state(Converter *converter, enum Converter_State state) {
     converter->state = state;
     if (state == CONVERTER_OFF) {
         converter->state = CONVERTER_OFF;
@@ -6,7 +6,7 @@ void converter_set_state(struct Converter *converter, enum Converter_State state
     }
 }
 
-bool converter_is_layout_valid(struct Converter *converter) {
+bool converter_is_layout_valid(Converter *converter) {
     bool is_empty = true;
     for (int i = 0; i < converter->slot_count; i++) {
         if (converter->slots[i].item.type) {
@@ -21,7 +21,7 @@ bool converter_is_layout_valid(struct Converter *converter) {
 }
 
 void converter_begin_converting(void *converter_ptr) {
-    struct Converter *converter = (struct Converter *) converter_ptr;
+    Converter *converter = (Converter *) converter_ptr;
     
     if (!converter_is_layout_valid(converter))
         return;
@@ -35,8 +35,8 @@ void converter_begin_converting(void *converter_ptr) {
 
 //////////////////////////////////////////
 
-struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
-    struct Button *b = PushSize(gs->persistent_memory, sizeof(struct Button));
+Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
+    Button *b = PushSize(gs->persistent_memory, sizeof(Button));
     b->type = type;
     b->texture = texture;
     b->disabled = false;
@@ -51,7 +51,7 @@ struct Button *button_allocate(enum Button_Type type, SDL_Texture *texture, cons
 }
 
 void tool_button_set_disabled(int level) {
-    struct Button **tools = gs->gui.tool_buttons;
+    Button **tools = gs->gui.tool_buttons;
     
     //tools[TOOL_BLOCKER]->disabled = true;
     
@@ -102,7 +102,7 @@ void tool_button_set_disabled(int level) {
 void click_gui_tool_button(void *type_ptr) {
     int type = *(int*)type_ptr;
     
-    struct GUI *gui = &gs->gui;
+    GUI *gui = &gs->gui;
     
     if (gui->popup) return;
     
@@ -155,9 +155,9 @@ void click_gui_tool_button(void *type_ptr) {
     tooltip_reset(&gui->tooltip);
 }
 
-void button_tick(struct Button *b, void *data) {
-    struct Input *input = &gs->input;
-    struct GUI *gui = &gs->gui;
+void button_tick(Button *b, void *data) {
+    Input *input = &gs->input;
+    GUI *gui = &gs->gui;
     
     int gui_input_mx = input->real_mx;
     int gui_input_my = input->real_my;
@@ -200,8 +200,8 @@ void button_tick(struct Button *b, void *data) {
     }
 }
 
-void button_draw(struct Button *b) {
-    struct Input *input = &gs->input;
+void button_draw(Button *b) {
+    Input *input = &gs->input;
     
     int gui_input_mx = input->real_mx;// / gs->S;
     int gui_input_my = input->real_my;// / gs->S;
@@ -234,7 +234,7 @@ void button_draw(struct Button *b) {
 }
 
 void gui_message_stack_push(const char *str) {
-    struct GUI *gui = &gs->gui;
+    GUI *gui = &gs->gui;
     
     Assert(strlen(str) <= 100);
     Assert(gui->message_count <= MAX_MESSAGE_STACK);
@@ -245,17 +245,17 @@ void gui_message_stack_push(const char *str) {
         }
     }
     gui->message_count++;
-    struct Message *msg = &gui->message_stack[0];
+    Message *msg = &gui->message_stack[0];
     
     strcpy(msg->str, str);
     msg->alpha = 255;
 }
 
 void gui_message_stack_tick_and_draw(void) {
-    struct GUI *gui = &gs->gui;
+    GUI *gui = &gs->gui;
     
     for (int i = 0; i < gui->message_count; i++) {
-        struct Message *msg = &gui->message_stack[i];
+        Message *msg = &gui->message_stack[i];
         
         SDL_Color col = { 255, 255, 255, msg->alpha };
         draw_text(gs->fonts.font_consolas, msg->str, col, (SDL_Color){0, 0, 0, 255}, true, true, 0, GUI_H+gs->S*gs->gh - i*32, NULL, NULL);
@@ -272,7 +272,7 @@ void gui_message_stack_tick_and_draw(void) {
 }
 
 void gui_init(void) {
-    struct GUI *gui = &gs->gui;
+    GUI *gui = &gs->gui;
     
     gui->popup_y = (f32) (gs->gh*gs->S);
     gui->popup_y_vel = 0;
@@ -309,8 +309,8 @@ void gui_tick(void) {
     if (gs->levels[gs->level_current].state != LEVEL_STATE_PLAY)
         return;
     
-    struct GUI *gui = &gs->gui;
-    struct Input *input = &gs->input;
+    GUI *gui = &gs->gui;
+    Input *input = &gs->input;
     
     tool_button_set_disabled(gs->level_current);
     
@@ -372,7 +372,7 @@ void gui_tick(void) {
 
 // Gives the amount of each cell type there are
 // in an array of cells.
-void profile_array(struct Cell *desired,
+void profile_array(Cell *desired,
                    char out[64][CELL_TYPE_COUNT],
                    int *count) 
 {
@@ -403,11 +403,11 @@ void profile_array(struct Cell *desired,
 }
 
 void gui_draw_profile() {
-    struct Level *level = &gs->levels[gs->level_current];
+    Level *level = &gs->levels[gs->level_current];
     int count = 0;
     
 #if 0
-    struct Cell *overlay_grid = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
+    Cell *overlay_grid = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(Cell));
     
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         overlay_grid[i].type = gs->overlay.grid[i];
@@ -457,7 +457,7 @@ void gui_draw_profile() {
 }
 
 void gui_draw(void) {
-    struct GUI *gui = &gs->gui;
+    GUI *gui = &gs->gui;
     
     // Draw the toolbar buttons.
     SDL_Texture *old = SDL_GetRenderTarget(gs->renderer);
@@ -492,7 +492,7 @@ void gui_draw(void) {
     SDL_SetRenderTarget(gs->renderer, old);
 }
 
-void converter_draw(struct Converter *converter) {
+void converter_draw(Converter *converter) {
     if (converter->state == CONVERTER_INACTIVE)
         return;
     
@@ -595,7 +595,7 @@ void all_converters_draw(void) {
 }
 
 void gui_popup_draw(void) {
-    struct GUI *gui = &gs->gui;
+    GUI *gui = &gs->gui;
     
     SDL_Rect popup = {
         0, (int)(GUI_H + gui->popup_y),
@@ -688,12 +688,12 @@ int get_cell_tier(int type) {
 
 //////////////////////////////////////////
 
-void auto_set_material_converter_slots(struct Converter *converter) {
+void auto_set_material_converter_slots(Converter *converter) {
     int level = gs->level_current;
     
     switch (level+1) {
         case 4: {
-            converter->slots[SLOT_FUEL].item = (struct Item)
+            converter->slots[SLOT_FUEL].item = (Item)
             {
                 .type = CELL_UNREFINED_COAL,
                 .amount = 179
@@ -701,7 +701,7 @@ void auto_set_material_converter_slots(struct Converter *converter) {
             break;
         }
         case 10: {
-            converter->slots[SLOT_FUEL].item = (struct Item)
+            converter->slots[SLOT_FUEL].item = (Item)
             {
                 .type = CELL_UNREFINED_COAL,
                 .amount = 2000
@@ -713,7 +713,7 @@ void auto_set_material_converter_slots(struct Converter *converter) {
     }
 }
 
-void converter_setup_position(struct Converter *converter) {
+void converter_setup_position(Converter *converter) {
     converter->slots[SLOT_INPUT1].x = converter->w/3.f;
     converter->slots[SLOT_INPUT1].y = GUI_H + converter->h/4.f;
     strcpy(converter->slots[SLOT_INPUT1].name, "Inp. 1");
@@ -760,11 +760,11 @@ void converter_setup_position(struct Converter *converter) {
     converter->go_button->h = Scale(48);
 }
 
-struct Converter *converter_init(int type, bool allocated) {
-    struct Converter *converter = NULL;
+Converter *converter_init(int type, bool allocated) {
+    Converter *converter = NULL;
     
     if (!allocated) {
-        converter = PushSize(gs->persistent_memory, sizeof(struct Converter));
+        converter = PushSize(gs->persistent_memory, sizeof(Converter));
     } else {
         switch (type) {
             case CONVERTER_FUEL:     converter = gs->fuel_converter;     break;
@@ -790,12 +790,12 @@ struct Converter *converter_init(int type, bool allocated) {
             converter->slot_count = 4;
             
             if (!allocated) {
-                converter->slots = PushArray(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
+                converter->slots = PushArray(gs->persistent_memory, converter->slot_count, sizeof(Slot));
             } else {
-                memset(&converter->slots[SLOT_INPUT1], 0, sizeof(struct Slot));
-                memset(&converter->slots[SLOT_INPUT2], 0, sizeof(struct Slot));
-                memset(&converter->slots[SLOT_FUEL],   0, sizeof(struct Slot));
-                memset(&converter->slots[SLOT_OUTPUT], 0, sizeof(struct Slot));
+                memset(&converter->slots[SLOT_INPUT1], 0, sizeof(Slot));
+                memset(&converter->slots[SLOT_INPUT2], 0, sizeof(Slot));
+                memset(&converter->slots[SLOT_FUEL],   0, sizeof(Slot));
+                memset(&converter->slots[SLOT_OUTPUT], 0, sizeof(Slot));
             }
             
             // NOTE: Converter slot positions are in global space,
@@ -814,11 +814,11 @@ struct Converter *converter_init(int type, bool allocated) {
             converter->slot_count = 3;
             
             if (!allocated) {
-                converter->slots = PushArray(gs->persistent_memory, converter->slot_count, sizeof(struct Slot));
+                converter->slots = PushArray(gs->persistent_memory, converter->slot_count, sizeof(Slot));
             } else {
-                memset(&converter->slots[SLOT_INPUT1], 0, sizeof(struct Slot));
-                memset(&converter->slots[SLOT_INPUT2], 0, sizeof(struct Slot));
-                memset(&converter->slots[SLOT_OUTPUT], 0, sizeof(struct Slot));
+                memset(&converter->slots[SLOT_INPUT1], 0, sizeof(Slot));
+                memset(&converter->slots[SLOT_INPUT2], 0, sizeof(Slot));
+                memset(&converter->slots[SLOT_OUTPUT], 0, sizeof(Slot));
             }
             
             converter_setup_position(converter);
@@ -838,7 +838,7 @@ void all_converters_init(void) {
     
 }
 
-int get_number_unique_inputs(struct Item *input1, struct Item *input2) {
+int get_number_unique_inputs(Item *input1, Item *input2) {
     int number_inputs = (input1->type != 0) + (input2->type != 0);
     int number_unique_inputs = 0;
     
@@ -855,16 +855,16 @@ int get_number_unique_inputs(struct Item *input1, struct Item *input2) {
     return number_unique_inputs;
 }
 
-struct Converter_Checker converter_checker(struct Item *input1, struct Item *input2) {
+Converter_Checker converter_checker(Item *input1, Item *input2) {
     Assert(input1);
     Assert(input2);
     
-    return (struct Converter_Checker) {
+    return (Converter_Checker) {
         input1, input2, 0
     };
 }
 
-bool is_either_input_type(struct Converter_Checker *checker, int type, bool restart) {
+bool is_either_input_type(Converter_Checker *checker, int type, bool restart) {
     Assert(checker->input1);
     Assert(checker->input2);
     
@@ -890,7 +890,7 @@ bool is_either_input_type(struct Converter_Checker *checker, int type, bool rest
     return true;
 }
 
-bool is_either_input_tier(struct Converter_Checker *checker, int tier, bool is_fuel, bool restart) {
+bool is_either_input_tier(Converter_Checker *checker, int tier, bool is_fuel, bool restart) {
     Assert(checker->input1);
     Assert(checker->input2);
     
@@ -917,7 +917,7 @@ bool is_either_input_tier(struct Converter_Checker *checker, int tier, bool is_f
     return true;
 }
 
-bool is_either_input_stone(struct Converter_Checker *checker, bool restart) {
+bool is_either_input_stone(Converter_Checker *checker, bool restart) {
     Assert(checker->input1);
     Assert(checker->input2);
     
@@ -941,12 +941,12 @@ bool is_either_input_stone(struct Converter_Checker *checker, bool restart) {
     return true;
 }
 
-int fuel_converter_convert(struct Item *input1, struct Item *input2) {
+int fuel_converter_convert(Item *input1, Item *input2) {
     int result_type = 0;
     int number_inputs = (input1->type != 0) + (input2->type != 0);
     int number_unique_inputs = 0;
     
-    struct Item *input = NULL;
+    Item *input = NULL;
     
     // We simply don't allow this.
     if (input1->type == input2->type) {
@@ -970,7 +970,7 @@ int fuel_converter_convert(struct Item *input1, struct Item *input2) {
         }
     }
     else if (number_unique_inputs == 2) {
-        struct Converter_Checker checker = converter_checker(input1, input2);
+        Converter_Checker checker = converter_checker(input1, input2);
         
         if (is_either_input_type(&checker, CELL_UNREFINED_COAL, false) &&
             is_either_input_tier(&checker, 2, false, false))
@@ -994,7 +994,7 @@ int fuel_converter_convert(struct Item *input1, struct Item *input2) {
     return result_type;
 }
 
-int material_converter_convert(struct Item *input1, struct Item *input2, struct Item *fuel) {
+int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
     Assert(input1);
     Assert(input2);
     
@@ -1006,7 +1006,7 @@ int material_converter_convert(struct Item *input1, struct Item *input2, struct 
         return 0;
     }
     
-    struct Item *input = NULL;
+    Item *input = NULL;
     
     if (number_inputs == 1) {
         input = input1->type ? input1 : input2;
@@ -1029,7 +1029,7 @@ int material_converter_convert(struct Item *input1, struct Item *input2, struct 
         }
         case CELL_UNREFINED_COAL: {
             if (number_inputs == 2) {
-                struct Converter_Checker checker = converter_checker(input1, input2);
+                Converter_Checker checker = converter_checker(input1, input2);
                 
                 if (is_either_input_type(&checker, CELL_COBBLESTONE, true) &&
                     is_either_input_type(&checker, CELL_SAND, false))
@@ -1055,7 +1055,7 @@ int material_converter_convert(struct Item *input1, struct Item *input2, struct 
                     case CELL_COBBLESTONE: result = CELL_MARBLE;      break;
                 }
             } else if (number_inputs == 2) {
-                struct Converter_Checker checker = converter_checker(input1, input2);
+                Converter_Checker checker = converter_checker(input1, input2);
                 
                 if (is_either_input_type(&checker, CELL_SANDSTONE, true) &&
                     is_either_input_type(&checker, CELL_MARBLE, false))
@@ -1084,7 +1084,7 @@ int material_converter_convert(struct Item *input1, struct Item *input2, struct 
                     }
                 }
             } else if (number_inputs == 2) {
-                struct Converter_Checker checker = converter_checker(input1, input2);
+                Converter_Checker checker = converter_checker(input1, input2);
                 
                 if (is_either_input_type(&checker, CELL_QUARTZ, true) &&
                     is_either_input_type(&checker, CELL_MARBLE, false))
@@ -1105,15 +1105,15 @@ int material_converter_convert(struct Item *input1, struct Item *input2, struct 
 }
 
 // Returns if the conversion went succesfully.
-bool converter_convert(struct Converter *converter) {
+bool converter_convert(Converter *converter) {
     bool did_convert = false;
     
     int temp_output_type = 0;
     
-    struct Item *input1 = &converter->slots[SLOT_INPUT1].item;
-    struct Item *input2 = &converter->slots[SLOT_INPUT2].item;
-    struct Item *output = &converter->slots[SLOT_OUTPUT].item;
-    struct Item *fuel = NULL;
+    Item *input1 = &converter->slots[SLOT_INPUT1].item;
+    Item *input2 = &converter->slots[SLOT_INPUT2].item;
+    Item *output = &converter->slots[SLOT_OUTPUT].item;
+    Item *fuel = NULL;
     
     if (converter->type == CONVERTER_MATERIAL) {
         fuel = &converter->slots[SLOT_FUEL].item;
@@ -1189,7 +1189,7 @@ bool converter_convert(struct Converter *converter) {
     return !final_conversion || !did_convert;
 }
 
-void converter_tick(struct Converter *converter) {
+void converter_tick(Converter *converter) {
     converter->arrow.y = (int) (converter->h/2 + 18);
     
     converter_setup_position(converter);
@@ -1270,7 +1270,7 @@ void all_converters_tick(void) {
     converter_tick(gs->fuel_converter);
     
     for (int i = 0; i < 2; i++) {
-        struct Converter *c = i == 0 ? gs->material_converter : gs->fuel_converter;
+        Converter *c = i == 0 ? gs->material_converter : gs->fuel_converter;
         
         for (int j = 0; j < c->slot_count; j++) {
             if (!c->slots[j].item.type) continue;

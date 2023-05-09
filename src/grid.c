@@ -30,7 +30,7 @@ int is_cell_gas(int type) {
 }
 
 
-bool any_neighbours_free(struct Cell *array, int x, int y) {
+bool any_neighbours_free(Cell *array, int x, int y) {
     for (int xx = -1; xx <= 1; xx++) {
         for (int yy = -1; yy <= 1; yy++) {
             if (xx == 0 && yy == 0) continue;
@@ -42,7 +42,7 @@ bool any_neighbours_free(struct Cell *array, int x, int y) {
     return false;
 }
 
-int number_neighbours_inclusive(struct Cell *array, int x, int y, int r) {
+int number_neighbours_inclusive(Cell *array, int x, int y, int r) {
     int c = 0;
     for (int xx = -r; xx <= r; xx++) {
         for (int yy = -r; yy <= r; yy++) {
@@ -53,7 +53,7 @@ int number_neighbours_inclusive(struct Cell *array, int x, int y, int r) {
     return c;
 }
 
-int number_neighbours(struct Cell *array, int x, int y, int r) {
+int number_neighbours(Cell *array, int x, int y, int r) {
     int c = 0;
     for (int xx = -r; xx <= r; xx++) {
         for (int yy = -r; yy <= r; yy++) {
@@ -131,7 +131,7 @@ int get_any_neighbour_object(int x, int y) {
 }
 
 // leeway = number of fails allowed to have before returning false.
-bool compare_cells_to_int(struct Cell *a, int *b, int leeway) {
+bool compare_cells_to_int(Cell *a, int *b, int leeway) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (a[i].type != b[i]) {
             leeway--;
@@ -142,7 +142,7 @@ bool compare_cells_to_int(struct Cell *a, int *b, int leeway) {
     return true;
 }
 
-int compare_cells_to_int_count(struct Cell *a, int *b) {
+int compare_cells_to_int_count(Cell *a, int *b) {
     int hits = 0;
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (a[i].type != b[i]) hits++;
@@ -150,7 +150,7 @@ int compare_cells_to_int_count(struct Cell *a, int *b) {
     return hits;
 }
 
-bool compare_cells(struct Cell *a, struct Cell *b) {
+bool compare_cells(Cell *a, Cell *b) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (a[i].type != b[i].type) return false;
     }
@@ -168,7 +168,7 @@ bool compare_cells(struct Cell *a, struct Cell *b) {
 // the object field set to -1, confusingly, use -2 as the
 // object parameter.
 //
-void set_array(struct Cell *arr, int x, int y, int val, int object) {
+void set_array(Cell *arr, int x, int y, int val, int object) {
     if (x < 0 || x >= gs->gw || y < 0 || y >= gs->gh) return;
     
     arr[x+y*gs->gw].type = val;
@@ -207,7 +207,7 @@ void set(int x, int y, int val, int object) {
     set_array(gs->grid, x, y, val, object);
 }
 
-void swap_array(struct Cell *arr, int x1, int y1, int x2, int y2) {
+void swap_array(Cell *arr, int x1, int y1, int x2, int y2) {
     if (x1 < 0 || x1 >= gs->gw || y1 < 0 || y1 >= gs->gh) return;
     if (x2 < 0 || x2 >= gs->gw || y2 < 0 || y2 >= gs->gh) return;
     
@@ -217,7 +217,7 @@ void swap_array(struct Cell *arr, int x1, int y1, int x2, int y2) {
     arr[x2+y2*gs->gw].px = x2;
     arr[x2+y2*gs->gw].py = y2;
     
-    struct Cell temp = arr[x2+y2*gs->gw];
+    Cell temp = arr[x2+y2*gs->gw];
     arr[x2+y2*gs->gw] = arr[x1+y1*gs->gw];
     arr[x1+y1*gs->gw] = temp;
 }
@@ -250,13 +250,13 @@ void grid_init(int w, int h) {
     
     if (gs->grid_layers[0] == NULL) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-            gs->grid_layers[i] = PushArray(gs->persistent_memory, w*h, sizeof(struct Cell));
+            gs->grid_layers[i] = PushArray(gs->persistent_memory, w*h, sizeof(Cell));
         }
     }
     
     for (int i = 0; i < w*h; i++) {
         for (int j = 0; j < NUM_GRID_LAYERS; j++) {
-            gs->grid_layers[j][i] = (struct Cell){.type = 0, .object = -1 };
+            gs->grid_layers[j][i] = (Cell){.type = 0, .object = -1 };
             gs->grid_layers[j][i].rand = rand();
             gs->grid_layers[j][i].id = i;
         }
@@ -266,7 +266,7 @@ void grid_init(int w, int h) {
     gs->gas_grid = gs->grid_layers[1];
 }
 
-SDL_Color pixel_from_index_grid(struct Cell *grid, enum Cell_Type type, int i) {
+SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
     SDL_Color color = {0};
     int r, amt;
     
@@ -425,8 +425,8 @@ SDL_Color pixel_from_index(enum Cell_Type type, int i) {
 }
 
 // In this function, we use vx_acc and vy_acc as a higher precision position value.
-bool move_by_velocity_gas(struct Cell *arr, int x, int y) {
-    struct Cell *p = &arr[x+y*gs->gw];
+bool move_by_velocity_gas(Cell *arr, int x, int y) {
+    Cell *p = &arr[x+y*gs->gw];
     
     if (p->vx_acc == 0 && p->vy_acc == 0) {
         p->vx_acc = (f32) x;
@@ -452,8 +452,8 @@ bool move_by_velocity_gas(struct Cell *arr, int x, int y) {
     return false;
 }
 
-void move_by_velocity(struct Cell *arr, int x, int y) {
-    struct Cell *p = &arr[x+y*gs->gw];
+void move_by_velocity(Cell *arr, int x, int y) {
+    Cell *p = &arr[x+y*gs->gw];
     
     if (p->vx == 0 && p->vy == 0) {
         return;
@@ -540,7 +540,7 @@ bool can_gas_cell_swap(int x, int y) {
 
 // For x_direction and y_direction, a value of -1 or 1 should be used.
 // Returns amount of cells updated.
-int grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
+int grid_array_tick(Cell *array, int x_direction, int y_direction) {
     int start_y = (y_direction == 1) ? 0 : gs->gh-1;
     int start_x = (x_direction == 1) ? 0 : gs->gw-1;
     
@@ -556,7 +556,7 @@ int grid_array_tick(struct Cell *array, int x_direction, int y_direction) {
                 x = gs->gw - 1 - x;
             }
             
-            struct Cell *c = &array[x+y*gs->gw];
+            Cell *c = &array[x+y*gs->gw];
             
             // Make sure we're only dealing with non-objects.
             if (!c->type || c->object != -1 || c->updated) continue;
@@ -697,7 +697,7 @@ void simulation_tick(void) {
     gs->frames++;
     
     for (int i = 0; i < gs->levels[gs->level_current].source_cell_count; i++) {
-        struct Source_Cell *sc = &gs->levels[gs->level_current].source_cell[i];
+        Source_Cell *sc = &gs->levels[gs->level_current].source_cell[i];
         
         int x = sc->x;
         int y = sc->y;
@@ -719,7 +719,7 @@ void simulation_tick(void) {
     grid_array_tick(gs->gas_grid, 1, 1);
 }
 
-void grid_array_draw(struct Cell *array, Uint8 alpha) {
+void grid_array_draw(Cell *array, Uint8 alpha) {
     for (int i = 0; i < gs->gw*gs->gh; i++)
         array[i].updated = 0;
     
@@ -734,7 +734,7 @@ void grid_array_draw(struct Cell *array, Uint8 alpha) {
             
             const bool draw_lines = false;
             if (draw_lines) {
-                struct Line l = {x, y, array[x+y*gs->gw].px, array[x+y*gs->gw].py};
+                Line l = {x, y, array[x+y*gs->gw].px, array[x+y*gs->gw].py};
                 if (array[x+y*gs->gw].px != 0 && array[x+y*gs->gw].py != 0 && array[x+y*gs->gw].type == CELL_WATER) {
                     SDL_RenderDrawLine(gs->renderer, l.x1, l.y1, l.x2, l.y2);
                 } else {
@@ -793,8 +793,8 @@ void object_tick(int obj) {
     if (gs->current_tool == TOOL_GRABBER && gs->grabber.object_holding == obj) return;
     
     // Copy of grid to fall back to if we abort.
-    struct Cell *grid_temp = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
-    memcpy(grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
+    Cell *grid_temp = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(Cell));
+    memcpy(grid_temp, gs->grid, sizeof(Cell)*gs->gw*gs->gh);
     
     int dy = 1;
     
@@ -804,7 +804,7 @@ void object_tick(int obj) {
             
             if (y+1 >= gs->gh || gs->grid[x+(y+1)*gs->gw].type) {
                 // Abort!
-                memcpy(gs->grid, grid_temp, sizeof(struct Cell)*gs->gw*gs->gh);
+                memcpy(gs->grid, grid_temp, sizeof(Cell)*gs->gw*gs->gh);
                 return;
             } else {
                 swap(x, y, x, y+dy);
@@ -906,8 +906,8 @@ int object_attempt_move(int object, int dx, int dy) {
     f32 vx = ux; // = 0;
     f32 vy = uy; // = 0;
     
-    struct Cell *grid_temp = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(struct Cell));
-    memcpy(grid_temp, gs->grid, sizeof(struct Cell)*gs->gw*gs->gh);
+    Cell *grid_temp = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(Cell));
+    memcpy(grid_temp, gs->grid, sizeof(Cell)*gs->gw*gs->gh);
     
     /* while (sqrt(vx*vx + vy*vy) < len) { */
     /*     vx += ux; */
@@ -919,7 +919,7 @@ int object_attempt_move(int object, int dx, int dy) {
                 int ry = y + (int)vy;
                 if (rx < 0 || ry < 0 || rx >= gs->gw || ry >= gs->gh || gs->grid[rx+ry*gs->gw].type) {
                     // Abort
-                    memcpy(gs->grid, grid_temp, sizeof(struct Cell) * gs->gw * gs->gh);
+                    memcpy(gs->grid, grid_temp, sizeof(Cell) * gs->gw * gs->gh);
                     /* temp_dealloc(result_grid); */
                     return 0;
                 }
@@ -933,7 +933,7 @@ int object_attempt_move(int object, int dx, int dy) {
     return (int) (ux+uy*gs->gw);
 }
 
-int get_cell_index_by_id(struct Cell *array, int id) {
+int get_cell_index_by_id(Cell *array, int id) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (array[i].id == id) {
             return i;

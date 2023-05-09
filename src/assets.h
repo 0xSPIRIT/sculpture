@@ -43,6 +43,8 @@ enum {
     RENDER_TARGET_GUI_TOOLBAR, // The render target showing the tool buttons
     RENDER_TARGET_CHISEL_BLOCKER,
     RENDER_TARGET_CHISEL, // Use the same render target for each chisel.
+    RENDER_TARGET_HAMMER,
+    RENDER_TARGET_HAMMER2,
     RENDER_TARGET_GRID,
     RENDER_TARGET_3D,
     RENDER_TARGET_CONVERSION_PANEL,
@@ -51,7 +53,7 @@ enum {
     RENDER_TARGET_COUNT 
 };
 
-struct Audio {
+typedef struct Audio {
     Mix_Music *music_titlescreen;
     Mix_Music *music_creation;
     
@@ -63,10 +65,10 @@ struct Audio {
     
     Mix_Chunk *medium_chisel[6];
     Mix_Chunk *small_chisel, *large_chisel;
-};
+} Audio;
 
 // Only contains textures!
-struct Textures {
+typedef struct Textures {
     // List of render targets for each level
     // Index into this using enum.
     SDL_Texture *render_targets[LEVEL_COUNT][RENDER_TARGET_COUNT];
@@ -104,9 +106,9 @@ struct Textures {
     SDL_Texture *narrator_line[10];
     
     SDL_Texture *text_arrow;
-};
+} Textures;
 
-struct Surfaces {
+typedef struct Surfaces {
     SDL_Surface *renderer_3d;
     
     SDL_Surface *text[TEXT_INDEX_COUNT];
@@ -130,9 +132,9 @@ struct Surfaces {
     SDL_Surface *narrator_line[10];
     
     SDL_Surface *narrator;
-};
+} Surfaces;
 
-struct Fonts {
+typedef struct Fonts {
     TTF_Font *font,
     *font_times,
     *font_consolas,
@@ -142,7 +144,7 @@ struct Fonts {
     *font_title,
     *font_title_2,
     *font_titlescreen;
-};
+} Fonts;
 
 int font_sizes[100] = {
     20,

@@ -12,7 +12,7 @@ enum Chisel_State {
     CHISEL_STATE_CHISELING
 };
 
-struct Chisel {
+typedef struct Chisel {
     enum Chisel_State state;
     enum Chisel_Size size;
     int x, y, w, h;
@@ -28,6 +28,4 @@ struct Chisel {
     
     int did_chisel_this_frame;
     int num_times_chiseled;
-};
-
-void chisel_get_adjusted_positions(int angle, int size, int *x, int *y);
+} Chisel;

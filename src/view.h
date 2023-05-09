@@ -1,9 +1,9 @@
-struct View {
+typedef struct View {
     f64 x, y, w, h;
-};
+} View;
 
 #if 0
-void view_tick(struct View *view, struct Input *input) {
+void view_tick(View *view, Input *input) {
     f64 desired_x = 0;
     
     (void)input;

@@ -1,25 +1,25 @@
-void tooltip_reset(struct Tooltip *tooltip) {
+void tooltip_reset(Tooltip *tooltip) {
     if (tooltip->preview) {
         tooltip->preview->index=0;
     }
-    memset(tooltip, 0, sizeof(struct Tooltip));
+    memset(tooltip, 0, sizeof(Tooltip));
     tooltip->x = tooltip->y = -1;
 }
 
-void tooltip_set_position_to_cursor(struct Tooltip *tooltip, int type) {
-    struct Input *input = &gs->input;
+void tooltip_set_position_to_cursor(Tooltip *tooltip, int type) {
+    Input *input = &gs->input;
     tooltip->x = (f32)input->real_mx/gs->S;
     tooltip->y = (f32)input->real_my/gs->S - GUI_H/gs->S;
     tooltip->type = type;
 }
 
-void tooltip_set_position(struct Tooltip *tooltip, int x, int y, int type) {
+void tooltip_set_position(Tooltip *tooltip, int x, int y, int type) {
     tooltip->x = (f32) x;
     tooltip->y = (f32) y;
     tooltip->type = type;
 }
 
-void tooltip_draw_box(struct Tooltip *tooltip, int w, int h) {
+void tooltip_draw_box(Tooltip *tooltip, int w, int h) {
     tooltip->w = w;
     tooltip->h = h;
 
@@ -53,7 +53,7 @@ void tooltip_get_string(int type, int amt, char *out_str) {
 
 // This happens outside of the pixel-art texture, so we must
 // multiply all positions by scale.
-void tooltip_draw(struct Tooltip *tooltip) {
+void tooltip_draw(Tooltip *tooltip) {
     if (tooltip->x == -1 && tooltip->y == -1) return;
     
     const int margin = 8; // In real pixels.

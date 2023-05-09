@@ -99,7 +99,7 @@
 "We'd sculpt the little birds and trees.\n"\
 "And it'd feel good.\n"\
 
-struct Narrator {
+typedef struct Narrator {
     char current_lines[10][256];
     int current_line_count;
     
@@ -117,6 +117,6 @@ struct Narrator {
     bool first_frame;
     
     bool off;
-};
+} Narrator;
 
 void narrator_next_line(bool init);

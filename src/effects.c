@@ -23,13 +23,13 @@ void effect_set(int type, int w, int h) {
     }
     
     if (gs->current_effect.particles == NULL) {
-        gs->current_effect.particles = PushArray(gs->persistent_memory, gs->current_effect.particle_count, sizeof(struct Effect_Particle));
+        gs->current_effect.particles = PushArray(gs->persistent_memory, gs->current_effect.particle_count, sizeof(Effect_Particle));
     }
     
     switch (type) {
         case EFFECT_SNOW: {
             for (int i = 0; i < gs->current_effect.particle_count; i++) {
-                struct Effect_Particle *particle = &gs->current_effect.particles[i];
+                Effect_Particle *particle = &gs->current_effect.particles[i];
                 particle->x = (f32) (rand()%gs->current_effect.w);
                 particle->y = (f32) (rand()%gs->current_effect.h);
                 
@@ -48,7 +48,7 @@ void effect_set(int type, int w, int h) {
         }
         case EFFECT_RAIN: {
             for (int i = 0; i < gs->current_effect.particle_count; i++) {
-                struct Effect_Particle *particle = &gs->current_effect.particles[i];
+                Effect_Particle *particle = &gs->current_effect.particles[i];
                 particle->x = (f32) (rand()%gs->gw);
                 particle->y = (f32) (rand()%gs->gh);
                 
@@ -60,7 +60,7 @@ void effect_set(int type, int w, int h) {
     }
 }
 
-void particle_tick(struct Effect *effect, int i) {
+void particle_tick(Effect *effect, int i) {
     if (gs->levels[gs->level_current].state == LEVEL_STATE_OUTRO)
         return;
     if (gs->paused && !gs->step_one)
@@ -70,7 +70,7 @@ void particle_tick(struct Effect *effect, int i) {
     
     switch (effect->type) {
         case EFFECT_SNOW: case EFFECT_RAIN: {
-            struct Effect_Particle *particle = &gs->current_effect.particles[i];
+            Effect_Particle *particle = &gs->current_effect.particles[i];
             
             int reverse = (gs->level_current+1 >= 8) ? -1 : 1;
             
@@ -99,7 +99,7 @@ void particle_tick(struct Effect *effect, int i) {
     }
 }
 
-void effect_draw(struct Effect *effect, bool draw_points) {
+void effect_draw(Effect *effect, bool draw_points) {
     if (effect->type == EFFECT_NONE)
         return;
     
@@ -118,7 +118,7 @@ void effect_draw(struct Effect *effect, bool draw_points) {
             for (int i = 0; i < effect->particle_count; i++) {
                 particle_tick(effect, i);
                 
-                struct Effect_Particle *particle = &gs->current_effect.particles[i];
+                Effect_Particle *particle = &gs->current_effect.particles[i];
                 f32 length = (f32) sqrt(particle->vx*particle->vx + particle->vy*particle->vy);
                 
                 f32 max;
@@ -157,7 +157,7 @@ void effect_draw(struct Effect *effect, bool draw_points) {
             for (int i = 0; i < effect->particle_count; i++) {
                 particle_tick(effect, i);
                 
-                struct Effect_Particle *particle = &gs->current_effect.particles[i];
+                Effect_Particle *particle = &gs->current_effect.particles[i];
                 
                 int px = (int)particle->x;
                 int py = (int)particle->y;

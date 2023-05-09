@@ -66,7 +66,7 @@ enum Cell_Type {
     CELL_TYPE_COUNT
 };
 
-struct Cell {
+typedef struct Cell {
     enum Cell_Type type;  // The type of this cell.
     int id;               // Unique ID for each cell.
     int object;           // Object index the cell belongs. -1 for none
@@ -78,11 +78,11 @@ struct Cell {
     f32 vx_acc, vy_acc;   // When vel < 1, we need to keep track of that
     int px, py;           // Previous positions
     int rand;             // Random value per cell
-};
+} Cell;
 
 // Provides higher fidelity X and Y values
 // SOA not AOS for simplicity.
-struct Dust_Data {
+typedef struct Dust_Data {
     enum Cell_Type *types;
     f64 *xs;
     f64 *ys;
@@ -90,10 +90,10 @@ struct Dust_Data {
     f64 *vys;
     int *timers;
     int count;
-};
+} Dust_Data;
 
-struct Line {
+typedef struct Line {
     int x1, y1, x2, y2;
-};
+} Line;
 
-int compare_cells_to_int_count(struct Cell *a, int *b);
+int compare_cells_to_int_count(Cell *a, int *b);

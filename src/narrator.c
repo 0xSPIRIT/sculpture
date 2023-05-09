@@ -63,9 +63,9 @@ char* get_narration(int level) {
 }
 
 void narrator_init(int level) {
-    struct Narrator *n = &gs->narrator;
+    Narrator *n = &gs->narrator;
     
-    memset(&gs->narrator, 0, sizeof(struct Narrator));
+    memset(&gs->narrator, 0, sizeof(Narrator));
     
     char *narration = NULL;
     
@@ -100,7 +100,7 @@ void narrator_init(int level) {
 }
 
 void narrator_next_line(bool init) {
-    struct Narrator *n = &gs->narrator;
+    Narrator *n = &gs->narrator;
     
     n->update = true; // Gets reset in narrator_run
     
@@ -133,7 +133,7 @@ void narrator_next_line(bool init) {
 }
 
 void narrator_tick() {
-    struct Narrator *n = &gs->narrator;
+    Narrator *n = &gs->narrator;
     
     n->delay--;
     if (n->delay > 0) return;
@@ -175,7 +175,7 @@ void narrator_tick() {
 }
 
 void narrator_run(SDL_Color col) {
-    struct Narrator *n = &gs->narrator;
+    Narrator *n = &gs->narrator;
     
     if (n->off) return;
     if (n->delay > 0) return;
@@ -189,7 +189,7 @@ void narrator_run(SDL_Color col) {
         } else {
             level_set_state(gs->level_current, LEVEL_STATE_INTRO);
             effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
-            memset(&gs->narrator, 0, sizeof(struct Narrator));
+            memset(&gs->narrator, 0, sizeof(Narrator));
         }
         return;
     }

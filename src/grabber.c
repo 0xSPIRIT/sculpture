@@ -4,7 +4,7 @@ void grabber_init(void) {
 }
 
 void grabber_tick(void) {
-    struct Grabber *grabber = &gs->grabber;
+    Grabber *grabber = &gs->grabber;
     
     if (gs->tutorial.active) return;
 

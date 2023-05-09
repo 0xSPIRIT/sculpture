@@ -1,11 +1,11 @@
 void deleter_init(void) {
-    struct Deleter *deleter = &gs->deleter;
+    Deleter *deleter = &gs->deleter;
     deleter->texture = gs->textures.deleter;
     SDL_QueryTexture(deleter->texture, NULL, NULL, &deleter->w, &deleter->h);
 }
 
 void deleter_delete(void) {
-    struct Deleter *deleter = &gs->deleter;
+    Deleter *deleter = &gs->deleter;
     
     save_state_to_next();
     
@@ -17,8 +17,8 @@ void deleter_delete(void) {
 }
 
 void deleter_tick(void) {
-    struct Deleter *deleter = &gs->deleter;
-    struct Input *input = &gs->input;
+    Deleter *deleter = &gs->deleter;
+    Input *input = &gs->input;
     
     if (gs->is_mouse_over_any_button) return;
     
@@ -50,7 +50,7 @@ void deleter_tick(void) {
 }
 
 void deleter_draw(void) {
-    struct Deleter *deleter = &gs->deleter;
+    Deleter *deleter = &gs->deleter;
     
     const SDL_Rect dst = {
         (int) deleter->x, (int) deleter->y,

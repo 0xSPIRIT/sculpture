@@ -2,9 +2,11 @@
 #define OVERLAY_INTERFACE_ERASER_MODE 5 // Index into interface->buttons
 #define OVERLAY_INTERFACE_CLEAR_ALL 6 // Index into interface->buttons
 
-struct Overlay_Interface {
-    struct Button *buttons[OVERLAY_INTERFACE_BUTTONS];
-};
+typedef struct Button Button;
+
+typedef struct Overlay_Interface {
+    Button *buttons[OVERLAY_INTERFACE_BUTTONS];
+} Overlay_Interface;
 
 // Function prototypes so that gui.c can find it.
 // (overlay_interface.c is included before gui.c

@@ -5,7 +5,7 @@ enum {
     HAMMER_STATE_BLOWBACK
 };
 
-struct Hammer {
+typedef struct Hammer {
     int state;
     
     int dir;
@@ -16,4 +16,4 @@ struct Hammer {
     SDL_Texture *tex;
     
     f64 t;
-};
+} Hammer;

@@ -1,5 +1,5 @@
 void credits_run(void) {
-    struct Credits *c = &gs->credits;
+    Credits *c = &gs->credits;
     
     if (c->state == CREDITS_OFF) return;
     

@@ -12,7 +12,7 @@ enum Object3D_State {
     OBJECT_DONE
 };
 
-struct Object3D {
+typedef struct Object3D {
     bool active;
     SDL_Texture *texture;
     int state;
@@ -24,7 +24,7 @@ struct Object3D {
     int t, hold;
     f64 t2;
     int timer;
-};
+} Object3D;
 
 typedef struct vec2 {
     f32 x, y;

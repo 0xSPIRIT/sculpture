@@ -12,7 +12,7 @@ void set_fade(int id, f64 start, f64 end) {
 }
 
 void reset_fade() {
-    memset(&gs->fade, 0, sizeof(struct Fade));
+    memset(&gs->fade, 0, sizeof(Fade));
 }
 
 void fade_draw() {

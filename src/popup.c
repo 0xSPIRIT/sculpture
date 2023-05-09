@@ -1,5 +1,5 @@
 void set_text_field(const char *description, const char *initial_text, void (*on_return)(const char *)) {
-    struct Text_Field *text_field = &gs->text_field;
+    Text_Field *text_field = &gs->text_field;
     
     text_field->active = true;
     text_field->on_return = on_return;
@@ -9,7 +9,7 @@ void set_text_field(const char *description, const char *initial_text, void (*on
 }
 
 void text_field_tick(void) {
-    struct Text_Field *text_field = &gs->text_field;
+    Text_Field *text_field = &gs->text_field;
     
     if (!text_field->active) return;
     
@@ -46,7 +46,7 @@ void text_field_tick(void) {
 }
 
 void text_field_draw(void) {
-    struct Text_Field *text_field = &gs->text_field;
+    Text_Field *text_field = &gs->text_field;
     
     if (!text_field->active) return;
     

@@ -10,7 +10,7 @@ enum Overlay_Tool {
     OVERLAY_TOOL_ERASER_RECTANGLE,
 };
 
-struct Overlay_Changes {
+typedef struct Overlay_Changes {
     int *grids[MAX_GRID_CHANGES];
     int count, index;
     
@@ -18,16 +18,16 @@ struct Overlay_Changes {
     bool was_grid_none; // Was the games grid completely zeroed out at some point?
     
     f32 alpha;
-};
+} Overlay_Changes;
 
-struct Overlay {
+typedef struct Overlay {
     int *grid;
     int *temp_grid;
     enum Overlay_Tool tool;
     
     int current_material;
     
-    struct Overlay_Changes changes;
+    Overlay_Changes changes;
     
     SDL_Rect r;
     f32 size;
@@ -36,4 +36,4 @@ struct Overlay {
     bool show;
     
     int temp_x, temp_y;
-};
+} Overlay;

@@ -93,7 +93,7 @@
     "your inventory.\n"
 
 // A rectangle containing text, and an "Okay" button.
-struct Tutorial_Rect {
+typedef struct Tutorial_Rect {
     bool active;
     
     TTF_Font *font;
@@ -110,13 +110,13 @@ struct Tutorial_Rect {
     f64 x, y; // 0 to 1
     SDL_Rect rect;
     
-    struct Button *ok_button;
+    Button *ok_button;
     
     struct Tutorial_Rect *next;
-};
+} Tutorial_Rect;
 
-struct Tutorial_Rect* tutorial_rect(const char *str,
-                                    f64 x,
-                                    f64 y,
-                                    struct Tutorial_Rect *next);
+Tutorial_Rect* tutorial_rect(const char *str,
+                             f64 x,
+                             f64 y,
+                             Tutorial_Rect *next);
 void tutorial_rect_close(void*);

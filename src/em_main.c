@@ -14,12 +14,12 @@
 #include <dirent.h>
 #include <errno.h>
 
-struct GameLoopData {
-    struct Memory_Arena persistent_memory, transient_memory;
-    struct Game_State *game_state;
-};
+typedef struct GameLoopData {
+    Memory_Arena persistent_memory, transient_memory;
+    Game_State *game_state;
+} GameLoopData;
 
-void game_init_sdl(struct Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
+void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
     SDL_Init(SDL_INIT_VIDEO);
     Assert(Mix_Init(MIX_INIT_OGG) != 0);
     
@@ -51,11 +51,11 @@ void game_init_sdl(struct Game_State *state, const char *window_title, int w, in
     }
 }
 
-void make_memory_arena(struct Memory_Arena *persistent_memory, struct Memory_Arena *transient_memory) {
+void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_memory) {
     persistent_memory->size = Megabytes(512);
     transient_memory->size = Megabytes(8);
     
-    AssertNW(persistent_memory->size >= sizeof(struct Game_State));
+    AssertNW(persistent_memory->size >= sizeof(Game_State));
     
     //void* base_address = (void*) Terabytes(2);
     
@@ -76,7 +76,7 @@ bool prefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
 }
 
-void game_init_a(struct Game_State *state) {
+void game_init_a(Game_State *state) {
     srand((unsigned int) time(0));
     
     if (state->S == 0)
@@ -110,7 +110,8 @@ void game_init_a(struct Game_State *state) {
     
     fonts_init(&state->fonts);
 }
-void game_deinit(struct Game_State *state) {
+
+void game_deinit(Game_State *state) {
     //textures_deinit(&state->textures);
     surfaces_deinit(&state->surfaces);
     fonts_deinit(&state->fonts);
@@ -120,7 +121,7 @@ void game_deinit(struct Game_State *state) {
 }
 
 void em_mainloop(void *arg) {
-    struct GameLoopData *data = (struct GameLoopData*) arg;
+    GameLoopData *data = (GameLoopData*) arg;
     
     input_tick(data->game_state);
     
@@ -140,10 +141,10 @@ void em_mainloop(void *arg) {
 
 int main(int argc, char **argv)
 {
-    struct GameLoopData data;
+    GameLoopData data;
     
     DIR *d;
-    struct dirent *dir;
+    dirent *dir;
     d = opendir(".");
     if (d) {
         while ((dir = readdir(d)) != NULL) {
@@ -153,7 +154,7 @@ int main(int argc, char **argv)
     }
     
     make_memory_arena(&data.persistent_memory, &data.transient_memory);
-    data.game_state = PushSize(&data.persistent_memory, sizeof(struct Game_State));
+    data.game_state = PushSize(&data.persistent_memory, sizeof(Game_State));
     gs = data.game_state;
     
     gs->use_software_renderer = false;

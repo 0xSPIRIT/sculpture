@@ -1,4 +1,4 @@
-void calculate_tutorial_rect_size(struct Tutorial_Rect *tut) {
+void calculate_tutorial_rect_size(Tutorial_Rect *tut) {
     tut->margin = Scale(8);
     
     int fw=0, fh=0;
@@ -36,12 +36,12 @@ void calculate_tutorial_rect_size(struct Tutorial_Rect *tut) {
     tut->ok_button->y = tut->rect.y + tut->rect.h - tut->ok_button->h - tut->margin;
 }
 
-struct Tutorial_Rect* tutorial_rect(const char *str,
+Tutorial_Rect* tutorial_rect(const char *str,
                                     f64 x,
                                     f64 y,
-                                    struct Tutorial_Rect *next)
+                                    Tutorial_Rect *next)
 {
-    struct Tutorial_Rect *tut = PushSize(gs->persistent_memory, sizeof(struct Tutorial_Rect));
+    Tutorial_Rect *tut = PushSize(gs->persistent_memory, sizeof(Tutorial_Rect));
     
     tut->font = gs->fonts.font;
     tut->active = gs->show_tutorials;
@@ -80,7 +80,7 @@ struct Tutorial_Rect* tutorial_rect(const char *str,
 void tutorial_rect_close(void *ptr) {
     (void)ptr;
     
-    struct Tutorial_Rect *tut = &gs->tutorial;
+    Tutorial_Rect *tut = &gs->tutorial;
     tut->active = false;
     
     for (int i = 0; i < MAX_TUTORIAL_LINES; i++) {
@@ -95,7 +95,7 @@ void tutorial_rect_close(void *ptr) {
 }
 
 void tutorial_rect_run() {
-    struct Tutorial_Rect *tut = &gs->tutorial;
+    Tutorial_Rect *tut = &gs->tutorial;
     
     if (!SHOW_TUTORIAL) {
         while (tut->active)
@@ -162,17 +162,17 @@ void check_for_tutorial() {
     
     switch (l+1) {
         case 1: {
-            struct Tutorial_Rect *t3 = tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
+            Tutorial_Rect *t3 = tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
                                                      NormX(32),
                                                      NormY((768.8/8.0)+32),
                                                      NULL);
             
-            struct Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_CHISEL_STRING,
+            Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_CHISEL_STRING,
                                                      NormX(32),
                                                      NormY((768.8/8.0)+32),
                                                      t3);
             
-            struct Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_OVERLAY_STRING,
+            Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_OVERLAY_STRING,
                                                      NormX(32),
                                                      NormY((768.8/8.0)+32),
                                                      t2);

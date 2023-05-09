@@ -1,5 +1,5 @@
 void conversions_gui_init(void) {
-    struct Conversions *c = &gs->conversions;
+    Conversions *c = &gs->conversions;
     
     FILE *f = fopen(RES_DIR "layout_converter.txt", "r");
     
@@ -27,7 +27,7 @@ void conversions_gui_init(void) {
 }
 
 void conversions_gui_tick(void) {
-    struct Conversions *c = &gs->conversions;
+    Conversions *c = &gs->conversions;
     
     if (!gs->text_field.active && gs->input.keys_pressed[SDL_SCANCODE_I]) {
         c->active = !c->active;
@@ -35,7 +35,7 @@ void conversions_gui_tick(void) {
 }
 
 void conversions_gui_draw(void) {
-    struct Conversions *c = &gs->conversions;
+    Conversions *c = &gs->conversions;
     
     const SDL_Color bg = {0, 0, 0, 200};
     

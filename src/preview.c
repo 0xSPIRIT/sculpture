@@ -1,11 +1,11 @@
-void preview_start_recording(struct Preview *p, const char *name) {
+void preview_start_recording(Preview *p, const char *name) {
     strcpy(p->name, name);
     p->length = 0;
-    memset(p->states, 0, sizeof(struct Preview_State)*MAX_PREVIEW_STATES);
+    memset(p->states, 0, sizeof(Preview_State)*MAX_PREVIEW_STATES);
     p->recording = true;
 }
 
-void preview_finish_recording(struct Preview *p) {
+void preview_finish_recording(Preview *p) {
     char filename[64] = {0};
     sprintf(filename, RES_DIR "previews/%s", p->name);
     
@@ -20,17 +20,17 @@ void preview_finish_recording(struct Preview *p) {
            PREVIEW_GRID_SIZE,
            fp);
     fwrite((const void*)p->states,
-           sizeof(struct Preview_State),
+           sizeof(Preview_State),
            p->length,
            fp);
     
     fclose(fp);
 }
 
-void preview_load(struct Preview *p, const char *file) {
+void preview_load(Preview *p, const char *file) {
     FILE *fp = fopen(file, "rb");
     
-    memset(p, 0, sizeof(struct Preview));
+    memset(p, 0, sizeof(Preview));
     p->recording = false;
     
     fscanf(fp, "%d\n", &p->length);
@@ -39,7 +39,7 @@ void preview_load(struct Preview *p, const char *file) {
           PREVIEW_GRID_SIZE,
           fp);
     fread(p->states,
-          sizeof(struct Preview_State),
+          sizeof(Preview_State),
           p->length,
           fp);
     
@@ -57,7 +57,7 @@ void previews_load(void) {
                  RES_DIR "previews/placer.bin");
 }
 
-void preview_record(struct Preview *p) {
+void preview_record(Preview *p) {
     if (p->length > MAX_PREVIEW_STATES) {
         preview_finish_recording(p);
         return;
@@ -87,7 +87,7 @@ void preview_record(struct Preview *p) {
     p->length++;
 }
 
-void preview_draw(struct Preview *p, int dx, int dy, int scale) {
+void preview_draw(Preview *p, int dx, int dy, int scale) {
     Assert(gs->gw == 64);
     Assert(gs->gh == 64);
     
@@ -152,7 +152,7 @@ void preview_draw(struct Preview *p, int dx, int dy, int scale) {
             int y = p->states[p->index].y;
             int angle = p->states[p->index].angle;
             
-            struct Chisel *chisel = NULL;
+            Chisel *chisel = NULL;
             if (tool == TOOL_CHISEL_SMALL)  chisel = &gs->chisel_small;
             if (tool == TOOL_CHISEL_MEDIUM) chisel = &gs->chisel_medium;
             if (tool == TOOL_CHISEL_LARGE)  chisel = &gs->chisel_large;

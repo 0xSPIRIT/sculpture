@@ -4,7 +4,7 @@ enum Credits_State {
     CREDITS_SHOW,
 };
 
-struct Credits {
+typedef struct Credits {
     int state;
     int timer;
-};
+} Credits;

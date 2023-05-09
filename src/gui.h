@@ -23,7 +23,7 @@ enum Button_Type {
     BUTTON_TYPE_TUTORIAL
 };
 
-struct Tooltip {
+typedef struct Tooltip {
     enum Tooltip_Type type;
     
     bool set_this_frame;
@@ -32,30 +32,30 @@ struct Tooltip {
     char str[MAX_TOOLTIP_LEN][MAX_TOOLTIP_LINE_LEN];
     int w, h;
     
-    struct Preview *preview;
-};
+    Preview *preview;
+} Tooltip;
 
-struct Message {
+typedef struct Message {
     char str[100];
     Uint8 alpha;
-};
+} Message;
 
-struct GUI {
+typedef struct GUI {
     bool popup;
     f32 popup_y, popup_y_vel, popup_h; // For the bottom part
     f32 popup_inventory_y, popup_inventory_y_vel, popup_inventory_h;
     SDL_Texture *popup_texture;
-    struct Tooltip tooltip;
+    Tooltip tooltip;
     
-    struct Overlay_Interface overlay_interface;
+    Overlay_Interface overlay_interface;
     
-    struct Button *tool_buttons[TOOL_COUNT];
+    Button *tool_buttons[TOOL_COUNT];
     
-    struct Message message_stack[MAX_MESSAGE_STACK];
+    Message message_stack[MAX_MESSAGE_STACK];
     int message_count;
-};
+} GUI;
 
-struct Button {
+typedef struct Button {
     enum Button_Type type;
     int x, y, w, h;
     int index;
@@ -66,8 +66,8 @@ struct Button {
     bool highlighted;
     bool just_had_tooltip; // Used to disable the GUI tooltip when the mouse goes off me.
     void (*on_pressed)(void*);
-    struct Preview *preview;
-};
+    Preview *preview;
+} Button;
 
 enum Converter_Type {
     CONVERTER_MATERIAL,
@@ -75,10 +75,10 @@ enum Converter_Type {
     CONVERTER_COUNT
 };
 
-struct Arrow {
+typedef struct Arrow {
     SDL_Texture *texture;
     int x, y, w, h;
-};
+} Arrow;
 
 enum Converter_State {
     CONVERTER_OFF,
@@ -86,7 +86,7 @@ enum Converter_State {
     CONVERTER_INACTIVE // Used in levels where the converter is greyed out.
 };
 
-struct Converter {
+typedef struct Converter {
     enum Converter_Type type;
     enum Converter_State state;
 
@@ -97,15 +97,17 @@ struct Converter {
 
     int timer_max, timer_current;
     
-    struct Slot *slots;
+    Slot *slots;
     int slot_count;
 
-    struct Button *go_button;
+    Button *go_button;
 
-    struct Arrow arrow;
-};
+    Arrow arrow;
+} Converter;
 
-struct Converter_Checker {
-    struct Item *input1, *input2;
+typedef struct Converter Converter;
+
+typedef struct Converter_Checker {
+    Item *input1, *input2;
     int current; // 1 or 2 [0 when first initialized]
-};
+} Converter_Checker;

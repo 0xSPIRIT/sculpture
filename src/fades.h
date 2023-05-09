@@ -11,9 +11,9 @@ enum {
     FADE_LEVEL_NARRATION,
 };
 
-struct Fade {
+typedef struct Fade {
     int id;
     bool active;
     f64 alpha, start_alpha, desired_alpha, time;
     f64 dt;
-};
+} Fade;

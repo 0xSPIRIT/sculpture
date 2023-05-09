@@ -40,39 +40,51 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
 
 // Creates all render targets for all the levels.
 void render_targets_init(SDL_Renderer *renderer,
-                         struct Level *levels,
-                         struct Textures *textures) {
+                         Level *levels,
+                         Textures *textures) {
     int width = gs->desktop_w;
     int height = gs->desktop_h;
     
     for (int lvl = 0; lvl < LEVEL_COUNT; lvl++) {
-        struct Level *l = &levels[lvl];
+        Level *l = &levels[lvl];
         Assert(l->w != 0 && l->h != 0);
         
         for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
-            if (i == RENDER_TARGET_MASTER) {
-                textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
-                continue;
-            }
-            if (i == RENDER_TARGET_CONVERSION_PANEL || i == RENDER_TARGET_OUTRO) {
-                textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
-                SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
-                continue;
-            }
-            if (i == RENDER_TARGET_GUI_TOOLBAR) {
-                textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
-                Assert(textures->render_targets[lvl][i]);
-                continue;
-            }
-            if (i == RENDER_TARGET_3D) {
-                textures->render_targets[lvl][i] = SDL_CreateTexture(renderer,
-                                                                     ALASKA_PIXELFORMAT,
-                                                                     SDL_TEXTUREACCESS_STREAMING,
-                                                                     SCALE_3D*gs->window_width,
-                                                                     SCALE_3D*gs->window_height);
-                SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
-                Assert(textures->render_targets[lvl][i]);
-                continue;
+            switch (i) {
+                case RENDER_TARGET_MASTER: {
+                    textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
+                    continue;
+                }
+                case RENDER_TARGET_CONVERSION_PANEL: case RENDER_TARGET_OUTRO: {
+                    textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
+                    SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
+                    continue;
+                }
+                case RENDER_TARGET_GUI_TOOLBAR: {
+                    textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
+                    Assert(textures->render_targets[lvl][i]);
+                    continue;
+                }
+                case RENDER_TARGET_3D: {
+                    textures->render_targets[lvl][i] = SDL_CreateTexture(renderer,
+                                                                         ALASKA_PIXELFORMAT,
+                                                                         SDL_TEXTUREACCESS_STREAMING,
+                                                                         SCALE_3D*gs->window_width,
+                                                                         SCALE_3D*gs->window_height);
+                    SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
+                    Assert(textures->render_targets[lvl][i]);
+                    continue;
+                }
+                case RENDER_TARGET_HAMMER: {
+                    textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
+                    SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
+                    continue;
+                }
+                case RENDER_TARGET_HAMMER2: {
+                    textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
+                    SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
+                    continue;
+                }
             }
             
             textures->render_targets[lvl][i] = CreateRenderTarget(l->w, l->h);
@@ -81,10 +93,10 @@ void render_targets_init(SDL_Renderer *renderer,
     }
 }
 
-void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
+void textures_init(SDL_Renderer *renderer, Textures *textures) {
     SDL_Surface *surf = NULL;
     
-    memset(textures, 0, sizeof(struct Textures));
+    memset(textures, 0, sizeof(Textures));
     
     // Converter Item Textures || previously item_init()
     for (int i = 0; i < CELL_TYPE_COUNT; i++) {
@@ -160,9 +172,9 @@ void textures_init(SDL_Renderer *renderer, struct Textures *textures) {
     SDL_FreeSurface(pixel_format_surf);
 }
 
-void textures_deinit(struct Textures *textures) {
+void textures_deinit(Textures *textures) {
     int *texs = (int*) textures;
-    size_t tex_count = sizeof(struct Textures)/sizeof(SDL_Texture*);
+    size_t tex_count = sizeof(Textures)/sizeof(SDL_Texture*);
     
     for (int i = 0; i < tex_count; i++) {
         if ((SDL_Texture*)(texs+i) != NULL) {
@@ -171,7 +183,7 @@ void textures_deinit(struct Textures *textures) {
     }
 }
 
-void surfaces_init(struct Surfaces *surfaces) {
+void surfaces_init(Surfaces *surfaces) {
     surfaces->a = NULL;
     surfaces->renderer_3d = SDL_CreateRGBSurfaceWithFormat(0, gs->desktop_w, gs->desktop_h, 32, ALASKA_PIXELFORMAT);
     //surfaces->a = IMG_Load(RES_DIR "something.png");
@@ -186,9 +198,9 @@ void surfaces_init(struct Surfaces *surfaces) {
     surfaces->triangle_blob_surface = IMG_Load(RES_DIR "triangle_blob.png");
 }
 
-void surfaces_deinit(struct Surfaces *surfaces) {
+void surfaces_deinit(Surfaces *surfaces) {
     SDL_Surface **surfs = (SDL_Surface**) surfaces;
-    size_t surf_count = sizeof(struct Surfaces)/sizeof(SDL_Surface*);
+    size_t surf_count = sizeof(Surfaces)/sizeof(SDL_Surface*);
     
     for (size_t i = 0; i < surf_count; i++) {
         if (surfs[i])
@@ -196,7 +208,7 @@ void surfaces_deinit(struct Surfaces *surfaces) {
     }
 }
 
-void fonts_init(struct Fonts *fonts) {
+void fonts_init(Fonts *fonts) {
     // THESE MUST BE IN ORDER IN THE FONT STRUCT
     fonts->font          = TTF_OpenFont(RES_DIR "Courier Prime.ttf", Scale(font_sizes[0]));
     fonts->font_times    = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(font_sizes[1]));
@@ -209,23 +221,23 @@ void fonts_init(struct Fonts *fonts) {
     fonts->font_titlescreen = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(font_sizes[8]));
     
     TTF_Font **ttf_fonts = (TTF_Font**) fonts;
-    size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);
+    size_t font_count = sizeof(Fonts)/sizeof(TTF_Font*);
     
     for (size_t i = 0; i < font_count; i++) {
         TTF_SetFontHinting(ttf_fonts[i], TTF_HINTING_LIGHT_SUBPIXEL);
     }
 }
 
-void fonts_deinit(struct Fonts *fonts) {
+void fonts_deinit(Fonts *fonts) {
     TTF_Font **ttf_fonts = (TTF_Font**) fonts;
-    size_t font_count = sizeof(struct Fonts)/sizeof(TTF_Font*);
+    size_t font_count = sizeof(Fonts)/sizeof(TTF_Font*);
     
     for (size_t i = 0; i < font_count; i++) {
         TTF_CloseFont(ttf_fonts[i]);
     }
 }
 
-void audio_init(struct Audio *audio) {
+void audio_init(Audio *audio) {
     audio->music_titlescreen = Mix_LoadMUS(RES_DIR "audio/titlescreen.ogg");
     audio->music_creation = Mix_LoadMUS(RES_DIR "audio/music_creation.ogg");
     
@@ -251,7 +263,7 @@ void audio_init(struct Audio *audio) {
     Mix_Volume(AUDIO_CHANNEL_GUI, Volume(0.20));
 }
 
-void audio_deinit(struct Audio *audio) {
+void audio_deinit(Audio *audio) {
     Mix_FreeMusic(audio->music_titlescreen);
     Mix_FreeMusic(audio->music_creation);
     for (int i = 0; i < 6; i++)

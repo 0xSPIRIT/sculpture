@@ -41,11 +41,11 @@
 // use transient allocation.
 //   [PushArray(gs->transient_memory, ...)]
 //
-struct Memory_Arena {
+typedef struct Memory_Arena {
     Uint8 *data;
     Uint8 *cursor;
     Uint64 size;
-};
+} Memory_Arena;
 
 enum State_Game {
     GAME_STATE_TITLESCREEN,
@@ -56,49 +56,49 @@ enum State_Game {
 // If you're adding values at runtime into the struct, add it
 // to the end, because we have pointers pointing to variables
 // in here and we don't want to mess that up.
-struct Game_State {
-    struct Memory_Arena *persistent_memory, *transient_memory;
+typedef struct Game_State {
+    Memory_Arena *persistent_memory, *transient_memory;
     
     bool use_software_renderer;
     
-    struct SDL_Window *window;
-    struct SDL_Renderer *renderer;
+    SDL_Window *window;
+    SDL_Renderer *renderer;
     
-    struct Preview current_preview;
-    struct Preview tool_previews[TOOL_COUNT];
+    Preview current_preview;
+    Preview tool_previews[TOOL_COUNT];
     
     enum State_Game gamestate;
     
-    struct Titlescreen titlescreen;
+    Titlescreen titlescreen;
     
     SDL_Event *event;
     
-    struct Fade fade;
+    Fade fade;
     
-    struct Conversions conversions;
+    Conversions conversions;
     
-    struct Tutorial_Rect tutorial;
+    Tutorial_Rect tutorial;
     bool show_tutorials;
     
     bool level1_set_highlighted;
     
-    struct Credits credits;
-    struct Narrator narrator;
-    struct Object3D obj;
+    Credits credits;
+    Narrator narrator;
+    Object3D obj;
     
-    struct View view;
+    View view;
     
-    struct Timelapse timelapse;
+    Timelapse timelapse;
     
-    struct Audio audio;
+    Audio audio;
     
     int item_prev_amounts[ITEM_COUNT];
     // the amount an item has at the time it was last drawn.
     // (The rendering data is stored in textures.items and surfaces.items)
     
-    struct Textures textures; // Contains pointers to SDL textures.
-    struct Surfaces surfaces;
-    struct Fonts fonts;
+    Textures textures; // Contains pointers to SDL textures.
+    Surfaces surfaces;
+    Fonts fonts;
     char texts[TEXT_INDEX_COUNT][128];
     
     bool is_mouse_over_any_button;
@@ -116,9 +116,9 @@ struct Game_State {
     
     enum Blob_Type blob_type;
     
-    struct Dust_Data dust_data;
-    struct Cell *grid_layers[NUM_GRID_LAYERS]; 
-    struct Cell *grid, *gas_grid; // Pointers into grid_layers
+    Dust_Data dust_data;
+    Cell *grid_layers[NUM_GRID_LAYERS]; 
+    Cell *grid, *gas_grid; // Pointers into grid_layers
     
     // grid = regular everyday grid
     // gas_grid = only used for gases
@@ -135,39 +135,39 @@ struct Game_State {
     int frames;
     bool step_one;
     
-    struct Inventory inventory;
+    Inventory inventory;
     
-    struct Deleter deleter;
-    struct Overlay overlay;
+    Deleter deleter;
+    Overlay overlay;
     
     clock_t global_start, global_end;
     
     bool undo_initialized;
     
-    struct Save_State save_states[MAX_UNDO];
+    Save_State save_states[MAX_UNDO];
     int save_state_count; // Number of states saved.
     
-    struct Text_Field text_field;
+    Text_Field text_field;
     
     bool creative_mode;
     
-    struct Placer placers[PLACER_COUNT];
+    Placer placers[PLACER_COUNT];
     int current_placer;
     
-    struct Level levels[LEVEL_COUNT];
+    Level levels[LEVEL_COUNT];
     int level_current, level_count, new_level;
     
-    struct GUI gui;
+    GUI gui;
     SDL_Texture *gui_texture;
     
-    struct Input input;
+    Input input;
     
-    struct Grabber grabber;
-    struct Effect current_effect;
+    Grabber grabber;
+    Effect current_effect;
     
-    struct Converter *material_converter, *fuel_converter;
+    Converter *material_converter, *fuel_converter;
     
-    struct Item item_holding;
+    Item item_holding;
     
     bool did_chisel_tutorial;
     bool did_undo_tutorial;
@@ -176,13 +176,13 @@ struct Game_State {
     bool did_fuel_converter_tutorial;
     bool did_placer_rectangle_tutorial;
     
-    struct Hammer hammer;
+    Hammer hammer;
     
-    struct Chisel chisel_small, chisel_medium, chisel_large;
-    struct Chisel *chisel;
-};
+    Chisel chisel_small, chisel_medium, chisel_large;
+    Chisel *chisel;
+} Game_State;
 
-struct Game_State *gs = NULL;
+Game_State *gs = NULL;
 
 void _assert(SDL_Window *window, const char *func, const char *file, const int line) {
     char message[64] = {0};
@@ -210,7 +210,7 @@ void _assert(SDL_Window *window, const char *func, const char *file, const int l
 }
 
 // Gives pointer to zeroed memory.
-void *_push_array(struct Memory_Arena *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
+void *_push_array(Memory_Arena *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
     void *output = NULL;
     
@@ -218,7 +218,7 @@ void *_push_array(struct Memory_Arena *memory, Uint64 num, Uint64 size_individua
     
     const int debug_memory = false;
     
-    if (debug_memory && gs) {
+    if (debug_memory && gs != NULL) {
         char memory_name[64] = {0};
         if (memory == gs->persistent_memory) {
             strcpy(memory_name, "Persistent");

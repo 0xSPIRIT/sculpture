@@ -1,5 +1,5 @@
-void input_tick(struct Game_State *state) {
-    struct Input *in = &state->input;
+void input_tick(Game_State *state) {
+    Input *in = &state->input;
     
     in->pmx = in->mx;
     in->pmy = in->my;

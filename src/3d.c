@@ -2,13 +2,13 @@
 // Simple 3D Software Renderer
 //
 
-struct TriangleDrawData {
+typedef struct TriangleDrawData {
     int start_y, end_y;
     Uint32 *pixels;
     SDL_Surface *surf;
     int w;
     Vertex points[3];
-};
+} TriangleDrawData;
 
 
 // 3 vertices required
@@ -45,7 +45,7 @@ void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *
 }
 
 void draw_triangle(void *ptr) {
-    struct TriangleDrawData *data = (struct TriangleDrawData*)ptr;
+    TriangleDrawData *data = (TriangleDrawData*)ptr;
     
     for (int y = data->start_y; y < data->end_y; y++) {
         draw_triangle_row(data->pixels, data->surf, data->w, y, data->points);
@@ -66,7 +66,7 @@ void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p)
     // interpolation techniques for texture
     // coordinates and positions.
     
-    struct TriangleDrawData data = {
+    TriangleDrawData data = {
         0, h,
         pixels,
         surf,
@@ -88,8 +88,8 @@ void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p)
 #endif
 }
 
-void object_activate(struct Object3D *obj) {
-    memset(obj, 0, sizeof(struct Object3D));
+void object_activate(Object3D *obj) {
+    memset(obj, 0, sizeof(Object3D));
     gs->obj.z = 1;
     gs->obj.yrot = 0;
     gs->obj.active = true;
@@ -141,7 +141,7 @@ vec2* project(vec3 *input, int count) {
     return points;
 }
 
-void object_draw(struct Object3D *obj) {
+void object_draw(Object3D *obj) {
     if (!obj->active) return;
     if (obj->state == OBJECT_DONE) {
         if (obj->timer == -1) {

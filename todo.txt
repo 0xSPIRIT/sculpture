@@ -1,13 +1,6 @@
 TODO
   - Redo Chiseling
-     x Don't chisel between gaps. eg. in Level 1 you can chisel between
-       objects.
-         To do this, perhaps use a flood fill first.
-
-     x Small inconsistency with hovering over a cell.
-       The chisel doesn't go where you want it to.
-
-     - Add the hammer animation; make it nice and succulent
+     x Add the hammer animation; make it nice and succulent
          => Make a render target for the hammer.
             Do the normal rotation on that texture.
             Then, position and rotate that texture around the chisel.

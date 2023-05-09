@@ -1,6 +1,6 @@
 #define MOUSE_BUTTONS 16
 
-struct Input {
+typedef struct Input {
     int mx, my; // Fake in game coordinates (pixel art scaled)
     int real_mx, real_my; // In real window coordinates
     int pmx, pmy;
@@ -13,4 +13,4 @@ struct Input {
 
     Uint8 mouse_pressed[MOUSE_BUTTONS];
     Uint8 mouse_released[MOUSE_BUTTONS];
-};
+} Input;
