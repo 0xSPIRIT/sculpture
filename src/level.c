@@ -67,7 +67,7 @@ void level_setup_initial_grid() {
     // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         int id = gs->grid[i].id;
-        gs->grid[i] = (Cell){.type = gs->levels[gs->level_current].initial_grid[i].type, .rand = rand(), .id = id, .object = -1, .is_initial = true};
+        gs->grid[i] = (Cell){.type = gs->levels[gs->level_current].initial_grid[i].type, .rand = rand(), .id = id, .object = -1};
     }
     objects_reevaluate();
 }
@@ -196,7 +196,6 @@ void goto_level(int lvl) {
     
     gs->hammer = hammer_init();
     
-    //chisel_hammer_init();
     deleter_init();
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_init(i);

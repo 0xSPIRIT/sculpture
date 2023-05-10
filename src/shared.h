@@ -52,6 +52,11 @@ enum State_Game {
     GAME_STATE_PLAY
 };
 
+// Unused
+typedef struct View {
+    f64 x, y, w, h;
+} View;
+
 // Contains the entirety of the game's state.
 // If you're adding values at runtime into the struct, add it
 // to the end, because we have pointers pointing to variables

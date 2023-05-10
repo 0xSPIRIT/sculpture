@@ -71,8 +71,8 @@ typedef struct Cell {
     int id;               // Unique ID for each cell.
     int object;           // Object index the cell belongs. -1 for none
     int temp;             // Temporary variable for algorithms
+    Uint8 pressure;       // Pressure from 0 to 255.
     bool updated;         // Updated for the frame yet?
-    bool is_initial;      // Is this cell unset from the initial position?
     int time;             // Time since set
     f32 vx, vy;           // Velocity
     f32 vx_acc, vy_acc;   // When vel < 1, we need to keep track of that

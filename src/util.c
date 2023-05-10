@@ -257,15 +257,6 @@ int randB(int i) {
     return my_rand(my_rand(my_rand(num*num)));
 }
 
-#ifdef __EMSCRIPTEN__
-int min(int a, int b) {
-#else
-int minimum(int a, int b) {
-#endif
-    if (a < b) return a;
-    return b;
-}
-    
 f32 lerp(f32 a, f32 b, f32 t) {
     return a + t*(b-a); // or a(1-t) + tb -- same thing.
 }
@@ -381,9 +372,21 @@ void draw_text_blended_indexed(int index, TTF_Font *font, char *str, SDL_Color c
     SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
 }
 
-void draw_text_indexed(int index, TTF_Font *font, char *str, SDL_Color col, SDL_Color bg_col, Uint8 alpha, bool align_right, bool align_bottom, int x, int y, int *out_w, int *out_h, bool update)
+void draw_text_indexed(int index,
+                       TTF_Font *font,
+                       char *str,
+                       SDL_Color col,
+                       SDL_Color bg_col,
+                       Uint8 alpha,
+                       bool align_right,
+                       bool align_bottom,
+                       int x,
+                       int y,
+                       int *out_w,
+                       int *out_h,
+                       bool update)
 {
-        (void)bg_col;
+    (void)bg_col;
     Assert(index < TEXT_INDEX_COUNT);
     if (!*str) {
         TTF_SizeText(font, "A", out_w, out_h);
@@ -423,16 +426,16 @@ void draw_text_indexed(int index, TTF_Font *font, char *str, SDL_Color col, SDL_
 }
 
 void draw_text(TTF_Font *font,
-                   const char *str,
-                   SDL_Color col,
-                   SDL_Color bg_col,
-                   bool align_right,
-                   bool align_bottom,
-                   int x,
-                   int y,
-                   int *out_w,
-                   int *out_h) 
-    {
+               const char *str,
+               SDL_Color col,
+               SDL_Color bg_col,
+               bool align_right,
+               bool align_bottom,
+               int x,
+               int y,
+               int *out_w,
+               int *out_h) 
+{
     if (!*str) {
         TTF_SizeText(font, "+", out_w, out_h);
         return;
@@ -556,3 +559,14 @@ void draw_line(SDL_Point a, SDL_Point b, f32 size, bool infinite) {
         }
     }
 }
+
+#ifdef __EMSCRIPTEN__
+int min(int a, int b) {
+#else
+int minimum(int a, int b) {
+#endif
+    if (a < b) return a;
+    return b;
+}
+    
+    

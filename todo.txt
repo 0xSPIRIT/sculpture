@@ -1,14 +1,7 @@
 TODO
   - Redo Chiseling
-     x Add the hammer animation; make it nice and succulent
-         => Make a render target for the hammer.
-            Do the normal rotation on that texture.
-            Then, position and rotate that texture around the chisel.
-
-     - Re-add chisel pressure.
-
+     x Re-add chisel pressure.
      - Re-add tutorial strings where necessary in chisel.c.
-
      - Hand-make sprites for each rotation.
 
   - Add water to one of the intial states!

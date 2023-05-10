@@ -200,6 +200,8 @@ void flood_fill(Uint8 *grid, int x, int y, Uint8 value) {
 
 // dx and dy represent any offset you want in the circle placement.
 void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int size) {
+    if (!is_pressure_low_enough(gs->grid[x+y*gs->gw]))
+        return;
     if (!chisel->is_calculating_highlight)
         save_state_to_next();
     

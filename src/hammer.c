@@ -42,6 +42,7 @@ void hammer_tick(Hammer *hammer) {
     switch (hammer->state) {
         case HAMMER_STATE_WINDUP: {
             hammer->angle += speed * hammer->dir * 6;
+            
             if (fabs(hammer->angle - hammer->temp_angle) >= 60) {
                 hammer->state = HAMMER_STATE_ATTACK;
             }
@@ -50,6 +51,7 @@ void hammer_tick(Hammer *hammer) {
         case HAMMER_STATE_ATTACK: {
             int p_sign = sign(hammer->angle - hammer->temp_angle);
             hammer->angle -= speed * hammer->dir * 16;
+            
             if (p_sign != sign(hammer->angle - hammer->temp_angle)) {
                 gs->chisel->state = CHISEL_STATE_CHISELING;
                 hammer->state = HAMMER_STATE_BLOWBACK;
@@ -59,7 +61,8 @@ void hammer_tick(Hammer *hammer) {
         }
         case HAMMER_STATE_BLOWBACK: {
             hammer->angle = hammer->temp_angle + hammer->dir * 16 * (1 - hammer->t*hammer->t);
-            hammer->t += 0.1;
+            hammer->t += 0.15;
+            
             if (hammer->t >= 1) {
                 hammer->state = HAMMER_STATE_IDLE;
                 hammer->angle = hammer->temp_angle;

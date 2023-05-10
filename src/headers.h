@@ -42,7 +42,6 @@
 #include "tutorial.h"
 #include "assets.h"
 #include "undo.h"
-#include "view.h"
 #include "timelapse.h"
 #include "3d.h"
 #include "titlescreen.h"

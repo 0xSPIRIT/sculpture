@@ -173,7 +173,6 @@ void set_array(Cell *arr, int x, int y, int val, int object) {
     
     arr[x+y*gs->gw].type = val;
     arr[x+y*gs->gw].time = 0;
-    arr[x+y*gs->gw].is_initial = false;
     
     if (object == -2) {
         arr[x+y*gs->gw].object = -1;
@@ -235,15 +234,6 @@ f32 water_spread(void) {
     return rand()%3 + ((f32)rand())/RAND_MAX;
 }
 
-f32 get_pressure_threshold(int chisel_size) {
-    switch (chisel_size) {
-        case 0: return 0.8f;
-        case 1: return 0.8f;
-        case 2: return 0.8f;
-    }
-    return 0;
-}
-
 void grid_init(int w, int h) {
     gs->gw = w;
     gs->gh = h;
@@ -264,6 +254,16 @@ void grid_init(int w, int h) {
     
     gs->grid = gs->grid_layers[0];
     gs->gas_grid = gs->grid_layers[1];
+}
+
+SDL_Color get_pressure_color(Cell *cell) {
+    SDL_Color c = {
+        cell->pressure,
+        0,
+        0,
+        255
+    };
+    return c;
 }
 
 SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
@@ -729,6 +729,11 @@ void grid_array_draw(Cell *array, Uint8 alpha) {
             
             SDL_Color col = pixel_from_index(array[x+y*gs->gw].type, x+y*gs->gw);
             
+            const int DRAW_PRESSURE = 0;
+            if (DRAW_PRESSURE && array[x+y*gs->gw].type) {
+                col = get_pressure_color(&array[x+y*gs->gw]);
+            }
+            
             f64 a = alpha/255.0;
             SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, col.a * a);
             
@@ -785,6 +790,21 @@ void grid_draw(void) {
             }
         }
     } 
+}
+
+bool is_pressure_low_enough(Cell cell) {
+    if (cell.pressure < 220)
+        return true;
+    return false;
+}
+
+void calculate_pressure(Cell *grid) {
+    const int radius = 3;
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        int neighbours = number_neighbours(grid, i%gs->gw, i/gs->gw, radius);
+        int total = (2*radius+1)*(2*radius+1)-1; // +1 including middle row/col
+        grid[i].pressure = (Uint8) (255 * (f64)neighbours/total);
+    }
 }
 
 // Try to move us down 1 cell.
@@ -860,6 +880,8 @@ void objects_reevaluate(void) {
         gs->grid[i].object = gs->grid[i].temp;
         gs->grid[i].temp = 0;
     }
+    
+    calculate_pressure(gs->grid);
 }
 
 int condition(int a, int end, int dir) {

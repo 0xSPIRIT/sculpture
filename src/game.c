@@ -55,7 +55,7 @@ void game_resize(int h) {
     TTF_Font **ttf_fonts = (TTF_Font**) fonts;
     size_t font_count = sizeof(Fonts)/sizeof(TTF_Font*);
     
-    for (size_t i = 0; i < font_count; i++) {
+    for (Uint64 i = 0; i < font_count; i++) {
         TTF_SetFontSize(ttf_fonts[i], Scale(font_sizes[i]));
     }
     

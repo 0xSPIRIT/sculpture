@@ -23,6 +23,9 @@ enum {
 #define NormX(x) ((f64)(x)/768.0)
 #define NormY(x) (NormX(x))
 
+// Not the best method, but it's too much work for too little gain
+// when adding a new text index. Just add another guy on here
+// and use him in the draw call.
 enum {
     TEXT_OUTRO_LEVEL_NAME,
     TEXT_OUTRO_INTENDED,
