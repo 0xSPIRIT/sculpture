@@ -1,4 +1,4 @@
-#define SHOW_TUTORIAL 0
+#define SHOW_TUTORIAL 1
 
 #define MAX_TUTORIAL_LINES 10
 

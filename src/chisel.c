@@ -198,10 +198,32 @@ void flood_fill(Uint8 *grid, int x, int y, Uint8 value) {
     flood_fill(grid, x, y+1, value);
 }
 
+// Returns false if there is no space in the inventory.
+bool chisel_attempt_add_to_inventory(int x, int y) {
+    int type = gs->grid[x+y*gs->gw].type;
+    int amount = 1;
+    if (gs->level_current+1 != 11 && gs->grid[x+y*gs->gw].is_initial)
+        amount = (rand()%2==0) ? 2 : 1;
+    
+    return add_item_to_inventory_slot(type, amount);
+}
+
+bool should_display_pressure_tutorial() {
+    return !gs->did_pressure_tutorial;
+}
+
 // dx and dy represent any offset you want in the circle placement.
 void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int size) {
-    if (!is_pressure_low_enough(gs->grid[x+y*gs->gw]))
+    if (!is_pressure_low_enough(gs->grid[x+y*gs->gw])) {
+        if (should_display_pressure_tutorial()) {
+            gs->tutorial = *tutorial_rect(TUTORIAL_PRESSURE_STRING,
+                                          NormX(32),
+                                          NormY(768.0/8.0 + 32),
+                                          NULL);
+            gs->did_pressure_tutorial = true;
+        }
         return;
+    }
     if (!chisel->is_calculating_highlight)
         save_state_to_next();
     
@@ -216,9 +238,17 @@ void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int siz
     if (!chisel->is_calculating_highlight) chisel_play_sound(chisel->size);
     
     if (size == 0) {
-        set(x, y, 0, -1);
-        if (!chisel->is_calculating_highlight)
-            move_mouse_to_grid_position(x, y);
+        if (can_add_item_to_inventory(gs->grid[x+y*gs->gw].type)) {
+            int type = gs->grid[x+y*gs->gw].type;
+            if (!chisel->is_calculating_highlight) {
+                chisel_attempt_add_to_inventory(x, y);
+                move_mouse_to_grid_position(x, y);
+                f64 vx = randf(2.0)-1;
+                f64 vy = randf(2.0)-1;
+                emit_dust(type, x, y, vx, vy);
+            }
+            set(x, y, 0, -1);
+        }
     } else {
         // Destroy in a circle.
         int type = 0;
@@ -238,12 +268,14 @@ void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int siz
                 if (gs->grid[x+xx+(y+yy)*gs->gw].type != 0)
                     type = gs->grid[x+xx+(y+yy)*gs->gw].type;
                 
-                set(x+xx, y+yy, 0, -1);
-                
-                if (!chisel->is_calculating_highlight) {
-                    f64 vx = randf(2.0)-1;
-                    f64 vy = randf(2.0)-1;
-                    emit_dust(type, x+xx, y+yy, vx, vy);
+                if (can_add_item_to_inventory(gs->grid[x+xx + (y+yy)*gs->gw].type)) {
+                    if (!chisel->is_calculating_highlight) {
+                        chisel_attempt_add_to_inventory(x+xx, y+yy);
+                        f64 vx = randf(2.0)-1;
+                        f64 vy = randf(2.0)-1;
+                        emit_dust(type, x+xx, y+yy, vx, vy);
+                    }
+                    set(x+xx, y+yy, 0, -1);
                 }
             }
         }

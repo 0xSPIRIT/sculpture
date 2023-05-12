@@ -37,9 +37,9 @@ void calculate_tutorial_rect_size(Tutorial_Rect *tut) {
 }
 
 Tutorial_Rect* tutorial_rect(const char *str,
-                                    f64 x,
-                                    f64 y,
-                                    Tutorial_Rect *next)
+                             f64 x,
+                             f64 y,
+                             Tutorial_Rect *next)
 {
     Tutorial_Rect *tut = PushSize(gs->persistent_memory, sizeof(Tutorial_Rect));
     

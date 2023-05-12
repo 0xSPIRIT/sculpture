@@ -67,7 +67,13 @@ void level_setup_initial_grid() {
     // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         int id = gs->grid[i].id;
-        gs->grid[i] = (Cell){.type = gs->levels[gs->level_current].initial_grid[i].type, .rand = rand(), .id = id, .object = -1};
+        gs->grid[i] = (Cell){
+            .type = gs->levels[gs->level_current].initial_grid[i].type,
+            .rand = rand(),
+            .id = id,
+            .object = -1,
+            .is_initial = true
+        };
     }
     objects_reevaluate();
 }

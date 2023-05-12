@@ -45,3 +45,5 @@ typedef struct Inventory {
 } Inventory;
 
 bool add_item_to_inventory_slot(enum Cell_Type type, int amount);
+bool can_add_item_to_inventory(enum Cell_Type type);
+    

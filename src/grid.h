@@ -72,6 +72,7 @@ typedef struct Cell {
     int object;           // Object index the cell belongs. -1 for none
     int temp;             // Temporary variable for algorithms
     Uint8 pressure;       // Pressure from 0 to 255.
+    bool is_initial;      // Is this from the initial state?
     bool updated;         // Updated for the frame yet?
     int time;             // Time since set
     f32 vx, vy;           // Velocity

@@ -56,6 +56,19 @@ void inventory_setup_slots() {
     }
 }
 
+bool can_add_item_to_inventory(enum Cell_Type type) {
+    for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
+        Slot *slot = &gs->inventory.slots[i];
+        if (slot->item.type == 0 ||
+            slot->item.type == type)
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
 bool add_item_to_inventory_slot(enum Cell_Type type, int amount) {
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
         Slot *slot = &gs->inventory.slots[i];

@@ -173,6 +173,7 @@ void set_array(Cell *arr, int x, int y, int val, int object) {
     
     arr[x+y*gs->gw].type = val;
     arr[x+y*gs->gw].time = 0;
+    arr[x+y*gs->gw].is_initial = false;
     
     if (object == -2) {
         arr[x+y*gs->gw].object = -1;
