@@ -288,8 +288,12 @@ void gui_init(void) {
         get_name_from_tool(i, name);
         
         if (gui->tool_buttons[i] == NULL) {
-            gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR, gs->textures.tool_buttons[i], name, click_gui_tool_button);
-            gui->tool_buttons[i]->w = gui->tool_buttons[i]->h = gs->window_width/8;
+            gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR,
+                                                   gs->textures.tool_buttons[i],
+                                                   name,
+                                                   click_gui_tool_button);
+            gui->tool_buttons[i]->w = gui->tool_buttons[i]->h = GUI_H;
+            SDL_SetTextureScaleMode(gui->tool_buttons[i]->texture, 1);
             if (gs->tool_previews[i].length)
                 gui->tool_buttons[i]->preview = &gs->tool_previews[i];
         }
@@ -301,6 +305,11 @@ void gui_init(void) {
         
         cum += gui->tool_buttons[i]->w;
     }
+    
+#if 0
+    SDL_SetTextureScaleMode(RenderTarget(RENDER_TARGET_GUI_TOOLBAR),
+                            2);
+#endif
     
     //overlay_interface_init();
 }
@@ -472,10 +481,6 @@ void gui_draw(void) {
     
     // Tool bar
     if (gs->gui.popup_inventory_y < GUI_H) {
-        SDL_SetRenderDrawColor(gs->renderer, 64, 64, 64, 255);
-        SDL_Rect r = { 0, 0, gs->gw, GUI_H/gs->S };
-        SDL_RenderFillRect(gs->renderer, &r);
-        
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_draw(gui->tool_buttons[i]);
         }

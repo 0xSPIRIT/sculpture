@@ -4,7 +4,7 @@ TODO
      - Re-add tutorial strings where necessary in chisel.c.
      - Hand-make sprites for each rotation.
 
-  - Add water to one of the intial states!
+  - Redo many initial states of the levels!
 
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.

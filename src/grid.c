@@ -758,9 +758,6 @@ void grid_draw(void) {
     grid_array_draw(gs->grid, 255);
     dust_grid_draw();
     
-    //    if (gs->overlay.show)
-    //        grid_array_draw(gs->levels[gs->level_current].desired_grid, 255);
-    
     overlay_draw();
     
     // Draw inspiration ghost
