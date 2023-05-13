@@ -560,7 +560,7 @@ void draw_outro(Level *level) {
     
     if ((gs->level_current+1 == 1 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) ||
         gs->level_current+1 >= 8 && gs->level_current+1 <= 10 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) {
-        color_next_level = (SDL_Color){200, 0, 0, alpha};
+        color_next_level = (SDL_Color){255, 255, 255, alpha/4};
     }
     
     draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,

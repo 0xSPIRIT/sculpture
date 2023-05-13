@@ -1,6 +1,6 @@
 TODO
+  x I key doesn't work after fullscreen is toggle!
   - Redo Chiseling
-     x Re-add chisel pressure.
      - Re-add tutorial strings where necessary in chisel.c.
      - Hand-make sprites for each rotation.
 

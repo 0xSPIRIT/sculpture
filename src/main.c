@@ -425,6 +425,7 @@ int main(int argc, char **argv)
                 SDL_SetWindowTitle(game_state->window, title);
             }
         } else {
+#ifndef ALASKA_RELEASE_MODE
             Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
             Uint64 size_max = persistent_memory.size;
             f32 percentage = (f32)size_current / (f32)size_max;
@@ -438,6 +439,7 @@ int main(int argc, char **argv)
                     percentage);
             
             SDL_SetWindowTitle(game_state->window, title);
+#endif
         }
     }
     

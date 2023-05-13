@@ -156,7 +156,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                     placer->rect.w = 0;
                     placer->rect.h = 0;
                 } else {
-#ifdef ALASKA_DEBUG
+#ifndef ALASKA_RELEASE_MODE
                     is_running = false; 
 #endif
                 }
@@ -172,7 +172,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_BACKQUOTE: {
-#ifdef ALASKA_DEBUG
+#ifndef ALASKA_RELEASE_MODE
                 gs->creative_mode = !gs->creative_mode;
                 if (gs->creative_mode) {
                     gui_message_stack_push("Creative Mode: On");
@@ -200,7 +200,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
-#if ALASKA_DEBUG
+#ifndef ALASKA_RELEASE_MODE
             case SDLK_e: {
                 if (gs->input.keys[SDL_SCANCODE_LCTRL]) {
                     for (int i = 0; i < gs->gw*gs->gh; i++)

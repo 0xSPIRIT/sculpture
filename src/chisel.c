@@ -264,6 +264,7 @@ void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int siz
                 if (xx*xx + yy*yy > size*size) continue;
                 if (!is_in_bounds(x+xx, y+yy)) continue;
                 if (grid[x+xx+(y+yy)*gs->gw] != 1) continue;
+                if (!is_cell_hard(gs->grid[x+xx+(y+yy)*gs->gw].type)) continue;
                 
                 if (gs->grid[x+xx+(y+yy)*gs->gw].type != 0)
                     type = gs->grid[x+xx+(y+yy)*gs->gw].type;
@@ -280,11 +281,13 @@ void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int siz
             }
         }
     }
+    
     chisel->x = x;
     chisel->y = y;
     if (!chisel->is_calculating_highlight && size > 0) {
         chisel_move_mouse_until_cell(chisel, x, y, chisel->angle, size+1);
     }
+    
     objects_reevaluate();
 }
 

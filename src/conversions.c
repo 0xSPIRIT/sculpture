@@ -1,3 +1,20 @@
+void conversions_gui_setup_rectangle(bool really_update) {
+    if (really_update) {
+    } else if (!gs->resized) return;
+    
+    Conversions *c = &gs->conversions;
+    
+    c->r = (SDL_Rect){
+        Scale(64), Scale(64),
+        Scale(400), 0
+    };
+    
+    int h;
+    
+    TTF_SizeText(gs->fonts.font_small, "A", NULL, &h);
+    c->r.h = h*c->line_count + Scale(32);
+}
+
 void conversions_gui_init(void) {
     Conversions *c = &gs->conversions;
     
@@ -15,15 +32,7 @@ void conversions_gui_init(void) {
     
     fclose(f);
     
-    c->r = (SDL_Rect){
-        340, 32,
-        400, 0
-    };
-    
-    int h;
-    
-    TTF_SizeText(gs->fonts.font_small, "A", NULL, &h);
-    c->r.h = h*c->line_count + 32;
+    conversions_gui_setup_rectangle(true);
 }
 
 void conversions_gui_tick(void) {
@@ -41,9 +50,11 @@ void conversions_gui_draw(void) {
     
     if (!c->active) return;
     
+    conversions_gui_setup_rectangle(false);
+    
     const bool update = false;
     
-    if (!c->calculated_render_target || update) {
+    if (!c->calculated_render_target || update || gs->resized) {
         c->calculated_render_target = true;
         int cum = 0;
         

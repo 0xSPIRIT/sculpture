@@ -1,5 +1,5 @@
 #define LEVEL_COUNT 11
-#ifdef ALASKA_DEBUG
+#ifndef ALASKA_RELEASE_MODE
   #define POPUP_TIME 120
 #else
   #define POPUP_TIME 220

@@ -37,7 +37,7 @@ void grabber_tick(void) {
         
         get_name_from_type(gs->overlay.grid[gx+gy*gs->gw], type_name);
         
-        if (gs->level_current == 0)
+        if (gs->level_current == 0 || gs->level_current+1 > 7)
             sprintf(tooltip_text, "Material: %s", type_name);
         else
             sprintf(tooltip_text, "Preferred Material: %s", type_name);

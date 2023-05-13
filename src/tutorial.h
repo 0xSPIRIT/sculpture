@@ -1,4 +1,8 @@
-#define SHOW_TUTORIAL 1
+#ifdef ALASKA_RELEASE_MODE
+  #define SHOW_TUTORIAL 1
+#else
+  #define SHOW_TUTORIAL 0
+#endif
 
 #define MAX_TUTORIAL_LINES 10
 
