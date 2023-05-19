@@ -12,7 +12,7 @@ void placer_init(int num) {
     placer->x = gs->gw/2;
     placer->y = gs->gh/2;
     
-    placer->texture = gs->textures.placer;
+    placer->texture = Texture(TEXTURE_PLACER);
     SDL_QueryTexture(placer->texture, NULL, NULL, &placer->w, &placer->h);
     
     placer->object_index = -1;
@@ -398,9 +398,9 @@ void placer_tick(Placer *placer) {
             
             if (!gs->did_placer_rectangle_tutorial) {
                 Tutorial_Rect *t = tutorial_rect(TUTORIAL_RECTANGLE_PLACE,
-                                                        NormX(32),
-                                                        NormY((768.8/8.0)+32),
-                                                        NULL);
+                                                 NormX(32),
+                                                 NormY((768.8/8.0)+32),
+                                                 NULL);
                 gs->tutorial = *t;
                 gs->did_placer_rectangle_tutorial = true;
             }
@@ -423,15 +423,15 @@ void placer_tick(Placer *placer) {
                          placer->x + 3,
                          placer->y + 3,
                          TOOLTIP_TYPE_PLACER);
-
+    
     char name[64] = {0};
     sprintf(name, "Placer %d", placer->index+1);
     strcpy(gs->gui.tooltip.str[0], name);
-
+    
     // Get name from type.
     char string[256] = {0};
     tooltip_get_string(placer->contains->type, placer->contains->amount, string);
-
+    
     if (!gs->gui.popup) {
         if (placer->contains->type && !is_cell_hard(placer->contains->type)) {
             if (placer->state == PLACER_SUCK_MODE) {
@@ -478,33 +478,33 @@ void placer_draw(Placer *placer, bool full_size) {
             }
         }
     }
-
+    
     SDL_Rect dst = {
         placer->x - placer->w/2, placer->y - placer->h,
         placer->w, placer->h
     };
-
+    
     dst.x *= scale;
     dst.y *= scale;
     dst.w *= scale;
     dst.h *= scale;
-
+    
     dst.y += y_off;
-
+    
     switch (placer->index) {
-    case 0:
+        case 0:
         SDL_SetTextureColorMod(placer->texture, 255, 0, 0);
         break;
-    case 1:
+        case 1:
         SDL_SetTextureColorMod(placer->texture, 0, 255, 0);
         break;
-    case 2:
+        case 2:
         SDL_SetTextureColorMod(placer->texture, 0, 0, 255);
         break;
     }
-
+    
     SDL_RenderCopy(gs->renderer, placer->texture, NULL, &dst);
-
+    
     if (placer->rect.x != -1) {
         // Make sure the area is enough before you start drawing the rectangle.
         SDL_Rect c = placer->rect;
@@ -516,7 +516,7 @@ void placer_draw(Placer *placer, bool full_size) {
         } else {
             SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
         }
-            
+        
         SDL_RenderDrawRect(gs->renderer, &placer->rect);
     }
     
@@ -530,7 +530,7 @@ void placer_draw(Placer *placer, bool full_size) {
 
 bool is_mouse_in_placer(Placer *placer) {
     Input *input = &gs->input;
-
+    
     SDL_Point mouse = {input->mx, input->my};
     SDL_Rect rectangle = {
         placer->x - placer->w/2,

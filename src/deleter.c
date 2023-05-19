@@ -1,6 +1,6 @@
 void deleter_init(void) {
     Deleter *deleter = &gs->deleter;
-    deleter->texture = gs->textures.deleter;
+    deleter->texture = Texture(TEXTURE_DELETER);
     SDL_QueryTexture(deleter->texture, NULL, NULL, &deleter->w, &deleter->h);
 }
 

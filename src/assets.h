@@ -1,7 +1,7 @@
 #ifdef ALASKA_RELEASE_MODE
-  #define RES_DIR "res/"
+#define RES_DIR "res/"
 #else
-  #define RES_DIR "../res/"
+#define RES_DIR "../res/"
 #endif
 
 #define ALASKA_PIXELFORMAT SDL_PIXELFORMAT_ABGR8888
@@ -70,45 +70,47 @@ typedef struct Audio {
     Mix_Chunk *small_chisel, *large_chisel;
 } Audio;
 
+enum {
+    TEXTURE_RENDER_TARGETS = 0,
+    TEXTURE_RENDER_TARGET_END = LEVEL_COUNT*RENDER_TARGET_COUNT,
+    TEXTURE_LEVEL_BACKGROUNDS,
+    TEXTURE_LEVEL_BACKGROUNDS_END = TEXTURE_LEVEL_BACKGROUNDS+LEVEL_COUNT,
+    TEXTURE_TEXT,
+    TEXTURE_TEXT_END = TEXTURE_TEXT + TEXT_INDEX_COUNT,
+    TEXTURE_TAB,
+    TEXTURE_DELETER,
+    TEXTURE_PLACER,
+    TEXTURE_KNIFE,
+    TEXTURE_POPUP,
+    TEXTURE_BLOB_HAMMER,
+    TEXTURE_CONVERTER_ARROW,
+    TEXTURE_CHISEL,
+    TEXTURE_CHISEL_END = TEXTURE_CHISEL+3,
+    TEXTURE_CHISEL_HAMMER,
+    TEXTURE_ITEMS,
+    TEXTURE_ITEMS_END = TEXTURE_ITEMS+CELL_TYPE_COUNT,
+    TEXTURE_TOOL_BUTTONS,
+    TEXTURE_TOOL_BUTTONS_END = TEXTURE_TOOL_BUTTONS+TOOL_COUNT,
+    TEXTURE_CONVERT_BUTTON,
+    TEXTURE_OK_BUTTON,
+    TEXTURE_SLOT_NAMES,
+    TEXTURE_SLOT_NAMES_END=TEXTURE_SLOT_NAMES+TOTAL_SLOT_COUNT,
+    TEXTURE_CONVERTER_NAMES,
+    TEXTURE_CONVERTER_NAMES_END=TEXTURE_CONVERTER_NAMES+CONVERTER_COUNT,
+    TEXTURE_ITEM_NUMS,
+    TEXTURE_ITEM_NUMS_END = TEXTURE_ITEM_NUMS+ITEM_COUNT,
+    TEXTURE_NARRATOR,
+    TEXTURE_NARRATOR_LINE,
+    TEXTURE_NARRATOR_LINE_END=TEXTURE_NARRATOR_LINE + 10,
+    TEXTURE_TEXT_ARROW,
+    TEXTURE_COUNT
+};
+
+#define Texture(x) (gs->textures.texs[x])
+
 // Only contains textures!
 typedef struct Textures {
-    // List of render targets for each level
-    // Index into this using enum.
-    SDL_Texture *render_targets[LEVEL_COUNT][RENDER_TARGET_COUNT];
-    
-    SDL_Texture *level_backgrounds[LEVEL_COUNT];
-    
-    SDL_Texture *text[TEXT_INDEX_COUNT];
-    
-    SDL_Texture *tab;
-    
-    SDL_Texture *deleter,
-        *placer,
-        *knife,
-        *popup,
-        *blob_hammer,
-        *converter_arrow;
-
-    SDL_Texture *chisel_outside[3],
-        *chisel_face[3],
-        *chisel_hammer;
-
-    SDL_Texture *items[CELL_TYPE_COUNT];
-    
-    SDL_Texture *tool_buttons[TOOL_COUNT];
-    SDL_Texture *convert_button, *tutorial_ok_button;
-
-    // Temp textures for drawing text goes here!
-
-    SDL_Texture *slot_names[TOTAL_SLOT_COUNT];
-    SDL_Texture *converter_names[CONVERTER_COUNT];
-    
-    SDL_Texture *item_nums[ITEM_COUNT]; // Refers to the number text on items.
-    
-    SDL_Texture *narrator;
-    SDL_Texture *narrator_line[10];
-    
-    SDL_Texture *text_arrow;
+    SDL_Texture *texs[TEXTURE_COUNT];
 } Textures;
 
 typedef struct Surfaces {
@@ -118,15 +120,15 @@ typedef struct Surfaces {
     
     SDL_Surface *a;
     SDL_Surface *bark_surface,
-        *glass_surface,
-        *wood_plank_surface,
-        *marble_surface,
-        *granite_surface,
-        *diamond_surface,
-        *ice_surface,
-        *grass_surface,
-        *triangle_blob_surface;
-
+    *glass_surface,
+    *wood_plank_surface,
+    *marble_surface,
+    *granite_surface,
+    *diamond_surface,
+    *ice_surface,
+    *grass_surface,
+    *triangle_blob_surface;
+    
     SDL_Surface *item_nums[ITEM_COUNT];
     
     // Any temp surfaces you might need to draw text or w/e goes here!

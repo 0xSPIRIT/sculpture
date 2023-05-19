@@ -343,7 +343,7 @@ void draw_text_blended_indexed(int index, TTF_Font *font, char *str, SDL_Color c
         TTF_SizeText(font, "+", out_w, out_h);
         return;
     }
-        
+    
     SDL_Surface *surf = NULL;
     SDL_Texture *texture = NULL;
     
@@ -353,11 +353,11 @@ void draw_text_blended_indexed(int index, TTF_Font *font, char *str, SDL_Color c
     if (gs->resized || strcmp(gs->texts[index], str) != 0 || !gs->surfaces.text[index]) {
         strncpy(gs->texts[index], str, 128);
         gs->surfaces.text[index] = TTF_RenderText_Blended(font, str, col);
-        gs->textures.text[index] = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.text[index]);
+        Texture(TEXTURE_TEXT+index) = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.text[index]);
     }
     
     surf = gs->surfaces.text[index];
-    texture = gs->textures.text[index];
+    texture = Texture(TEXTURE_TEXT+index);
     
     SDL_Rect dst = { x, y, surf->w, surf->h };
     
@@ -392,7 +392,7 @@ void draw_text_indexed(int index,
         TTF_SizeText(font, "A", out_w, out_h);
         return;
     }
-        
+    
     if (gs->resized) update=true;
     
     SDL_Surface *surf = NULL;
@@ -404,12 +404,12 @@ void draw_text_indexed(int index,
     if (update || strcmp(gs->texts[index], str) != 0 || !gs->surfaces.text[index]) {
         strncpy(gs->texts[index], str, 128);
         //gs->surfaces.text[index] = TTF_RenderText_LCD(font, str, col, bg_col);
-            gs->surfaces.text[index] = TTF_RenderText_Blended(font, str, col);
-        gs->textures.text[index] = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.text[index]);
+        gs->surfaces.text[index] = TTF_RenderText_Blended(font, str, col);
+        Texture(TEXTURE_TEXT+index) = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.text[index]);
     }
     
     surf = gs->surfaces.text[index];
-    texture = gs->textures.text[index];
+    texture = Texture(TEXTURE_TEXT+index);
     
     SDL_Rect dst = { x, y, surf->w, surf->h };
     
@@ -442,8 +442,8 @@ void draw_text(TTF_Font *font,
     }
     
     //SDL_Surface *surf = TTF_RenderText_LCD(font, str, col, bg_col);
-        (void)bg_col;
-        SDL_Surface *surf = TTF_RenderText_Blended(font, str, col);
+    (void)bg_col;
+    SDL_Surface *surf = TTF_RenderText_Blended(font, str, col);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     
     SDL_Rect dst = { x, y, surf->w, surf->h };
@@ -563,10 +563,11 @@ void draw_line(SDL_Point a, SDL_Point b, f32 size, bool infinite) {
 #ifdef __EMSCRIPTEN__
 int min(int a, int b) {
 #else
-int minimum(int a, int b) {
+    int minimum(int a, int b) {
 #endif
-    if (a < b) return a;
-    return b;
-}
+        if (a < b) return a;
+        return b;
+    }
+    
     
     

@@ -62,13 +62,13 @@ void game_resize(int h) {
     gs->resized = true;
     
     int lvl = 10;
-    SDL_DestroyTexture(gs->textures.render_targets[lvl][RENDER_TARGET_3D]);
-    gs->textures.render_targets[lvl][RENDER_TARGET_3D] = SDL_CreateTexture(gs->renderer,
-                                                                           ALASKA_PIXELFORMAT,
-                                                                           SDL_TEXTUREACCESS_STREAMING,
-                                                                           SCALE_3D*gs->window_width,
-                                                                           SCALE_3D*(gs->window_height-GUI_H));
-    SDL_SetTextureBlendMode(gs->textures.render_targets[lvl][RENDER_TARGET_3D], SDL_BLENDMODE_BLEND);
+    SDL_DestroyTexture(RenderTargetLvl(lvl, RENDER_TARGET_3D));
+    RenderTargetLvl(lvl, RENDER_TARGET_3D) = SDL_CreateTexture(gs->renderer,
+                                                               ALASKA_PIXELFORMAT,
+                                                               SDL_TEXTUREACCESS_STREAMING,
+                                                               SCALE_3D*gs->window_width,
+                                                               SCALE_3D*(gs->window_height-GUI_H));
+    SDL_SetTextureBlendMode(RenderTargetLvl(lvl, RENDER_TARGET_3D), SDL_BLENDMODE_BLEND);
 }
 
 export void game_init(Game_State *state, int level) {

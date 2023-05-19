@@ -67,7 +67,7 @@ typedef struct Game_Code {
 
 void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
     SDL_Init(SDL_INIT_VIDEO);
-
+    
     Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
     
     state->window = SDL_CreateWindow(window_title,
@@ -175,7 +175,7 @@ void game_init(Game_State *state) {
 }
 
 void game_deinit(Game_State *state) {
-    //textures_deinit(&state->textures);
+    textures_deinit(&state->textures);
     surfaces_deinit(&state->surfaces);
     fonts_deinit(&state->fonts);
     audio_deinit(&state->audio);
@@ -283,6 +283,8 @@ int main(int argc, char **argv)
     }
 #endif
     
+    Log("%d\n", TEXTURE_TEXT_ARROW);
+    
     f64 scale = 0;
     
     int fullscreen = ALASKA_START_FULLSCREEN;
@@ -338,10 +340,7 @@ int main(int argc, char **argv)
     // can we initialize render targets (since they depend
     // on each level's width/height)
     
-    render_targets_init(game_state->renderer,
-                        game_state->levels,
-                        &game_state->textures);
-    
+    render_targets_init(game_state->renderer, game_state->levels);
     
     bool running = true;
     

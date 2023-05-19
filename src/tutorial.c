@@ -50,7 +50,7 @@ Tutorial_Rect* tutorial_rect(const char *str,
     strcpy(tut->str, str);
     memset(tut->lines, 0, MAX_TUTORIAL_LINES*64);
     
-    tut->ok_button = button_allocate(BUTTON_TYPE_TUTORIAL, gs->textures.tutorial_ok_button, "", NULL);
+    tut->ok_button = button_allocate(BUTTON_TYPE_TUTORIAL, Texture(TEXTURE_OK_BUTTON), "", NULL);
     tut->ok_button->w = Scale(tut->ok_button->w);
     tut->ok_button->h = Scale(tut->ok_button->h);
     
@@ -110,7 +110,7 @@ void tutorial_rect_run() {
     }
     
     calculate_tutorial_rect_size(tut);
-        
+    
     const SDL_Color bg = (SDL_Color){0, 0, 0, 255};
     
     SDL_SetRenderDrawColor(gs->renderer, bg.r, bg.g, bg.b, 255);
@@ -163,19 +163,19 @@ void check_for_tutorial() {
     switch (l+1) {
         case 1: {
             Tutorial_Rect *t3 = tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
-                                                     NormX(32),
-                                                     NormY((768.8/8.0)+32),
-                                                     NULL);
+                                              NormX(32),
+                                              NormY((768.8/8.0)+32),
+                                              NULL);
             
             Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_CHISEL_STRING,
-                                                     NormX(32),
-                                                     NormY((768.8/8.0)+32),
-                                                     t3);
+                                              NormX(32),
+                                              NormY((768.8/8.0)+32),
+                                              t3);
             
             Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_OVERLAY_STRING,
-                                                     NormX(32),
-                                                     NormY((768.8/8.0)+32),
-                                                     t2);
+                                              NormX(32),
+                                              NormY((768.8/8.0)+32),
+                                              t2);
             gs->tutorial = *t1;
             
             gs->gui.tool_buttons[TOOL_OVERLAY]->highlighted = true;

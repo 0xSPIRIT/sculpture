@@ -57,7 +57,7 @@ void click_overlay_interface(void *ptr) {
     }
     
     interf->buttons[button_index]->active = true;
-
+    
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
         if (i == OVERLAY_INTERFACE_ERASER_MODE) continue;
         
@@ -69,7 +69,7 @@ void click_overlay_interface(void *ptr) {
 
 void overlay_interface_init(void) {
     Overlay_Interface *interf = &gs->gui.overlay_interface;
-
+    
     const char overlay_interface_names[OVERLAY_INTERFACE_BUTTONS][64] = {
         "Brush Tool",
         "Line Tool",
@@ -79,37 +79,37 @@ void overlay_interface_init(void) {
         "Eraser Mode",
         "Clear All",
     };
-
+    
     int cum = 0;
     int ypad = 10;
-
+    
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
         Button *b = 0;
-
-        SDL_Texture *texture = gs->textures.tool_buttons[TOOL_GRABBER];
-
+        
+        SDL_Texture *texture = Texture(TEXTURE_TOOL_BUTTONS + TOOL_GRABBER);
+        
         b = button_allocate(
-            BUTTON_TYPE_OVERLAY_INTERFACE,
-            texture,
-            overlay_interface_names[i],
-            click_overlay_interface
-        );
-
+                            BUTTON_TYPE_OVERLAY_INTERFACE,
+                            texture,
+                            overlay_interface_names[i],
+                            click_overlay_interface
+                            );
+        
         b->x = 20;
         b->y = 110 + cum;
         b->index = i;
-
+        
         cum += b->w + ypad;
-
+        
         interf->buttons[i] = b;
     }
-
+    
     interf->buttons[0]->active = true;
 }
 
 void overlay_interface_tick(void) {
     Overlay_Interface *interf = &gs->gui.overlay_interface;
-
+    
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
         button_tick(interf->buttons[i], (void*)&i);
     }
@@ -117,7 +117,7 @@ void overlay_interface_tick(void) {
 
 void overlay_interface_draw(void) {
     Overlay_Interface *interf = &gs->gui.overlay_interface;
-
+    
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
         button_draw(interf->buttons[i]);
     }

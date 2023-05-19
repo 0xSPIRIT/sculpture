@@ -1,19 +1,12 @@
 TODO
-  x I key doesn't work after fullscreen is toggle!
-  - Redo Chiseling
-     - Re-add tutorial strings where necessary in chisel.c.
-     - Hand-make sprites for each rotation.
 
-  - Redo many initial states of the levels!
+  - Hand-make sprites for each rotation.
+
+  - Redo all levels.
+    - Add another level 7 thing but in reverse. Perhaps do it before 7.
+    - Ensure the progression is step-by-step.
+
+  - Add a popup upon next level saying "Are you satisfied?"
 
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.
-
-  - Debug crash that happens when you Ctrl+G through many levels
-    until you end up at level 7. Something with the memory gets messed
-    up which first manifests as the snow being less in the opening.
-    Very curious.
-
-Music For Alaska Inspiration:
-https://www.youtube.com/watch?v=BK5Yp5FD7C4
-Synth parts from this, not the beat.

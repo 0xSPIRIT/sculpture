@@ -105,11 +105,11 @@ void item_draw(Item *item, int x, int y, int w, int h) {
     };
     
     if (y >= GUI_H && y <= gs->gui.popup_y) {
-        SDL_SetTextureColorMod(texs->items[item->type], 255, 0, 0);
+        SDL_SetTextureColorMod(texs->texs[TEXTURE_ITEMS+item->type], 255, 0, 0);
     } else {
-        SDL_SetTextureColorMod(texs->items[item->type], 255, 255, 255);
+        SDL_SetTextureColorMod(texs->texs[TEXTURE_ITEMS+item->type], 255, 255, 255);
     }
-    SDL_RenderCopy(gs->renderer, texs->items[item->type], NULL, &r);
+    SDL_RenderCopy(gs->renderer, texs->texs[TEXTURE_ITEMS+item->type], NULL, &r);
     
     if (gs->item_prev_amounts[item->index] != item->amount) {
         gs->item_prev_amounts[item->index] = item->amount;
@@ -121,15 +121,15 @@ void item_draw(Item *item, int x, int y, int w, int h) {
         
         if (surfs->item_nums[item->index])
             SDL_FreeSurface(surfs->item_nums[item->index]);
-        if (texs->item_nums[item->index])
-            SDL_DestroyTexture(texs->item_nums[item->index]);
+        if (texs->texs[TEXTURE_ITEM_NUMS+item->index])
+            SDL_DestroyTexture(texs->texs[TEXTURE_ITEM_NUMS+item->index]);
         
         surfs->item_nums[item->index] = TTF_RenderText_LCD(gs->fonts.font_bold_small,
                                                            number,
                                                            color,
                                                            BLACK);
-        texs->item_nums[item->index] = SDL_CreateTextureFromSurface(gs->renderer,
-                                                                    surfs->item_nums[item->index]);
+        texs->texs[TEXTURE_ITEM_NUMS+item->index] = SDL_CreateTextureFromSurface(gs->renderer,
+                                                                                 surfs->item_nums[item->index]);
     }
     
     
@@ -141,11 +141,11 @@ void item_draw(Item *item, int x, int y, int w, int h) {
     };
     
     if (y >= GUI_H && y <= gs->gui.popup_y) {
-        SDL_SetTextureColorMod(texs->item_nums[item->index], 255, 0, 0);
+        SDL_SetTextureColorMod(texs->texs[TEXTURE_ITEM_NUMS+item->index], 255, 0, 0);
     } else {
-        SDL_SetTextureColorMod(texs->item_nums[item->index], 255, 255, 255);
+        SDL_SetTextureColorMod(texs->texs[TEXTURE_ITEM_NUMS+item->index], 255, 255, 255);
     }
-    SDL_RenderCopy(gs->renderer, texs->item_nums[item->index], NULL, &dst);
+    SDL_RenderCopy(gs->renderer, texs->texs[TEXTURE_ITEM_NUMS+item->index], NULL, &dst);
 }
 
 // rx, ry are relative values.
@@ -201,31 +201,31 @@ void slot_draw(Slot *slot, f32 rx, f32 ry) {
         
         if (c) {
             surf = &gs->surfaces.slot_names[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT * c->type + slot->type];
-            texture = &gs->textures.slot_names[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT * c->type + slot->type];
+            texture = &Texture(TEXTURE_SLOT_NAMES + INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT * c->type + slot->type);
         } else {
             surf = &gs->surfaces.slot_names[slot->inventory_index];
-            texture = &gs->textures.slot_names[slot->inventory_index];
+            texture = &Texture(TEXTURE_SLOT_NAMES + slot->inventory_index);
         }
         
 #ifndef MODIFYING_COLORS
         if (!*surf) {
 #else
-        if (*surf) SDL_FreeSurface(*surf);
+            if (*surf) SDL_FreeSurface(*surf);
 #endif
             *surf = TTF_RenderText_Blended(gs->fonts.font_small,
-                                       slot->name,
-                                       (SDL_Color){
-                                           Red(SLOT_TEXT_COLOR), 
-                                           Green(SLOT_TEXT_COLOR), 
-                                           Blue(SLOT_TEXT_COLOR), 
-                                           255
+                                           slot->name,
+                                           (SDL_Color){
+                                               Red(SLOT_TEXT_COLOR), 
+                                               Green(SLOT_TEXT_COLOR), 
+                                               Blue(SLOT_TEXT_COLOR), 
+                                               255
                                            });
 #if 0
-                                       (SDL_Color){
-                                           Red(INVENTORY_COLOR),
-                                           Green(INVENTORY_COLOR),
-                                           Blue(INVENTORY_COLOR),
-                                           0});
+            (SDL_Color){
+                Red(INVENTORY_COLOR),
+                Green(INVENTORY_COLOR),
+                Blue(INVENTORY_COLOR),
+                0});
 #endif
 #ifndef MODIFYING_COLORS
         }
@@ -236,7 +236,7 @@ void slot_draw(Slot *slot, f32 rx, f32 ry) {
 #ifndef MODIFYING_COLORS
         if (!*texture) {
 #else
-        if (*texture) SDL_DestroyTexture(*texture);
+            if (*texture) SDL_DestroyTexture(*texture);
 #endif
             *texture = SDL_CreateTextureFromSurface(gs->renderer, *surf);
 #ifndef MODIFYING_COLORS
@@ -417,9 +417,9 @@ void inventory_tick() {
     
     if (gs->level_current == 6-1 && !gs->did_fuel_converter_tutorial) {
         Tutorial_Rect *next = tutorial_rect(TUTORIAL_TEXT_FILE_STRING,
-                                                   NormX(32),
-                                                   NormY((768.8/8.0)+128),
-                                                   NULL);
+                                            NormX(32),
+                                            NormY((768.8/8.0)+128),
+                                            NULL);
         gs->tutorial = *tutorial_rect(TUTORIAL_FUEL_CONVERTER_STRING,
                                       NormX(32),
                                       NormY((768.8/8.0)+128),

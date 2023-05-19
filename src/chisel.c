@@ -2,7 +2,7 @@ Chisel chisel_init(enum Chisel_Size size) {
     Chisel chisel = {0};
     
     chisel.size = size;
-    chisel.texture = gs->textures.chisel_outside[size];
+    chisel.texture = Texture(TEXTURE_CHISEL+size);
     chisel.lookahead = 5;
     
     SDL_QueryTexture(chisel.texture, NULL, NULL, &chisel.w, &chisel.h);

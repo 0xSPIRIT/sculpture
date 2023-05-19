@@ -162,9 +162,9 @@ void button_tick(Button *b, void *data) {
     int gui_input_mx = input->real_mx;
     int gui_input_my = input->real_my;
     
-    // TODO: This is a hack so that function pointers won't stop working
-    //       upon reloading the DLL... Honestly why don't we just do it
-    //       this way normally? Seems to work great.
+    // This is a hack so that function pointers won't stop working
+    // upon reloading the DLL... Honestly why don't we just do it
+    // this way normally? Seems to work great.
     switch (b->type) {
         case BUTTON_TYPE_CONVERTER:         b->on_pressed = converter_begin_converting; break;
         case BUTTON_TYPE_TOOL_BAR:          b->on_pressed = click_gui_tool_button;      break;
@@ -277,7 +277,7 @@ void gui_init(void) {
     gui->popup_y = (f32) (gs->gh*gs->S);
     gui->popup_y_vel = 0;
     gui->popup = 0;
-    gui->popup_texture = gs->textures.popup;
+    gui->popup_texture = Texture(TEXTURE_POPUP);
     
     tooltip_reset(&gui->tooltip);
     
@@ -289,7 +289,7 @@ void gui_init(void) {
         
         if (gui->tool_buttons[i] == NULL) {
             gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR,
-                                                   gs->textures.tool_buttons[i],
+                                                   Texture(TEXTURE_TOOL_BUTTONS + i),
                                                    name,
                                                    click_gui_tool_button);
             gui->tool_buttons[i]->w = gui->tool_buttons[i]->h = GUI_H;
@@ -541,39 +541,39 @@ void converter_draw(Converter *converter) {
     SDL_RenderCopy(gs->renderer, converter->arrow.texture, NULL, &arrow_dst);
     
     SDL_Surface **surf = &gs->surfaces.converter_names[converter->type];
-    SDL_Texture **tex = &gs->textures.converter_names[converter->type];
+    SDL_Texture **tex = &Texture(TEXTURE_CONVERTER_NAMES+converter->type);
     
 #ifndef MODIFYING_COLORS
     if (!*surf || gs->resized) {
 #else
         if (*surf) SDL_FreeSurface(*surf);
 #endif
-    
+        
         *surf = TTF_RenderText_Blended(gs->fonts.font_courier,
-                                   converter->name, 
-                                   (SDL_Color){
-                                       Red(CONVERTER_NAME_COLOR),
-                                       Green(CONVERTER_NAME_COLOR),
-                                       Blue(CONVERTER_NAME_COLOR),
-                                       255
+                                       converter->name, 
+                                       (SDL_Color){
+                                           Red(CONVERTER_NAME_COLOR),
+                                           Green(CONVERTER_NAME_COLOR),
+                                           Blue(CONVERTER_NAME_COLOR),
+                                           255
                                        });
 #if 0
-                                   (SDL_Color){
-                                       Red(INVENTORY_COLOR2),
-                                       Green(INVENTORY_COLOR2), 
-                                       Blue(INVENTORY_COLOR2),
-                                       255
-                                   });
+        (SDL_Color){
+            Red(INVENTORY_COLOR2),
+            Green(INVENTORY_COLOR2), 
+            Blue(INVENTORY_COLOR2),
+            255
+        });
 #endif
 #ifndef MODIFYING_COLORS
     }
 #endif
     Assert(*surf);
-
+    
 #ifndef MODIFYING_COLORS
     if (!*tex || gs->resized) {
 #else
-    if (*tex) SDL_DestroyTexture(*tex);
+        if (*tex) SDL_DestroyTexture(*tex);
 #endif
         *tex = SDL_CreateTextureFromSurface(gs->renderer, *surf);
 #ifndef MODIFYING_COLORS
@@ -626,7 +626,7 @@ void gui_popup_draw(void) {
     }
     
     int w, h;
-    SDL_QueryTexture(gs->textures.tab, NULL, NULL, &w, &h);
+    SDL_QueryTexture(Texture(TEXTURE_TAB), NULL, NULL, &w, &h);
     
     SDL_Rect bar = {
         0, popup.y,
@@ -644,10 +644,10 @@ void gui_popup_draw(void) {
         w, h
     };
     
-    SDL_SetTextureAlphaMod(gs->textures.tab, 127);
+    SDL_SetTextureAlphaMod(Texture(TEXTURE_TAB), 127);
     
     if (gs->level_current >= 4-1)
-        SDL_RenderCopy(gs->renderer, gs->textures.tab, NULL, &tab_icon);
+        SDL_RenderCopy(gs->renderer, Texture(TEXTURE_TAB), NULL, &tab_icon);
     
     all_converters_draw();
     inventory_draw();
@@ -747,7 +747,7 @@ void converter_setup_position(Converter *converter) {
         converter->slots[i].inventory_index = -1;
     }
     
-    converter->arrow.texture = gs->textures.converter_arrow;
+    converter->arrow.texture = Texture(TEXTURE_CONVERTER_ARROW);
     
     SDL_QueryTexture(converter->arrow.texture, NULL, NULL, &converter->arrow.w, &converter->arrow.h);
     converter->arrow.w = Scale(converter->arrow.w);
@@ -759,7 +759,7 @@ void converter_setup_position(Converter *converter) {
     
     // Both X and Y-coordinates are updated in converter_tick.
     if (converter->go_button == NULL) {
-        converter->go_button = button_allocate(BUTTON_TYPE_CONVERTER, gs->textures.convert_button, "Convert", converter_begin_converting);
+        converter->go_button = button_allocate(BUTTON_TYPE_CONVERTER, Texture(TEXTURE_CONVERT_BUTTON), "Convert", converter_begin_converting);
     }
     converter->go_button->w = Scale(48);
     converter->go_button->h = Scale(48);
@@ -986,7 +986,7 @@ int fuel_converter_convert(Item *input1, Item *input2) {
         else if (is_either_input_type(&checker, CELL_UNREFINED_COAL, true) &&
                  is_either_input_type(&checker, CELL_LAVA, false))
         {
-            result_type = CELL_REFINED_COAL; // TODO: Higher output ratio.
+            result_type = CELL_REFINED_COAL;
         }
         
         else if (is_either_input_type(&checker, CELL_REFINED_COAL, true) &&
@@ -1198,7 +1198,7 @@ void converter_tick(Converter *converter) {
     converter->arrow.y = (int) (converter->h/2 + 18);
     
     converter_setup_position(converter);
-            
+    
     switch (converter->type) {
         case CONVERTER_MATERIAL: {
             converter->x = 0;

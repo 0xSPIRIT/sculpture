@@ -20,7 +20,7 @@ void narrator_draw_text_blended(int i, // 0 to 10
     }
     
     SDL_Surface *surf = gs->surfaces.narrator_line[i];
-    SDL_Texture *texture = gs->textures.narrator_line[i];
+    SDL_Texture *texture = Texture(TEXTURE_NARRATOR_LINE+i);
     
     if (!surf || update) {
         if (surf) SDL_FreeSurface(surf);
@@ -28,10 +28,10 @@ void narrator_draw_text_blended(int i, // 0 to 10
     }
     if (!texture || update) {
         if (texture) SDL_DestroyTexture(texture);
-        gs->textures.narrator_line[i] = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.narrator_line[i]);
+        Texture(TEXTURE_NARRATOR_LINE+i) = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.narrator_line[i]);
     }
     surf = gs->surfaces.narrator_line[i];    
-    texture = gs->textures.narrator_line[i];    
+    texture = Texture(TEXTURE_NARRATOR_LINE+i);
     
     SDL_Rect dst = { x, y + gs->window_height/2 - surf->h/2, surf->w, surf->h };
     
@@ -43,8 +43,8 @@ void narrator_draw_text_blended(int i, // 0 to 10
     if (out_h)
         *out_h = surf->h;
     
-    SDL_SetTextureAlphaMod(gs->textures.narrator_line[i], max(min(gs->narrator.alpha, 255), 0));
-    SDL_RenderCopy(gs->renderer, gs->textures.narrator_line[i], NULL, &dst);
+    SDL_SetTextureAlphaMod(Texture(TEXTURE_NARRATOR_LINE+i), max(min(gs->narrator.alpha, 255), 0));
+    SDL_RenderCopy(gs->renderer, Texture(TEXTURE_NARRATOR_LINE+i), NULL, &dst);
 }
 
 char* get_narration(int level) {

@@ -26,7 +26,8 @@
 #define PushArray(arena, count, size) (_push_array(arena, count, size, __FILE__, __LINE__))
 
 // 'which' is an enum in assets.h
-#define RenderTarget(which) (gs->textures.render_targets[gs->level_current][which])
+#define RenderTarget(which) (Texture(TEXTURE_RENDER_TARGETS+gs->level_current*LEVEL_COUNT+which))
+#define RenderTargetLvl(lvl, which) (Texture(TEXTURE_RENDER_TARGETS+lvl*LEVEL_COUNT+which))
 
 
 #include "headers.h" // Used to get type size information.
@@ -206,7 +207,7 @@ void _assert(SDL_Window *window, const char *func, const char *file, const int l
     } else {
         sprintf(message, "%s :: at %s:%d", func, file, line);
     }
-        
+    
     if (window) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, window);
     }
@@ -232,10 +233,10 @@ void *_push_array(Memory_Arena *memory, Uint64 num, Uint64 size_individual, cons
         } else {
             Assert(0);
         }
-
+        
         Log("%s Memory_Arena :: Allocated %zd bytes at %s(%d)\n", memory_name, size, file, line);
     }
-
+    
     if (memory->cursor+size > memory->data+memory->size) {
         char message[256] = {0};
         sprintf(message, "Out of Memory_Arena!\nAllowed memory: %zd bytes, Attempted allocation to %zd bytes.\n%s:%d",
@@ -245,9 +246,9 @@ void *_push_array(Memory_Arena *memory, Uint64 num, Uint64 size_individual, cons
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory_Arena Error :(", message, gs->window);
         exit(1);
     }
-
+    
     output = memory->cursor;
     memory->cursor += size;
-
+    
     return output;
 }

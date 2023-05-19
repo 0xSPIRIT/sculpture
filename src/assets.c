@@ -40,8 +40,7 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
 
 // Creates all render targets for all the levels.
 void render_targets_init(SDL_Renderer *renderer,
-                         Level *levels,
-                         Textures *textures) {
+                         Level *levels) {
     int width = gs->desktop_w;
     int height = gs->desktop_h;
     
@@ -52,43 +51,43 @@ void render_targets_init(SDL_Renderer *renderer,
         for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
             switch (i) {
                 case RENDER_TARGET_MASTER: {
-                    textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
+                    RenderTargetLvl(lvl, i) = CreateRenderTarget(width, height);
                     continue;
                 }
                 case RENDER_TARGET_CONVERSION_PANEL: case RENDER_TARGET_OUTRO: {
-                    textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
-                    SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
+                    RenderTargetLvl(lvl, i) = CreateRenderTarget(width, height);
+                    SDL_SetTextureBlendMode(RenderTargetLvl(lvl, i), SDL_BLENDMODE_BLEND);
                     continue;
                 }
                 case RENDER_TARGET_GUI_TOOLBAR: {
-                    textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
-                    Assert(textures->render_targets[lvl][i]);
+                    RenderTargetLvl(lvl, i) = CreateRenderTarget(width, height);
+                    Assert(RenderTargetLvl(lvl, i));
                     continue;
                 }
                 case RENDER_TARGET_3D: {
-                    textures->render_targets[lvl][i] = SDL_CreateTexture(renderer,
-                                                                         ALASKA_PIXELFORMAT,
-                                                                         SDL_TEXTUREACCESS_STREAMING,
-                                                                         SCALE_3D*gs->window_width,
-                                                                         SCALE_3D*gs->window_height);
-                    SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
-                    Assert(textures->render_targets[lvl][i]);
+                    RenderTargetLvl(lvl, i) = SDL_CreateTexture(renderer,
+                                                                ALASKA_PIXELFORMAT,
+                                                                SDL_TEXTUREACCESS_STREAMING,
+                                                                SCALE_3D*gs->window_width,
+                                                                SCALE_3D*gs->window_height);
+                    SDL_SetTextureBlendMode(RenderTargetLvl(lvl, i), SDL_BLENDMODE_BLEND);
+                    Assert(RenderTargetLvl(lvl, i));
                     continue;
                 }
                 case RENDER_TARGET_HAMMER: {
-                    textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
-                    SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
+                    RenderTargetLvl(lvl, i) = CreateRenderTarget(width, height);
+                    SDL_SetTextureBlendMode(RenderTargetLvl(lvl, i), SDL_BLENDMODE_BLEND);
                     continue;
                 }
                 case RENDER_TARGET_HAMMER2: {
-                    textures->render_targets[lvl][i] = CreateRenderTarget(width, height);
-                    SDL_SetTextureBlendMode(textures->render_targets[lvl][i], SDL_BLENDMODE_BLEND);
+                    RenderTargetLvl(lvl, i) = CreateRenderTarget(width, height);
+                    SDL_SetTextureBlendMode(RenderTargetLvl(lvl, i), SDL_BLENDMODE_BLEND);
                     continue;
                 }
             }
             
-            textures->render_targets[lvl][i] = CreateRenderTarget(l->w, l->h);
-            Assert(textures->render_targets[lvl][i]);
+            RenderTargetLvl(lvl, i) = CreateRenderTarget(l->w, l->h);
+            Assert(RenderTargetLvl(lvl, i));
         }
     }
 }
@@ -108,19 +107,19 @@ void textures_init(SDL_Renderer *renderer, Textures *textures) {
         surf = IMG_Load(file);
         Assert(surf);
         
-        textures->items[i] = SDL_CreateTextureFromSurface(renderer, surf);
-        Assert(textures->items[i]);
+        Texture(TEXTURE_ITEMS+i) = SDL_CreateTextureFromSurface(renderer, surf);
+        Assert(Texture(TEXTURE_ITEMS+i));
         
         SDL_FreeSurface(surf);
         surf = NULL;
     }
     
-    textures->tab = load_texture(renderer, RES_DIR "tab.png");
-    textures->deleter = load_texture(renderer, RES_DIR "deleter.png");
-    textures->placer = load_texture(renderer, RES_DIR "placer.png");
-    textures->knife = load_texture(renderer, RES_DIR "knife.png");
-    textures->popup = load_texture(renderer, RES_DIR "popup.png");
-    textures->text_arrow = load_texture(renderer, RES_DIR "text_arrow.png");
+    Texture(TEXTURE_TAB)        = load_texture(renderer, RES_DIR "tab.png");
+    Texture(TEXTURE_DELETER)    = load_texture(renderer, RES_DIR "deleter.png");
+    Texture(TEXTURE_PLACER)     = load_texture(renderer, RES_DIR "placer.png");
+    Texture(TEXTURE_KNIFE)      = load_texture(renderer, RES_DIR "knife.png");
+    Texture(TEXTURE_POPUP)      = load_texture(renderer, RES_DIR "popup.png");
+    Texture(TEXTURE_TEXT_ARROW) = load_texture(renderer, RES_DIR "text_arrow.png");
     
     //textures->level_backgrounds[0] = load_texture(renderer, RES_DIR "bg0.png");
     
@@ -131,21 +130,21 @@ void textures_init(SDL_Renderer *renderer, Textures *textures) {
         get_file_from_tool(i, filename);
         sprintf(path, RES_DIR "buttons/%s", filename);
         
-        textures->tool_buttons[i] = load_texture(renderer, path);
-        Assert(textures->tool_buttons[i]);
+        Texture(TEXTURE_TOOL_BUTTONS+i) = load_texture(renderer, path);
+        Assert(Texture(TEXTURE_TOOL_BUTTONS+i));
     }
     
-    textures->blob_hammer = load_texture(renderer, RES_DIR "hammer.png");
-    textures->converter_arrow = load_texture(renderer, RES_DIR "arrow.png");
-    textures->convert_button = load_texture(renderer, RES_DIR "buttons/convert.png");
-    textures->tutorial_ok_button = load_texture(renderer, RES_DIR "buttons/tutorial_ok.png");
+    Texture(TEXTURE_BLOB_HAMMER)= load_texture(renderer, RES_DIR "hammer.png");
+    Texture(TEXTURE_CONVERTER_ARROW) = load_texture(renderer, RES_DIR "arrow.png");
+    Texture(TEXTURE_CONVERT_BUTTON) = load_texture(renderer, RES_DIR "buttons/convert.png");
+    Texture(TEXTURE_OK_BUTTON) = load_texture(renderer, RES_DIR "buttons/tutorial_ok.png");
     
     const char *chisel_files[] = {
         RES_DIR "chisel_small",
         RES_DIR "chisel_medium",
         RES_DIR "chisel_large",
     };
-    textures->chisel_hammer = load_texture(renderer, RES_DIR "hammer.png");
+    Texture(TEXTURE_CHISEL_HAMMER) = load_texture(renderer, RES_DIR "hammer.png");
     
     // Loop through all chisels
     for (int i = 0; i < 3; i++) {
@@ -159,13 +158,8 @@ void textures_init(SDL_Renderer *renderer, Textures *textures) {
             
             strcat(file, ".png");
             
-            if (face) {
-                textures->chisel_face[i] = load_texture(renderer, file);
-                Assert(textures->chisel_face[i]);
-            } else {
-                textures->chisel_outside[i] = load_texture(renderer, file);
-                Assert(textures->chisel_outside[i]);
-            }
+            Texture(TEXTURE_CHISEL+i) = load_texture(renderer, file);
+            Assert(Texture(TEXTURE_CHISEL+i));
         }
     }
     
@@ -173,20 +167,13 @@ void textures_init(SDL_Renderer *renderer, Textures *textures) {
 }
 
 void textures_deinit(Textures *textures) {
-    int *texs = (int*) textures;
-    size_t tex_count = sizeof(Textures)/sizeof(SDL_Texture*);
-    
-    for (int i = 0; i < tex_count; i++) {
-        if ((SDL_Texture*)(texs+i) != NULL) {
-            SDL_DestroyTexture((SDL_Texture*) (texs+i));
-        }
-    }
+    for (int i = 0; i < TEXTURE_COUNT; i++)
+        if (textures->texs[i]) SDL_DestroyTexture(textures->texs[i]);
 }
 
 void surfaces_init(Surfaces *surfaces) {
     surfaces->a = NULL;
     surfaces->renderer_3d = SDL_CreateRGBSurfaceWithFormat(0, gs->desktop_w, gs->desktop_h, 32, ALASKA_PIXELFORMAT);
-    //surfaces->a = IMG_Load(RES_DIR "something.png");
     surfaces->bark_surface = IMG_Load(RES_DIR "bark.png");
     surfaces->glass_surface = IMG_Load(RES_DIR "glass.png");
     surfaces->wood_plank_surface = IMG_Load(RES_DIR "plank.png");
@@ -242,7 +229,7 @@ void audio_init(Audio *audio) {
     audio->music_creation = Mix_LoadMUS(RES_DIR "audio/music_creation.ogg");
     
     Mix_VolumeMusic(3 * MIX_MAX_VOLUME / 4);
-
+    
     audio->pip = Mix_LoadWAV(RES_DIR "audio/pip.ogg");
     
     for (int i = 0; i < 6; i++) {

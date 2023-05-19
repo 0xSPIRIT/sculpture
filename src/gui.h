@@ -89,19 +89,19 @@ enum Converter_State {
 typedef struct Converter {
     enum Converter_Type type;
     enum Converter_State state;
-
+    
     char name[CONVERTER_NAME_LEN];
-
+    
     f32 x, y, w, h;
     int speed; // Amount of cells converted per tick.
-
+    
     int timer_max, timer_current;
     
     Slot *slots;
     int slot_count;
-
+    
     Button *go_button;
-
+    
     Arrow arrow;
 } Converter;
 

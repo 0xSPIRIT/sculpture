@@ -1,7 +1,7 @@
 Hammer hammer_init(void) {
     Hammer hammer = {0};
     
-    hammer.tex = gs->textures.chisel_hammer;
+    hammer.tex = Texture(TEXTURE_CHISEL_HAMMER);
     hammer.dir = 1;
     SDL_QueryTexture(hammer.tex, NULL, NULL, &hammer.w, &hammer.h);
     
