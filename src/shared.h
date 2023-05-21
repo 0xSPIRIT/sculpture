@@ -83,7 +83,7 @@ typedef struct Game_State {
     
     Fade fade;
     
-    Conversions conversions;
+    Conversions converter;
     
     Tutorial_Rect tutorial;
     bool show_tutorials;

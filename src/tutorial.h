@@ -75,7 +75,7 @@
 #define TUTORIAL_TEXT_FILE_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "To get a full list of conversions, press I to toggle the\n" \
+    "To get a full list of converter, press I to toggle the\n" \
 "conversion recipe book.\n"\
 
 #define TUTORIAL_CAREFUL_STRING \

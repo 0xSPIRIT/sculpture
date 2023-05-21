@@ -5,7 +5,7 @@
 #include "util.c"
 #include "fades.c"
 #include "overlay.c"
-#include "conversions.c"
+#include "converter.c"
 #include "dust.c"
 #include "grid.c"
 #include "credits.c"
@@ -74,7 +74,7 @@ export void game_init(Game_State *state, int level) {
     
     gs->show_tutorials = true;
     
-    conversions_gui_init();
+    converter_gui_init();
     levels_setup();
     previews_load();
     goto_level(level);
@@ -367,7 +367,7 @@ export void game_run(Game_State *state) {
                 //view_tick(&gs->view, &gs->input);
                 
                 gui_tick();
-                conversions_gui_tick();
+                converter_gui_tick();
                 inventory_tick();
                 all_converters_tick();
                 

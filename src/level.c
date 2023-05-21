@@ -117,7 +117,7 @@ void goto_level(int lvl) {
            sizeof(Source_Cell)*SOURCE_CELL_MAX);
     gs->levels[lvl].source_cell_count = gs->levels[lvl].default_source_cell_count;
     
-    gs->conversions.calculated_render_target = false;
+    gs->converter.calculated_render_target = false;
     
     gs->current_tool = TOOL_GRABBER;
     

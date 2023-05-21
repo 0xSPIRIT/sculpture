@@ -1,3 +1,17 @@
+void undo_system_init(void) {
+    gs->undo_initialized = true;
+    
+    gs->save_state_count = 1;
+    
+    for (int i = 0; i < NUM_GRID_LAYERS; i++) {
+        current_state()->grid_layers[i] = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(Cell));
+    }
+    
+    gs->save_state_count = 0;
+    
+    save_state_to_next();
+}
+
 void undo_system_reset(void) {
     gs->save_state_count = 0;
     for (int i = 0; i < MAX_UNDO; i++) {
@@ -83,20 +97,6 @@ void save_state_to_next(void) {
         state->source_cell[i] = gs->levels[gs->level_current].source_cell[i];
     }
     state->source_cell_count = gs->levels[gs->level_current].source_cell_count;
-}
-
-void undo_system_init(void) {
-    gs->undo_initialized = true;
-    
-    gs->save_state_count = 1;
-    
-    for (int i = 0; i < NUM_GRID_LAYERS; i++) {
-        current_state()->grid_layers[i] = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(Cell));
-    }
-    
-    gs->save_state_count = 0;
-    
-    save_state_to_next();
 }
 
 bool is_current_grid_same_as(Save_State *state) {

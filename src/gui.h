@@ -1,7 +1,3 @@
-#define MAX_TOOLTIP_LEN 128
-#define MAX_TOOLTIP_LINE_LEN 128
-#define CONVERTER_NAME_LEN 32
-
 #define GUI_POPUP_H (0.4375*gs->window_height) // window_height/2
 #define GUI_H (gs->window_width/8)
 
@@ -24,18 +20,6 @@ enum Button_Type {
     BUTTON_TYPE_POPUP_CONFIRM,
     BUTTON_TYPE_POPUP_CANCEL
 };
-
-typedef struct Tooltip {
-    enum Tooltip_Type type;
-    
-    bool set_this_frame;
-    
-    f32 x, y;
-    char str[MAX_TOOLTIP_LEN][MAX_TOOLTIP_LINE_LEN];
-    int w, h;
-    
-    Preview *preview;
-} Tooltip;
 
 typedef struct Message {
     char str[100];
@@ -80,45 +64,29 @@ typedef struct Button {
     Preview *preview;
 } Button;
 
-enum Converter_Type {
-    CONVERTER_MATERIAL,
-    CONVERTER_FUEL,
-    CONVERTER_COUNT
-};
-
 typedef struct Arrow {
     SDL_Texture *texture;
     int x, y, w, h;
 } Arrow;
 
-enum Converter_State {
-    CONVERTER_OFF,
-    CONVERTER_ON,
-    CONVERTER_INACTIVE // Used in levels where the converter is greyed out.
-};
-
-typedef struct Converter {
-    enum Converter_Type type;
-    enum Converter_State state;
-    
-    char name[CONVERTER_NAME_LEN];
-    
-    f32 x, y, w, h;
-    int speed; // Amount of cells converted per tick.
-    
-    int timer_max, timer_current;
-    
-    Slot *slots;
-    int slot_count;
-    
-    Button *go_button;
-    
-    Arrow arrow;
-} Converter;
-
-typedef struct Converter Converter;
-
-typedef struct Converter_Checker {
-    Item *input1, *input2;
-    int current; // 1 or 2 [0 when first initialized]
-} Converter_Checker;
+Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *tooltip_text, void (*on_pressed)(void*));
+void tool_button_set_disabled(int level);
+void click_gui_tool_button(void *type_ptr);
+void button_tick(Button *b, void *data);
+void button_draw(Button *b);
+void gui_message_stack_push(const char *str);
+void gui_message_stack_tick_and_draw(void);
+Popup_Confirm popup_confirm_init(void);
+void gui_init(void);
+void gui_tick(void);
+void profile_array(Cell *desired, char out[64][CELL_TYPE_COUNT], int *count);
+void gui_draw_profile();
+void gui_draw(void);
+void popup_confirm_confirm(void* ptr);
+void popup_confirm_cancel(void* ptr);
+Popup_Confirm popup_confirm_init();
+void popup_confirm_tick_and_draw(Popup_Confirm *popup);
+void gui_popup_draw(void);
+bool is_cell_stone(int type);
+int get_cell_tier(int type);
+int get_number_unique_inputs(Item *input1, Item *input2);
