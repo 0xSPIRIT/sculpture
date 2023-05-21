@@ -225,6 +225,13 @@ void goto_level(int lvl) {
     level_setup_initial_grid();
 #endif
     
+    if (!gs->undo_initialized) {
+        undo_system_init();
+    } else {
+        undo_system_reset();
+        save_state_to_next();
+    }
+    
     for (int i = 0; i < TOOL_COUNT; i++) {
         gs->gui.tool_buttons[i]->highlighted = false;
         gs->gui.tool_buttons[i]->disabled = false;
@@ -233,20 +240,14 @@ void goto_level(int lvl) {
     timelapse_init();
     
     check_for_tutorial();
-    
 }
 
 void level_set_state(int level, enum Level_State state) {
     Level *l = &gs->levels[level];
     
     if (state == LEVEL_STATE_PLAY) {
-        effect_set(l->effect_type, gs->gw, gs->gh);
-        if (!gs->undo_initialized) {
-            undo_system_init();
-        } else {
-            undo_system_reset();
-            save_state_to_next();
-        }
+        if (gs->current_effect.type != l->effect_type)
+            effect_set(l->effect_type, gs->gw, gs->gh);
     } else if (state == LEVEL_STATE_OUTRO) {
         l->outro_alpha = 0;
         l->desired_alpha = 255;
@@ -312,33 +313,34 @@ void level_tick(void) {
             if (fabs(level->outro_alpha - level->desired_alpha) < 15)
                 level->outro_alpha = level->desired_alpha;
             
-            if (wait_for_fade(FADE_LEVEL_FINISH)) {
-                reset_fade();
-                goto_level(++gs->level_current);
-            }
-            
-            if (input->keys[SDL_SCANCODE_N]) {
+            if (!gs->gui.popup_confirm.active && input->keys[SDL_SCANCODE_N]) {
                 if (gs->level_current+1 < 11) {
+#if 0
                     int lvl = gs->level_current+1;
                     bool same = compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY);
+#endif
                     
+#if 0
                     if ((lvl == 1 || lvl >= 8) && same) {
-                        set_fade(FADE_LEVEL_FINISH, 0, 255);
+#endif
+                        gs->gui.popup_confirm.active = true;
+#if 0
                     } else if (lvl > 1 && lvl < 8) {
-                        set_fade(FADE_LEVEL_FINISH, 0, 255);
+                        gs->gui.popup_confirm.active = true;
                     } else {
                         level_set_state(gs->level_current, LEVEL_STATE_PLAY);
                         if (lvl != 1)
                             gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL_2,
                                                           NormX(32),
-                                                      NormY((768.8/8.0)+32),
+                                                          NormY((768.8/8.0)+32),
                                                           NULL);
                         else
                             gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
                                                           NormX(32),
-                                                      NormY((768.8/8.0)+32),
+                                                          NormY((768.8/8.0)+32),
                                                           NULL);
                     }
+#endif
                 } else {
                     level_set_state(gs->level_current, LEVEL_STATE_PLAY);
                     object_activate(&gs->obj);
@@ -346,7 +348,7 @@ void level_tick(void) {
                 }
             }
             
-            if (input->keys_pressed[SDL_SCANCODE_F]) {
+            if (!gs->gui.popup_confirm.active && input->keys_pressed[SDL_SCANCODE_F]) {
                 level->off = true;
                 level->desired_alpha = 0;
             }
@@ -363,6 +365,7 @@ void level_tick(void) {
             if (input->keys_pressed[SDL_SCANCODE_F]) {
                 level_set_state(gs->level_current, LEVEL_STATE_OUTRO);
                 input->keys[SDL_SCANCODE_F] = 0;
+                break;
             }
             
             simulation_tick();
@@ -477,133 +480,130 @@ void level_draw_intro(void) {
 }
 
 void draw_outro(Level *level) {
-    Uint8 alpha = 255;
-    
     SDL_Texture *previous = SDL_GetRenderTarget(gs->renderer);
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO));
     
-    SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, alpha);
-    SDL_RenderFillRect(gs->renderer, &rect);
-    SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
-    SDL_RenderDrawRect(gs->renderer, &rect);
-    
-    const int margin = Scale(36);
-    
-    { // Level name
-        char string[256] = {0};
-        sprintf(string, "Level %d - \"%s\"", gs->level_current+1, level->name);
-        
-        int x = rect.x + margin;
-        int y = rect.y + margin;
-        
-        draw_text_indexed(TEXT_OUTRO_LEVEL_NAME,
-                          gs->fonts.font,
-                          string, WHITE, BLACK, alpha, 0, 0, x, y, NULL, NULL, false);
-    }
-    
-    
-    // Desired and Your grid.
-    
-    const int scale = Scale(3);
-    
-    int dx = rect.x + margin;
-    int dy = rect.y + Scale(100);
-    
-    draw_text_indexed(TEXT_OUTRO_INTENDED,
-                      gs->fonts.font,
-                      "What you intended", WHITE, BLACK, alpha, 0, 0, dx, dy, NULL, NULL, false);
-    draw_text_indexed(TEXT_OUTRO_RESULT,
-                      gs->fonts.font,
-                      "The result", WHITE, BLACK, alpha, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL, false);
-    
-    // Desired
-    
-    for (int y = 0; y < gs->gh; y++) {
-        for (int x = 0; x < gs->gw; x++) {
-            SDL_Rect r;
-            
-            if (!level->desired_grid[x+y*gs->gw].type) {
-                SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, alpha);
-            } else {
-                SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
-                SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, alpha); // 255 on this because desired_grid doesn't have depth set.
-            }
-            
-            r = (SDL_Rect){ scale*x + dx, scale*y + dy + 32, scale, scale };
-            SDL_RenderFillRect(gs->renderer, &r);
+    if (gs->gui.popup_confirm.active) {
+        popup_confirm_tick_and_draw(&gs->gui.popup_confirm);
+        if (gs->gui.popup_confirm.active == false) {
+            SDL_SetRenderTarget(gs->renderer, previous);
+            return;
         }
-    }
-    
-    SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
-    SDL_Rect desired_rect = (SDL_Rect){
-        dx, dy+32,
-        scale*gs->gw, scale*gs->gh
-    };
-    SDL_RenderDrawRect(gs->renderer, &desired_rect);
-    
-    dx += rect.w - margin - scale*level->w - margin;
-    
-    // Your grid
-    
-    timelapse_tick_and_draw(dx, dy+32, scale, scale);
-    
-    SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
-    desired_rect = (SDL_Rect){
-        dx, dy+32,
-        scale*gs->gw, scale*gs->gh
-    };
-    SDL_RenderDrawRect(gs->renderer, &desired_rect);
-    
-    SDL_Color color_next_level = (SDL_Color){0, 200, 0, alpha};
-    bool update = true;
-    
-    if ((gs->level_current+1 == 1 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) ||
-        gs->level_current+1 >= 8 && gs->level_current+1 <= 10 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) {
-        color_next_level = (SDL_Color){255, 255, 255, alpha/4};
-    }
-    
-    draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,
-                      gs->fonts.font,
-                      "Next Level [n]",
-                      color_next_level,
-                      (SDL_Color){0, 0, 0, alpha},
-                      alpha,
-                      1, 1,
-                      rect.x + rect.w - margin,
-                      rect.y + rect.h - margin,
-                      NULL,
-                      NULL,
-                      update);
-    draw_text_indexed(TEXT_OUTRO_PREV_LEVEL,
-                      gs->fonts.font,
-                      "Close [f]",
-                      (SDL_Color){128, 128, 128, alpha},
-                      (SDL_Color){0, 0, 0, alpha}, 
-                      alpha,
-                      0, 1,
-                      rect.x + margin,
-                      rect.y + rect.h - margin,
-                      NULL,
-                      NULL,
-                      false);
-    
-    if (gs->level_current+1 >= 8 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) {
-        char comment[128]={0};
+    } else {
+        Uint8 alpha = 255;
         
-        strcpy(comment, "I cannot settle for this.");
+        SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
+        SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, alpha);
+        SDL_RenderFillRect(gs->renderer, &rect);
+        SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
+        SDL_RenderDrawRect(gs->renderer, &rect);
         
-        draw_text_indexed(TEXT_NOT_GOOD_ENOUGH,
+        const int margin = Scale(36);
+        
+        { // Level name
+            char string[256] = {0};
+            sprintf(string, "Level %d - \"%s\"", gs->level_current+1, level->name);
+            
+            int x = rect.x + margin;
+            int y = rect.y + margin;
+            
+            draw_text_indexed(TEXT_OUTRO_LEVEL_NAME,
+                              gs->fonts.font,
+                              string, WHITE, BLACK, alpha, 0, 0, x, y, NULL, NULL, false);
+        }
+        
+        
+        // Desired and Your grid.
+        
+        const int scale = Scale(3);
+        
+        int dx = rect.x + margin;
+        int dy = rect.y + Scale(100);
+        
+        draw_text_indexed(TEXT_OUTRO_INTENDED,
                           gs->fonts.font,
-                          comment,
-                          (SDL_Color){180, 0, 0, alpha},
-                          BLACK,
+                          "What you intended", WHITE, BLACK, alpha, 0, 0, dx, dy, NULL, NULL, false);
+        draw_text_indexed(TEXT_OUTRO_RESULT,
+                          gs->fonts.font,
+                          "The result", WHITE, BLACK, alpha, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL, false);
+        
+        // Desired
+        
+        for (int y = 0; y < gs->gh; y++) {
+            for (int x = 0; x < gs->gw; x++) {
+                SDL_Rect r;
+                
+                if (!level->desired_grid[x+y*gs->gw].type) {
+                    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, alpha);
+                } else {
+                    SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
+                    SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, alpha); // 255 on this because desired_grid doesn't have depth set.
+                }
+                
+                r = (SDL_Rect){ scale*x + dx, scale*y + dy + 32, scale, scale };
+                SDL_RenderFillRect(gs->renderer, &r);
+            }
+        }
+        
+        SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
+        SDL_Rect desired_rect = (SDL_Rect){
+            dx, dy+32,
+            scale*gs->gw, scale*gs->gh
+        };
+        SDL_RenderDrawRect(gs->renderer, &desired_rect);
+        
+        dx += rect.w - margin - scale*level->w - margin;
+        
+        // Your grid
+        
+        timelapse_tick_and_draw(dx, dy+32, scale, scale);
+        
+        SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
+        desired_rect = (SDL_Rect){
+            dx, dy+32,
+            scale*gs->gw, scale*gs->gh
+        };
+        SDL_RenderDrawRect(gs->renderer, &desired_rect);
+        
+#if 0
+        SDL_Color color_next_level = (SDL_Color){0, 200, 0, alpha};
+#endif
+        bool update = false;
+        
+#if 0        
+        if ((gs->level_current+1 == 1 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) ||
+            gs->level_current+1 >= 8 && gs->level_current+1 <= 10 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) {
+            color_next_level = (SDL_Color){255, 255, 255, alpha/4};
+        }
+#endif
+        
+        SDL_Color color_next_level = (SDL_Color){255,255,255,255};
+        
+        draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,
+                          gs->fonts.font,
+                          "Next Level [n]",
+                          color_next_level,
+                          (SDL_Color){0, 0, 0, 255},
+                          255,
+                          1, 1,
+                          rect.x + rect.w - margin,
+                          rect.y + rect.h - margin,
+                          NULL,
+                          NULL,
+                          update);
+        draw_text_indexed(TEXT_OUTRO_PREV_LEVEL,
+                          gs->fonts.font,
+                          "Close [f]",
+                          (SDL_Color){128, 128, 128, alpha},
+                          (SDL_Color){0, 0, 0, alpha}, 
                           alpha,
-                          0, 0,
-                          rect.x + rect.w - 300,
-                          rect.y + rect.h/2 + 64,
-                          NULL, NULL,
+                          0, 1,
+                          rect.x + margin,
+                          rect.y + rect.h - margin,
+                          NULL,
+                          NULL,
                           false);
+        
     }
     
     SDL_SetRenderTarget(gs->renderer, previous);
@@ -636,7 +636,7 @@ void level_draw(void) {
         case LEVEL_STATE_INTRO: {
             SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
             SDL_RenderClear(gs->renderer);
-    
+            
             level_draw_intro();
             text_field_draw();
             break;
@@ -739,16 +739,16 @@ int rgb_to_type(Uint8 r, Uint8 g, Uint8 b) {
 
 void level_output_to_png(const char *output_file) {
     SDL_Surface *surf = SDL_CreateRGBSurface(0, gs->gw, gs->gh, 32, 0, 0, 0, 0);
-
+    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             int type = gs->grid[x+y*gs->gw].type;
-
+            
             SDL_Color color = type_to_rgb(type);
             Uint32 pixel = SDL_MapRGB(surf->format, color.r, color.g, color.b);
             set_pixel(surf, x, y, pixel);
         }
     }
-
+    
     Assert(IMG_SavePNG(surf, output_file) == 0);
 }

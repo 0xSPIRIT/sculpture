@@ -116,7 +116,12 @@ typedef struct Narrator {
     f64 hang_time; // The hang time between each line
     bool first_frame;
     
+    f64 glitch_time;
+    f64 target_time;
+    bool red;
+    
     bool off;
 } Narrator;
 
 void narrator_next_line(bool init);
+int get_glitched_offset(void);

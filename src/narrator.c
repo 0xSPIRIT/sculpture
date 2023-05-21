@@ -44,6 +44,25 @@ void narrator_draw_text_blended(int i, // 0 to 10
         *out_h = surf->h;
     
     SDL_SetTextureAlphaMod(Texture(TEXTURE_NARRATOR_LINE+i), max(min(gs->narrator.alpha, 255), 0));
+    Narrator *n = &gs->narrator;
+    if (gs->level_current+1 == 8) {
+        // All of these are in ms.
+        if (n->glitch_time <= n->target_time) {
+            n->glitch_time = randf(1000);
+            n->target_time = -randf(1000);
+            n->red = rand()<RAND_MAX/10;
+        }
+        n->glitch_time -= gs->dt * 1000;
+        
+        if (n->glitch_time>0) {
+            if (n->red)
+                SDL_SetTextureColorMod(Texture(TEXTURE_NARRATOR_LINE+i), 255, 64, 64);
+            else
+                SDL_SetTextureColorMod(Texture(TEXTURE_NARRATOR_LINE+i), 255, 220, 200);
+        } else {
+            SDL_SetTextureColorMod(Texture(TEXTURE_NARRATOR_LINE+i), 255, 255, 255);
+        }
+    }
     SDL_RenderCopy(gs->renderer, Texture(TEXTURE_NARRATOR_LINE+i), NULL, &dst);
 }
 
@@ -174,6 +193,12 @@ void narrator_tick() {
     }
 }
 
+int get_glitched_offset(void) {
+    int xoff = 0;
+    xoff = fmod(rand(),Scale(4))-Scale(2);
+    return xoff;
+}
+
 void narrator_run(SDL_Color col) {
     Narrator *n = &gs->narrator;
     
@@ -205,14 +230,22 @@ void narrator_run(SDL_Color col) {
         
         const int pad = 8;
         
+        SDL_Color c = col;
+        
+        int xoff = 0;
+        if (gs->level_current+1 == 8 || gs->level_current+1 == 10) {
+            xoff = get_glitched_offset();
+            if (rand() < RAND_MAX/100) {xoff *= 25;}
+        }
+        
         int surf_h;
         narrator_draw_text_blended(i,
                                    font,
                                    s,
-                                   col,
+                                   c,
                                    false,
                                    false,
-                                   gs->window_width/2 - w/2,
+                                   xoff + gs->window_width/2 - w/2,
                                    16 + i*(h+pad) - (h+pad)*n->current_line_count/2,
                                    NULL,
                                    &surf_h,

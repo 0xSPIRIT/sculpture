@@ -20,7 +20,9 @@ enum Button_Type {
     BUTTON_TYPE_TOOL_BAR,
     BUTTON_TYPE_CONVERTER,
     BUTTON_TYPE_OVERLAY_INTERFACE,
-    BUTTON_TYPE_TUTORIAL
+    BUTTON_TYPE_TUTORIAL,
+    BUTTON_TYPE_POPUP_CONFIRM,
+    BUTTON_TYPE_POPUP_CANCEL
 };
 
 typedef struct Tooltip {
@@ -40,6 +42,13 @@ typedef struct Message {
     Uint8 alpha;
 } Message;
 
+typedef struct {
+    bool active;
+    char text[128];
+    SDL_Rect r;
+    Button *a, *b;
+} Popup_Confirm;
+
 typedef struct GUI {
     bool popup;
     f32 popup_y, popup_y_vel, popup_h; // For the bottom part
@@ -50,6 +59,8 @@ typedef struct GUI {
     Overlay_Interface overlay_interface;
     
     Button *tool_buttons[TOOL_COUNT];
+    
+    Popup_Confirm popup_confirm;
     
     Message message_stack[MAX_MESSAGE_STACK];
     int message_count;

@@ -36,6 +36,7 @@ enum {
     TEXT_CONVERTER_REQUIRED_START,
     TEXT_TITLESCREEN,
     TEXT_NOT_GOOD_ENOUGH,
+    TEXT_CONFIRM,
     TEXT_INDEX_COUNT = 128
 };
 
@@ -103,12 +104,13 @@ enum {
     TEXTURE_NARRATOR_LINE,
     TEXTURE_NARRATOR_LINE_END=TEXTURE_NARRATOR_LINE + 10,
     TEXTURE_TEXT_ARROW,
+    TEXTURE_CONFIRM_BUTTON,
+    TEXTURE_CANCEL_BUTTON,
     TEXTURE_COUNT
 };
 
 #define Texture(x) (gs->textures.texs[x])
 
-// Only contains textures!
 typedef struct Textures {
     SDL_Texture *texs[TEXTURE_COUNT];
 } Textures;
@@ -151,7 +153,7 @@ typedef struct Fonts {
     *font_titlescreen;
 } Fonts;
 
-int font_sizes[100] = {
+int font_sizes[32] = {
     20,
     30,
     24,

@@ -1,8 +1,8 @@
 #define LEVEL_COUNT 11
 #ifndef ALASKA_RELEASE_MODE
-  #define POPUP_TIME 120
+#define POPUP_TIME 120
 #else
-  #define POPUP_TIME 220
+#define POPUP_TIME 220
 #endif
 
 #define SOURCE_CELL_MAX 8

@@ -37,13 +37,6 @@ void game_resize(int h) {
     gs->window_width = gs->S*64.0;
     gs->window_height = gs->S*64.0 + GUI_H;
     
-#if 0
-    gs->gui.popup_y = gs->gh*gs->S;
-    gs->gui.popup = false;
-    gs->gui.popup_y_vel = 0;
-    gs->gui.popup_inventory_y_vel = 0;
-#endif
-    
     gs->gui.popup_y *= gs->gh*gs->S;
     
     gs->view.x = 0;
@@ -82,13 +75,9 @@ export void game_init(Game_State *state, int level) {
     gs->show_tutorials = true;
     
     conversions_gui_init();
-    
     levels_setup();
-    
     previews_load();
-    
     goto_level(level);
-    
     titlescreen_init();
     
 #ifndef ALASKA_RELEASE_MODE

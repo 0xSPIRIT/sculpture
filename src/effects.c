@@ -112,7 +112,7 @@ void effect_draw(Effect *effect, bool draw_points) {
         effect->h = gs->gh;
     }
 #endif
-
+    
     switch (effect->type) {
         case EFFECT_SNOW: {
             for (int i = 0; i < effect->particle_count; i++) {

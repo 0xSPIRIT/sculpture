@@ -114,6 +114,9 @@ void textures_init(SDL_Renderer *renderer, Textures *textures) {
         surf = NULL;
     }
     
+    Texture(TEXTURE_CONFIRM_BUTTON) = load_texture(renderer, RES_DIR "buttons/confirm.png");
+    Texture(TEXTURE_CANCEL_BUTTON)  = load_texture(renderer, RES_DIR "buttons/cancel.png");
+    
     Texture(TEXTURE_TAB)        = load_texture(renderer, RES_DIR "tab.png");
     Texture(TEXTURE_DELETER)    = load_texture(renderer, RES_DIR "deleter.png");
     Texture(TEXTURE_PLACER)     = load_texture(renderer, RES_DIR "placer.png");

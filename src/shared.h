@@ -26,8 +26,8 @@
 #define PushArray(arena, count, size) (_push_array(arena, count, size, __FILE__, __LINE__))
 
 // 'which' is an enum in assets.h
-#define RenderTarget(which) (Texture(TEXTURE_RENDER_TARGETS+gs->level_current*LEVEL_COUNT+which))
-#define RenderTargetLvl(lvl, which) (Texture(TEXTURE_RENDER_TARGETS+lvl*LEVEL_COUNT+which))
+#define RenderTarget(which) (Texture(TEXTURE_RENDER_TARGETS+gs->level_current*RENDER_TARGET_COUNT+which))
+#define RenderTargetLvl(lvl, which) (Texture(TEXTURE_RENDER_TARGETS+lvl*RENDER_TARGET_COUNT+which))
 
 
 #include "headers.h" // Used to get type size information.
@@ -64,6 +64,8 @@ typedef struct View {
 // in here and we don't want to mess that up.
 typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
+    
+    f64 dt;
     
     bool use_software_renderer;
     

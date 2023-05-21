@@ -388,10 +388,12 @@ int main(int argc, char **argv)
         
         QueryPerformanceCounter(&time_elapsed);
         
+        Uint64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
+        f64 d = (f64)delta / (f64)frequency.QuadPart;
+        
+        gs->dt = d;
+        
         if (use_software_renderer) {
-            Uint64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
-            f64 d = (f64)delta / (f64)frequency.QuadPart;
-            
             // Sleep until 16.6ms has passed.
             while (d < target_seconds_per_frame) {
                 LARGE_INTEGER end;
