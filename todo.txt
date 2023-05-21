@@ -1,6 +1,6 @@
 TODO
 
-  - Refactor all the level.c code, including level states,
+  x Refactor all the level.c code, including level states,
     and especially drawing the outro code.
 
   - Hand-make sprites for each rotation.

@@ -373,8 +373,8 @@ export void game_run(Game_State *state) {
                 
                 //Log("gs->gw: %d, gs->S: %.2f, gs->window_width: %.2f, gs->gw*gs->S = %.2f\n", gs->gw, gs->S, (f64)gs->window_width, (f64)(gs->gw*gs->S));
                 
-                level_tick();
-                level_draw();
+                level_tick(&gs->levels[gs->level_current]);
+                level_draw(&gs->levels[gs->level_current]);
                 
                 fade_draw();
                 

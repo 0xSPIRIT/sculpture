@@ -1,69 +1,4 @@
-// Gets cells based on pixels in the image.
-//
-// path                  - path to the image
-// out                   - pointer to array of Cells (it's allocated in this function)
-// source_cells          - pointer to a bunch of source cells (NULL if don't want). Must not be heap allocated.
-// out_source_cell_count - Pointer to the cell count. Updates in this func.
-// out_w & out_h         - width and height of the image.
-void level_get_cells_from_image(const char *path,
-                                Cell **out,
-                                Source_Cell *source_cells,
-                                int *out_source_cell_count,
-                                int *out_w,
-                                int *out_h)
-{
-    SDL_Surface *surface = IMG_Load(path);
-    Assert(surface);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surface);
-    Assert(texture);
-    
-    int w = surface->w;
-    int h = surface->h;
-    
-    *out_w = w;
-    *out_h = h;
-    
-    *out = PushArray(gs->persistent_memory, w*h, sizeof(Cell));
-    
-    for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            Uint8 r, g, b;
-            
-            Uint32 pixel = ((Uint32*)surface->pixels)[x+y*w];
-            SDL_GetRGB(pixel, surface->format, &r, &g, &b);
-            
-            int cell = 0;
-            
-            if (r == 255 && g == 0 && b == 0) {
-                Source_Cell *s = &source_cells[(*out_source_cell_count)++];
-                s->x = x;
-                s->y = y;
-                s->type = CELL_STEAM;
-            } else {
-                for (int i = 0; i < CELL_TYPE_COUNT; i++) {
-                    SDL_Color c = {
-                        type_to_rgb_table[i*4 + 1],
-                        type_to_rgb_table[i*4 + 2],
-                        type_to_rgb_table[i*4 + 3],
-                        255
-                    };
-                    
-                    if (r == c.r && g == c.g && b == c.b) {
-                        cell = i;
-                        break;
-                    }
-                }
-            }
-            
-            (*out)[x+y*w].type = cell;
-        }
-    }
-    
-    SDL_FreeSurface(surface);
-    SDL_DestroyTexture(texture);
-}
-
-void level_setup_initial_grid() {
+void level_setup_initial_grid(void) {
     // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         int id = gs->grid[i].id;
@@ -80,6 +15,7 @@ void level_setup_initial_grid() {
 
 int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
     Level *level = &gs->levels[gs->level_count++];
+    
     level->index = gs->level_count-1;
     strcpy(level->name, name);
     level->popup_time_current = 0;
@@ -172,7 +108,6 @@ void goto_level(int lvl) {
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
     
     tooltip_reset(&gs->gui.tooltip);
-    
     narrator_init(gs->level_current);
     
     gs->levels[lvl].popup_time_current = 0;
@@ -195,9 +130,9 @@ void goto_level(int lvl) {
     
     dust_init();
     
-    gs->chisel_small = chisel_init(CHISEL_SMALL);
+    gs->chisel_small  = chisel_init(CHISEL_SMALL);
     gs->chisel_medium = chisel_init(CHISEL_MEDIUM);
-    gs->chisel_large = chisel_init(CHISEL_LARGE);
+    gs->chisel_large  = chisel_init(CHISEL_LARGE);
     gs->chisel = &gs->chisel_small;
     
     gs->hammer = hammer_init();
@@ -276,10 +211,7 @@ void goto_level_string_hook(const char *string) {
     goto_level(lvl);
 }
 
-void level_tick(void) {
-    Level *level = &gs->levels[gs->level_current];
-    Input *input = &gs->input;
-    
+void level_tick(Level *level) {
     if (gs->text_field.active) return;
     if (gs->gui.popup) return;
     
@@ -289,148 +221,155 @@ void level_tick(void) {
             narrator_tick();
             break;
         }
-        case LEVEL_STATE_INTRO: {
-            level->popup_time_current++;
-            
-            if (wait_for_fade(FADE_LEVEL_PLAY_IN)) {
-                reset_fade();
-                set_fade(FADE_LEVEL_PLAY_OUT, 255, 0);
-                
-                level_set_state(gs->level_current, LEVEL_STATE_PLAY);
-                level_setup_initial_grid();
-            }
-            
-            if (gs->input.keys_pressed[SDL_SCANCODE_TAB] || level->popup_time_current >= level->popup_time_max) {
-                level->popup_time_current = 0;
-                
-                reset_fade();
-                set_fade(FADE_LEVEL_PLAY_IN, 0, 255);
-            }
-            break;
-        }
-        case LEVEL_STATE_OUTRO: {
-            level->outro_alpha = goto64(level->outro_alpha, level->desired_alpha, 25);
-            if (fabs(level->outro_alpha - level->desired_alpha) < 15)
-                level->outro_alpha = level->desired_alpha;
-            
-            if (!gs->gui.popup_confirm.active && input->keys[SDL_SCANCODE_N]) {
-                if (gs->level_current+1 < 11) {
-#if 0
-                    int lvl = gs->level_current+1;
-                    bool same = compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY);
-#endif
-                    
-#if 0
-                    if ((lvl == 1 || lvl >= 8) && same) {
-#endif
-                        gs->gui.popup_confirm.active = true;
-#if 0
-                    } else if (lvl > 1 && lvl < 8) {
-                        gs->gui.popup_confirm.active = true;
-                    } else {
-                        level_set_state(gs->level_current, LEVEL_STATE_PLAY);
-                        if (lvl != 1)
-                            gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL_2,
-                                                          NormX(32),
-                                                          NormY((768.8/8.0)+32),
-                                                          NULL);
-                        else
-                            gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
-                                                          NormX(32),
-                                                          NormY((768.8/8.0)+32),
-                                                          NULL);
-                    }
-#endif
-                } else {
-                    level_set_state(gs->level_current, LEVEL_STATE_PLAY);
-                    object_activate(&gs->obj);
-                    effect_set(EFFECT_SNOW, gs->window_width, gs->window_height);
-                }
-            }
-            
-            if (!gs->gui.popup_confirm.active && input->keys_pressed[SDL_SCANCODE_F]) {
-                level->off = true;
-                level->desired_alpha = 0;
-            }
-            
-            if (level->off && level->outro_alpha == 0) {
-                level_set_state(gs->level_current, LEVEL_STATE_PLAY);
-                level->off = false;
-            }
-            break;
-        }
-        case LEVEL_STATE_PLAY: {
-            if (gs->fade.active) break;
-            
-            if (input->keys_pressed[SDL_SCANCODE_F]) {
-                level_set_state(gs->level_current, LEVEL_STATE_OUTRO);
-                input->keys[SDL_SCANCODE_F] = 0;
-                break;
-            }
-            
-            simulation_tick();
-            
-            if (!gs->paused || gs->step_one) {
-                for (int i = 0; i < gs->object_count; i++) {
-                    object_tick(i);
-                }
-            }
-            
-            if (gs->step_one) {
-                gs->step_one = 0;
-            }
-            
-            overlay_swap_tick();
-            
-            if (gs->current_tool > TOOL_CHISEL_LARGE) {
-                gs->overlay.current_material = -1;
-            }
-            
-            if (!level->first_frame_compare && compare_cells_to_int(gs->grid, gs->overlay.grid, 0)) {
-                level->first_frame_compare = true;
-                gs->overlay.show = false;
-            }
-            
-            switch (gs->current_tool) {
-                case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-                    chisel_tick(gs->chisel);
-                    break;
-                }
-#if 0
-                case TOOL_BLOCKER: {
-                    blocker_tick();
-                    break;
-                }
-#endif
-                case TOOL_OVERLAY: {
-                    //overlay_tick();
-                    break;
-                }
-                case TOOL_DELETER: {
-                    deleter_tick();
-                    break;
-                }
-                case TOOL_PLACER: {
-                    if (!gs->gui.popup) // We'll handle updating it in the converter
-                        placer_tick(&gs->placers[gs->current_placer]);
-                    break;
-                }
-                case TOOL_GRABBER: {
-                    grabber_tick();
-                    break;
-                }
-            }
-            
-            hammer_tick(&gs->hammer);
-            
-            break;
-        }
+        case LEVEL_STATE_INTRO: { level_tick_intro(level); break; }
+        case LEVEL_STATE_OUTRO: { level_tick_outro(level); break; }
+        case LEVEL_STATE_PLAY:  { level_tick_play(level); break;  }
+        case LEVEL_STATE_CONFIRMATION: { break; } // Check draw code.
     }
 }
 
-void level_draw_intro(void) {
-    Level *level = &gs->levels[gs->level_current];
+void level_tick_intro(Level *level) {
+    level->popup_time_current++;
     
+    if (wait_for_fade(FADE_LEVEL_PLAY_IN)) {
+        reset_fade();
+        set_fade(FADE_LEVEL_PLAY_OUT, 255, 0);
+        
+        level_set_state(gs->level_current, LEVEL_STATE_PLAY);
+        level_setup_initial_grid();
+    }
+    
+    if (gs->input.keys_pressed[SDL_SCANCODE_TAB] || level->popup_time_current >= level->popup_time_max) {
+        level->popup_time_current = 0;
+        
+        reset_fade();
+        set_fade(FADE_LEVEL_PLAY_IN, 0, 255);
+    }
+}
+
+void level_tick_outro(Level *level) {
+    level->outro_alpha = goto64(level->outro_alpha, level->desired_alpha, 25);
+    if (fabs(level->outro_alpha - level->desired_alpha) < 15)
+        level->outro_alpha = level->desired_alpha;
+    
+    if (!gs->gui.popup_confirm.active && gs->input.keys[SDL_SCANCODE_N]) {
+        if (gs->level_current+1 < 11) {
+#if 0
+            int lvl = gs->level_current+1;
+            bool same = compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY);
+#endif
+            
+#if 0
+            if ((lvl == 1 || lvl >= 8) && same) {
+#endif
+                gs->gui.popup_confirm.active = true;
+#if 0
+            } else if (lvl > 1 && lvl < 8) {
+                gs->gui.popup_confirm.active = true;
+            } else {
+                level_set_state(gs->level_current, LEVEL_STATE_PLAY);
+                if (lvl != 1)
+                    gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL_2,
+                                                  NormX(32),
+                                                  NormY((768.8/8.0)+32),
+                                                  NULL);
+                else
+                    gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
+                                                  NormX(32),
+                                                  NormY((768.8/8.0)+32),
+                                                  NULL);
+            }
+#endif
+        } else {
+            level_set_state(gs->level_current, LEVEL_STATE_PLAY);
+            object_activate(&gs->obj);
+            effect_set(EFFECT_SNOW, gs->window_width, gs->window_height);
+        }
+    }
+    
+    if (!gs->gui.popup_confirm.active && gs->input.keys_pressed[SDL_SCANCODE_F]) {
+        level->off = true;
+        level->desired_alpha = 0;
+    }
+    
+    if (level->off && level->outro_alpha == 0) {
+        level_set_state(gs->level_current, LEVEL_STATE_PLAY);
+        level->off = false;
+    }
+}
+
+void level_tick_play(Level *level) {
+    if (gs->fade.active) return;
+    
+    if (gs->input.keys_pressed[SDL_SCANCODE_F]) {
+        level_set_state(gs->level_current, LEVEL_STATE_OUTRO);
+        gs->input.keys[SDL_SCANCODE_F] = 0;
+        return;
+    }
+    
+    simulation_tick();
+    
+    if (!gs->paused || gs->step_one) {
+        for (int i = 0; i < gs->object_count; i++) {
+            object_tick(i);
+        }
+    }
+    
+    if (gs->step_one) {
+        gs->step_one = 0;
+    }
+    
+    overlay_swap_tick();
+    
+    if (gs->current_tool > TOOL_CHISEL_LARGE) {
+        gs->overlay.current_material = -1;
+    }
+    
+    if (!level->first_frame_compare && compare_cells_to_int(gs->grid, gs->overlay.grid, 0)) {
+        level->first_frame_compare = true;
+        gs->overlay.show = false;
+    }
+    
+    switch (gs->current_tool) {
+        case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
+            chisel_tick(gs->chisel);
+            break;
+        }
+        case TOOL_DELETER: {
+            deleter_tick();
+            break;
+        }
+        case TOOL_PLACER: {
+            if (!gs->gui.popup) // We'll handle updating it in the converter
+                placer_tick(&gs->placers[gs->current_placer]);
+            break;
+        }
+        case TOOL_GRABBER: {
+            grabber_tick();
+            break;
+        }
+    }
+    
+    hammer_tick(&gs->hammer);
+}
+
+void level_draw_confirm(void) {
+    popup_confirm_tick_and_draw(&gs->gui.popup_confirm);
+}
+
+void level_draw(Level *level) {
+    switch (level->state) {
+        case LEVEL_STATE_NARRATION: { level_draw_narration();          break; }
+        case LEVEL_STATE_INTRO:     { level_draw_intro(level);         break; }
+        case LEVEL_STATE_OUTRO:     { level_draw_outro_or_play(level); break; }
+        case LEVEL_STATE_PLAY:      { level_draw_outro_or_play(level); break; }
+        case LEVEL_STATE_CONFIRMATION: { level_draw_confirm();         break; }
+    }
+    
+    text_field_draw();
+}
+
+void level_draw_intro(Level *level) {
     Assert(RenderTarget(RENDER_TARGET_GLOBAL));
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
     
@@ -479,132 +418,136 @@ void level_draw_intro(void) {
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
 }
 
-void draw_outro(Level *level) {
+#define LEVEL_MARGIN Scale(36)
+
+void level_draw_name_intro(Level *level, SDL_Rect rect) {
+    // Level name
+    char string[256] = {0};
+    sprintf(string, "Level %d - \"%s\"", gs->level_current+1, level->name);
+    
+    int x = rect.x + LEVEL_MARGIN;
+    int y = rect.y + LEVEL_MARGIN;
+    
+    draw_text_indexed(TEXT_OUTRO_LEVEL_NAME,
+                      gs->fonts.font,
+                      string,
+                      WHITE,
+                      BLACK,
+                      255,
+                      0,
+                      0,
+                      x,
+                      y,
+                      NULL,
+                      NULL,
+                      false);
+}
+
+#define LEVEL_DESIRED_GRID_SCALE Scale(3)
+
+void level_draw_desired_grid(Level *level, int dx, int dy) {
+    const int scale = LEVEL_DESIRED_GRID_SCALE;
+    
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            SDL_Rect r;
+            
+            if (!level->desired_grid[x+y*gs->gw].type) {
+                SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+            } else {
+                SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
+                SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, 255);
+            }
+            
+            r = (SDL_Rect){ scale*x + dx, scale*y + dy + 32, scale, scale };
+            SDL_RenderFillRect(gs->renderer, &r);
+        }
+    }
+}
+
+void level_draw_outro(Level *level) {
     SDL_Texture *previous = SDL_GetRenderTarget(gs->renderer);
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO));
     
-    if (gs->gui.popup_confirm.active) {
-        popup_confirm_tick_and_draw(&gs->gui.popup_confirm);
-        if (gs->gui.popup_confirm.active == false) {
-            SDL_SetRenderTarget(gs->renderer, previous);
-            return;
-        }
-    } else {
-        Uint8 alpha = 255;
-        
-        SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
-        SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, alpha);
-        SDL_RenderFillRect(gs->renderer, &rect);
-        SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
-        SDL_RenderDrawRect(gs->renderer, &rect);
-        
-        const int margin = Scale(36);
-        
-        { // Level name
-            char string[256] = {0};
-            sprintf(string, "Level %d - \"%s\"", gs->level_current+1, level->name);
-            
-            int x = rect.x + margin;
-            int y = rect.y + margin;
-            
-            draw_text_indexed(TEXT_OUTRO_LEVEL_NAME,
-                              gs->fonts.font,
-                              string, WHITE, BLACK, alpha, 0, 0, x, y, NULL, NULL, false);
-        }
-        
-        
-        // Desired and Your grid.
-        
-        const int scale = Scale(3);
-        
-        int dx = rect.x + margin;
-        int dy = rect.y + Scale(100);
-        
-        draw_text_indexed(TEXT_OUTRO_INTENDED,
-                          gs->fonts.font,
-                          "What you intended", WHITE, BLACK, alpha, 0, 0, dx, dy, NULL, NULL, false);
-        draw_text_indexed(TEXT_OUTRO_RESULT,
-                          gs->fonts.font,
-                          "The result", WHITE, BLACK, alpha, 0, 0, dx+rect.w - margin - scale*level->w - margin, dy, NULL, NULL, false);
-        
-        // Desired
-        
-        for (int y = 0; y < gs->gh; y++) {
-            for (int x = 0; x < gs->gw; x++) {
-                SDL_Rect r;
-                
-                if (!level->desired_grid[x+y*gs->gw].type) {
-                    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, alpha);
-                } else {
-                    SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
-                    SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, alpha); // 255 on this because desired_grid doesn't have depth set.
-                }
-                
-                r = (SDL_Rect){ scale*x + dx, scale*y + dy + 32, scale, scale };
-                SDL_RenderFillRect(gs->renderer, &r);
-            }
-        }
-        
-        SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
-        SDL_Rect desired_rect = (SDL_Rect){
-            dx, dy+32,
-            scale*gs->gw, scale*gs->gh
-        };
-        SDL_RenderDrawRect(gs->renderer, &desired_rect);
-        
-        dx += rect.w - margin - scale*level->w - margin;
-        
-        // Your grid
-        
-        timelapse_tick_and_draw(dx, dy+32, scale, scale);
-        
-        SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
-        desired_rect = (SDL_Rect){
-            dx, dy+32,
-            scale*gs->gw, scale*gs->gh
-        };
-        SDL_RenderDrawRect(gs->renderer, &desired_rect);
-        
-#if 0
-        SDL_Color color_next_level = (SDL_Color){0, 200, 0, alpha};
-#endif
-        bool update = false;
-        
-#if 0        
-        if ((gs->level_current+1 == 1 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) ||
-            gs->level_current+1 >= 8 && gs->level_current+1 <= 10 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) {
-            color_next_level = (SDL_Color){255, 255, 255, alpha/4};
-        }
-#endif
-        
-        SDL_Color color_next_level = (SDL_Color){255,255,255,255};
-        
-        draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,
-                          gs->fonts.font,
-                          "Next Level [n]",
-                          color_next_level,
-                          (SDL_Color){0, 0, 0, 255},
-                          255,
-                          1, 1,
-                          rect.x + rect.w - margin,
-                          rect.y + rect.h - margin,
-                          NULL,
-                          NULL,
-                          update);
-        draw_text_indexed(TEXT_OUTRO_PREV_LEVEL,
-                          gs->fonts.font,
-                          "Close [f]",
-                          (SDL_Color){128, 128, 128, alpha},
-                          (SDL_Color){0, 0, 0, alpha}, 
-                          alpha,
-                          0, 1,
-                          rect.x + margin,
-                          rect.y + rect.h - margin,
-                          NULL,
-                          NULL,
-                          false);
-        
-    }
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
+    SDL_RenderClear(gs->renderer);
+    
+    Uint8 alpha = 255;
+    
+    SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, alpha);
+    SDL_RenderFillRect(gs->renderer, &rect);
+    SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
+    SDL_RenderDrawRect(gs->renderer, &rect);
+    
+    level_draw_name_intro(level, rect);
+    
+    //~ Desired and Your grid.
+    
+    const int scale = LEVEL_DESIRED_GRID_SCALE;
+    const int margin = LEVEL_MARGIN;
+    
+    int dx = rect.x + LEVEL_MARGIN;
+    int dy = rect.y + Scale(100);
+    
+    draw_text_indexed(TEXT_OUTRO_INTENDED,
+                      gs->fonts.font,
+                      "What you intended", WHITE, BLACK, alpha, 0, 0, dx, dy, NULL, NULL, false);
+    draw_text_indexed(TEXT_OUTRO_RESULT,
+                      gs->fonts.font,
+                      "The result", WHITE, BLACK, alpha, 0, 0, dx+rect.w - LEVEL_MARGIN - scale*level->w - margin, dy, NULL, NULL, false);
+    
+    //~
+    level_draw_desired_grid(level, dx, dy);
+    
+    SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
+    SDL_Rect desired_rect = (SDL_Rect){
+        dx, dy+32,
+        scale*gs->gw, scale*gs->gh
+    };
+    SDL_RenderDrawRect(gs->renderer, &desired_rect);
+    
+    dx += rect.w - margin - scale*level->w - margin;
+    
+    //~ Your grid
+    
+    timelapse_tick_and_draw(dx, dy+32, scale, scale);
+    
+    SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
+    desired_rect = (SDL_Rect){
+        dx, dy+32,
+        scale*gs->gw, scale*gs->gh
+    };
+    SDL_RenderDrawRect(gs->renderer, &desired_rect);
+    
+    bool update = false;
+    
+    SDL_Color color_next_level = (SDL_Color){255,255,255,255};
+    
+    draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,
+                      gs->fonts.font,
+                      "Next Level [n]",
+                      color_next_level,
+                      (SDL_Color){0, 0, 0, 255},
+                      255,
+                      1, 1,
+                      rect.x + rect.w - margin,
+                      rect.y + rect.h - margin,
+                      NULL,
+                      NULL,
+                      update);
+    draw_text_indexed(TEXT_OUTRO_PREV_LEVEL,
+                      gs->fonts.font,
+                      "Close [f]",
+                      (SDL_Color){128, 128, 128, alpha},
+                      (SDL_Color){0, 0, 0, alpha}, 
+                      alpha,
+                      0, 1,
+                      rect.x + margin,
+                      rect.y + rect.h - margin,
+                      NULL,
+                      NULL,
+                      false);
     
     SDL_SetRenderTarget(gs->renderer, previous);
     SDL_SetTextureAlphaMod(RenderTarget(RENDER_TARGET_OUTRO), level->outro_alpha);
@@ -619,107 +562,136 @@ void draw_outro(Level *level) {
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO), &src, &dst);
 }
 
-void level_draw(void) {
-    Level *level = &gs->levels[gs->level_current];
+void level_get_cells_from_image(const char *path,
+                                Cell **out,
+                                Source_Cell *source_cells,
+                                int *out_source_cell_count,
+                                int *out_w,
+                                int *out_h)
+{
+    SDL_Surface *surface = IMG_Load(path);
+    Assert(surface);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surface);
+    Assert(texture);
     
-    switch (level->state) {
-        case LEVEL_STATE_NARRATION: {
-            SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
-            SDL_RenderClear(gs->renderer);
+    int w = surface->w;
+    int h = surface->h;
+    
+    *out_w = w;
+    *out_h = h;
+    
+    *out = PushArray(gs->persistent_memory, w*h, sizeof(Cell));
+    
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            Uint8 r, g, b;
             
-            effect_draw(&gs->current_effect, false);
+            Uint32 pixel = ((Uint32*)surface->pixels)[x+y*w];
+            SDL_GetRGB(pixel, surface->format, &r, &g, &b);
             
-            narrator_run(WHITE);
-            text_field_draw();
-            break;
-        }
-        case LEVEL_STATE_INTRO: {
-            SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-            SDL_RenderClear(gs->renderer);
+            int cell = 0;
             
-            level_draw_intro();
-            text_field_draw();
-            break;
-        }
-        case LEVEL_STATE_OUTRO: case LEVEL_STATE_PLAY: {
-            SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-            SDL_RenderClear(gs->renderer);
-            
-            SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
-            
-            SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
-            
-            if (gs->current_preview.recording)
-                SDL_SetRenderDrawColor(gs->renderer, 53, 20, 20, 255);
-            else
-                SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-            SDL_RenderClear(gs->renderer);
-            
-            grid_draw();
-            
-            effect_draw(&gs->current_effect, true);
-            
-            switch (gs->current_tool) {
-                case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-                    chisel_draw(gs->chisel);
-                    hammer_draw(&gs->hammer);
-                    break;
-                }
-                case TOOL_DELETER: {
-                    deleter_draw();
-                    break;
-                }
-                case TOOL_PLACER: {
-                    if (!gs->gui.popup) // When gui.popup = true, we draw in converter
-                        placer_draw(&gs->placers[gs->current_placer], false);
-                    break;
-                }
-            }
-            
-            draw_objects();
-            
-            SDL_SetRenderTarget(gs->renderer, prev);
-            
-            if (level->state == LEVEL_STATE_OUTRO) {
-                SDL_Rect dst = {
-                    -gs->view.x,
-                    -gs->view.y + GUI_H,
-                    gs->view.w, gs->view.h
-                };
-                
-                SDL_RenderCopy(gs->renderer,
-                               RenderTarget(RENDER_TARGET_GLOBAL),
-                               NULL,
-                               &dst);
-                gui_draw();
-                draw_outro(level);
-                
-                text_field_draw();
+            if (r == 255 && g == 0 && b == 0) {
+                Source_Cell *s = &source_cells[(*out_source_cell_count)++];
+                s->x = x;
+                s->y = y;
+                s->type = CELL_STEAM;
             } else {
-                SDL_Rect dst = {
-                    -gs->view.x,
-                    -gs->view.y + GUI_H,
-                    gs->view.w, gs->view.h
-                };
-                
-                SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
-                
-                gui_draw();
-                gui_popup_draw();
-                
-                tutorial_rect_run();
-                
-                tooltip_draw(&gs->gui.tooltip);
-                
-                if (gs->gui.popup)
-                    gui_draw_profile();
-                
-                gui_message_stack_tick_and_draw();
-                text_field_draw();
+                for (int i = 0; i < CELL_TYPE_COUNT; i++) {
+                    SDL_Color c = {
+                        type_to_rgb_table[i*4 + 1],
+                        type_to_rgb_table[i*4 + 2],
+                        type_to_rgb_table[i*4 + 3],
+                        255
+                    };
+                    
+                    if (r == c.r && g == c.g && b == c.b) {
+                        cell = i;
+                        break;
+                    }
+                }
             }
+            
+            (*out)[x+y*w].type = cell;
+        }
+    }
+    
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
+}
+
+void level_draw_narration(void) {
+    SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
+    SDL_RenderClear(gs->renderer);
+    
+    effect_draw(&gs->current_effect, false);
+    
+    narrator_run(WHITE);
+}
+
+void level_draw_outro_or_play(Level *level) {
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+    SDL_RenderClear(gs->renderer);
+    
+    SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
+    
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
+    
+    if (gs->current_preview.recording)
+        SDL_SetRenderDrawColor(gs->renderer, 53, 20, 20, 255);
+    else
+        SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+    SDL_RenderClear(gs->renderer);
+    
+    grid_draw();
+    
+    effect_draw(&gs->current_effect, true);
+    
+    switch (gs->current_tool) {
+        case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
+            chisel_draw(gs->chisel);
+            hammer_draw(&gs->hammer);
+            break;
+        }
+        case TOOL_DELETER: {
+            deleter_draw();
+            break;
+        }
+        case TOOL_PLACER: {
+            if (!gs->gui.popup) // When gui.popup = true, we draw in converter
+                placer_draw(&gs->placers[gs->current_placer], false);
             break;
         }
     }
+    
+    draw_objects();
+    
+    SDL_SetRenderTarget(gs->renderer, prev);
+    
+    SDL_Rect dst = {
+        -gs->view.x,
+        -gs->view.y + GUI_H,
+        gs->view.w, gs->view.h
+    };
+    
+    if (level->state == LEVEL_STATE_OUTRO) {
+        SDL_RenderCopy(gs->renderer,
+                       RenderTarget(RENDER_TARGET_GLOBAL),
+                       NULL,
+                       &dst);
+        level_draw_outro(level);
+    } else {
+        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
+        
+        gui_popup_draw();
+        tutorial_rect_run();
+        tooltip_draw(&gs->gui.tooltip);
+        
+        if (gs->gui.popup)
+            gui_draw_profile();
+    }
+    
+    gui_draw();
 }
 
 SDL_Color type_to_rgb(int type) {
