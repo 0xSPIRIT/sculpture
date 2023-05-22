@@ -130,6 +130,7 @@ int get_any_neighbour_object(int x, int y) {
     return -1;
 }
 
+// Compares the types of a cell array to an integer array.
 // leeway = number of fails allowed to have before returning false.
 bool compare_cells_to_int(Cell *a, int *b, int leeway) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {

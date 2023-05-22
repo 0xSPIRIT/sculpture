@@ -473,7 +473,7 @@ void inventory_draw(void) {
     
     GUI *gui = &gs->gui;
     
-    inventory_setup_slots();
+    //inventory_setup_slots();
     
     const f32 y = -GUI_H + gui->popup_inventory_y;
     
@@ -481,12 +481,12 @@ void inventory_draw(void) {
         0, y,
         gs->S*gs->gw, GUI_H
     };
+    
     SDL_SetRenderDrawColor(gs->renderer, 
                            Red(INVENTORY_COLOR),
                            Green(INVENTORY_COLOR),
                            Blue(INVENTORY_COLOR),
                            255);
-    
     SDL_RenderFillRect(gs->renderer, &rect);
     
     SDL_SetRenderDrawColor(gs->renderer, 

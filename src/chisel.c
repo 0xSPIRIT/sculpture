@@ -212,6 +212,16 @@ bool should_display_pressure_tutorial() {
     return !gs->did_pressure_tutorial;
 }
 
+bool special_case_for_diamond(int x, int y) {
+    if (gs->level_current+1 == 5 && gs->grid[x+y*gs->gw].type == CELL_DIAMOND)
+    {
+        Log("A!\n");
+        return false;
+    }
+    Log("%d, %d, %d!\n", gs->level_current+1, gs->grid[x+y*gs->gw].type, CELL_DIAMOND);
+    return true;
+}
+
 // dx and dy represent any offset you want in the circle placement.
 void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int size) {
     if (!is_pressure_low_enough(gs->grid[x+y*gs->gw])) {
@@ -238,7 +248,7 @@ void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int siz
     if (!chisel->is_calculating_highlight) chisel_play_sound(chisel->size);
     
     if (size == 0) {
-        if (can_add_item_to_inventory(gs->grid[x+y*gs->gw].type)) {
+        if (special_case_for_diamond(x, y) && can_add_item_to_inventory(gs->grid[x+y*gs->gw].type)) {
             int type = gs->grid[x+y*gs->gw].type;
             if (!chisel->is_calculating_highlight) {
                 chisel_attempt_add_to_inventory(x, y);
@@ -247,6 +257,7 @@ void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int siz
                 f64 vy = randf(2.0)-1;
                 emit_dust(type, x, y, vx, vy);
             }
+            
             set(x, y, 0, -1);
         }
     } else {
@@ -265,6 +276,7 @@ void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int siz
                 if (!is_in_bounds(x+xx, y+yy)) continue;
                 if (grid[x+xx+(y+yy)*gs->gw] != 1) continue;
                 if (!is_cell_hard(gs->grid[x+xx+(y+yy)*gs->gw].type)) continue;
+                if (!special_case_for_diamond(x+xx, y+yy)) continue;
                 
                 if (gs->grid[x+xx+(y+yy)*gs->gw].type != 0)
                     type = gs->grid[x+xx+(y+yy)*gs->gw].type;

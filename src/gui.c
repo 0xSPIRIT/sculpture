@@ -164,7 +164,7 @@ void button_tick(Button *b, void *data) {
     }
 }
 
-void button_draw(Button *b) {
+void button_draw_prefer_color(Button *b, SDL_Color color) {
     Input *input = &gs->input;
     
     int gui_input_mx = input->real_mx;// / gs->S;
@@ -191,10 +191,14 @@ void button_draw(Button *b) {
                gui_input_my >= b->y && gui_input_my < b->y+b->h) {
         SDL_SetTextureColorMod(b->texture, 230, 230, 230);
     } else {
-        SDL_SetTextureColorMod(b->texture, 255, 255, 255);
+        SDL_SetTextureColorMod(b->texture, color.r, color.g, color.b);
     }
     
     SDL_RenderCopy(gs->renderer, b->texture, NULL, &dst);
+}
+
+void button_draw(Button *b) {
+    button_draw_prefer_color(b, (SDL_Color){255,255,255,255});
 }
 
 void gui_message_stack_push(const char *str) {
@@ -468,6 +472,40 @@ void gui_draw(void) {
 
 //~ Popup Confirmation
 
+Popup_Confirm popup_confirm_init() {
+    Popup_Confirm result = {0};
+    
+    result.active = false;
+    
+    result.a = button_allocate(BUTTON_TYPE_POPUP_CONFIRM,
+                               Texture(TEXTURE_CONFIRM_BUTTON),
+                               "",
+                               popup_confirm_confirm);
+    result.b = button_allocate(BUTTON_TYPE_POPUP_CANCEL,
+                               Texture(TEXTURE_CANCEL_BUTTON),
+                               "",
+                               popup_confirm_cancel);
+    
+    return result;
+}
+
+bool can_goto_next_level(void) {
+    int level = gs->level_current+1;
+    
+    if (level == 1 &&
+        !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY))
+    {
+        return false;
+    }
+    
+    if (level >= 8 &&
+        !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY))
+    {
+        return false;
+    }
+    return true;
+}
+
 void popup_confirm_confirm(void* ptr) {
     (void)ptr;
     Popup_Confirm *c = &gs->gui.popup_confirm;
@@ -475,7 +513,10 @@ void popup_confirm_confirm(void* ptr) {
     
     c->active = false;
     
-    set_fade(FADE_LEVEL_FINISH, 0, 255);
+    if (can_goto_next_level()) {
+        set_fade(FADE_LEVEL_FINISH, 0, 255);
+        Log("ASDF\n");
+    }
     
     level->off = false;
     level->desired_alpha = 0;
@@ -495,23 +536,6 @@ void popup_confirm_cancel(void* ptr) {
     c->active = false;
 }
 
-Popup_Confirm popup_confirm_init() {
-    Popup_Confirm result = {0};
-    
-    result.active = false;
-    
-    result.a = button_allocate(BUTTON_TYPE_POPUP_CONFIRM,
-                               Texture(TEXTURE_CONFIRM_BUTTON),
-                               "",
-                               popup_confirm_confirm);
-    result.b = button_allocate(BUTTON_TYPE_POPUP_CANCEL,
-                               Texture(TEXTURE_CANCEL_BUTTON),
-                               "",
-                               popup_confirm_cancel);
-    
-    return result;
-}
-
 void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
     if (wait_for_fade(FADE_LEVEL_FINISH)) {
         reset_fade();
@@ -527,19 +551,23 @@ void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
         2*gs->window_width/3,
         gs->window_height/4
     };
-    SDL_SetRenderDrawColor(gs->renderer, 32, 32, 32, 255);
+    
+    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
     SDL_RenderFillRect(gs->renderer, &popup->r);
     
+    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+    SDL_RenderDrawRect(gs->renderer, &popup->r);
+    
     popup->a->x = 1*gs->window_width/5 + popup->b->w*1;
-    popup->a->y = popup->r.y + popup->r.h - Scale(64);
+    popup->a->y = popup->r.y + popup->r.h - Scale(50);
     
     popup->b->x = 4*gs->window_width/5 - popup->a->w*2;
-    popup->b->y = popup->r.y + popup->r.h - Scale(64);
+    popup->b->y = popup->r.y + popup->r.h - Scale(50);
     
     button_tick(popup->a, NULL);
     button_tick(popup->b, NULL);
     
-    button_draw(popup->a);
+    button_draw_prefer_color(popup->a, can_goto_next_level() ? (SDL_Color){255,255,255,255} : (SDL_Color){127,127,127,255});
     button_draw(popup->b);
     
     SDL_Color col = (SDL_Color){175, 175, 175, 255};
@@ -581,24 +609,36 @@ void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
                       false);
     
     
-    if (gs->level_current+1 >= 8 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) {
+    if (!can_goto_next_level()) {
         char comment[128]={0};
         
         strcpy(comment, "I cannot settle for this.");
         
         int h;
         
-        TTF_SizeText(gs->fonts.font, comment, &w, &h);
+        TTF_SizeText(gs->fonts.font_times, comment, &w, &h);
+        
+        int xoff = get_glitched_offset();
+        
+        f64 button_x = popup->a->x + popup->a->w/2;
+        f64 button_y = popup->a->y + popup->a->h/2;
+        
+        f64 norm_dist = sqrtf((button_x - gs->input.real_mx)*(button_x - gs->input.real_mx) + (button_y - gs->input.real_my)*(button_y - gs->input.real_my));
+        norm_dist /= gs->window_width;
+        norm_dist = 1 - norm_dist;
+        
+        Log("%f\n", norm_dist);
+        if (rand()<norm_dist*RAND_MAX) xoff *= 25;
         
         draw_text_indexed(TEXT_NOT_GOOD_ENOUGH,
-                          gs->fonts.font,
+                          gs->fonts.font_times,
                           comment,
                           (SDL_Color){180, 0, 0, 255},
                           BLACK,
                           255,
                           0, 0,
-                          popup->r.x + popup->r.w/2 - w/2,
-                          popup->r.y + popup->r.h - 1.5*h,
+                          xoff + popup->r.x + popup->r.w/2 - w/2,
+                          popup->r.y + popup->r.h - 2.7*h,
                           NULL, NULL,
                           false);
     }

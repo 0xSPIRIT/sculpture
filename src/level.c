@@ -680,8 +680,11 @@ void level_draw_outro_or_play(Level *level) {
                        NULL,
                        &dst);
         level_draw_outro(level);
+        gui_draw();
     } else {
         SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
+        
+        gui_draw();
         
         gui_popup_draw();
         tutorial_rect_run();
@@ -690,8 +693,6 @@ void level_draw_outro_or_play(Level *level) {
         if (gs->gui.popup)
             gui_draw_profile();
     }
-    
-    gui_draw();
 }
 
 SDL_Color type_to_rgb(int type) {

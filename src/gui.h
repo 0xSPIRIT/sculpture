@@ -73,6 +73,7 @@ Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char 
 void tool_button_set_disabled(int level);
 void click_gui_tool_button(void *type_ptr);
 void button_tick(Button *b, void *data);
+void button_draw_prefer_color(Button *b, SDL_Color color);
 void button_draw(Button *b);
 void gui_message_stack_push(const char *str);
 void gui_message_stack_tick_and_draw(void);
