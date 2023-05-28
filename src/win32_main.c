@@ -67,6 +67,11 @@ void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bo
                                      SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     Assert(state->window);
     
+    SDL_Surface *window_icon = IMG_Load(RES_DIR "icon.png");
+    SDL_SetWindowIcon(state->window, window_icon);
+    
+    SDL_FreeSurface(window_icon);
+    
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
     
@@ -113,7 +118,7 @@ f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     GetWindowRect(hDesktop, &desktop);
     int w = desktop.right;
     int h = desktop.bottom;
-    
+
     if (dw) *dw=w;
     if (dh) *dh=h;
     

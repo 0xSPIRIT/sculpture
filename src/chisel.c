@@ -440,6 +440,9 @@ void chisel_draw_highlights(int *highlights, int count) {
 void chisel_tick(Chisel *chisel) {
     chisel->did_chisel_this_frame = false;
     
+    if (gs->hammer.state == HAMMER_STATE_WINDUP ||
+        gs->hammer.state == HAMMER_STATE_ATTACK) return;
+    
     switch (chisel->state) {
         case CHISEL_STATE_IDLE: {
             int idx = chisel_clamp_to_grid(chisel->angle, gs->input.mx, gs->input.my);

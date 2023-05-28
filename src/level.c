@@ -575,7 +575,7 @@ void level_get_cells_from_image(const char *path,
     Assert(surface);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surface);
     Assert(texture);
-    
+
     int w = surface->w;
     int h = surface->h;
     
@@ -586,10 +586,17 @@ void level_get_cells_from_image(const char *path,
     
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
-            Uint8 r, g, b;
+            Uint8 r=0, g=0, b=0;
             
-            Uint32 pixel = ((Uint32*)surface->pixels)[x+y*w];
-            SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+            if (surface->format->BytesPerPixel == 1) {
+                Uint8 pixel = ((Uint8*)surface->pixels)[x + y * w];
+                SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+            } else if (surface->format->BytesPerPixel == 4) {
+                Uint32 pixel = ((Uint32*)surface->pixels)[x + y * w];
+                SDL_GetRGB(pixel, surface->format, &r, &g, &b);
+            } else {
+                Assert(0);
+            }
             
             int cell = 0;
             

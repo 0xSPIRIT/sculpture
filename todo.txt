@@ -1,5 +1,7 @@
 TODO
 
+  - Stop chisel attachment to mouse when chiseling.
+
   - Something buggy to do with the converter GUI when resizing
     the window-- it doesn't update properly... Debug this!
 

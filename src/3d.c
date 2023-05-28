@@ -2,7 +2,7 @@
 // Simple 3D Software Renderer
 //
 
-typedef struct TriangleDrawData {
+typedef struct {
     int start_y, end_y;
     Uint32 *pixels;
     SDL_Surface *surf;

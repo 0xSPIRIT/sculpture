@@ -64,11 +64,18 @@ Overlay_Changes overlay_load_changes(const char *name_generic, int num) {
         
         for (int y = 0; y < surf->h; y++) {
             for (int x = 0; x < surf->w; x++) {
-                Uint8 r, g, b;
+                Uint8 r=0, g=0, b=0;
                 
-                Uint32 pixel = ((Uint32*)surf->pixels)[x+y*w];
-                SDL_GetRGB(pixel, surf->format, &r, &g, &b);
-                
+                if (surf->format->BytesPerPixel == 1) {
+                    Uint8 pixel = ((Uint8*)surf->pixels)[x + y * w];
+                    SDL_GetRGB(pixel, surf->format, &r, &g, &b);
+                } else if (surf->format->BytesPerPixel == 4) {
+                    Uint32 pixel = ((Uint32*)surf->pixels)[x + y * w];
+                    SDL_GetRGB(pixel, surf->format, &r, &g, &b);
+                } else {
+                    Assert(0);
+                }
+
                 int cell = 0;
                 
                 for (int j = 0; j < CELL_TYPE_COUNT; j++) {
