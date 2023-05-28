@@ -106,6 +106,7 @@ enum {
     TEXTURE_TEXT_ARROW,
     TEXTURE_CONFIRM_BUTTON,
     TEXTURE_CANCEL_BUTTON,
+    TEXTURE_BACKGROUND,
     TEXTURE_COUNT
 };
 
@@ -119,6 +120,8 @@ typedef struct Surfaces {
     SDL_Surface *renderer_3d;
     
     SDL_Surface *text[TEXT_INDEX_COUNT];
+    
+    SDL_Surface *background;
     
     SDL_Surface *a;
     SDL_Surface *bark_surface,

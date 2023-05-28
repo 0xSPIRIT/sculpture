@@ -515,8 +515,16 @@ void popup_confirm_confirm(void* ptr) {
     
     if (can_goto_next_level()) {
         set_fade(FADE_LEVEL_FINISH, 0, 255);
-        Log("ASDF\n");
     }
+    
+    // Special thing for level 1.
+    if (gs->level_current+1 == 1) {
+        gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
+                                      NormX(32),
+                                      NormY((768.8/8.0)+32),
+                                      NULL);
+        Log("Happened!\n");
+    }; 
     
     level->off = false;
     level->desired_alpha = 0;
@@ -612,7 +620,8 @@ void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
     if (!can_goto_next_level()) {
         char comment[128]={0};
         
-        strcpy(comment, "I cannot settle for this.");
+        if (gs->level_current+1 > 7)
+            strcpy(comment, "I cannot settle for this.");
         
         int h;
         
@@ -627,13 +636,14 @@ void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
         norm_dist /= gs->window_width;
         norm_dist = 1 - norm_dist;
         
-        Log("%f\n", norm_dist);
-        if (rand()<norm_dist*RAND_MAX) xoff *= 25;
+        SDL_Color color = (SDL_Color){180, 180, 180, 180};
+        if (gs->level_current+1 > 7)
+            color = (SDL_Color){180, 0, 0, 255};
         
         draw_text_indexed(TEXT_NOT_GOOD_ENOUGH,
                           gs->fonts.font_times,
                           comment,
-                          (SDL_Color){180, 0, 0, 255},
+                          color,
                           BLACK,
                           255,
                           0, 0,

@@ -215,10 +215,8 @@ bool should_display_pressure_tutorial() {
 bool special_case_for_diamond(int x, int y) {
     if (gs->level_current+1 == 5 && gs->grid[x+y*gs->gw].type == CELL_DIAMOND)
     {
-        Log("A!\n");
         return false;
     }
-    Log("%d, %d, %d!\n", gs->level_current+1, gs->grid[x+y*gs->gw].type, CELL_DIAMOND);
     return true;
 }
 

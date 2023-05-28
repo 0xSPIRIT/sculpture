@@ -5,7 +5,7 @@ set Linker_Flags=user32.lib shell32.lib dbghelp.lib SDL2.lib SDL2_ttf.lib SDL2_i
 
   rem gcc main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -g -o ..\bin\win32_sculpture.exe
 
-if not exist src/main.c goto INVALID_DIR
+if not exist src/win32_main.c goto INVALID_DIR
 
 pushd bin\
 
@@ -27,7 +27,7 @@ set err=%errorlevel%
 (>>win32_sculpture.exe call;) 2>nul || goto end
 
   REM Build the SDL layer (.exe)
-cl.exe %Compiler_Flags% ..\src\main.c %Linker_Flags% SDL2main.lib /link /incremental:no /out:win32_sculpture.exe
+cl.exe %Compiler_Flags% ..\src\win32_main.c %Linker_Flags% SDL2main.lib /link /incremental:no /out:win32_sculpture.exe
 
 if NOT %errorlevel%==0 (set err=%errorlevel%)
 

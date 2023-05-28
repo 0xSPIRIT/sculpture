@@ -1,13 +1,17 @@
 TODO
 
-  - Hand-make sprites for each rotation.
+  - Something buggy to do with the converter GUI when resizing
+    the window-- it doesn't update properly... Debug this!
 
   - Redo all levels.
     - Add another level 7 thing but in reverse. Perhaps do it before 7.
     - Ensure the progression is step-by-step.
 
-  x Add a popup upon next level saying "Are you satisfied?"
-  x Fix the chisel being able to destroy diamond in level 5.
+  - Graphics :: make it have a rustic feel.
+
+  - Music.
+
+  - Hand-make sprites for each rotation.
 
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.

@@ -18,9 +18,7 @@
 #endif
 
 // Assert using an SDL MessageBox popup. Prints to the console too.
-#define Assert(condition) if(!(condition)) {   _assert(gs->window, __func__, __FILE__, __LINE__), __debugbreak(); }
-// Assert without the popup (no window); use only console instead.
-#define AssertNW(condition) if(!(condition)) { _assert(NULL, __func__, __FILE__, __LINE__), __debugbreak(); }
+#define Assert(condition) if(!(condition)) {   _assert(__func__, __FILE__, __LINE__), __debugbreak(); }
 
 #define PushSize(arena, size) (_push_array(arena, 1, size, __FILE__, __LINE__))
 #define PushArray(arena, count, size) (_push_array(arena, count, size, __FILE__, __LINE__))
@@ -74,6 +72,8 @@ typedef struct Game_State {
     
     Preview current_preview;
     Preview tool_previews[TOOL_COUNT];
+    
+    Background background;
     
     enum State_Game gamestate;
     
@@ -192,7 +192,7 @@ typedef struct Game_State {
 
 Game_State *gs = NULL;
 
-void _assert(SDL_Window *window, const char *func, const char *file, const int line) {
+void _assert(const char *func, const char *file, const int line) {
     char message[64] = {0};
     char line_of_code[2048] = {0};
     
@@ -210,9 +210,7 @@ void _assert(SDL_Window *window, const char *func, const char *file, const int l
         sprintf(message, "%s :: at %s:%d", func, file, line);
     }
     
-    if (window) {
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, window);
-    }
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, NULL);
     
     Error("\n:::: ASSERTION FAILED ::::\n%s", message);
 }

@@ -110,6 +110,8 @@ void goto_level(int lvl) {
     tooltip_reset(&gs->gui.tooltip);
     narrator_init(gs->level_current);
     
+    gs->background = background_init();
+    
     gs->levels[lvl].popup_time_current = 0;
     
     memcpy(&gs->levels[lvl].source_cell,
@@ -359,11 +361,11 @@ void level_draw_confirm(void) {
 
 void level_draw(Level *level) {
     switch (level->state) {
-        case LEVEL_STATE_NARRATION: { level_draw_narration();          break; }
-        case LEVEL_STATE_INTRO:     { level_draw_intro(level);         break; }
-        case LEVEL_STATE_OUTRO:     { level_draw_outro_or_play(level); break; }
-        case LEVEL_STATE_PLAY:      { level_draw_outro_or_play(level); break; }
-        case LEVEL_STATE_CONFIRMATION: { level_draw_confirm();         break; }
+        case LEVEL_STATE_NARRATION:    { level_draw_narration();          break; }
+        case LEVEL_STATE_INTRO:        { level_draw_intro(level);         break; }
+        case LEVEL_STATE_OUTRO:        { level_draw_outro_or_play(level); break; }
+        case LEVEL_STATE_PLAY:         { level_draw_outro_or_play(level); break; }
+        case LEVEL_STATE_CONFIRMATION: { level_draw_confirm();            break; }
     }
     
     text_field_draw();
@@ -624,9 +626,9 @@ void level_draw_narration(void) {
     SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
     SDL_RenderClear(gs->renderer);
     
-    effect_draw(&gs->current_effect, false);
-    
+    effect_draw(&gs->current_effect, false, ONLY_SLOW_SLOW);
     narrator_run(WHITE);
+    effect_draw(&gs->current_effect, false, ONLY_SLOW_FAST);
 }
 
 void level_draw_outro_or_play(Level *level) {
@@ -643,9 +645,11 @@ void level_draw_outro_or_play(Level *level) {
         SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
     SDL_RenderClear(gs->renderer);
     
-    grid_draw();
+    background_draw(&gs->background);
     
-    effect_draw(&gs->current_effect, true);
+    effect_draw(&gs->current_effect, true, ONLY_SLOW_ALL);
+    
+    grid_draw();
     
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {

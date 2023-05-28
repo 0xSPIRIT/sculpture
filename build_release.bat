@@ -5,7 +5,7 @@ set Linker_Flags=user32.lib shell32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib SDL
 
 rem gcc main.c *.c -Wall -pedantic -lSDL2 -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2_gfx -g -o ..\bin\alaska.exe
 
-if not exist src/main.c goto INVALID_DIR
+if not exist src/win32_main.c goto INVALID_DIR
 
 if not exist bin_release\ mkdir bin_release
 if not exist bin_release\obj\ mkdir bin_release\obj\
@@ -25,7 +25,7 @@ REM and we still retain the errorlevel from the DLL compilation.
 (>>alaska.exe call;) 2>nul || goto end
 
 REM Build the SDL layer (.exe)
-cl.exe %Common_Compiler_Flags% ..\src\main.c %Linker_Flags% SDL2main.lib /link /incremental:no /out:alaska.exe /NODEFAULTLIB:msvcrt /SUBSYSTEM:WINDOWS
+cl.exe %Common_Compiler_Flags% ..\src\win32_main.c %Linker_Flags% SDL2main.lib /link /incremental:no /out:alaska.exe /NODEFAULTLIB:msvcrt /SUBSYSTEM:WINDOWS
 
 if NOT %errorlevel%==0 (set err=%errorlevel%)
 

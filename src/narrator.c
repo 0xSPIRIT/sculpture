@@ -44,6 +44,7 @@ void narrator_draw_text_blended(int i, // 0 to 10
         *out_h = surf->h;
     
     SDL_SetTextureAlphaMod(Texture(TEXTURE_NARRATOR_LINE+i), max(min(gs->narrator.alpha, 255), 0));
+#if 0
     Narrator *n = &gs->narrator;
     if (gs->level_current+1 == 8) {
         // All of these are in ms.
@@ -63,6 +64,7 @@ void narrator_draw_text_blended(int i, // 0 to 10
             SDL_SetTextureColorMod(Texture(TEXTURE_NARRATOR_LINE+i), 255, 255, 255);
         }
     }
+#endif
     SDL_RenderCopy(gs->renderer, Texture(TEXTURE_NARRATOR_LINE+i), NULL, &dst);
 }
 
@@ -233,10 +235,12 @@ void narrator_run(SDL_Color col) {
         SDL_Color c = col;
         
         int xoff = 0;
+#if 0
         if (gs->level_current+1 == 8 || gs->level_current+1 == 10) {
             xoff = get_glitched_offset();
             if (rand() < RAND_MAX/100) {xoff *= 25;}
         }
+#endif
         
         int surf_h;
         narrator_draw_text_blended(i,

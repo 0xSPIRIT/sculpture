@@ -81,7 +81,6 @@ void game_init_a(Game_State *state) {
     
     if (state->S == 0)
         state->S = calculate_scale(false);
-    Log("Game Scale: %.2f\n", state->S);
     
     state->window_width = 128*state->S;
     state->window_height = 128*state->S + GUI_H;

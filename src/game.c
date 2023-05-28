@@ -28,6 +28,7 @@
 #include "3d.c"
 #include "level.c"
 #include "titlescreen.c"
+#include "background.c"
 
 void game_resize(int h) {
     gs->gui.popup_y /= gs->gh*gs->S;
@@ -371,8 +372,6 @@ export void game_run(Game_State *state) {
                 inventory_tick();
                 all_converters_tick();
                 
-                //Log("gs->gw: %d, gs->S: %.2f, gs->window_width: %.2f, gs->gw*gs->S = %.2f\n", gs->gw, gs->S, (f64)gs->window_width, (f64)(gs->gw*gs->S));
-                
                 level_tick(&gs->levels[gs->level_current]);
                 level_draw(&gs->levels[gs->level_current]);
                 
@@ -402,7 +401,6 @@ export void game_run(Game_State *state) {
         gs->window_width,
         gs->window_height
     };
-    //Log("%d, %d, %d\n", gs->window_width, (int)(gs->S*gs->gw), gs->real_width);
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_MASTER), &src, &dst);
     
     SDL_RenderPresent(gs->renderer);

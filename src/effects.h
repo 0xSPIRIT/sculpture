@@ -6,6 +6,12 @@ enum Effect_Type {
     EFFECT_RAIN
 };
 
+enum Only_Slow {
+    ONLY_SLOW_ALL,
+    ONLY_SLOW_SLOW,
+    ONLY_SLOW_FAST,
+};
+
 typedef struct Effect_Particle {
     f32 x, y;
     f32 vx, vy;

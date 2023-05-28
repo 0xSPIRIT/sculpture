@@ -186,6 +186,14 @@ void surfaces_init(Surfaces *surfaces) {
     surfaces->ice_surface = IMG_Load(RES_DIR "ice.png");
     surfaces->grass_surface = IMG_Load(RES_DIR "grass.png");
     surfaces->triangle_blob_surface = IMG_Load(RES_DIR "triangle_blob.png");
+    
+    // TODO: Hack. 64,64 should be gs->gw, gs->gh, but they're not 
+    //       defined as yet here.
+    surfaces->background = SDL_CreateRGBSurfaceWithFormat(0,
+                                                          64,
+                                                          64,
+                                                          32,
+                                                          ALASKA_PIXELFORMAT);
 }
 
 void surfaces_deinit(Surfaces *surfaces) {
