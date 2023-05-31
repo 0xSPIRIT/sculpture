@@ -38,7 +38,7 @@ bool was_mouse_in_slot(Slot *slot) {
                             });
 }
 
-void inventory_setup_slots() {
+void inventory_setup_slots(void) {
     const int startx = (gs->gw*gs->S)/2 - 0.5*INVENTORY_SLOT_COUNT*Scale(100);
     const int starty = GUI_H/2;
     
@@ -207,8 +207,10 @@ void slot_draw(Slot *slot, f32 rx, f32 ry) {
             texture = &Texture(TEXTURE_SLOT_NAMES + slot->inventory_index);
         }
         
+        // TOOD: Just make your own proper text renderer for god's sake.
+        
 #ifndef MODIFYING_COLORS
-        if (!*surf) {
+        if (!*surf || gs->resized) {
 #else
             if (*surf) SDL_FreeSurface(*surf);
 #endif
@@ -473,7 +475,8 @@ void inventory_draw(void) {
     
     GUI *gui = &gs->gui;
     
-    //inventory_setup_slots();
+    if (gs->resized)
+        inventory_setup_slots();
     
     const f32 y = -GUI_H + gui->popup_inventory_y;
     

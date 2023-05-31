@@ -28,10 +28,10 @@ void credits_run(void) {
                       "Created by spiritwolf",
                       col,
                       WHITE,
-                      true,
-                      true,
-                      gs->window_width - 128,
-                      gs->window_height - 128,
+                      false,
+                      false,
+                      Scale(128),
+                      Scale(128),
                       NULL,
                       NULL);
             break;

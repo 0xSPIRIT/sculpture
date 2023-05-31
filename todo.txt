@@ -1,13 +1,10 @@
 TODO
 
-  - Stop chisel attachment to mouse when chiseling.
-
-  - Something buggy to do with the converter GUI when resizing
-    the window-- it doesn't update properly... Debug this!
-
   - Redo all levels.
-    - Add another level 7 thing but in reverse. Perhaps do it before 7.
+    - Add another level 7 thing but in reverse? Perhaps do it before 7.
     - Ensure the progression is step-by-step.
+
+  - Cool gradient background.
 
   - Graphics :: make it have a rustic feel.
 
@@ -17,3 +14,5 @@ TODO
 
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.
+
+  - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs

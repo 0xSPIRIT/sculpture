@@ -116,47 +116,58 @@ typedef struct Textures {
     SDL_Texture *texs[TEXTURE_COUNT];
 } Textures;
 
+#define SURFACE_COUNT 1024
+
 typedef struct Surfaces {
-    SDL_Surface *renderer_3d;
+    SDL_Surface *surfaces[SURFACE_COUNT];
     
-    SDL_Surface *text[TEXT_INDEX_COUNT];
-    
-    SDL_Surface *background;
-    
-    SDL_Surface *a;
-    SDL_Surface *bark_surface,
-    *glass_surface,
-    *wood_plank_surface,
-    *marble_surface,
-    *granite_surface,
-    *diamond_surface,
-    *ice_surface,
-    *grass_surface,
-    *triangle_blob_surface;
-    
-    SDL_Surface *item_nums[ITEM_COUNT];
-    
-    // Any temp surfaces you might need to draw text or w/e goes here!
-    SDL_Surface *slot_names[TOTAL_SLOT_COUNT];
-    SDL_Surface *converter_names[CONVERTER_COUNT];
-    SDL_Surface *narrator_line[10];
-    
-    SDL_Surface *narrator;
+    struct {
+        SDL_Surface *renderer_3d;
+        
+        SDL_Surface *text[TEXT_INDEX_COUNT];
+        
+        SDL_Surface *background;
+        
+        SDL_Surface *a;
+        SDL_Surface *bark_surface,
+        *glass_surface,
+        *wood_plank_surface,
+        *marble_surface,
+        *granite_surface,
+        *diamond_surface,
+        *ice_surface,
+        *grass_surface,
+        *triangle_blob_surface;
+        
+        SDL_Surface *item_nums[ITEM_COUNT];
+        
+        // Any temp surfaces you might need to draw text or w/e goes here!
+        SDL_Surface *slot_names[TOTAL_SLOT_COUNT];
+        SDL_Surface *converter_names[CONVERTER_COUNT];
+        SDL_Surface *narrator_line[10];
+        
+        SDL_Surface *narrator;
+    };
 } Surfaces;
 
-typedef struct Fonts {
-    TTF_Font *font,
-    *font_times,
-    *font_consolas,
-    *font_courier,
-    *font_small,
-    *font_bold_small,
-    *font_title,
-    *font_title_2,
-    *font_titlescreen;
+#define FONT_COUNT 9
+
+typedef union Fonts {
+    TTF_Font *fonts[FONT_COUNT];
+    struct {
+        TTF_Font *font,
+        *font_times,
+        *font_consolas,
+        *font_courier,
+        *font_small,
+        *font_bold_small,
+        *font_title,
+        *font_title_2,
+        *font_titlescreen;
+    };
 } Fonts;
 
-int font_sizes[32] = {
+int font_sizes[FONT_COUNT] = {
     20,
     30,
     24,

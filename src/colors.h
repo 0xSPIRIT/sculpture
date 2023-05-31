@@ -18,4 +18,3 @@
 // frame, which is really slow.
 
 //#define MODIFYING_COLORS
-#undef MODIFYING_COLORS

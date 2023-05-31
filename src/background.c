@@ -4,55 +4,25 @@ Background background_init(void) {
     return background;
 }
 
-void background_draw(Background *background) {
-    int w = background->surface->w, h = background->surface->h;
+f64 NormalSine(f64 t) {
+    return 0.5*(1 + sin(t));
+}
+
+void background_draw(Background *bg) {
+    int w = bg->surface->w, h = bg->surface->h;
     
-    background->time += gs->dt;
-    
-    const double speed = 0.1;
+    bg->time += gs->dt;
     
     for (int i = 0; i < w*h; i++) {
-        double r, g, b;
+        f64 r, g, b;
         
-        double t = background->time;
-        if (i%2==0)
-            t += ((double)i/(double)(2*w*h));
-        else
-            t += ((double)i/(double)(1.8*w*h));
-        
-        t *= speed;
-        
-        double coeff = 0.25;
-        
-        r = sin(1.5*t);
-        r *= r;
-        r *= coeff*50;
-        
-        g = 2*cos(t)*sin(t);
-        g *= g;
-        g *= coeff*10;
-            
-        b = 2*cos(t);
-        b *= b;
-        b *= coeff*25;
-        
-        const int flicker = 6;
-        
-        int amt = rand()%(flicker*2)-flicker;
-        
-        r += amt;
-        g += amt;
-        b += amt;
-        
-        if (r<0) r = 0;
-        if (g<0) g = 0;
-        if (b<0) b = 0;
+        r = g = b = 30*NormalSine(bg->time);
         
         Uint32 pixel = 0xFF000000 | (Uint8)b << 16 | (Uint8)g << 8 | (Uint8)r;
-        set_pixel(background->surface, i%w, i/w, pixel);
+        set_pixel(bg->surface, i%w, i/w, pixel);
     }
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer,
-                                                        background->surface);
+                                                        bg->surface);
     SDL_RenderCopy(gs->renderer, texture, NULL, NULL);
     SDL_DestroyTexture(texture);
 }

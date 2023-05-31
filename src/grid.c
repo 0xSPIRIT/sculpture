@@ -366,10 +366,7 @@ SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
         
         case CELL_GLASS: {
             color = get_pixel(gs->surfaces.glass_surface, i%gs->gw, i/gs->gw);
-            const f32 coeff = 0.2f;
-            #ifndef __EMSCRIPTEN__
-            color.a = 180 + sin(coeff * (i + sin(gs->frames/200.0)*6))*20;
-            #endif
+            color.a = 255;
             break;
         }
         

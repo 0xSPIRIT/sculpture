@@ -190,7 +190,7 @@ typedef struct Game_State {
     Chisel *chisel;
 } Game_State;
 
-Game_State *gs = NULL;
+static Game_State *gs = NULL;
 
 void _assert(const char *func, const char *file, const int line) {
     char message[64] = {0};

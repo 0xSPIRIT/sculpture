@@ -51,7 +51,7 @@ bool is_mouse_in_slot(Slot *slot);
 bool was_mouse_in_slot(Slot *slot);
 
 void inventory_init(void);
-void inventory_setup_slots();
+void inventory_setup_slots(void);
 
 void item_tick(Item *item, Slot *slot, int x, int y, int w, int h);
 void slot_tick(Slot *slot);

@@ -57,8 +57,6 @@ void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_
     
     AssertNW(persistent_memory->size >= sizeof(Game_State));
     
-    //void* base_address = (void*) Terabytes(2);
-    
     persistent_memory->data = malloc(persistent_memory->size + transient_memory->size);
     AssertNW(persistent_memory->data);
     persistent_memory->cursor = persistent_memory->data;

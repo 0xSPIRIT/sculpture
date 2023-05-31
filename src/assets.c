@@ -197,17 +197,13 @@ void surfaces_init(Surfaces *surfaces) {
 }
 
 void surfaces_deinit(Surfaces *surfaces) {
-    SDL_Surface **surfs = (SDL_Surface**) surfaces;
-    size_t surf_count = sizeof(Surfaces)/sizeof(SDL_Surface*);
-    
-    for (size_t i = 0; i < surf_count; i++) {
-        if (surfs[i])
-            SDL_FreeSurface(surfs[i]);
+    for (size_t i = 0; i < SURFACE_COUNT; i++) {
+        if (surfaces->surfaces[i])
+            SDL_FreeSurface(surfaces->surfaces[i]);
     }
 }
 
 void fonts_init(Fonts *fonts) {
-    // THESE MUST BE IN ORDER IN THE FONT STRUCT
     fonts->font          = TTF_OpenFont(RES_DIR "Courier Prime.ttf", Scale(font_sizes[0]));
     fonts->font_times    = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(font_sizes[1]));
     fonts->font_consolas = TTF_OpenFont(RES_DIR "consola.ttf", Scale(font_sizes[2]));
@@ -218,20 +214,14 @@ void fonts_init(Fonts *fonts) {
     fonts->font_title_2  = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(font_sizes[7]));
     fonts->font_titlescreen = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(font_sizes[8]));
     
-    TTF_Font **ttf_fonts = (TTF_Font**) fonts;
-    size_t font_count = sizeof(Fonts)/sizeof(TTF_Font*);
-    
-    for (size_t i = 0; i < font_count; i++) {
-        TTF_SetFontHinting(ttf_fonts[i], TTF_HINTING_LIGHT_SUBPIXEL);
+    for (size_t i = 0; i < FONT_COUNT; i++) {
+        TTF_SetFontHinting(fonts->fonts[i], TTF_HINTING_LIGHT_SUBPIXEL);
     }
 }
 
 void fonts_deinit(Fonts *fonts) {
-    TTF_Font **ttf_fonts = (TTF_Font**) fonts;
-    size_t font_count = sizeof(Fonts)/sizeof(TTF_Font*);
-    
-    for (size_t i = 0; i < font_count; i++) {
-        TTF_CloseFont(ttf_fonts[i]);
+    for (size_t i = 0; i < FONT_COUNT; i++) {
+        TTF_CloseFont(fonts->fonts[i]);
     }
 }
 

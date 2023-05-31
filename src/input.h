@@ -13,4 +13,7 @@ typedef struct Input {
 
     Uint8 mouse_pressed[MOUSE_BUTTONS];
     Uint8 mouse_released[MOUSE_BUTTONS];
+
+    Uint8 keys_previous[SDL_NUM_SCANCODES];
+    Uint32 mouse_previous;
 } Input;

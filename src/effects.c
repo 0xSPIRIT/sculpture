@@ -1,4 +1,4 @@
-static void effect_reset_snow(bool big) {
+void effect_reset_snow(bool big) {
     for (int i = 0; i < gs->current_effect.particle_count; i++) {
         Effect_Particle *particle = &gs->current_effect.particles[i];
         particle->x = (f32) (rand()%gs->current_effect.w);
@@ -152,7 +152,11 @@ void effect_draw(Effect *effect, bool draw_points, int only_slow) {
                 if (effect->w > gs->gw) coeff = 0.6f;
                 
                 Uint8 col = (Uint8) (255 * coeff*length/max);
-                SDL_SetRenderDrawColor(gs->renderer, col, col, col, 255);
+                if (effect->w > gs->gw) {
+                    SDL_SetRenderDrawColor(gs->renderer, col, col, col, 255);
+                } else {
+                    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, col);
+                }
                 
                 if (draw_points) {
                     SDL_RenderDrawPoint(gs->renderer, px, py);

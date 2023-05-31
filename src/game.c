@@ -45,12 +45,8 @@ void game_resize(int h) {
     gs->view.w = gs->window_width;
     gs->view.h = gs->window_height-GUI_H;
     
-    Fonts *fonts = &gs->fonts;
-    TTF_Font **ttf_fonts = (TTF_Font**) fonts;
-    size_t font_count = sizeof(Fonts)/sizeof(TTF_Font*);
-    
-    for (Uint64 i = 0; i < font_count; i++) {
-        TTF_SetFontSize(ttf_fonts[i], Scale(font_sizes[i]));
+    for (int i = 0; i < FONT_COUNT; i++) {
+        TTF_SetFontSize(gs->fonts.fonts[i], Scale(font_sizes[i]));
     }
     
     gs->resized = true;

@@ -193,7 +193,7 @@ void load_game_code(Game_Code *code) {
     
     // Copy File may fail the first few times ..?
     int copy_counter = 0;
-    while (1) {
+    while (true) {
         copy_counter++;
         Assert(copy_counter <= 10);
         
@@ -247,6 +247,8 @@ int SDL_main(int argc, char **argv)
 int main(int argc, char **argv)
 #endif
 {
+    // TODO: Change this to a more supported function.
+    //       This only works for win10+
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
     
 #ifndef ALASKA_RELEASE_MODE
@@ -369,6 +371,7 @@ int main(int argc, char **argv)
         }
         
         game_code.game_run(gs);
+        ++fps_count;
         
         // Zero out the transient memory for next frame!
         memset(transient_memory.data, 0, transient_memory.size);
@@ -380,8 +383,6 @@ int main(int argc, char **argv)
         f64 d = (f64)delta / (f64)frequency.QuadPart;
         
         gs->dt = d;
-        
-        ++fps_count;
         
 #ifndef ALASKA_RELEASE_MODE
         if (use_software_renderer) {
@@ -417,27 +418,28 @@ int main(int argc, char **argv)
                 SDL_SetWindowTitle(gs->window, title);
             }
         } else {
+#if 0
             Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
             Uint64 size_max = persistent_memory.size;
             f32 percentage = (f32)size_current / (f32)size_max;
             percentage *= 100.f;
+#endif
             
             time_passed += d;
+            
             if (time_passed >= 1) {
-                fps_draw = fps_count;
-                fps_count=0;
+                fps_draw = fps_count-1;
                 time_passed = 0;
+                fps_count=0;
             }
             
             char title[128] = {0};
             sprintf(title,
-                    "Alaska | Memory Used: %.2f/%.2f MB [%.2f%%] | FPS: %d",
-                    size_current/1024.0/1024.0,
-                    size_max/1024.0/1024.0,
-                    percentage,
-                    fps_draw);
-            
+                    "Alaska | FPS: %d | Frametime: %.2fms",
+                    fps_draw,
+                    1000*d);
             SDL_SetWindowTitle(gs->window, title);
+            
         }
 #endif
     }

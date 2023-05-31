@@ -69,8 +69,8 @@ bool is_either_input_type(Converter_Checker *checker, int type, bool restart);
 bool is_either_input_tier(Converter_Checker *checker, int tier, bool is_fuel, bool restart);
 bool is_either_input_stone(Converter_Checker *checker, bool restart);
 
-int fuel_converter_convert(Item *input1, Item *input2);
-int material_converter_convert(Item *input1, Item *input2, Item *fuel);
+int  fuel_converter_convert(Item *input1, Item *input2);
+int  material_converter_convert(Item *input1, Item *input2, Item *fuel);
 bool converter_convert(Converter *converter);
 void converter_tick(Converter *converter);
 void all_converters_tick(void);
