@@ -1,4 +1,4 @@
-void narrator_draw_text_blended(int i, // 0 to 10
+static void narrator_draw_text_blended(int i, // 0 to 10
                                 TTF_Font *font,
                                 const char *str,
                                 SDL_Color col,
@@ -20,7 +20,7 @@ void narrator_draw_text_blended(int i, // 0 to 10
     }
     
     SDL_Surface *surf = gs->surfaces.narrator_line[i];
-    SDL_Texture *texture = Texture(TEXTURE_NARRATOR_LINE+i);
+    SDL_Texture *texture = GetTexture(TEXTURE_NARRATOR_LINE+i);
     
     if (!surf || update) {
         if (surf) SDL_FreeSurface(surf);
@@ -28,10 +28,10 @@ void narrator_draw_text_blended(int i, // 0 to 10
     }
     if (!texture || update) {
         if (texture) SDL_DestroyTexture(texture);
-        Texture(TEXTURE_NARRATOR_LINE+i) = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.narrator_line[i]);
+        GetTexture(TEXTURE_NARRATOR_LINE+i) = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.narrator_line[i]);
     }
     surf = gs->surfaces.narrator_line[i];    
-    texture = Texture(TEXTURE_NARRATOR_LINE+i);
+    texture = GetTexture(TEXTURE_NARRATOR_LINE+i);
     
     SDL_Rect dst = { x, y + gs->window_height/2 - surf->h/2, surf->w, surf->h };
     
@@ -43,7 +43,7 @@ void narrator_draw_text_blended(int i, // 0 to 10
     if (out_h)
         *out_h = surf->h;
     
-    SDL_SetTextureAlphaMod(Texture(TEXTURE_NARRATOR_LINE+i), max(min(gs->narrator.alpha, 255), 0));
+    SDL_SetTextureAlphaMod(GetTexture(TEXTURE_NARRATOR_LINE+i), max(min(gs->narrator.alpha, 255), 0));
 #if 0
     Narrator *n = &gs->narrator;
     if (gs->level_current+1 == 8) {
@@ -57,18 +57,18 @@ void narrator_draw_text_blended(int i, // 0 to 10
         
         if (n->glitch_time>0) {
             if (n->red)
-                SDL_SetTextureColorMod(Texture(TEXTURE_NARRATOR_LINE+i), 255, 64, 64);
+                SDL_SetTextureColorMod(GetTexture(TEXTURE_NARRATOR_LINE+i), 255, 64, 64);
             else
-                SDL_SetTextureColorMod(Texture(TEXTURE_NARRATOR_LINE+i), 255, 220, 200);
+                SDL_SetTextureColorMod(GetTexture(TEXTURE_NARRATOR_LINE+i), 255, 220, 200);
         } else {
-            SDL_SetTextureColorMod(Texture(TEXTURE_NARRATOR_LINE+i), 255, 255, 255);
+            SDL_SetTextureColorMod(GetTexture(TEXTURE_NARRATOR_LINE+i), 255, 255, 255);
         }
     }
 #endif
-    SDL_RenderCopy(gs->renderer, Texture(TEXTURE_NARRATOR_LINE+i), NULL, &dst);
+    SDL_RenderCopy(gs->renderer, GetTexture(TEXTURE_NARRATOR_LINE+i), NULL, &dst);
 }
 
-char* get_narration(int level) {
+static char* get_narration(int level) {
     switch (level+1) {
         case 1:  return NARRATION_LEVEL_1;
         case 3:  return NARRATION_LEVEL_3;
@@ -83,7 +83,7 @@ char* get_narration(int level) {
     return NULL;
 }
 
-void narrator_init(int level) {
+static void narrator_init(int level) {
     Narrator *n = &gs->narrator;
     
     memset(&gs->narrator, 0, sizeof(Narrator));
@@ -120,7 +120,7 @@ void narrator_init(int level) {
     narrator_next_line(true);
 }
 
-void narrator_next_line(bool init) {
+static void narrator_next_line(bool init) {
     Narrator *n = &gs->narrator;
     
     n->update = true; // Gets reset in narrator_run
@@ -153,7 +153,7 @@ void narrator_next_line(bool init) {
     n->current_line_count = a;
 }
 
-void narrator_tick() {
+static void narrator_tick() {
     Narrator *n = &gs->narrator;
     
     n->delay--;
@@ -195,13 +195,13 @@ void narrator_tick() {
     }
 }
 
-int get_glitched_offset(void) {
+static int get_glitched_offset(void) {
     int xoff = 0;
     xoff = fmod(rand(),Scale(4))-Scale(2);
     return xoff;
 }
 
-void narrator_run(SDL_Color col) {
+static void narrator_run(SDL_Color col) {
     Narrator *n = &gs->narrator;
     
     if (n->off) return;

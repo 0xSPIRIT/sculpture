@@ -119,8 +119,8 @@ typedef struct Tutorial_Rect {
     struct Tutorial_Rect *next;
 } Tutorial_Rect;
 
-Tutorial_Rect* tutorial_rect(const char *str,
+static Tutorial_Rect* tutorial_rect(const char *str,
                              f64 x,
                              f64 y,
                              Tutorial_Rect *next);
-void tutorial_rect_close(void*);
+static void tutorial_rect_close(void*);

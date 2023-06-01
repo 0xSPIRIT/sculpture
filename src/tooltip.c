@@ -1,4 +1,4 @@
-void tooltip_reset(Tooltip *tooltip) {
+static void tooltip_reset(Tooltip *tooltip) {
     if (tooltip->preview) {
         tooltip->preview->index=0;
     }
@@ -6,20 +6,20 @@ void tooltip_reset(Tooltip *tooltip) {
     tooltip->x = tooltip->y = -1;
 }
 
-void tooltip_set_position_to_cursor(Tooltip *tooltip, int type) {
+static void tooltip_set_position_to_cursor(Tooltip *tooltip, int type) {
     Input *input = &gs->input;
     tooltip->x = (f32)input->real_mx/gs->S;
     tooltip->y = (f32)input->real_my/gs->S - GUI_H/gs->S;
     tooltip->type = type;
 }
 
-void tooltip_set_position(Tooltip *tooltip, int x, int y, int type) {
+static void tooltip_set_position(Tooltip *tooltip, int x, int y, int type) {
     tooltip->x = (f32) x;
     tooltip->y = (f32) y;
     tooltip->type = type;
 }
 
-void tooltip_draw_box(Tooltip *tooltip, int w, int h) {
+static void tooltip_draw_box(Tooltip *tooltip, int w, int h) {
     tooltip->w = w;
     tooltip->h = h;
 
@@ -36,7 +36,7 @@ void tooltip_draw_box(Tooltip *tooltip, int w, int h) {
     SDL_RenderDrawRect(gs->renderer, &r);
 }
 
-void tooltip_get_string(int type, int amt, char *out_str) {
+static void tooltip_get_string(int type, int amt, char *out_str) {
     char name[256] = {0};
     if (amt == 0) {
         strcpy(out_str, "Contains nothing");
@@ -53,7 +53,7 @@ void tooltip_get_string(int type, int amt, char *out_str) {
 
 // This happens outside of the pixel-art texture, so we must
 // multiply all positions by scale.
-void tooltip_draw(Tooltip *tooltip) {
+static void tooltip_draw(Tooltip *tooltip) {
     if (tooltip->x == -1 && tooltip->y == -1) return;
     
     const int margin = 8; // In real pixels.

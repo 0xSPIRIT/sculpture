@@ -1,4 +1,4 @@
-int is_cell_hard(int type) {
+static int is_cell_hard(int type) {
     return
         type == CELL_ICE         ||
         type == CELL_WOOD_LOG    ||
@@ -19,18 +19,18 @@ int is_cell_hard(int type) {
         type == CELL_REFINED_COAL;
 }
 
-int is_cell_liquid(int type) {
+static int is_cell_liquid(int type) {
     return type == CELL_WATER || type == CELL_LAVA;
 }
 
-int is_cell_gas(int type) {
+static int is_cell_gas(int type) {
     return
         type == CELL_SMOKE ||
         type == CELL_STEAM;
 }
 
 
-bool any_neighbours_free(Cell *array, int x, int y) {
+static bool any_neighbours_free(Cell *array, int x, int y) {
     for (int xx = -1; xx <= 1; xx++) {
         for (int yy = -1; yy <= 1; yy++) {
             if (xx == 0 && yy == 0) continue;
@@ -42,7 +42,7 @@ bool any_neighbours_free(Cell *array, int x, int y) {
     return false;
 }
 
-int number_neighbours_inclusive(Cell *array, int x, int y, int r) {
+static int number_neighbours_inclusive(Cell *array, int x, int y, int r) {
     int c = 0;
     for (int xx = -r; xx <= r; xx++) {
         for (int yy = -r; yy <= r; yy++) {
@@ -53,7 +53,7 @@ int number_neighbours_inclusive(Cell *array, int x, int y, int r) {
     return c;
 }
 
-int number_neighbours(Cell *array, int x, int y, int r) {
+static int number_neighbours(Cell *array, int x, int y, int r) {
     int c = 0;
     for (int xx = -r; xx <= r; xx++) {
         for (int yy = -r; yy <= r; yy++) {
@@ -65,7 +65,7 @@ int number_neighbours(Cell *array, int x, int y, int r) {
     return c;
 }
 
-int is_any_neighbour_hard(int x, int y) {
+static int is_any_neighbour_hard(int x, int y) {
     int r = 1;
     for (int xx = -r; xx <= r; xx++) {
         for (int yy = -r; yy <= r; yy++) {
@@ -77,7 +77,7 @@ int is_any_neighbour_hard(int x, int y) {
     return 0;
 }
 
-int number_neighbours_of_object(int x, int y, int r, int obj) {
+static int number_neighbours_of_object(int x, int y, int r, int obj) {
     int c = 0;
     
     for (int xx = -r; xx <= r; xx++) {
@@ -91,7 +91,7 @@ int number_neighbours_of_object(int x, int y, int r, int obj) {
     return c;
 }
 
-int get_neighbour_type_in_direction(int x, int y, f32 angle) {
+static int get_neighbour_type_in_direction(int x, int y, f32 angle) {
     angle += 180;
     
     f64 len = 2;
@@ -117,7 +117,7 @@ int get_neighbour_type_in_direction(int x, int y, f32 angle) {
     return -1;
 }
 
-int get_any_neighbour_object(int x, int y) {
+static int get_any_neighbour_object(int x, int y) {
     for (int xx = -1; xx <= 1; xx++) {
         for (int yy = -1; yy <= 1; yy++) {
             if (xx == 0 && yy == 0)        continue;
@@ -132,7 +132,7 @@ int get_any_neighbour_object(int x, int y) {
 
 // Compares the types of a cell array to an integer array.
 // leeway = number of fails allowed to have before returning false.
-bool compare_cells_to_int(Cell *a, int *b, int leeway) {
+static bool compare_cells_to_int(Cell *a, int *b, int leeway) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (a[i].type != b[i]) {
             leeway--;
@@ -143,7 +143,7 @@ bool compare_cells_to_int(Cell *a, int *b, int leeway) {
     return true;
 }
 
-int compare_cells_to_int_count(Cell *a, int *b) {
+static int compare_cells_to_int_count(Cell *a, int *b) {
     int hits = 0;
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (a[i].type != b[i]) hits++;
@@ -151,7 +151,7 @@ int compare_cells_to_int_count(Cell *a, int *b) {
     return hits;
 }
 
-bool compare_cells(Cell *a, Cell *b) {
+static bool compare_cells(Cell *a, Cell *b) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (a[i].type != b[i].type) return false;
     }
@@ -169,7 +169,7 @@ bool compare_cells(Cell *a, Cell *b) {
 // the object field set to -1, confusingly, use -2 as the
 // object parameter.
 //
-void set_array(Cell *arr, int x, int y, int val, int object) {
+static void set_array(Cell *arr, int x, int y, int val, int object) {
     if (x < 0 || x >= gs->gw || y < 0 || y >= gs->gh) return;
     
     arr[x+y*gs->gw].type = val;
@@ -204,11 +204,11 @@ void set_array(Cell *arr, int x, int y, int val, int object) {
 
 // Sets an index in the grid array. Obj can be left to -1 to automatically
 // find an object to assign to the cell, or it can be any value.
-void set(int x, int y, int val, int object) {
+static void set(int x, int y, int val, int object) {
     set_array(gs->grid, x, y, val, object);
 }
 
-void swap_array(Cell *arr, int x1, int y1, int x2, int y2) {
+static void swap_array(Cell *arr, int x1, int y1, int x2, int y2) {
     if (x1 < 0 || x1 >= gs->gw || y1 < 0 || y1 >= gs->gh) return;
     if (x2 < 0 || x2 >= gs->gw || y2 < 0 || y2 >= gs->gh) return;
     
@@ -223,20 +223,20 @@ void swap_array(Cell *arr, int x1, int y1, int x2, int y2) {
     arr[x1+y1*gs->gw] = temp;
 }
 
-void swap(int x1, int y1, int x2, int y2) {
+static void swap(int x1, int y1, int x2, int y2) {
     swap_array(gs->grid, x1, y1, x2, y2);
 }
 
-f32 damp(int i) {
+static f32 damp(int i) {
     srand(i);
     return 0.5f + ((f32)rand())/RAND_MAX * 0.4f;
 }
 
-f32 water_spread(void) {
+static f32 water_spread(void) {
     return rand()%3 + ((f32)rand())/RAND_MAX;
 }
 
-void grid_init(int w, int h) {
+static void grid_init(int w, int h) {
     gs->gw = w;
     gs->gh = h;
     
@@ -258,7 +258,7 @@ void grid_init(int w, int h) {
     gs->gas_grid = gs->grid_layers[1];
 }
 
-SDL_Color get_pressure_color(Cell *cell) {
+static SDL_Color get_pressure_color(Cell *cell) {
     SDL_Color c = {
         cell->pressure,
         0,
@@ -268,7 +268,7 @@ SDL_Color get_pressure_color(Cell *cell) {
     return c;
 }
 
-SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
+static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
     SDL_Color color = {0};
     int r, amt;
     
@@ -419,12 +419,12 @@ SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
     return color;
 }
 
-SDL_Color pixel_from_index(enum Cell_Type type, int i) {
+static SDL_Color pixel_from_index(enum Cell_Type type, int i) {
     return pixel_from_index_grid(gs->grid, type, i);
 }
 
 // In this function, we use vx_acc and vy_acc as a higher precision position value.
-bool move_by_velocity_gas(Cell *arr, int x, int y) {
+static bool move_by_velocity_gas(Cell *arr, int x, int y) {
     Cell *p = &arr[x+y*gs->gw];
     
     if (p->vx_acc == 0 && p->vy_acc == 0) {
@@ -451,7 +451,7 @@ bool move_by_velocity_gas(Cell *arr, int x, int y) {
     return false;
 }
 
-void move_by_velocity(Cell *arr, int x, int y) {
+static void move_by_velocity(Cell *arr, int x, int y) {
     Cell *p = &arr[x+y*gs->gw];
     
     if (p->vx == 0 && p->vy == 0) {
@@ -524,7 +524,7 @@ void move_by_velocity(Cell *arr, int x, int y) {
 
 
 // Checks if an object still exists, or if all its cells were removed.
-int object_does_exist(int obj) {
+static int object_does_exist(int obj) {
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (gs->grid[x+y*gs->gw].object == obj) return 1;
@@ -533,13 +533,13 @@ int object_does_exist(int obj) {
     return 0;
 }
 
-bool can_gas_cell_swap(int x, int y) {
+static bool can_gas_cell_swap(int x, int y) {
     return !gs->gas_grid[x+y*gs->gw].type || is_cell_gas(gs->gas_grid[x+y*gs->gw].type);
 }
 
 // For x_direction and y_direction, a value of -1 or 1 should be used.
 // Returns amount of cells updated.
-int grid_array_tick(Cell *array, int x_direction, int y_direction) {
+static int grid_array_tick(Cell *array, int x_direction, int y_direction) {
     int start_y = (y_direction == 1) ? 0 : gs->gh-1;
     int start_x = (x_direction == 1) ? 0 : gs->gw-1;
     
@@ -689,7 +689,7 @@ int grid_array_tick(Cell *array, int x_direction, int y_direction) {
     return cells_updated;
 }
 
-void simulation_tick(void) {
+static void simulation_tick(void) {
     if (!gs->step_one)
         if (gs->paused) return;
     
@@ -718,7 +718,7 @@ void simulation_tick(void) {
     grid_array_tick(gs->gas_grid, 1, 1);
 }
 
-void grid_array_draw(Cell *array, Uint8 alpha) {
+static void grid_array_draw(Cell *array, Uint8 alpha) {
     for (int i = 0; i < gs->gw*gs->gh; i++)
         array[i].updated = 0;
     
@@ -751,7 +751,7 @@ void grid_array_draw(Cell *array, Uint8 alpha) {
     }
 }
 
-void grid_draw(void) {
+static void grid_draw(void) {
     // Draw all the grids in a layered order.
     grid_array_draw(gs->gas_grid, 255);
     grid_array_draw(gs->grid, 255);
@@ -786,15 +786,25 @@ void grid_draw(void) {
             }
         }
     } 
+    
+    if (gs->current_tool >= TOOL_CHISEL_SMALL &&
+        gs->current_tool <= TOOL_CHISEL_LARGE &&
+        gs->chisel->state == CHISEL_STATE_IDLE)
+    {
+        chisel_draw_highlights(gs->chisel->highlights,
+                               gs->chisel->highlight_count,
+                               0,
+                               0);
+    }
 }
 
-bool is_pressure_low_enough(Cell cell) {
+static bool is_pressure_low_enough(Cell cell) {
     if (cell.pressure < 220)
         return true;
     return false;
 }
 
-void calculate_pressure(Cell *grid) {
+static void calculate_pressure(Cell *grid) {
     const int radius = 3;
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         int neighbours = number_neighbours(grid, i%gs->gw, i/gs->gw, radius);
@@ -805,7 +815,7 @@ void calculate_pressure(Cell *grid) {
 
 // Try to move us down 1 cell.
 // If any cell is unable to move, undo the work.
-void object_tick(int obj) {
+static void object_tick(int obj) {
     if (gs->current_tool == TOOL_GRABBER && gs->grabber.object_holding == obj) return;
     
     // Copy of grid to fall back to if we abort.
@@ -833,7 +843,7 @@ void object_tick(int obj) {
     }
 }
 
-void mark_neighbours(int x, int y, int obj, int pobj, int *cell_count) {
+static void mark_neighbours(int x, int y, int obj, int pobj, int *cell_count) {
     if (x < 0 || y < 0 || x >= gs->gw || y >= gs->gh ||
         !gs->grid[x+y*gs->gw].type ||
         !is_cell_hard(gs->grid[x+y*gs->gw].type) ||
@@ -856,7 +866,7 @@ void mark_neighbours(int x, int y, int obj, int pobj, int *cell_count) {
 // to split that into two separate objects.
 // We don't want to bind together two objects which happen to be neighbouring,
 // though, only break apart things.
-void objects_reevaluate(void) {
+static void objects_reevaluate(void) {
     gs->object_count = 0;
     gs->object_current = 0;
     for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -880,14 +890,14 @@ void objects_reevaluate(void) {
     calculate_pressure(gs->grid);
 }
 
-int condition(int a, int end, int dir) {
+static int condition(int a, int end, int dir) {
     if (dir == 1) {
         return a <= end;
     }
     return a >= end;
 }
 
-int object_attempt_move(int object, int dx, int dy) {
+static int object_attempt_move(int object, int dx, int dy) {
     f32 len = sqrtf((f32) (dx*dx + dy*dy));
     if (len == 0) return 0;
     
@@ -951,7 +961,7 @@ int object_attempt_move(int object, int dx, int dy) {
     return (int) (ux+uy*gs->gw);
 }
 
-int get_cell_index_by_id(Cell *array, int id) {
+static int get_cell_index_by_id(Cell *array, int id) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (array[i].id == id) {
             return i;
@@ -960,7 +970,7 @@ int get_cell_index_by_id(Cell *array, int id) {
     return -1;
 }
 
-void convert_object_to_dust(int object) {
+static void convert_object_to_dust(int object) {
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (gs->grid[x+y*gs->gw].object != object) continue;
@@ -969,7 +979,7 @@ void convert_object_to_dust(int object) {
     }
 }
 
-void draw_objects(void) {
+static void draw_objects(void) {
     if (!gs->do_draw_objects) return;
     
     for (int y = 0; y < gs->gh; y++) {
@@ -984,7 +994,7 @@ void draw_objects(void) {
 }
 
 // Returns the index of the closest cell to the point (px, py)
-int clamp_to_grid(int px, 
+static int clamp_to_grid(int px, 
                   int py, 
                   bool outside, 
                   bool on_edge, 

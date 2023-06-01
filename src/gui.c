@@ -1,4 +1,4 @@
-Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
+static Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
     Button *b = PushSize(gs->persistent_memory, sizeof(Button));
     b->type = type;
     b->texture = texture;
@@ -13,7 +13,7 @@ Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char 
     return b;
 }
 
-void tool_button_set_disabled(int level) {
+static void tool_button_set_disabled(int level) {
     Button **tools = gs->gui.tool_buttons;
     
     //tools[TOOL_BLOCKER]->disabled = true;
@@ -62,7 +62,7 @@ void tool_button_set_disabled(int level) {
     }
 }
 
-void click_gui_tool_button(void *type_ptr) {
+static void click_gui_tool_button(void *type_ptr) {
     int type = *(int*)type_ptr;
     
     GUI *gui = &gs->gui;
@@ -118,7 +118,7 @@ void click_gui_tool_button(void *type_ptr) {
     tooltip_reset(&gui->tooltip);
 }
 
-void button_tick(Button *b, void *data) {
+static void button_tick(Button *b, void *data) {
     Input *input = &gs->input;
     GUI *gui = &gs->gui;
     
@@ -164,7 +164,7 @@ void button_tick(Button *b, void *data) {
     }
 }
 
-void button_draw_prefer_color(Button *b, SDL_Color color) {
+static void button_draw_prefer_color(Button *b, SDL_Color color) {
     Input *input = &gs->input;
     
     int gui_input_mx = input->real_mx;// / gs->S;
@@ -197,11 +197,11 @@ void button_draw_prefer_color(Button *b, SDL_Color color) {
     SDL_RenderCopy(gs->renderer, b->texture, NULL, &dst);
 }
 
-void button_draw(Button *b) {
+static void button_draw(Button *b) {
     button_draw_prefer_color(b, (SDL_Color){255,255,255,255});
 }
 
-void gui_message_stack_push(const char *str) {
+static void gui_message_stack_push(const char *str) {
     GUI *gui = &gs->gui;
     
     Assert(strlen(str) <= 100);
@@ -219,7 +219,7 @@ void gui_message_stack_push(const char *str) {
     msg->alpha = 255;
 }
 
-void gui_message_stack_tick_and_draw(void) {
+static void gui_message_stack_tick_and_draw(void) {
     GUI *gui = &gs->gui;
     
     for (int i = 0; i < gui->message_count; i++) {
@@ -239,13 +239,13 @@ void gui_message_stack_tick_and_draw(void) {
     }
 }
 
-void gui_init(void) {
+static void gui_init(void) {
     GUI *gui = &gs->gui;
     
     gui->popup_y = (f32) (gs->gh*gs->S);
     gui->popup_y_vel = 0;
     gui->popup = 0;
-    gui->popup_texture = Texture(TEXTURE_POPUP);
+    gui->popup_texture = GetTexture(TEXTURE_POPUP);
     
     gs->gui.popup_confirm = popup_confirm_init();
     
@@ -259,7 +259,7 @@ void gui_init(void) {
         
         if (gui->tool_buttons[i] == NULL) {
             gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR,
-                                                   Texture(TEXTURE_TOOL_BUTTONS + i),
+                                                   GetTexture(TEXTURE_TOOL_BUTTONS + i),
                                                    name,
                                                    click_gui_tool_button);
             gui->tool_buttons[i]->w = gui->tool_buttons[i]->h = GUI_H;
@@ -284,7 +284,7 @@ void gui_init(void) {
     //overlay_interface_init();
 }
 
-void gui_tick(void) {
+static void gui_tick(void) {
     if (gs->levels[gs->level_current].state != LEVEL_STATE_PLAY)
         return;
     
@@ -351,7 +351,7 @@ void gui_tick(void) {
 
 // Gives the amount of each cell type there are
 // in an array of cells.
-void profile_array(Cell *desired,
+static void profile_array(Cell *desired,
                    char out[64][CELL_TYPE_COUNT],
                    int *count) 
 {
@@ -381,7 +381,7 @@ void profile_array(Cell *desired,
     }
 }
 
-void gui_draw_profile() {
+static void gui_draw_profile() {
     Level *level = &gs->levels[gs->level_current];
     int count = 0;
     
@@ -435,7 +435,7 @@ void gui_draw_profile() {
     }
 }
 
-void gui_draw(void) {
+static void gui_draw(void) {
     GUI *gui = &gs->gui;
     
     // Draw the toolbar buttons.
@@ -472,24 +472,24 @@ void gui_draw(void) {
 
 //~ Popup Confirmation
 
-Popup_Confirm popup_confirm_init() {
+static Popup_Confirm popup_confirm_init() {
     Popup_Confirm result = {0};
     
     result.active = false;
     
     result.a = button_allocate(BUTTON_TYPE_POPUP_CONFIRM,
-                               Texture(TEXTURE_CONFIRM_BUTTON),
+                               GetTexture(TEXTURE_CONFIRM_BUTTON),
                                "",
                                popup_confirm_confirm);
     result.b = button_allocate(BUTTON_TYPE_POPUP_CANCEL,
-                               Texture(TEXTURE_CANCEL_BUTTON),
+                               GetTexture(TEXTURE_CANCEL_BUTTON),
                                "",
                                popup_confirm_cancel);
     
     return result;
 }
 
-bool can_goto_next_level(void) {
+static bool can_goto_next_level(void) {
     int level = gs->level_current+1;
     
     if (level == 1 &&
@@ -506,7 +506,7 @@ bool can_goto_next_level(void) {
     return true;
 }
 
-void popup_confirm_confirm(void* ptr) {
+static void popup_confirm_confirm(void* ptr) {
     (void)ptr;
     Popup_Confirm *c = &gs->gui.popup_confirm;
     Level *level = &gs->levels[gs->level_current];
@@ -531,7 +531,7 @@ void popup_confirm_confirm(void* ptr) {
     level_set_state(gs->level_current, LEVEL_STATE_PLAY);
 }
 
-void popup_confirm_cancel(void* ptr) {
+static void popup_confirm_cancel(void* ptr) {
     (void)ptr;
     
     Popup_Confirm *c = &gs->gui.popup_confirm;
@@ -544,7 +544,7 @@ void popup_confirm_cancel(void* ptr) {
     c->active = false;
 }
 
-void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
+static void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
     if (wait_for_fade(FADE_LEVEL_FINISH)) {
         reset_fade();
         goto_level(++gs->level_current);
@@ -655,7 +655,7 @@ void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
     
 }
 
-void gui_popup_draw(void) {
+static void gui_popup_draw(void) {
     GUI *gui = &gs->gui;
     
     SDL_Rect popup = {
@@ -682,7 +682,7 @@ void gui_popup_draw(void) {
     }
     
     int w, h;
-    SDL_QueryTexture(Texture(TEXTURE_TAB), NULL, NULL, &w, &h);
+    SDL_QueryTexture(GetTexture(TEXTURE_TAB), NULL, NULL, &w, &h);
     
     SDL_Rect bar = {
         0, popup.y,
@@ -700,17 +700,17 @@ void gui_popup_draw(void) {
         w, h
     };
     
-    SDL_SetTextureAlphaMod(Texture(TEXTURE_TAB), 127);
+    SDL_SetTextureAlphaMod(GetTexture(TEXTURE_TAB), 127);
     
     if (gs->level_current >= 4-1)
-        SDL_RenderCopy(gs->renderer, Texture(TEXTURE_TAB), NULL, &tab_icon);
+        SDL_RenderCopy(gs->renderer, GetTexture(TEXTURE_TAB), NULL, &tab_icon);
     
     all_converters_draw();
     inventory_draw();
     converter_gui_draw();
 }
 
-bool is_cell_stone(int type) {
+static bool is_cell_stone(int type) {
     switch (type) {
         case CELL_COBBLESTONE: case CELL_MARBLE: case CELL_SANDSTONE:
         case CELL_CONCRETE: case CELL_QUARTZ: case CELL_GRANITE:
@@ -724,7 +724,7 @@ bool is_cell_stone(int type) {
 // Possibilities:
 //   Tiers 1, 2, or 3.
 //   Returns 0 if no tier is specified.
-int get_cell_tier(int type) {
+static int get_cell_tier(int type) {
     switch (type) {
         case CELL_MARBLE: case CELL_COBBLESTONE: case CELL_SANDSTONE: {
             return 1;

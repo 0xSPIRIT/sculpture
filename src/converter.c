@@ -1,4 +1,4 @@
-Converter *converter_init(int type, bool allocated) {
+static Converter *converter_init(int type, bool allocated) {
     Converter *converter = NULL;
     
     if (!allocated) {
@@ -69,14 +69,14 @@ Converter *converter_init(int type, bool allocated) {
     return converter;
 }
 
-void all_converters_init(void) {
+static void all_converters_init(void) {
     bool allocated = gs->material_converter != NULL || gs->fuel_converter != NULL;
     gs->material_converter = converter_init(CONVERTER_MATERIAL, allocated);
     gs->fuel_converter = converter_init(CONVERTER_FUEL, allocated);
     
 }
 
-void converter_set_state(Converter *converter, enum Converter_State state) {
+static void converter_set_state(Converter *converter, enum Converter_State state) {
     converter->state = state;
     if (state == CONVERTER_OFF) {
         converter->state = CONVERTER_OFF;
@@ -84,7 +84,7 @@ void converter_set_state(Converter *converter, enum Converter_State state) {
     }
 }
 
-void converter_draw(Converter *converter) {
+static void converter_draw(Converter *converter) {
     if (converter->state == CONVERTER_INACTIVE)
         return;
     
@@ -128,7 +128,7 @@ void converter_draw(Converter *converter) {
     SDL_RenderCopy(gs->renderer, converter->arrow.texture, NULL, &arrow_dst);
     
     SDL_Surface **surf = &gs->surfaces.converter_names[converter->type];
-    SDL_Texture **tex = &Texture(TEXTURE_CONVERTER_NAMES+converter->type);
+    SDL_Texture **tex = &GetTexture(TEXTURE_CONVERTER_NAMES+converter->type);
     
 #ifndef MODIFYING_COLORS
     if (!*surf || gs->resized) {
@@ -181,12 +181,12 @@ void converter_draw(Converter *converter) {
     button_draw(converter->go_button);
 }
 
-void all_converters_draw(void) {
+static void all_converters_draw(void) {
     converter_draw(gs->material_converter);
     converter_draw(gs->fuel_converter);    
 }
 
-bool converter_is_layout_valid(Converter *converter) {
+static bool converter_is_layout_valid(Converter *converter) {
     bool is_empty = true;
     for (int i = 0; i < converter->slot_count; i++) {
         if (converter->slots[i].item.type) {
@@ -200,7 +200,7 @@ bool converter_is_layout_valid(Converter *converter) {
     return true;
 }
 
-void converter_begin_converting(void *converter_ptr) {
+static void converter_begin_converting(void *converter_ptr) {
     Converter *converter = (Converter *) converter_ptr;
     
     if (!converter_is_layout_valid(converter))
@@ -213,7 +213,7 @@ void converter_begin_converting(void *converter_ptr) {
     converter_set_state(converter, converter->state == CONVERTER_ON ? CONVERTER_OFF : CONVERTER_ON);
 }
 
-void converter_gui_setup_rectangle(bool really_update) {
+static void converter_gui_setup_rectangle(bool really_update) {
     if (really_update) {
     } else if (!gs->resized) return;
     
@@ -230,7 +230,7 @@ void converter_gui_setup_rectangle(bool really_update) {
     c->r.h = h*c->line_count + Scale(32);
 }
 
-void converter_gui_init(void) {
+static void converter_gui_init(void) {
     Conversions *c = &gs->converter;
     
     FILE *f = fopen(RES_DIR "layout_converter.txt", "r");
@@ -250,7 +250,7 @@ void converter_gui_init(void) {
     converter_gui_setup_rectangle(true);
 }
 
-void converter_gui_tick(void) {
+static void converter_gui_tick(void) {
     Conversions *c = &gs->converter;
     
     if (!gs->text_field.active && gs->input.keys_pressed[SDL_SCANCODE_I]) {
@@ -258,7 +258,7 @@ void converter_gui_tick(void) {
     }
 }
 
-void converter_gui_draw(void) {
+static void converter_gui_draw(void) {
     Conversions *c = &gs->converter;
     
     const SDL_Color bg = {0, 0, 0, 200};
@@ -335,7 +335,7 @@ void converter_gui_draw(void) {
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_CONVERSION_PANEL), &src, &dst);
 }
 
-void auto_set_material_converter_slots(Converter *converter) {
+static void auto_set_material_converter_slots(Converter *converter) {
     int level = gs->level_current;
     
     switch (level+1) {
@@ -360,7 +360,7 @@ void auto_set_material_converter_slots(Converter *converter) {
     }
 }
 
-void converter_setup_position(Converter *converter) {
+static void converter_setup_position(Converter *converter) {
     converter->slots[SLOT_INPUT1].x = converter->w/3.f;
     converter->slots[SLOT_INPUT1].y = GUI_H + converter->h/4.f;
     strcpy(converter->slots[SLOT_INPUT1].name, "Inp. 1");
@@ -389,7 +389,7 @@ void converter_setup_position(Converter *converter) {
         converter->slots[i].inventory_index = -1;
     }
     
-    converter->arrow.texture = Texture(TEXTURE_CONVERTER_ARROW);
+    converter->arrow.texture = GetTexture(TEXTURE_CONVERTER_ARROW);
     
     SDL_QueryTexture(converter->arrow.texture, NULL, NULL, &converter->arrow.w, &converter->arrow.h);
     converter->arrow.w = Scale(converter->arrow.w);
@@ -401,13 +401,13 @@ void converter_setup_position(Converter *converter) {
     
     // Both X and Y-coordinates are updated in converter_tick.
     if (converter->go_button == NULL) {
-        converter->go_button = button_allocate(BUTTON_TYPE_CONVERTER, Texture(TEXTURE_CONVERT_BUTTON), "Convert", converter_begin_converting);
+        converter->go_button = button_allocate(BUTTON_TYPE_CONVERTER, GetTexture(TEXTURE_CONVERT_BUTTON), "Convert", converter_begin_converting);
     }
     converter->go_button->w = Scale(48);
     converter->go_button->h = Scale(48);
 }
 
-int get_number_unique_inputs(Item *input1, Item *input2) {
+static int get_number_unique_inputs(Item *input1, Item *input2) {
     int number_inputs = (input1->type != 0) + (input2->type != 0);
     int number_unique_inputs = 0;
     
@@ -424,7 +424,7 @@ int get_number_unique_inputs(Item *input1, Item *input2) {
     return number_unique_inputs;
 }
 
-Converter_Checker converter_checker(Item *input1, Item *input2) {
+static Converter_Checker converter_checker(Item *input1, Item *input2) {
     Assert(input1);
     Assert(input2);
     
@@ -433,7 +433,7 @@ Converter_Checker converter_checker(Item *input1, Item *input2) {
     };
 }
 
-bool is_either_input_type(Converter_Checker *checker, int type, bool restart) {
+static bool is_either_input_type(Converter_Checker *checker, int type, bool restart) {
     Assert(checker->input1);
     Assert(checker->input2);
     
@@ -459,7 +459,7 @@ bool is_either_input_type(Converter_Checker *checker, int type, bool restart) {
     return true;
 }
 
-bool is_either_input_tier(Converter_Checker *checker, int tier, bool is_fuel, bool restart) {
+static bool is_either_input_tier(Converter_Checker *checker, int tier, bool is_fuel, bool restart) {
     Assert(checker->input1);
     Assert(checker->input2);
     
@@ -486,7 +486,7 @@ bool is_either_input_tier(Converter_Checker *checker, int tier, bool is_fuel, bo
     return true;
 }
 
-bool is_either_input_stone(Converter_Checker *checker, bool restart) {
+static bool is_either_input_stone(Converter_Checker *checker, bool restart) {
     Assert(checker->input1);
     Assert(checker->input2);
     
@@ -510,7 +510,7 @@ bool is_either_input_stone(Converter_Checker *checker, bool restart) {
     return true;
 }
 
-int fuel_converter_convert(Item *input1, Item *input2) {
+static int fuel_converter_convert(Item *input1, Item *input2) {
     int result_type = 0;
     int number_inputs = (input1->type != 0) + (input2->type != 0);
     int number_unique_inputs = 0;
@@ -563,7 +563,7 @@ int fuel_converter_convert(Item *input1, Item *input2) {
     return result_type;
 }
 
-int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
+static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
     Assert(input1);
     Assert(input2);
     
@@ -674,7 +674,7 @@ int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
 }
 
 // Returns if the conversion went succesfully.
-bool converter_convert(Converter *converter) {
+static bool converter_convert(Converter *converter) {
     bool did_convert = false;
     
     int temp_output_type = 0;
@@ -758,7 +758,7 @@ bool converter_convert(Converter *converter) {
     return !final_conversion || !did_convert;
 }
 
-void converter_tick(Converter *converter) {
+static void converter_tick(Converter *converter) {
     converter->arrow.y = (int) (converter->h/2 + 18);
     
     converter_setup_position(converter);
@@ -815,7 +815,7 @@ void converter_tick(Converter *converter) {
     if (!gs->gui.popup) return;
 }
 
-void all_converters_tick(void) {
+static void all_converters_tick(void) {
     // Grey out the buttons for each converter
     // if no converter are possible right now.
     
@@ -866,7 +866,7 @@ void all_converters_tick(void) {
     }
 }
 
-void setup_item_indices() {
+static void setup_item_indices() {
     // Set up the item indices.
     
     int mat_slot_count = gs->material_converter->slot_count;

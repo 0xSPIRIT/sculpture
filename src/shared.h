@@ -24,8 +24,8 @@
 #define PushArray(arena, count, size) (_push_array(arena, count, size, __FILE__, __LINE__))
 
 // 'which' is an enum in assets.h
-#define RenderTarget(which) (Texture(TEXTURE_RENDER_TARGETS+gs->level_current*RENDER_TARGET_COUNT+which))
-#define RenderTargetLvl(lvl, which) (Texture(TEXTURE_RENDER_TARGETS+lvl*RENDER_TARGET_COUNT+which))
+#define RenderTarget(which) (GetTexture(TEXTURE_RENDER_TARGETS+gs->level_current*RENDER_TARGET_COUNT+which))
+#define RenderTargetLvl(lvl, which) (GetTexture(TEXTURE_RENDER_TARGETS+lvl*RENDER_TARGET_COUNT+which))
 
 
 #include "headers.h" // Used to get type size information.
@@ -51,11 +51,6 @@ enum State_Game {
     GAME_STATE_PLAY
 };
 
-// Unused
-typedef struct View {
-    f64 x, y, w, h;
-} View;
-
 // Contains the entirety of the game's state.
 // If you're adding values at runtime into the struct, add it
 // to the end, because we have pointers pointing to variables
@@ -69,6 +64,7 @@ typedef struct Game_State {
     
     SDL_Window *window;
     SDL_Renderer *renderer;
+    Render render;
     
     Preview current_preview;
     Preview tool_previews[TOOL_COUNT];
@@ -104,7 +100,7 @@ typedef struct Game_State {
     // the amount an item has at the time it was last drawn.
     // (The rendering data is stored in textures.items and surfaces.items)
     
-    Textures textures; // Contains pointers to SDL textures.
+    GetTextures textures; // Contains pointers to SDL textures.
     Surfaces surfaces;
     Fonts fonts;
     char texts[TEXT_INDEX_COUNT][128];
@@ -192,7 +188,7 @@ typedef struct Game_State {
 
 static Game_State *gs = NULL;
 
-void _assert(const char *func, const char *file, const int line) {
+static void _assert(const char *func, const char *file, const int line) {
     char message[64] = {0};
     char line_of_code[2048] = {0};
     
@@ -216,7 +212,7 @@ void _assert(const char *func, const char *file, const int line) {
 }
 
 // Gives pointer to zeroed memory.
-void *_push_array(Memory_Arena *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
+static void *_push_array(Memory_Arena *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
     void *output = NULL;
     

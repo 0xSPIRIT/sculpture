@@ -1,9 +1,9 @@
-void grabber_init(void) {
+static void grabber_init(void) {
     gs->grabber.texture = 0;
     gs->grabber.object_holding = -1;
 }
 
-void grabber_tick(void) {
+static void grabber_tick(void) {
     Grabber *grabber = &gs->grabber;
     
     if (gs->tutorial.active) return;

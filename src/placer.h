@@ -33,4 +33,4 @@ typedef struct Placer {
     int placing_solid_time;
 } Placer;
 
-Placer *get_current_placer(void);
+static Placer *get_current_placer(void);

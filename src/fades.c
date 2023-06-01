@@ -1,21 +1,21 @@
-bool wait_for_fade(int id) {
+static bool wait_for_fade(int id) {
     if (gs->fade.id == id)
         return !gs->fade.active;
     return false;
 }
 
-void set_fade(int id, f64 start, f64 end) {
+static void set_fade(int id, f64 start, f64 end) {
     gs->fade.id = id;
     gs->fade.alpha = gs->fade.start_alpha = start;
     gs->fade.desired_alpha = end;
     gs->fade.active = true;
 }
 
-void reset_fade() {
+static void reset_fade() {
     memset(&gs->fade, 0, sizeof(Fade));
 }
 
-void fade_draw() {
+static void fade_draw() {
     if (!gs->fade.active) return;
     
     gs->fade.alpha = goto64(gs->fade.alpha, gs->fade.desired_alpha, 5);

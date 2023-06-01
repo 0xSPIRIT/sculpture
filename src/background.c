@@ -1,14 +1,14 @@
-Background background_init(void) {
+static Background background_init(void) {
     Background background = {0};
     background.surface = gs->surfaces.background;
     return background;
 }
 
-f64 NormalSine(f64 t) {
+static f64 NormalSine(f64 t) {
     return 0.5*(1 + sin(t));
 }
 
-void background_draw(Background *bg) {
+static void background_draw(Background *bg) {
     int w = bg->surface->w, h = bg->surface->h;
     
     bg->time += gs->dt;

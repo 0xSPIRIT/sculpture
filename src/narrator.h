@@ -123,5 +123,5 @@ typedef struct Narrator {
     bool off;
 } Narrator;
 
-void narrator_next_line(bool init);
-int get_glitched_offset(void);
+static void narrator_next_line(bool init);
+static int get_glitched_offset(void);

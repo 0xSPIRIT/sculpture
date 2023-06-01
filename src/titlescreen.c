@@ -1,11 +1,11 @@
-void titlescreen_init(void) {
+static void titlescreen_init(void) {
 }
 
-void titlescreen_goto_next(void) {
+static void titlescreen_goto_next(void) {
     gs->gamestate = GAME_STATE_PLAY;
 }
 
-void titlescreen_tick(void) {
+static void titlescreen_tick(void) {
     if (gs->input.keys[SDL_SCANCODE_RETURN]) {
         gs->titlescreen.stop = true;
         Mix_FadeOutMusic(1000);
@@ -13,7 +13,7 @@ void titlescreen_tick(void) {
     }
 }
 
-void titlescreen_draw(void) {
+static void titlescreen_draw(void) {
     SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
     SDL_RenderClear(gs->renderer);
     

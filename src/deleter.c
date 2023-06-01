@@ -1,10 +1,10 @@
-void deleter_init(void) {
+static void deleter_init(void) {
     Deleter *deleter = &gs->deleter;
-    deleter->texture = Texture(TEXTURE_DELETER);
+    deleter->texture = GetTexture(TEXTURE_DELETER);
     SDL_QueryTexture(deleter->texture, NULL, NULL, &deleter->w, &deleter->h);
 }
 
-void deleter_delete(void) {
+static void deleter_delete(void) {
     Deleter *deleter = &gs->deleter;
     
     save_state_to_next();
@@ -16,7 +16,7 @@ void deleter_delete(void) {
     objects_reevaluate();
 }
 
-void deleter_tick(void) {
+static void deleter_tick(void) {
     Deleter *deleter = &gs->deleter;
     Input *input = &gs->input;
     
@@ -49,7 +49,7 @@ void deleter_tick(void) {
     }
 }
 
-void deleter_draw(void) {
+static void deleter_draw(void) {
     Deleter *deleter = &gs->deleter;
     
     const SDL_Rect dst = {

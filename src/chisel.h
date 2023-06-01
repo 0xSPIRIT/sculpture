@@ -26,6 +26,12 @@ typedef struct Chisel {
     f64 angle;
     SDL_Texture *texture;
     
+    SDL_Texture *render_target;
+    int target_w, target_h;
+    
     int did_chisel_this_frame;
     int num_times_chiseled;
 } Chisel;
+
+// Called in grid_draw.
+static void chisel_draw_highlights(int *highlights, int count, int xoff, int yoff);

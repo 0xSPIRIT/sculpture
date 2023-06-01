@@ -29,8 +29,10 @@
 #include "level.c"
 #include "titlescreen.c"
 #include "background.c"
+#include "render.c"
+#include "view.c"
 
-void game_resize(int h) {
+static void game_resize(int h) {
     gs->gui.popup_y /= gs->gh*gs->S;
     
     gs->S = h / 72.0;

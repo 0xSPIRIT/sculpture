@@ -18,7 +18,9 @@
 
 #include "typedefs.h"
 #include "colors.h"
+#include "render.h"
 #include "cursor.h"
+#include "view.h"
 #include "fades.h"
 #include "preview.h"
 #include "credits.h"

@@ -1,4 +1,4 @@
-void effect_reset_snow(bool big) {
+static void effect_reset_snow(bool big) {
     for (int i = 0; i < gs->current_effect.particle_count; i++) {
         Effect_Particle *particle = &gs->current_effect.particles[i];
         particle->x = (f32) (rand()%gs->current_effect.w);
@@ -27,7 +27,7 @@ void effect_reset_snow(bool big) {
     }
 }
 
-void effect_set(int type, int w, int h) {
+static void effect_set(int type, int w, int h) {
     gs->current_effect.type = type;
     
     gs->current_effect.w = w;
@@ -74,7 +74,7 @@ void effect_set(int type, int w, int h) {
     }
 }
 
-void particle_tick(Effect *effect, int i) {
+static void particle_tick(Effect *effect, int i) {
     if (gs->levels[gs->level_current].state == LEVEL_STATE_OUTRO)
         return;
     if (gs->paused && !gs->step_one)
@@ -115,7 +115,7 @@ void particle_tick(Effect *effect, int i) {
     }
 }
 
-void effect_draw(Effect *effect, bool draw_points, int only_slow) {
+static void effect_draw(Effect *effect, bool draw_points, int only_slow) {
     if (effect->type == EFFECT_NONE)
         return;
     

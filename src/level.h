@@ -50,33 +50,33 @@ typedef struct Level {
     bool off;
 } Level;
 
-void level_setup_initial_grid(void);
-int  level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type);
-void levels_setup(void);
-void goto_level(int lvl);
-void level_set_state(int level, enum Level_State state);
-void goto_level_string_hook(const char *string);
-void level_tick(Level *level);
+static void level_setup_initial_grid(void);
+static int  level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type);
+static void levels_setup(void);
+static void goto_level(int lvl);
+static void level_set_state(int level, enum Level_State state);
+static void goto_level_string_hook(const char *string);
+static void level_tick(Level *level);
 
-void level_tick_intro(Level *level);
-void level_tick_outro(Level *level);
-void level_tick_play(Level *level);
+static void level_tick_intro(Level *level);
+static void level_tick_outro(Level *level);
+static void level_tick_play(Level *level);
     
-void level_draw_confirm(void);
-void level_draw_narration(void);
-void level_draw_name_intro(Level *level, SDL_Rect rect);
-void level_draw_desired_grid(Level *level, int dx, int dy);
-void level_draw_intro(Level *level);
-void level_draw_outro(Level *level);
-void level_draw_outro_or_play(Level *level);
+static void level_draw_confirm(void);
+static void level_draw_narration(void);
+static void level_draw_name_intro(Level *level, SDL_Rect rect);
+static void level_draw_desired_grid(Level *level, int dx, int dy);
+static void level_draw_intro(Level *level);
+static void level_draw_outro(Level *level);
+static void level_draw_outro_or_play(Level *level);
     
-void level_draw(Level *level);
+static void level_draw(Level *level);
 
-SDL_Color type_to_rgb(int type);
+static SDL_Color type_to_rgb(int type);
 
-int  rgb_to_type(Uint8 r, Uint8 g, Uint8 b);
-void level_output_to_png(const char *output_file);
-void level_get_cells_from_image(const char *path, Cell **out, Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h);
+static int  rgb_to_type(Uint8 r, Uint8 g, Uint8 b);
+static void level_output_to_png(const char *output_file);
+static void level_get_cells_from_image(const char *path, Cell **out, Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h);
 
 Uint8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
     // Type              R    G    B

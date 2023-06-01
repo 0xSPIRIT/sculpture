@@ -1,4 +1,4 @@
-void undo_system_init(void) {
+static void undo_system_init(void) {
     gs->undo_initialized = true;
     
     gs->save_state_count = 1;
@@ -12,7 +12,7 @@ void undo_system_init(void) {
     save_state_to_next();
 }
 
-void undo_system_reset(void) {
+static void undo_system_reset(void) {
     gs->save_state_count = 0;
     for (int i = 0; i < MAX_UNDO; i++) {
         for (int j = 0; j < NUM_GRID_LAYERS; j++) {
@@ -24,12 +24,12 @@ void undo_system_reset(void) {
     }
 }
 
-Save_State *current_state(void) {
+static Save_State *current_state(void) {
     if (gs->save_state_count == 0) return NULL;
     return &gs->save_states[gs->save_state_count-1];
 }
 
-void save_state_to_next(void) {
+static void save_state_to_next(void) {
     if (gs->save_state_count == MAX_UNDO) {
         // Move everything back by one, destroying the first
         // save state and leaving the last slot open.
@@ -99,14 +99,14 @@ void save_state_to_next(void) {
     state->source_cell_count = gs->levels[gs->level_current].source_cell_count;
 }
 
-bool is_current_grid_same_as(Save_State *state) {
+static bool is_current_grid_same_as(Save_State *state) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (state->grid_layers[0][i].type != gs->grid[i].type) return false;
     }
     return true;
 }
 
-bool is_current_slots_same_as(Save_State *state) {
+static bool is_current_slots_same_as(Save_State *state) {
     // Inventory Slots
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
         if (0 != memcmp(&state->placer_items[i], &gs->inventory.slots[i].item, sizeof(Item))) {
@@ -133,7 +133,7 @@ bool is_current_slots_same_as(Save_State *state) {
     return true;
 }
 
-void set_state(int num) {
+static void set_state(int num) {
     Save_State *state = &gs->save_states[num];
     
     Assert(state->grid_layers[0]);
@@ -164,12 +164,12 @@ void set_state(int num) {
     gs->levels[gs->level_current].source_cell_count = state->source_cell_count;
 }
 
-void set_state_to_string_hook(const char *string) {
+static void set_state_to_string_hook(const char *string) {
     int state_num = atoi(string);
     set_state(state_num);
 }
 
-void undo(void) {
+static void undo(void) {
     if (gs->tutorial.active && strcmp(gs->tutorial.str, TUTORIAL_UNDO_STRING) == 0) {
         tutorial_rect_close(NULL);
     }

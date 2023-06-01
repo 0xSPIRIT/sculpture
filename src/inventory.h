@@ -44,25 +44,25 @@ typedef struct Inventory {
     Slot slots[INVENTORY_SLOT_COUNT];
 } Inventory;
 
-bool add_item_to_inventory_slot(enum Cell_Type type, int amount);
-bool can_add_item_to_inventory(enum Cell_Type type);
+static bool add_item_to_inventory_slot(enum Cell_Type type, int amount);
+static bool can_add_item_to_inventory(enum Cell_Type type);
     
-bool is_mouse_in_slot(Slot *slot);
-bool was_mouse_in_slot(Slot *slot);
+static bool is_mouse_in_slot(Slot *slot);
+static bool was_mouse_in_slot(Slot *slot);
 
-void inventory_init(void);
-void inventory_setup_slots(void);
+static void inventory_init(void);
+static void inventory_setup_slots(void);
 
-void item_tick(Item *item, Slot *slot, int x, int y, int w, int h);
-void slot_tick(Slot *slot);
-void inventory_tick();
-void inventory_draw(void);
+static void item_tick(Item *item, Slot *slot, int x, int y, int w, int h);
+static void slot_tick(Slot *slot);
+static void inventory_tick();
+static void inventory_draw(void);
 
-bool can_add_item_to_inventory(enum Cell_Type type);
-bool add_item_to_inventory_slot(enum Cell_Type type, int amount);
+static bool can_add_item_to_inventory(enum Cell_Type type);
+static bool add_item_to_inventory_slot(enum Cell_Type type, int amount);
 
-void item_draw(Item *item, int x, int y, int w, int h);
-void slot_draw(Slot *slot, f32 rx, f32 ry);
+static void item_draw(Item *item, int x, int y, int w, int h);
+static void slot_draw(Slot *slot, f32 rx, f32 ry);
 
-bool is_cell_fuel(int type);
-bool can_place_item_in_slot(int type, enum Slot_Type slot);
+static bool is_cell_fuel(int type);
+static bool can_place_item_in_slot(int type, enum Slot_Type slot);

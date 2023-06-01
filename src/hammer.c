@@ -1,14 +1,14 @@
-Hammer hammer_init(void) {
+static Hammer hammer_init(void) {
     Hammer hammer = {0};
     
-    hammer.tex = Texture(TEXTURE_CHISEL_HAMMER);
+    hammer.tex = GetTexture(TEXTURE_CHISEL_HAMMER);
     hammer.dir = 1;
     SDL_QueryTexture(hammer.tex, NULL, NULL, &hammer.w, &hammer.h);
     
     return hammer;
 }
 
-void hammer_tick(Hammer *hammer) {
+static void hammer_tick(Hammer *hammer) {
     if (gs->input.keys[SDL_SCANCODE_RSHIFT]) {
         f64 rmx = (f64)gs->input.real_mx / (f64)gs->S;
         f64 rmy = (f64)(gs->input.real_my-GUI_H) / (f64)gs->S;
@@ -72,7 +72,16 @@ void hammer_tick(Hammer *hammer) {
     }
 }
 
-void hammer_draw(Hammer *hammer) {
+// How the drawing works:
+//
+// Firstly, the local hammer's angle (swing animation)
+// is drawn to a texture.
+//
+// Then, another texture is used to actually rotate the
+// entire hammer to the chisel's angle, and position
+// it accordingly.
+//
+static void hammer_draw(Hammer *hammer) {
     {
         SDL_Texture *old_target = SDL_GetRenderTarget(gs->renderer);
         

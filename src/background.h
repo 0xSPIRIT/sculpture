@@ -3,5 +3,5 @@ typedef struct {
     float time;
 } Background;
 
-Background background_init(void);
-void background_draw(Background *background);
+static Background background_init(void);
+static void background_draw(Background *background);

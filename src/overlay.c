@@ -25,16 +25,16 @@ Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_DUST,           77,   9, 249,
 };
 
-void first(int a) {
+static void first(int a) {
     (void)a;
 }
 
-void second(int a) {
+static void second(int a) {
     (void)a;
 }
 
 // name_generic is a formatted printf with a %d for the number, from 0 to num-1.
-Overlay_Changes overlay_load_changes(const char *name_generic, int num) {
+static Overlay_Changes overlay_load_changes(const char *name_generic, int num) {
     Overlay_Changes result = {0};
     result.count = num;
     
@@ -103,7 +103,7 @@ Overlay_Changes overlay_load_changes(const char *name_generic, int num) {
     return result;
 }
 
-void overlay_init(void) {
+static void overlay_init(void) {
     Overlay *overlay = &gs->overlay;
     
     overlay->tool = OVERLAY_TOOL_BRUSH;
@@ -149,7 +149,7 @@ void overlay_init(void) {
     }
 }
 
-void overlay_set_circle(int x, int y, int r, int value) {
+static void overlay_set_circle(int x, int y, int r, int value) {
     Overlay *overlay = &gs->overlay;
     
     for (int yy = -r; yy <= r; yy++) {
@@ -162,7 +162,7 @@ void overlay_set_circle(int x, int y, int r, int value) {
     }
 }
 
-void overlay_set_line(int *grid, int x1, int y1, int x2, int y2, int value) {
+static void overlay_set_line(int *grid, int x1, int y1, int x2, int y2, int value) {
     f64 dx = x2-x1;
     f64 dy = y2-y1;
     
@@ -216,7 +216,7 @@ void overlay_set_line(int *grid, int x1, int y1, int x2, int y2, int value) {
     }
 }
 
-void overlay_flood_fill(int *grid, int x, int y, int value) {
+static void overlay_flood_fill(int *grid, int x, int y, int value) {
     if (!is_in_bounds(x, y)) return;
     if (grid[x+y*gs->gw]) return;
     
@@ -228,7 +228,7 @@ void overlay_flood_fill(int *grid, int x, int y, int value) {
     overlay_flood_fill(grid, x, y-1, value);
 }
 
-void overlay_set_rectangle(int *grid, SDL_Rect r, int value) {
+static void overlay_set_rectangle(int *grid, SDL_Rect r, int value) {
     if (r.w < 0) {
         r.w *= -1;
         r.x -= r.w;
@@ -247,7 +247,7 @@ void overlay_set_rectangle(int *grid, SDL_Rect r, int value) {
     }
 }
 
-void overlay_swap_to_next(void) {
+static void overlay_swap_to_next(void) {
     Overlay *overlay = &gs->overlay;
     
     if (overlay->changes.count && overlay->changes.index < overlay->changes.count-1) {
@@ -258,7 +258,7 @@ void overlay_swap_to_next(void) {
     }
 }
 
-void overlay_swap_tick(void) {
+static void overlay_swap_tick(void) {
     Overlay *overlay = &gs->overlay;
     
     if (!overlay->changes.was_grid_none) {
@@ -291,7 +291,7 @@ void overlay_swap_tick(void) {
     overlay->changes.alpha = (f32)overlay->changes.temp/c;
 }
 
-void overlay_tick(void) {
+static void overlay_tick(void) {
     Overlay *overlay = &gs->overlay;
     
     memset(overlay->temp_grid, 0, sizeof(int)*gs->gw*gs->gh);
@@ -386,7 +386,7 @@ void overlay_tick(void) {
     }
 }
 
-bool int_array_any_neighbours_not_same(int *array, int x, int y) {
+static bool int_array_any_neighbours_not_same(int *array, int x, int y) {
     int a = array[x+y*gs->gw];
     for (int xx = -1; xx <= 1; xx++) {
         for (int yy = -1; yy <= 1; yy++) {
@@ -400,7 +400,7 @@ bool int_array_any_neighbours_not_same(int *array, int x, int y) {
     return false;
 }
 
-void overlay_draw_missed_pixels(int *grid) {
+static void overlay_draw_missed_pixels(int *grid) {
     SDL_SetRenderDrawColor(gs->renderer, 255, 128, 0, 255 * 0.5*(sin(SDL_GetTicks()/500.0)+1));
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
@@ -413,7 +413,7 @@ void overlay_draw_missed_pixels(int *grid) {
     }
 }
 
-void overlay_draw_grid(int *grid, f32 alpha_coeff) {
+static void overlay_draw_grid(int *grid, f32 alpha_coeff) {
     f32 alpha;
     alpha = 100;
     alpha *= alpha_coeff;
@@ -460,7 +460,7 @@ void overlay_draw_grid(int *grid, f32 alpha_coeff) {
     }
 }
 
-void overlay_draw(void) {
+static void overlay_draw(void) {
     Overlay *overlay = &gs->overlay;
     
     if (!overlay->show)

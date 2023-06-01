@@ -1,4 +1,4 @@
-bool is_mouse_in_slot(Slot *slot) {
+static bool is_mouse_in_slot(Slot *slot) {
     Input *input = &gs->input;
     
     int dx = 0;
@@ -18,7 +18,7 @@ bool is_mouse_in_slot(Slot *slot) {
                             });
 }
 
-bool was_mouse_in_slot(Slot *slot) {
+static bool was_mouse_in_slot(Slot *slot) {
     Input *input = &gs->input;
     
     int dx = 0;
@@ -38,7 +38,7 @@ bool was_mouse_in_slot(Slot *slot) {
                             });
 }
 
-void inventory_setup_slots(void) {
+static void inventory_setup_slots(void) {
     const int startx = (gs->gw*gs->S)/2 - 0.5*INVENTORY_SLOT_COUNT*Scale(100);
     const int starty = GUI_H/2;
     
@@ -56,7 +56,7 @@ void inventory_setup_slots(void) {
     }
 }
 
-bool can_add_item_to_inventory(enum Cell_Type type) {
+static bool can_add_item_to_inventory(enum Cell_Type type) {
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
         Slot *slot = &gs->inventory.slots[i];
         if (slot->item.type == 0 ||
@@ -69,7 +69,7 @@ bool can_add_item_to_inventory(enum Cell_Type type) {
     return false;
 }
 
-bool add_item_to_inventory_slot(enum Cell_Type type, int amount) {
+static bool add_item_to_inventory_slot(enum Cell_Type type, int amount) {
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
         Slot *slot = &gs->inventory.slots[i];
         if (slot->item.type == 0 ||
@@ -84,19 +84,19 @@ bool add_item_to_inventory_slot(enum Cell_Type type, int amount) {
     return false;
 }
 
-void inventory_init(void) {
+static void inventory_init(void) {
     memset(&gs->inventory, 0, sizeof(Inventory));
     inventory_setup_slots();
 }
 
-void item_draw(Item *item, int x, int y, int w, int h) {
+static void item_draw(Item *item, int x, int y, int w, int h) {
     if (!item->type) return;
     if (!item->amount) {
         item->type = 0;
         return;
     }
     
-    Textures *texs = &gs->textures;
+    GetTextures *texs = &gs->textures;
     Surfaces *surfs = &gs->surfaces;
     
     SDL_Rect r = {
@@ -149,7 +149,7 @@ void item_draw(Item *item, int x, int y, int w, int h) {
 }
 
 // rx, ry are relative values.
-void slot_draw(Slot *slot, f32 rx, f32 ry) {
+static void slot_draw(Slot *slot, f32 rx, f32 ry) {
     SDL_Rect bounds = {
         (int) (rx + slot->x - slot->w/2),
         (int) (ry + slot->y - slot->h/2),
@@ -201,10 +201,10 @@ void slot_draw(Slot *slot, f32 rx, f32 ry) {
         
         if (c) {
             surf = &gs->surfaces.slot_names[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT * c->type + slot->type];
-            texture = &Texture(TEXTURE_SLOT_NAMES + INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT * c->type + slot->type);
+            texture = &GetTexture(TEXTURE_SLOT_NAMES + INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT * c->type + slot->type);
         } else {
             surf = &gs->surfaces.slot_names[slot->inventory_index];
-            texture = &Texture(TEXTURE_SLOT_NAMES + slot->inventory_index);
+            texture = &GetTexture(TEXTURE_SLOT_NAMES + slot->inventory_index);
         }
         
         // TOOD: Just make your own proper text renderer for god's sake.
@@ -262,7 +262,7 @@ void slot_draw(Slot *slot, f32 rx, f32 ry) {
 //////////////////////////////// Inventory Ticking
 
 
-bool is_cell_fuel(int type) {
+static bool is_cell_fuel(int type) {
     switch (type) {
         case CELL_REFINED_COAL: case CELL_UNREFINED_COAL: case CELL_LAVA:
         return true;
@@ -270,7 +270,7 @@ bool is_cell_fuel(int type) {
     return false;
 }
 
-bool can_place_item_in_slot(int type, enum Slot_Type slot) {
+static bool can_place_item_in_slot(int type, enum Slot_Type slot) {
     bool can_put_fuel = false;
     
     if (slot == SLOT_FUEL) {
@@ -285,7 +285,7 @@ bool can_place_item_in_slot(int type, enum Slot_Type slot) {
 
 // Slot may be NULL if the item doesn't belong to any slot.
 // This function mostly just handles interactions with items and the mouse.
-void item_tick(Item *item, Slot *slot, int x, int y, int w, int h) {
+static void item_tick(Item *item, Slot *slot, int x, int y, int w, int h) {
     Input *input = &gs->input;
     
     if (item == &gs->item_holding) {
@@ -393,7 +393,7 @@ void item_tick(Item *item, Slot *slot, int x, int y, int w, int h) {
     }
 }
 
-void slot_tick(Slot *slot) {
+static void slot_tick(Slot *slot) {
     int rx = 0, ry = 0;
     
     if (slot->converter) {
@@ -414,7 +414,7 @@ void slot_tick(Slot *slot) {
 }
 
 // Look in gui.c for the ticking of converter slots.
-void inventory_tick() {
+static void inventory_tick() {
     if (!gs->gui.popup) return;
     
     if (gs->level_current == 6-1 && !gs->did_fuel_converter_tutorial) {
@@ -470,7 +470,7 @@ void inventory_tick() {
 }
 
 // calls from gui_draw()
-void inventory_draw(void) {
+static void inventory_draw(void) {
     if (gs->gui.popup_inventory_y <= 0) return;
     
     GUI *gui = &gs->gui;

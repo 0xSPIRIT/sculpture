@@ -13,7 +13,7 @@
 
 SDL_Surface *pixel_format_surf = NULL;
 
-SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
+static SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
     // A temp surface that exists solely to get its format
     // if surfaces are loaded with a format != ALASKA_PIXELFORMAT.
     if (!pixel_format_surf) {
@@ -39,7 +39,7 @@ SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
 }
 
 // Creates all render targets for all the levels.
-void render_targets_init(SDL_Renderer *renderer,
+static void render_targets_init(SDL_Renderer *renderer,
                          Level *levels) {
     int width = gs->desktop_w;
     int height = gs->desktop_h;
@@ -59,11 +59,6 @@ void render_targets_init(SDL_Renderer *renderer,
                     SDL_SetTextureBlendMode(RenderTargetLvl(lvl, i), SDL_BLENDMODE_BLEND);
                     continue;
                 }
-                case RENDER_TARGET_GUI_TOOLBAR: {
-                    RenderTargetLvl(lvl, i) = CreateRenderTarget(width, height);
-                    Assert(RenderTargetLvl(lvl, i));
-                    continue;
-                }
                 case RENDER_TARGET_3D: {
                     RenderTargetLvl(lvl, i) = SDL_CreateTexture(renderer,
                                                                 ALASKA_PIXELFORMAT,
@@ -74,12 +69,7 @@ void render_targets_init(SDL_Renderer *renderer,
                     Assert(RenderTargetLvl(lvl, i));
                     continue;
                 }
-                case RENDER_TARGET_HAMMER: {
-                    RenderTargetLvl(lvl, i) = CreateRenderTarget(width, height);
-                    SDL_SetTextureBlendMode(RenderTargetLvl(lvl, i), SDL_BLENDMODE_BLEND);
-                    continue;
-                }
-                case RENDER_TARGET_HAMMER2: {
+                case RENDER_TARGET_GUI_TOOLBAR: case RENDER_TARGET_HAMMER: case RENDER_TARGET_HAMMER2: case RENDER_TARGET_CHISEL: {
                     RenderTargetLvl(lvl, i) = CreateRenderTarget(width, height);
                     SDL_SetTextureBlendMode(RenderTargetLvl(lvl, i), SDL_BLENDMODE_BLEND);
                     continue;
@@ -92,12 +82,12 @@ void render_targets_init(SDL_Renderer *renderer,
     }
 }
 
-void textures_init(SDL_Renderer *renderer, Textures *textures) {
+static void textures_init(SDL_Renderer *renderer, GetTextures *textures) {
     SDL_Surface *surf = NULL;
     
-    memset(textures, 0, sizeof(Textures));
+    memset(textures, 0, sizeof(GetTextures));
     
-    // Converter Item Textures || previously item_init()
+    // Converter Item GetTextures || previously item_init()
     for (int i = 0; i < CELL_TYPE_COUNT; i++) {
         if (i == CELL_NONE) continue;
         
@@ -107,22 +97,22 @@ void textures_init(SDL_Renderer *renderer, Textures *textures) {
         surf = IMG_Load(file);
         Assert(surf);
         
-        Texture(TEXTURE_ITEMS+i) = SDL_CreateTextureFromSurface(renderer, surf);
-        Assert(Texture(TEXTURE_ITEMS+i));
+        GetTexture(TEXTURE_ITEMS+i) = SDL_CreateTextureFromSurface(renderer, surf);
+        Assert(GetTexture(TEXTURE_ITEMS+i));
         
         SDL_FreeSurface(surf);
         surf = NULL;
     }
     
-    Texture(TEXTURE_CONFIRM_BUTTON) = load_texture(renderer, RES_DIR "buttons/confirm.png");
-    Texture(TEXTURE_CANCEL_BUTTON)  = load_texture(renderer, RES_DIR "buttons/cancel.png");
+    GetTexture(TEXTURE_CONFIRM_BUTTON) = load_texture(renderer, RES_DIR "buttons/confirm.png");
+    GetTexture(TEXTURE_CANCEL_BUTTON)  = load_texture(renderer, RES_DIR "buttons/cancel.png");
     
-    Texture(TEXTURE_TAB)        = load_texture(renderer, RES_DIR "tab.png");
-    Texture(TEXTURE_DELETER)    = load_texture(renderer, RES_DIR "deleter.png");
-    Texture(TEXTURE_PLACER)     = load_texture(renderer, RES_DIR "placer.png");
-    Texture(TEXTURE_KNIFE)      = load_texture(renderer, RES_DIR "knife.png");
-    Texture(TEXTURE_POPUP)      = load_texture(renderer, RES_DIR "popup.png");
-    Texture(TEXTURE_TEXT_ARROW) = load_texture(renderer, RES_DIR "text_arrow.png");
+    GetTexture(TEXTURE_TAB)        = load_texture(renderer, RES_DIR "tab.png");
+    GetTexture(TEXTURE_DELETER)    = load_texture(renderer, RES_DIR "deleter.png");
+    GetTexture(TEXTURE_PLACER)     = load_texture(renderer, RES_DIR "placer.png");
+    GetTexture(TEXTURE_KNIFE)      = load_texture(renderer, RES_DIR "knife.png");
+    GetTexture(TEXTURE_POPUP)      = load_texture(renderer, RES_DIR "popup.png");
+    GetTexture(TEXTURE_TEXT_ARROW) = load_texture(renderer, RES_DIR "text_arrow.png");
     
     //textures->level_backgrounds[0] = load_texture(renderer, RES_DIR "bg0.png");
     
@@ -133,21 +123,21 @@ void textures_init(SDL_Renderer *renderer, Textures *textures) {
         get_file_from_tool(i, filename);
         sprintf(path, RES_DIR "buttons/%s", filename);
         
-        Texture(TEXTURE_TOOL_BUTTONS+i) = load_texture(renderer, path);
-        Assert(Texture(TEXTURE_TOOL_BUTTONS+i));
+        GetTexture(TEXTURE_TOOL_BUTTONS+i) = load_texture(renderer, path);
+        Assert(GetTexture(TEXTURE_TOOL_BUTTONS+i));
     }
     
-    Texture(TEXTURE_BLOB_HAMMER)= load_texture(renderer, RES_DIR "hammer.png");
-    Texture(TEXTURE_CONVERTER_ARROW) = load_texture(renderer, RES_DIR "arrow.png");
-    Texture(TEXTURE_CONVERT_BUTTON) = load_texture(renderer, RES_DIR "buttons/convert.png");
-    Texture(TEXTURE_OK_BUTTON) = load_texture(renderer, RES_DIR "buttons/tutorial_ok.png");
+    GetTexture(TEXTURE_BLOB_HAMMER)= load_texture(renderer, RES_DIR "hammer.png");
+    GetTexture(TEXTURE_CONVERTER_ARROW) = load_texture(renderer, RES_DIR "arrow.png");
+    GetTexture(TEXTURE_CONVERT_BUTTON) = load_texture(renderer, RES_DIR "buttons/convert.png");
+    GetTexture(TEXTURE_OK_BUTTON) = load_texture(renderer, RES_DIR "buttons/tutorial_ok.png");
     
     const char *chisel_files[] = {
         RES_DIR "chisel_small",
         RES_DIR "chisel_medium",
         RES_DIR "chisel_large",
     };
-    Texture(TEXTURE_CHISEL_HAMMER) = load_texture(renderer, RES_DIR "hammer.png");
+    GetTexture(TEXTURE_CHISEL_HAMMER) = load_texture(renderer, RES_DIR "hammer.png");
     
     // Loop through all chisels
     for (int i = 0; i < 3; i++) {
@@ -161,20 +151,20 @@ void textures_init(SDL_Renderer *renderer, Textures *textures) {
             
             strcat(file, ".png");
             
-            Texture(TEXTURE_CHISEL+i) = load_texture(renderer, file);
-            Assert(Texture(TEXTURE_CHISEL+i));
+            GetTexture(TEXTURE_CHISEL+i) = load_texture(renderer, file);
+            Assert(GetTexture(TEXTURE_CHISEL+i));
         }
     }
     
     SDL_FreeSurface(pixel_format_surf);
 }
 
-void textures_deinit(Textures *textures) {
+static void textures_deinit(GetTextures *textures) {
     for (int i = 0; i < TEXTURE_COUNT; i++)
         if (textures->texs[i]) SDL_DestroyTexture(textures->texs[i]);
 }
 
-void surfaces_init(Surfaces *surfaces) {
+static void surfaces_init(Surfaces *surfaces) {
     surfaces->a = NULL;
     surfaces->renderer_3d = SDL_CreateRGBSurfaceWithFormat(0, gs->desktop_w, gs->desktop_h, 32, ALASKA_PIXELFORMAT);
     surfaces->bark_surface = IMG_Load(RES_DIR "bark.png");
@@ -196,14 +186,14 @@ void surfaces_init(Surfaces *surfaces) {
                                                           ALASKA_PIXELFORMAT);
 }
 
-void surfaces_deinit(Surfaces *surfaces) {
+static void surfaces_deinit(Surfaces *surfaces) {
     for (size_t i = 0; i < SURFACE_COUNT; i++) {
         if (surfaces->surfaces[i])
             SDL_FreeSurface(surfaces->surfaces[i]);
     }
 }
 
-void fonts_init(Fonts *fonts) {
+static void fonts_init(Fonts *fonts) {
     fonts->font          = TTF_OpenFont(RES_DIR "Courier Prime.ttf", Scale(font_sizes[0]));
     fonts->font_times    = TTF_OpenFont(RES_DIR "EBGaramond-Medium.ttf", Scale(font_sizes[1]));
     fonts->font_consolas = TTF_OpenFont(RES_DIR "consola.ttf", Scale(font_sizes[2]));
@@ -219,13 +209,13 @@ void fonts_init(Fonts *fonts) {
     }
 }
 
-void fonts_deinit(Fonts *fonts) {
+static void fonts_deinit(Fonts *fonts) {
     for (size_t i = 0; i < FONT_COUNT; i++) {
         TTF_CloseFont(fonts->fonts[i]);
     }
 }
 
-void audio_init(Audio *audio) {
+static void audio_init(Audio *audio) {
     audio->music_titlescreen = Mix_LoadMUS(RES_DIR "audio/titlescreen.ogg");
     audio->music_creation = Mix_LoadMUS(RES_DIR "audio/music_creation.ogg");
     
@@ -251,7 +241,7 @@ void audio_init(Audio *audio) {
     Mix_Volume(AUDIO_CHANNEL_GUI, Volume(0.20));
 }
 
-void audio_deinit(Audio *audio) {
+static void audio_deinit(Audio *audio) {
     Mix_FreeMusic(audio->music_titlescreen);
     Mix_FreeMusic(audio->music_creation);
     for (int i = 0; i < 6; i++)

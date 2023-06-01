@@ -1,4 +1,4 @@
-void input_tick(Game_State *state) {
+static void input_tick(Game_State *state) {
     Input *in = &state->input;
     
     in->pmx = in->mx;

@@ -1,11 +1,11 @@
-void timelapse_init() {
+static void timelapse_init() {
     Timelapse *tl = &gs->timelapse;
     tl->timer = 0;
     tl->timer_max = 5;
     tl->frame = 0;
 }
 
-bool timelapse_is_state_grids_same(int a, int b) {
+static bool timelapse_is_state_grids_same(int a, int b) {
     Save_State *sa = &gs->save_states[a];
     Save_State *sb = &gs->save_states[b];
     
@@ -16,7 +16,7 @@ bool timelapse_is_state_grids_same(int a, int b) {
     return true;
 }
 
-void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
+static void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
     Timelapse *tl = &gs->timelapse;
     
     if (tl->frame < gs->save_state_count) {

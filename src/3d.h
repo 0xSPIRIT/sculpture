@@ -36,5 +36,5 @@ typedef struct {
 typedef struct {
     vec2 p;   // Position
     //vec3 col; // Color data per vertex. (0 to 255)
-    vec2 tex; // Texture coordinates (0 to 1)
+    vec2 tex; // GetTexture coordinates (0 to 1)
 } Vertex;

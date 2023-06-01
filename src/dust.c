@@ -1,4 +1,4 @@
-void dust_init(void) {
+static void dust_init(void) {
     if (!gs->dust_data.xs) {
         gs->dust_data.types = PushArray(gs->persistent_memory,
                                         gs->gw*gs->gh,
@@ -29,7 +29,7 @@ void dust_init(void) {
     gs->dust_data.count = 0;
 }
 
-void emit_dust(enum Cell_Type type, int x, int y, f64 vx, f64 vy) {
+static void emit_dust(enum Cell_Type type, int x, int y, f64 vx, f64 vy) {
     gs->dust_data.types[gs->dust_data.count] = type;
     gs->dust_data.xs[gs->dust_data.count] = x;
     gs->dust_data.ys[gs->dust_data.count] = y;
@@ -39,7 +39,7 @@ void emit_dust(enum Cell_Type type, int x, int y, f64 vx, f64 vy) {
     gs->dust_data.count++;
 }
 
-void emit_dust_explosion(enum Cell_Type type, int x, int y, int count) {
+static void emit_dust_explosion(enum Cell_Type type, int x, int y, int count) {
     for (int i = 0; i < count; i++) {
         f64 vx = randf(2.0)-1;
         f64 vy = randf(2.0)-1;
@@ -47,9 +47,9 @@ void emit_dust_explosion(enum Cell_Type type, int x, int y, int count) {
     }
 }
 
-void swap_array(Cell *arr, int x1, int y1, int x2, int y2);
+static void swap_array(Cell *arr, int x1, int y1, int x2, int y2);
 
-void dust_grid_tick(void) {
+static void dust_grid_tick(void) {
     Dust_Data *data = &gs->dust_data;
     
     for (int i = 0; i < data->count; i++) {
@@ -75,9 +75,9 @@ void dust_grid_tick(void) {
     }
 }
 
-SDL_Color pixel_from_index(enum Cell_Type type, int i);
+static SDL_Color pixel_from_index(enum Cell_Type type, int i);
 
-void dust_grid_draw(void) {
+static void dust_grid_draw(void) {
     Dust_Data *data = &gs->dust_data;
     
     for (int i = 0; i < data->count; i++) {

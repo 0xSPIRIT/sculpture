@@ -1,4 +1,4 @@
-void credits_run(void) {
+static void credits_run(void) {
     Credits *c = &gs->credits;
     
     if (c->state == CREDITS_OFF) return;

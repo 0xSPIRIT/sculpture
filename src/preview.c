@@ -1,11 +1,11 @@
-void preview_start_recording(Preview *p, const char *name) {
+static void preview_start_recording(Preview *p, const char *name) {
     strcpy(p->name, name);
     p->length = 0;
     memset(p->states, 0, sizeof(Preview_State)*MAX_PREVIEW_STATES);
     p->recording = true;
 }
 
-void preview_finish_recording(Preview *p) {
+static void preview_finish_recording(Preview *p) {
     char filename[64] = {0};
     sprintf(filename, RES_DIR "previews/%s", p->name);
     
@@ -27,7 +27,7 @@ void preview_finish_recording(Preview *p) {
     fclose(fp);
 }
 
-void preview_load(Preview *p, const char *file) {
+static void preview_load(Preview *p, const char *file) {
     FILE *fp = fopen(file, "rb");
     
     memset(p, 0, sizeof(Preview));
@@ -46,7 +46,7 @@ void preview_load(Preview *p, const char *file) {
     fclose(fp);
 }
 
-void previews_load(void) {
+static void previews_load(void) {
     preview_load(&gs->tool_previews[TOOL_CHISEL_SMALL],
                  RES_DIR "previews/small_chisel.bin");
     preview_load(&gs->tool_previews[TOOL_CHISEL_MEDIUM],
@@ -57,7 +57,7 @@ void previews_load(void) {
                  RES_DIR "previews/placer.bin");
 }
 
-void preview_record(Preview *p) {
+static void preview_record(Preview *p) {
     if (p->length > MAX_PREVIEW_STATES) {
         preview_finish_recording(p);
         return;
@@ -87,7 +87,7 @@ void preview_record(Preview *p) {
     p->length++;
 }
 
-void preview_draw(Preview *p, int dx, int dy, int scale) {
+static void preview_draw(Preview *p, int dx, int dy, int scale) {
     Assert(gs->gw == 64);
     Assert(gs->gh == 64);
     
@@ -196,18 +196,18 @@ void preview_draw(Preview *p, int dx, int dy, int scale) {
     if (p->index >= p->length) p->index = 0;
 }
 
-void preview_start_current(const char *name) {
+static void preview_start_current(const char *name) {
     gs->current_preview.recording = true;
     preview_start_recording(&gs->current_preview, name);
 }
 
-void preview_load_current(const char *name) {
+static void preview_load_current(const char *name) {
     char file[64];
     sprintf(file, RES_DIR "previews/%s", name);
     preview_load(&gs->current_preview, file);
 }
 
-void preview_tick() {
+static void preview_tick() {
 #ifndef ALASKA_RELEASE_MODE
     if (gs->input.keys_pressed[SDL_SCANCODE_END]) {
         set_text_field("Load Preview File:", "", preview_load_current);

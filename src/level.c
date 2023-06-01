@@ -1,4 +1,4 @@
-void level_setup_initial_grid(void) {
+static void level_setup_initial_grid(void) {
     // Reset everything except the IDs of the grid, since there's no reason to recalculate it.
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         int id = gs->grid[i].id;
@@ -13,7 +13,7 @@ void level_setup_initial_grid(void) {
     objects_reevaluate();
 }
 
-int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
+static int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
     Level *level = &gs->levels[gs->level_count++];
     
     level->index = gs->level_count-1;
@@ -53,7 +53,7 @@ int level_add(const char *name, const char *desired_image, const char *initial_i
     return level->index;
 }
 
-void levels_setup(void) {
+static void levels_setup(void) {
     level_add("Marrow",
               RES_DIR "lvl/desired/level 1.png",
               RES_DIR "lvl/initial/level 1.png",
@@ -100,7 +100,7 @@ void levels_setup(void) {
               EFFECT_NONE);
 }
 
-void goto_level(int lvl) {
+static void goto_level(int lvl) {
     gs->level_current = lvl;
     
     gs->levels[lvl].first_frame_compare = false;
@@ -179,7 +179,7 @@ void goto_level(int lvl) {
     check_for_tutorial();
 }
 
-void level_set_state(int level, enum Level_State state) {
+static void level_set_state(int level, enum Level_State state) {
     Level *l = &gs->levels[level];
     
     if (state == LEVEL_STATE_PLAY) {
@@ -204,7 +204,7 @@ void level_set_state(int level, enum Level_State state) {
     l->state = state;
 }
 
-void goto_level_string_hook(const char *string) {
+static void goto_level_string_hook(const char *string) {
     int lvl = atoi(string) - 1;
     
     if (lvl < 0) return;
@@ -213,7 +213,7 @@ void goto_level_string_hook(const char *string) {
     goto_level(lvl);
 }
 
-void level_tick(Level *level) {
+static void level_tick(Level *level) {
     if (gs->text_field.active) return;
     if (gs->gui.popup) return;
     
@@ -230,7 +230,7 @@ void level_tick(Level *level) {
     }
 }
 
-void level_tick_intro(Level *level) {
+static void level_tick_intro(Level *level) {
     level->popup_time_current++;
     
     if (wait_for_fade(FADE_LEVEL_PLAY_IN)) {
@@ -249,7 +249,7 @@ void level_tick_intro(Level *level) {
     }
 }
 
-void level_tick_outro(Level *level) {
+static void level_tick_outro(Level *level) {
     level->outro_alpha = goto64(level->outro_alpha, level->desired_alpha, 25);
     if (fabs(level->outro_alpha - level->desired_alpha) < 15)
         level->outro_alpha = level->desired_alpha;
@@ -300,7 +300,7 @@ void level_tick_outro(Level *level) {
     }
 }
 
-void level_tick_play(Level *level) {
+static void level_tick_play(Level *level) {
     if (gs->fade.active) return;
     
     if (gs->input.keys_pressed[SDL_SCANCODE_F]) {
@@ -355,11 +355,11 @@ void level_tick_play(Level *level) {
     hammer_tick(&gs->hammer);
 }
 
-void level_draw_confirm(void) {
+static void level_draw_confirm(void) {
     popup_confirm_tick_and_draw(&gs->gui.popup_confirm);
 }
 
-void level_draw(Level *level) {
+static void level_draw(Level *level) {
     switch (level->state) {
         case LEVEL_STATE_NARRATION:    { level_draw_narration();          break; }
         case LEVEL_STATE_INTRO:        { level_draw_intro(level);         break; }
@@ -371,7 +371,7 @@ void level_draw(Level *level) {
     text_field_draw();
 }
 
-void level_draw_intro(Level *level) {
+static void level_draw_intro(Level *level) {
     Assert(RenderTarget(RENDER_TARGET_GLOBAL));
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
     
@@ -422,7 +422,7 @@ void level_draw_intro(Level *level) {
 
 #define LEVEL_MARGIN Scale(36)
 
-void level_draw_name_intro(Level *level, SDL_Rect rect) {
+static void level_draw_name_intro(Level *level, SDL_Rect rect) {
     // Level name
     char string[256] = {0};
     sprintf(string, "Level %d - \"%s\"", gs->level_current+1, level->name);
@@ -447,7 +447,7 @@ void level_draw_name_intro(Level *level, SDL_Rect rect) {
 
 #define LEVEL_DESIRED_GRID_SCALE Scale(3)
 
-void level_draw_desired_grid(Level *level, int dx, int dy) {
+static void level_draw_desired_grid(Level *level, int dx, int dy) {
     const int scale = LEVEL_DESIRED_GRID_SCALE;
     
     for (int y = 0; y < gs->gh; y++) {
@@ -467,7 +467,7 @@ void level_draw_desired_grid(Level *level, int dx, int dy) {
     }
 }
 
-void level_draw_outro(Level *level) {
+static void level_draw_outro(Level *level) {
     SDL_Texture *previous = SDL_GetRenderTarget(gs->renderer);
     SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO));
     
@@ -564,7 +564,7 @@ void level_draw_outro(Level *level) {
     SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO), &src, &dst);
 }
 
-void level_get_cells_from_image(const char *path,
+static void level_get_cells_from_image(const char *path,
                                 Cell **out,
                                 Source_Cell *source_cells,
                                 int *out_source_cell_count,
@@ -629,7 +629,7 @@ void level_get_cells_from_image(const char *path,
     SDL_DestroyTexture(texture);
 }
 
-void level_draw_narration(void) {
+static void level_draw_narration(void) {
     SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
     SDL_RenderClear(gs->renderer);
     
@@ -638,7 +638,7 @@ void level_draw_narration(void) {
     effect_draw(&gs->current_effect, false, ONLY_SLOW_FAST);
 }
 
-void level_draw_outro_or_play(Level *level) {
+static void level_draw_outro_or_play(Level *level) {
     SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
     SDL_RenderClear(gs->renderer);
     
@@ -679,6 +679,8 @@ void level_draw_outro_or_play(Level *level) {
     
     SDL_SetRenderTarget(gs->renderer, prev);
     
+    view_update();
+    
     SDL_Rect dst = {
         -gs->view.x,
         -gs->view.y + GUI_H,
@@ -706,12 +708,12 @@ void level_draw_outro_or_play(Level *level) {
     }
 }
 
-SDL_Color type_to_rgb(int type) {
+static SDL_Color type_to_rgb(int type) {
     Assert(type < CELL_TYPE_COUNT);
     return (SDL_Color){type_to_rgb_table[4*type+1], type_to_rgb_table[4*type+2], type_to_rgb_table[4*type+3], 255};
 }
 
-int rgb_to_type(Uint8 r, Uint8 g, Uint8 b) {
+static int rgb_to_type(Uint8 r, Uint8 g, Uint8 b) {
     for (int i = 0; i < CELL_TYPE_COUNT; i++) {
         SDL_Color col = type_to_rgb(i);
         if (col.r == r && col.g == g && col.b == b) {
@@ -721,7 +723,7 @@ int rgb_to_type(Uint8 r, Uint8 g, Uint8 b) {
     return CELL_NONE;
 }
 
-void level_output_to_png(const char *output_file) {
+static void level_output_to_png(const char *output_file) {
     SDL_Surface *surf = SDL_CreateRGBSurface(0, gs->gw, gs->gh, 32, 0, 0, 0, 0);
     
     for (int y = 0; y < gs->gh; y++) {

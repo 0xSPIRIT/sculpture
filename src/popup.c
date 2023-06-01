@@ -1,4 +1,4 @@
-void set_text_field(const char *description, const char *initial_text, void (*on_return)(const char *)) {
+static void set_text_field(const char *description, const char *initial_text, void (*on_return)(const char *)) {
     Text_Field *text_field = &gs->text_field;
     
     text_field->active = true;
@@ -8,7 +8,7 @@ void set_text_field(const char *description, const char *initial_text, void (*on
     strcpy(text_field->text, initial_text);
 }
 
-void text_field_tick(void) {
+static void text_field_tick(void) {
     Text_Field *text_field = &gs->text_field;
     
     if (!text_field->active) return;
@@ -45,7 +45,7 @@ void text_field_tick(void) {
     }
 }
 
-void text_field_draw(void) {
+static void text_field_draw(void) {
     Text_Field *text_field = &gs->text_field;
     
     if (!text_field->active) return;

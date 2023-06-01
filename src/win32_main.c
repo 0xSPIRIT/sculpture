@@ -54,7 +54,7 @@ typedef struct Game_Code {
     GameRunProc game_run;
 } Game_Code;
 
-void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
+static void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
     SDL_Init(SDL_INIT_VIDEO);
     
     Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
@@ -92,7 +92,7 @@ void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bo
     }
 }
 
-void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_memory) {
+static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_memory) {
     persistent_memory->size = Megabytes(1024);
     transient_memory->size = Megabytes(8);
     
@@ -112,7 +112,7 @@ void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_
     transient_memory->cursor = transient_memory->data;
 }
 
-f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
+static f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     RECT desktop;
     HWND hDesktop = GetDesktopWindow();
     GetWindowRect(hDesktop, &desktop);
@@ -130,11 +130,11 @@ f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     }
 }
 
-bool prefix(const char *pre, const char *str) {
+static bool prefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
 }
 
-void game_init(Game_State *state) {
+static void game_init(Game_State *state) {
     srand((unsigned int) time(0));
     
     if (state->S == 0)
@@ -168,7 +168,7 @@ void game_init(Game_State *state) {
     fonts_init(&state->fonts);
 }
 
-void game_deinit(Game_State *state) {
+static void game_deinit(Game_State *state) {
     textures_deinit(&state->textures);
     surfaces_deinit(&state->surfaces);
     fonts_deinit(&state->fonts);
@@ -177,7 +177,7 @@ void game_deinit(Game_State *state) {
     SDL_Quit();
 }
 
-FILETIME get_last_write_time(char *filename) {
+static FILETIME get_last_write_time(char *filename) {
     FILETIME result = {0};
     WIN32_FILE_ATTRIBUTE_DATA data;
     
@@ -188,7 +188,7 @@ FILETIME get_last_write_time(char *filename) {
     return result;
 }
 
-void load_game_code(Game_Code *code) {
+static void load_game_code(Game_Code *code) {
     code->last_write_time = get_last_write_time(GAME_DLL_NAME);
     
     // Copy File may fail the first few times ..?
@@ -224,7 +224,7 @@ void load_game_code(Game_Code *code) {
     }
 }
 
-void reload_game_code(Game_Code *code) {
+static void reload_game_code(Game_Code *code) {
     WIN32_FILE_ATTRIBUTE_DATA ignored;
     if (GetFileAttributesExA(LOCK_NAME, GetFileExInfoStandard, &ignored)) {
         return;

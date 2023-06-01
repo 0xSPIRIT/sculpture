@@ -12,7 +12,7 @@ typedef struct {
 
 // 3 vertices required
 
-void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *p) {
+static void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *p) {
     const vec2 t[3] = {p[0].p, p[1].p, p[2].p};
     const SDL_PixelFormat *format = surf->format;
     
@@ -44,7 +44,7 @@ void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *
     }
 }
 
-void draw_triangle(void *ptr) {
+static void draw_triangle(void *ptr) {
     TriangleDrawData *data = (TriangleDrawData*)ptr;
     
     for (int y = data->start_y; y < data->end_y; y++) {
@@ -55,7 +55,7 @@ void draw_triangle(void *ptr) {
 #define PROFILE 0
 
 // Draw a surface given 4 points.
-void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p) {
+static void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p) {
 #if PROFILE
     LARGE_INTEGER start;
     QueryPerformanceCounter(&start);
@@ -88,7 +88,7 @@ void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p)
 #endif
 }
 
-void object_activate(Object3D *obj) {
+static void object_activate(Object3D *obj) {
     memset(obj, 0, sizeof(Object3D));
     gs->obj.z = 1;
     gs->obj.yrot = 0;
@@ -124,7 +124,7 @@ void object_activate(Object3D *obj) {
     SDL_SetRenderTarget(gs->renderer, prev);
 }
 
-vec2* project(vec3 *input, int count) {
+static vec2* project(vec3 *input, int count) {
     vec2 *points = PushArray(gs->transient_memory, count, sizeof(vec2));
     
     for (int i = 0; i < count; i++) {
@@ -141,7 +141,7 @@ vec2* project(vec3 *input, int count) {
     return points;
 }
 
-void object_draw(Object3D *obj) {
+static void object_draw(Object3D *obj) {
     if (!obj->active) return;
     if (obj->state == OBJECT_DONE) {
         if (obj->timer == -1) {

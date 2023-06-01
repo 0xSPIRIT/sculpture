@@ -1,4 +1,4 @@
-void click_overlay_interface(void *ptr) {
+static void click_overlay_interface(void *ptr) {
     int button_index = *(int*)ptr;
     
     Overlay *overlay = &gs->overlay;
@@ -67,7 +67,7 @@ void click_overlay_interface(void *ptr) {
     }
 }
 
-void overlay_interface_init(void) {
+static void overlay_interface_init(void) {
     Overlay_Interface *interf = &gs->gui.overlay_interface;
     
     const char overlay_interface_names[OVERLAY_INTERFACE_BUTTONS][64] = {
@@ -86,7 +86,7 @@ void overlay_interface_init(void) {
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
         Button *b = 0;
         
-        SDL_Texture *texture = Texture(TEXTURE_TOOL_BUTTONS + TOOL_GRABBER);
+        SDL_Texture *texture = GetTexture(TEXTURE_TOOL_BUTTONS + TOOL_GRABBER);
         
         b = button_allocate(
                             BUTTON_TYPE_OVERLAY_INTERFACE,
@@ -107,7 +107,7 @@ void overlay_interface_init(void) {
     interf->buttons[0]->active = true;
 }
 
-void overlay_interface_tick(void) {
+static void overlay_interface_tick(void) {
     Overlay_Interface *interf = &gs->gui.overlay_interface;
     
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
@@ -115,7 +115,7 @@ void overlay_interface_tick(void) {
     }
 }
 
-void overlay_interface_draw(void) {
+static void overlay_interface_draw(void) {
     Overlay_Interface *interf = &gs->gui.overlay_interface;
     
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {

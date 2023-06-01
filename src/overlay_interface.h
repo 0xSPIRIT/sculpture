@@ -12,7 +12,7 @@ typedef struct Overlay_Interface {
 // (overlay_interface.c is included before gui.c
 //  so we must do this.)
 
-void click_overlay_interface(void *ptr);
-void overlay_interface_init(void);
-void overlay_interface_draw(void);
-void overlay_interface_tick(void);
+static void click_overlay_interface(void *ptr);
+static void overlay_interface_init(void);
+static void overlay_interface_draw(void);
+static void overlay_interface_tick(void);

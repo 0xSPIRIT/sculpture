@@ -49,29 +49,29 @@ typedef struct Conversions {
     SDL_Rect r; // The panel position and size.
 } Conversions;
 
-Converter *converter_init(int type, bool allocated);
-void all_converters_init(void);
+static Converter *converter_init(int type, bool allocated);
+static void all_converters_init(void);
 
-void converter_set_state(Converter *converter, enum Converter_State state);
-bool converter_is_layout_valid(Converter *converter);
-void converter_begin_converting(void *converter_ptr);
+static void converter_set_state(Converter *converter, enum Converter_State state);
+static bool converter_is_layout_valid(Converter *converter);
+static void converter_begin_converting(void *converter_ptr);
 
-void converter_draw(Converter *converter);
-void all_converters_draw(void);
+static void converter_draw(Converter *converter);
+static void all_converters_draw(void);
 
-void auto_set_material_converter_slots(Converter *converter);
-void converter_setup_position(Converter *converter);
-int get_number_unique_inputs(Item *input1, Item *input2);
+static void auto_set_material_converter_slots(Converter *converter);
+static void converter_setup_position(Converter *converter);
+static int get_number_unique_inputs(Item *input1, Item *input2);
     
-Converter_Checker converter_checker(Item *input1, Item *input2);
+static Converter_Checker converter_checker(Item *input1, Item *input2);
 
-bool is_either_input_type(Converter_Checker *checker, int type, bool restart);
-bool is_either_input_tier(Converter_Checker *checker, int tier, bool is_fuel, bool restart);
-bool is_either_input_stone(Converter_Checker *checker, bool restart);
+static bool is_either_input_type(Converter_Checker *checker, int type, bool restart);
+static bool is_either_input_tier(Converter_Checker *checker, int tier, bool is_fuel, bool restart);
+static bool is_either_input_stone(Converter_Checker *checker, bool restart);
 
-int  fuel_converter_convert(Item *input1, Item *input2);
-int  material_converter_convert(Item *input1, Item *input2, Item *fuel);
-bool converter_convert(Converter *converter);
-void converter_tick(Converter *converter);
-void all_converters_tick(void);
-void setup_item_indices();
+static int  fuel_converter_convert(Item *input1, Item *input2);
+static int  material_converter_convert(Item *input1, Item *input2, Item *fuel);
+static bool converter_convert(Converter *converter);
+static void converter_tick(Converter *converter);
+static void all_converters_tick(void);
+static void setup_item_indices();

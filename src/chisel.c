@@ -1,8 +1,8 @@
-Chisel chisel_init(enum Chisel_Size size) {
+static Chisel chisel_init(enum Chisel_Size size) {
     Chisel chisel = {0};
     
     chisel.size = size;
-    chisel.texture = Texture(TEXTURE_CHISEL+size);
+    chisel.texture = GetTexture(TEXTURE_CHISEL+size);
     chisel.lookahead = 5;
     
     SDL_QueryTexture(chisel.texture, NULL, NULL, &chisel.w, &chisel.h);
@@ -10,7 +10,16 @@ Chisel chisel_init(enum Chisel_Size size) {
     return chisel;
 }
 
-void chisel_play_sound(int size) {
+static void chisel_init_render_target(Chisel *chisel) {
+    chisel->render_target = RenderTarget(RENDER_TARGET_CHISEL);
+    SDL_QueryTexture(chisel->render_target,
+                     NULL,
+                     NULL,
+                     &chisel->target_w,
+                     &chisel->target_h);
+}
+
+static void chisel_play_sound(int size) {
     switch (size) {
         case CHISEL_SMALL: {
             Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.small_chisel, 0);
@@ -27,7 +36,7 @@ void chisel_play_sound(int size) {
     }
 }
 
-int chisel_get_distance_from_facing_cell(int i, f64 angle) {
+static int chisel_get_distance_from_facing_cell(int i, f64 angle) {
     angle = M_PI * angle / 180.0;
     
     f64 real_dir_x = cos(angle);
@@ -55,14 +64,14 @@ int chisel_get_distance_from_facing_cell(int i, f64 angle) {
     }
 }
 
-bool chisel_is_facing_cell(int i, f64 angle, int lookahead) {
+static bool chisel_is_facing_cell(int i, f64 angle, int lookahead) {
     Assert(lookahead > 0);
     return chisel_get_distance_from_facing_cell(i, angle) <= lookahead;
 }
 
 // Finds a position closest to (x, y) that is on the grid
 // Returns: The index of the position
-int chisel_clamp_to_grid(f64 angle, int xx, int yy) {
+static int chisel_clamp_to_grid(f64 angle, int xx, int yy) {
     f64 closest_distance = gs->gw*gs->gh;
     
     bool is_mouse_on_cell = (gs->grid[xx+yy*gs->gw].type != CELL_NONE);
@@ -104,7 +113,7 @@ int chisel_clamp_to_grid(f64 angle, int xx, int yy) {
     return closest_idx;
 }
 
-bool is_bad_corner(Chisel *chisel, int x, int y) {
+static bool is_bad_corner(Chisel *chisel, int x, int y) {
     if (chisel->size != CHISEL_SMALL) return false;
     
     int nx, ny;
@@ -159,7 +168,7 @@ bool is_bad_corner(Chisel *chisel, int x, int y) {
     return false;
 }
 
-void chisel_move_mouse_until_cell(Chisel *chisel, int x, int y, f64 angle, f64 max_length) {
+static void chisel_move_mouse_until_cell(Chisel *chisel, int x, int y, f64 angle, f64 max_length) {
     angle = M_PI * angle / 180.0;
     f64 dir_x = cos(angle);
     f64 dir_y = sin(angle);
@@ -185,7 +194,7 @@ void chisel_move_mouse_until_cell(Chisel *chisel, int x, int y, f64 angle, f64 m
     move_mouse_to_grid_position((int)round(xx), (int)round(yy));
 }
 
-void flood_fill(Uint8 *grid, int x, int y, Uint8 value) {
+static void flood_fill(Uint8 *grid, int x, int y, Uint8 value) {
     if (!is_in_bounds(x, y)) return;
     if (gs->grid[x+y*gs->gw].type == CELL_NONE) return;
     if (grid[x+y*gs->gw] == value) return;
@@ -199,7 +208,7 @@ void flood_fill(Uint8 *grid, int x, int y, Uint8 value) {
 }
 
 // Returns false if there is no space in the inventory.
-bool chisel_attempt_add_to_inventory(int x, int y) {
+static bool chisel_attempt_add_to_inventory(int x, int y) {
     int type = gs->grid[x+y*gs->gw].type;
     int amount = 1;
     if (gs->level_current+1 != 11 && gs->grid[x+y*gs->gw].is_initial)
@@ -208,11 +217,11 @@ bool chisel_attempt_add_to_inventory(int x, int y) {
     return add_item_to_inventory_slot(type, amount);
 }
 
-bool should_display_pressure_tutorial() {
+static bool should_display_pressure_tutorial() {
     return !gs->did_pressure_tutorial;
 }
 
-bool special_case_for_diamond(int x, int y) {
+static bool special_case_for_diamond(int x, int y) {
     if (gs->level_current+1 == 5 && gs->grid[x+y*gs->gw].type == CELL_DIAMOND)
     {
         return false;
@@ -221,7 +230,7 @@ bool special_case_for_diamond(int x, int y) {
 }
 
 // dx and dy represent any offset you want in the circle placement.
-void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int size) {
+static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int size) {
     if (!is_pressure_low_enough(gs->grid[x+y*gs->gw])) {
         if (should_display_pressure_tutorial()) {
             gs->tutorial = *tutorial_rect(TUTORIAL_PRESSURE_STRING,
@@ -302,7 +311,7 @@ void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int siz
 }
 
 // Returns if succesful
-bool chisel_handle_bad_corner(Chisel *chisel, int ix, int iy,  int dir_x, int size) {
+static bool chisel_handle_bad_corner(Chisel *chisel, int ix, int iy,  int dir_x, int size) {
     int y = 0;
     int x = dir_x;
     
@@ -315,7 +324,7 @@ bool chisel_handle_bad_corner(Chisel *chisel, int ix, int iy,  int dir_x, int si
 }
 
 // Returns if the chisel was successful.
-bool chisel_chisel_circle(Chisel *chisel, int size) {
+static bool chisel_chisel_circle(Chisel *chisel, int size) {
     f64 angle = M_PI * chisel->angle / 180.0;
     
     f64 dir_x = round(cos(angle));
@@ -352,19 +361,19 @@ bool chisel_chisel_circle(Chisel *chisel, int size) {
     return false;
 }
 
-bool chisel_chisel_small(Chisel *chisel) {
+static bool chisel_chisel_small(Chisel *chisel) {
     return chisel_chisel_circle(chisel, 0);
 }
 
-bool chisel_chisel_medium(Chisel *chisel) {
+static bool chisel_chisel_medium(Chisel *chisel) {
     return chisel_chisel_circle(chisel, 2);
 }
 
-bool chisel_chisel_large(Chisel *chisel) {
+static bool chisel_chisel_large(Chisel *chisel) {
     return chisel_chisel_circle(chisel, 4);
 }
 
-bool chisel_chisel(Chisel *chisel) {
+static bool chisel_chisel(Chisel *chisel) {
     switch (chisel->size) {
         case CHISEL_SMALL:  return chisel_chisel_small(chisel);
         case CHISEL_MEDIUM: return chisel_chisel_medium(chisel);
@@ -374,7 +383,7 @@ bool chisel_chisel(Chisel *chisel) {
     return false;
 }
 
-void chisel_calculate_highlights(Chisel *chisel) {
+static void chisel_calculate_highlights(Chisel *chisel) {
     // Store some copies so we could roll back afterwards.
     Cell *grid_copy = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(Cell));
     memcpy(grid_copy, gs->grid, gs->gw*gs->gh*sizeof(Cell));
@@ -402,7 +411,7 @@ void chisel_calculate_highlights(Chisel *chisel) {
 }
 
 
-void chisel_draw_highlights(int *highlights, int count) {
+static void chisel_draw_highlights(int *highlights, int count, int xoff, int yoff) {
     bool hit = false;
     
     for (int i = 0; i < count; i++) {
@@ -433,11 +442,11 @@ void chisel_draw_highlights(int *highlights, int count) {
             SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 55);
         }
         
-        SDL_RenderDrawPoint(gs->renderer, x, y);
+        SDL_RenderDrawPoint(gs->renderer, xoff+x, yoff+y);
     }
 }
 
-void chisel_tick(Chisel *chisel) {
+static void chisel_tick(Chisel *chisel) {
     chisel->did_chisel_this_frame = false;
     
     if (gs->hammer.state == HAMMER_STATE_WINDUP ||
@@ -503,7 +512,7 @@ void chisel_tick(Chisel *chisel) {
 
 // Don't worry, we'll remove this later when we
 // make sprites for each rotation.
-void chisel_get_adjusted_positions(int angle, int size, int *x, int *y) {
+static void chisel_get_adjusted_positions(int angle, int size, int *x, int *y) {
     angle += 180;
     
     if (size == 0 || size == 1) {
@@ -543,7 +552,7 @@ void chisel_get_adjusted_positions(int angle, int size, int *x, int *y) {
     }
 }
 
-void chisel_draw(Chisel *chisel) {
+static void chisel_draw(Chisel *chisel) {
     int x, y;
     
     x = chisel->x;
@@ -577,5 +586,5 @@ void chisel_draw(Chisel *chisel) {
     SDL_RenderDrawPoint(gs->renderer, (int)chisel->x, (int)chisel->y);
     
     if (chisel->state == CHISEL_STATE_IDLE)
-        chisel_draw_highlights(chisel->highlights, chisel->highlight_count);
+        chisel_draw_highlights(chisel->highlights, chisel->highlight_count, 0, 0);
 }

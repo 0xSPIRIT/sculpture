@@ -49,7 +49,7 @@ enum {
     RENDER_TARGET_CHISEL, // Use the same render target for each chisel.
     RENDER_TARGET_HAMMER,
     RENDER_TARGET_HAMMER2,
-    RENDER_TARGET_GRID,
+    RENDER_TARGET_GRID, // Temp render target used by 3d.c
     RENDER_TARGET_3D,
     RENDER_TARGET_CONVERSION_PANEL,
     RENDER_TARGET_PREVIEW,
@@ -110,11 +110,11 @@ enum {
     TEXTURE_COUNT
 };
 
-#define Texture(x) (gs->textures.texs[x])
+#define GetTexture(x) (gs->textures.texs[x])
 
-typedef struct Textures {
+typedef struct GetTextures {
     SDL_Texture *texs[TEXTURE_COUNT];
-} Textures;
+} GetTextures;
 
 #define SURFACE_COUNT 1024
 

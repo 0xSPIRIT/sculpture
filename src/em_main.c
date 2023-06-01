@@ -19,7 +19,7 @@ typedef struct GameLoopData {
     Game_State *game_state;
 } GameLoopData;
 
-void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
+static void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
     SDL_Init(SDL_INIT_VIDEO);
     Assert(Mix_Init(MIX_INIT_OGG) != 0);
     
@@ -51,7 +51,7 @@ void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bo
     }
 }
 
-void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_memory) {
+static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_memory) {
     persistent_memory->size = Megabytes(512);
     transient_memory->size = Megabytes(8);
     
@@ -66,15 +66,15 @@ void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_
     transient_memory->cursor = transient_memory->data;
 }
 
-f64 calculate_scale(bool fullscreen) {
+static f64 calculate_scale(bool fullscreen) {
     return 7;
 }
 
-bool prefix(const char *pre, const char *str) {
+static bool prefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
 }
 
-void game_init_a(Game_State *state) {
+static void game_init_a(Game_State *state) {
     srand((unsigned int) time(0));
     
     if (state->S == 0)
@@ -108,7 +108,7 @@ void game_init_a(Game_State *state) {
     fonts_init(&state->fonts);
 }
 
-void game_deinit(Game_State *state) {
+static void game_deinit(Game_State *state) {
     //textures_deinit(&state->textures);
     surfaces_deinit(&state->surfaces);
     fonts_deinit(&state->fonts);
@@ -117,7 +117,7 @@ void game_deinit(Game_State *state) {
     SDL_Quit();
 }
 
-void em_mainloop(void *arg) {
+static void em_mainloop(void *arg) {
     GameLoopData *data = (GameLoopData*) arg;
     
     input_tick(data->game_state);
@@ -136,7 +136,7 @@ void em_mainloop(void *arg) {
     data->transient_memory.cursor = data->transient_memory.data;
 }
 
-int main(int argc, char **argv)
+static int main(int argc, char **argv)
 {
     GameLoopData data;
     

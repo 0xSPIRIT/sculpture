@@ -1,4 +1,4 @@
-void calculate_tutorial_rect_size(Tutorial_Rect *tut) {
+static void calculate_tutorial_rect_size(Tutorial_Rect *tut) {
     tut->margin = Scale(8);
     
     int fw=0, fh=0;
@@ -36,7 +36,7 @@ void calculate_tutorial_rect_size(Tutorial_Rect *tut) {
     tut->ok_button->y = tut->rect.y + tut->rect.h - tut->ok_button->h - tut->margin;
 }
 
-Tutorial_Rect* tutorial_rect(const char *str,
+static Tutorial_Rect* tutorial_rect(const char *str,
                              f64 x,
                              f64 y,
                              Tutorial_Rect *next)
@@ -50,7 +50,7 @@ Tutorial_Rect* tutorial_rect(const char *str,
     strcpy(tut->str, str);
     memset(tut->lines, 0, MAX_TUTORIAL_LINES*64);
     
-    tut->ok_button = button_allocate(BUTTON_TYPE_TUTORIAL, Texture(TEXTURE_OK_BUTTON), "", NULL);
+    tut->ok_button = button_allocate(BUTTON_TYPE_TUTORIAL, GetTexture(TEXTURE_OK_BUTTON), "", NULL);
     tut->ok_button->w = Scale(tut->ok_button->w);
     tut->ok_button->h = Scale(tut->ok_button->h);
     
@@ -77,7 +77,7 @@ Tutorial_Rect* tutorial_rect(const char *str,
     return tut;
 }
 
-void tutorial_rect_close(void *ptr) {
+static void tutorial_rect_close(void *ptr) {
     (void)ptr;
     
     Tutorial_Rect *tut = &gs->tutorial;
@@ -94,7 +94,7 @@ void tutorial_rect_close(void *ptr) {
     }
 }
 
-void tutorial_rect_run() {
+static void tutorial_rect_run() {
     Tutorial_Rect *tut = &gs->tutorial;
     
     if (!SHOW_TUTORIAL) {
@@ -157,7 +157,7 @@ void tutorial_rect_run() {
     button_draw(tut->ok_button);
 }
 
-void check_for_tutorial() {
+static void check_for_tutorial() {
     int l = gs->level_current;
     
     switch (l+1) {

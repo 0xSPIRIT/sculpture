@@ -1,6 +1,14 @@
 TODO
-
-  x The item icons are weird.
+ 
+  - Redo all rendering code to allow for larger textures.
+     - Implement an abstraction layer for rendering, which we desperately need.
+     - We'd simplify rendering targets.
+     - And make things more explicit when we're working with pixel-level or
+       screenspace-level.
+     - Implement the feature of adding negative positions into rendering targets,
+       so most of our actual rendering code can stay the same, and just allow
+       for negative coordinates.
+     - Also, redo the entire asset file. Horrible stuff.
 
   - Redo all levels.
     - Add another level 7 thing but in reverse? Perhaps do it before 7.

@@ -15,12 +15,12 @@ typedef struct Save_State {
     int source_cell_count;
 } Save_State;
 
-void undo_system_init(void);
-void undo_system_reset(void);
-Save_State *current_state(void);
-void save_state_to_next(void);
-void set_state(int num);
-bool is_current_grid_same_as(Save_State *state);
-bool is_current_slots_same_as(Save_State *state);
-void set_state_to_string_hook(const char *string);
-void undo(void);
+static void undo_system_init(void);
+static void undo_system_reset(void);
+static Save_State *current_state(void);
+static void save_state_to_next(void);
+static void set_state(int num);
+static bool is_current_grid_same_as(Save_State *state);
+static bool is_current_slots_same_as(Save_State *state);
+static void set_state_to_string_hook(const char *string);
+static void undo(void);
