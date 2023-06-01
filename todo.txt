@@ -1,5 +1,7 @@
 TODO
 
+  x The item icons are weird.
+
   - Redo all levels.
     - Add another level 7 thing but in reverse? Perhaps do it before 7.
     - Ensure the progression is step-by-step.
