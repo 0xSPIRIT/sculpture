@@ -61,6 +61,10 @@ typedef struct Game_State {
     SDL_Renderer *renderer;
     Render render;
     
+    // All stored surfaces and textures.
+    Textures textures;
+    Surfaces surfaces;
+    
     Preview current_preview;
     Preview tool_previews[TOOL_COUNT];
     
@@ -95,8 +99,6 @@ typedef struct Game_State {
     // the amount an item has at the time it was last drawn.
     // (The rendering data is stored in textures.items and surfaces.items)
     
-    Textures textures;
-    Surfaces surfaces;
     Fonts fonts;
     char texts[TEXT_INDEX_COUNT][128];
     

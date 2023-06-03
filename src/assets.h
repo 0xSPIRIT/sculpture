@@ -113,20 +113,17 @@ typedef struct Textures {
     Texture texs[TEXTURE_COUNT];
 } Textures;
 
-#define SURFACE_COUNT 1024
+// A bit nasty...
+#define SURFACE_COUNT (55+TOTAL_SLOT_COUNT+CONVERTER_COUNT)
 
-typedef struct Surfaces {
+typedef union Surfaces {
     SDL_Surface *surfaces[SURFACE_COUNT];
     
     struct {
-        SDL_Surface *renderer_3d;
-        
-        SDL_Surface *text[TEXT_INDEX_COUNT];
-        
-        SDL_Surface *background;
-        
-        SDL_Surface *a;
-        SDL_Surface *bark_surface,
+        SDL_Surface *renderer_3d,
+        *background,
+        *a,
+        *bark_surface,
         *glass_surface,
         *wood_plank_surface,
         *marble_surface,
@@ -146,6 +143,9 @@ typedef struct Surfaces {
         SDL_Surface *narrator;
     };
 } Surfaces;
+
+static_assert(sizeof(Surfaces) == SURFACE_COUNT*sizeof(SDL_Surface*),
+              "The Surfaces struct size is not equal to the surface count size!");
 
 #define FONT_COUNT 9
 

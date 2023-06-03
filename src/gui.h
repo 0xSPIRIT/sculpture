@@ -40,6 +40,8 @@ typedef struct GUI {
     Texture *popup_texture;
     Tooltip tooltip;
     
+    f64 stored_game_scale; // So we can know to resize if the scale changed.
+    
     Overlay_Interface overlay_interface;
     
     Button *tool_buttons[TOOL_COUNT];

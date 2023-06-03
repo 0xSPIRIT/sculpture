@@ -9,36 +9,6 @@
 // This is included only in the platform/SDL layer.
 //
 
-#define CreateRenderTarget(width, height) (SDL_CreateTexture(renderer, ALASKA_PIXELFORMAT, SDL_TEXTUREACCESS_TARGET, width, height))
-
-#if 0
-static SDL_Texture *load_texture(SDL_Renderer *renderer, const char *fp) {
-    // A temp surface that exists solely to get its format
-    // if surfaces are loaded with a format != ALASKA_PIXELFORMAT.
-    
-    char path[MAX_PATH] = {0};
-    strcat(path, RES_DIR);
-    strcat(path, fp);
-
-    SDL_Surface *surf = IMG_Load(path);
-    Log("%s\n", SDL_GetError());
-    Assert(surf);
-    
-    if (surf->format->format != ALASKA_PIXELFORMAT) {
-        SDL_Surface *new_surf = SDL_ConvertSurface(surf,
-                                                   pixel_format_surf->format,
-                                                   0);
-        SDL_FreeSurface(surf);
-        surf = new_surf;
-    }
-    
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surf);
-    Assert(texture);
-    SDL_FreeSurface(surf);
-    return texture;
-}
-#endif
-
 // Creates all render targets for all the levels.
 static void render_targets_init(void) {
     int width = gs->desktop_w;
@@ -53,7 +23,6 @@ static void render_targets_init(void) {
             case RENDER_TARGET_CONVERSION_PANEL: case RENDER_TARGET_OUTRO:
             case RENDER_TARGET_GUI_TOOLBAR: case RENDER_TARGET_HAMMER:
             case RENDER_TARGET_HAMMER2: case RENDER_TARGET_CHISEL: {
-                // TODO: Define the view state.
                 gs->render.render_targets[i] = RenderMakeTarget(width, height, VIEW_STATE_UNDEFINED, false);
                 continue;
             }
@@ -143,13 +112,6 @@ static void textures_init(Textures *textures) {
     }
 }
 
-static void textures_deinit(Textures *textures) {
-    for (int i = 0; i < TEXTURE_COUNT; i++) {
-        if (textures->texs[i].handle)
-            SDL_DestroyTexture(textures->texs[i].handle);
-    }
-}
-
 static void surfaces_init(Surfaces *surfaces) {
     surfaces->a = NULL;
     surfaces->renderer_3d = SDL_CreateRGBSurfaceWithFormat(0, gs->desktop_w, gs->desktop_h, 32, ALASKA_PIXELFORMAT);
@@ -172,13 +134,6 @@ static void surfaces_init(Surfaces *surfaces) {
     
     SDL_FreeSurface(gs->pixel_format_surf);
     gs->pixel_format_surf = NULL;
-}
-
-static void surfaces_deinit(Surfaces *surfaces) {
-    for (size_t i = 0; i < SURFACE_COUNT; i++) {
-        if (surfaces->surfaces[i])
-            SDL_FreeSurface(surfaces->surfaces[i]);
-    }
 }
 
 static void fonts_init(Fonts *fonts) {

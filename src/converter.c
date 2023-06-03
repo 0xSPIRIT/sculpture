@@ -147,61 +147,12 @@ static void converter_draw(int target, Converter *converter) {
                         gs->fonts.font_courier,
                         converter->name,
                         ColorFromInt(CONVERTER_NAME_COLOR),
+                        255,
                         (int) (converter->x + margin),                
                         (int) (converter->y + margin + GUI_H),
                         NULL,
                         NULL,
-                        255);
-    
-#if 0
-#ifndef MODIFYING_COLORS
-    if (!*surf || gs->resized) {
-#else
-        if (*surf) SDL_FreeSurface(*surf);
-#endif
-        
-        *surf = TTF_RenderText_Blended(gs->fonts.font_courier->handle,
-                                       converter->name, 
-                                       (SDL_Color){
-                                           Red(CONVERTER_NAME_COLOR),
-                                           Green(CONVERTER_NAME_COLOR),
-                                           Blue(CONVERTER_NAME_COLOR),
-                                           255
-                                       });
-#if 0
-        (SDL_Color){
-            Red(INVENTORY_COLOR2),
-            Green(INVENTORY_COLOR2), 
-            Blue(INVENTORY_COLOR2),
-            255
-        });
-#endif
-#ifndef MODIFYING_COLORS
-    }
-#endif
-    Assert(*surf);
-    
-#ifndef MODIFYING_COLORS
-    if (!*tex || gs->resized) {
-#else
-        if (*tex) SDL_DestroyTexture(*tex);
-#endif
-        *tex = SDL_CreateTextureFromSurface(gs->renderer, *surf);
-#ifndef MODIFYING_COLORS
-    }
-#endif
-    Assert(*tex);
-    
-    int margin = 8;
-    SDL_Rect r = {
-        (int) (converter->x + margin),
-        (int) (converter->y + margin + GUI_H),
-        (*surf)->w,
-        (*surf)->h
-    };
-    
-    SDL_RenderCopy(gs->renderer, *tex, NULL, &r);
-#endif
+                        false);
     
     button_draw(target, converter->go_button);
 }
@@ -245,14 +196,12 @@ static void converter_gui_setup_rectangle(bool really_update) {
     Conversions *c = &gs->converter;
     
     c->r = (SDL_Rect){
-        Scale(64), Scale(64),
-        Scale(400), 0
+        gs->window_width - Scale(64+400),
+        Scale(64),
+        Scale(360), 0
     };
     
-    int h;
-    
-    TTF_SizeText(gs->fonts.font_small->handle, "A", NULL, &h);
-    c->r.h = h*c->line_count + Scale(32);
+    c->r.h = gs->fonts.font_small->char_height*c->line_count - Scale(90);
 }
 
 static void converter_gui_init(void) {
@@ -318,8 +267,9 @@ static void converter_gui_draw(void) {
             strcpy(text_data.str, c->lines[i]);
             text_data.foreground = (SDL_Color){255, 255, 255, 255};
             text_data.alignment = ALIGNMENT_TOP_LEFT;
-            text_data.x = c->r.x + 16;
-            text_data.y = c->r.y + 16 + cum;
+            text_data.x = c->r.x + Scale(16);
+            text_data.y = c->r.y + Scale(16) + cum;
+            text_data.alpha = 255;
             
             RenderDrawText(target, &text_data);
             cum += text_data.texture.height;

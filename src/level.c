@@ -437,9 +437,10 @@ static void level_draw_name_intro(int target, Level *level, SDL_Rect rect) {
                         WHITE,
                         x,
                         y,
+                        255,
                         NULL,
                         NULL,
-                        255);
+                        false);
 }
 
 #define LEVEL_DESIRED_GRID_SCALE Scale(3)
@@ -499,9 +500,10 @@ static void level_draw_outro(int target, Level *level) {
                         WHITE,
                         dx,
                         dy,
+                        alpha,
                         NULL,
                         NULL,
-                        alpha);
+                        false);
     RenderDrawTextQuick(outro,
                         "Result",
                         gs->fonts.font,
@@ -509,9 +511,10 @@ static void level_draw_outro(int target, Level *level) {
                         WHITE,
                         dx+rect.w - LEVEL_MARGIN - scale*level->w - margin,
                         dy,
+                        alpha,
                         NULL,
                         NULL,
-                        alpha);
+                        false);
     
     //~
     level_draw_desired_grid(level, dx, dy);
@@ -545,9 +548,10 @@ static void level_draw_outro(int target, Level *level) {
                         color_next_level,
                         rect.x + rect.w - Scale(200),
                         rect.y + rect.h - margin - Scale(20),
+                        255,
                         NULL,
                         NULL,
-                        255);
+                        false);
     RenderDrawTextQuick(outro,
                         "close",
                         gs->fonts.font,
@@ -555,9 +559,10 @@ static void level_draw_outro(int target, Level *level) {
                         (SDL_Color){128, 128, 128, alpha},
                         rect.x + margin,
                         rect.y + rect.h - margin - Scale(20),
+                        255,
                         NULL,
                         NULL,
-                        alpha);
+                        false);
     
     RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_OUTRO)->texture, level->outro_alpha);
     SDL_Rect dst = {

@@ -15,11 +15,12 @@ static void narrator_draw_text_blended(int i, // 0 to 10
                         font,
                         str,
                         col,
+                        max(min(gs->narrator.alpha, 255), 0),
                         x,
                         y,
                         out_w,
                         out_h,
-                        max(min(gs->narrator.alpha, 255), 0));
+                        false);
 }
 
 static char* get_narration(int level) {

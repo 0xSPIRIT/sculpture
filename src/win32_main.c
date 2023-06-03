@@ -172,8 +172,7 @@ static void game_init(Game_State *state) {
 }
 
 static void game_deinit(Game_State *state) {
-    textures_deinit(&state->textures);
-    surfaces_deinit(&state->surfaces);
+    RenderCleanup(&state->render);
     fonts_deinit(&state->fonts);
     audio_deinit(&state->audio);
     
@@ -379,6 +378,8 @@ int main(int argc, char **argv)
         // Zero out the transient memory for next frame!
         memset(transient_memory.data, 0, transient_memory.size);
         transient_memory.cursor = transient_memory.data;
+        
+        RenderCleanupNonCachedText(&gs->render.temp_text_cache);
         
         QueryPerformanceCounter(&time_elapsed);
         

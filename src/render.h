@@ -64,17 +64,16 @@ typedef struct {
     bool force_update;
     Uint8 alpha;
     
+    f64 game_scale;       // OUT: The scale of the game at the time of rendering.
     Texture texture;      // OUT: The texture generated
     SDL_Surface *surface; // OUT: The surface generated
 } Render_Text_Data;
 
 typedef struct {
     Render_Text_Data data[128];
-    int count;
+    int size;
 } Render_Text_Data_Cache;
 
-// TODO: Move things that are in Game_State, such as
-//       the texture struct into here.
 typedef struct {
     SDL_Renderer *sdl;
     View_State view;
@@ -82,7 +81,8 @@ typedef struct {
     Render_Target *current_target;
     Render_Target *render_targets;
     
-    Render_Text_Data_Cache text_cache;
+    Render_Text_Data_Cache text_cache; // The permanent cache, destroyed upon RenderCleanup
+    Render_Text_Data_Cache temp_text_cache; // Temporary cache, destroyed at end of frame.
     int unfreed_objects;
 } Render;
 
@@ -93,6 +93,7 @@ static void RenderMaybeSwitchToTarget(int );
 
 RENDERAPI SDL_Surface *RenderLoadSurface(const char *fp);
 RENDERAPI Texture RenderLoadTexture(const char *fp);
+RENDERAPI void RenderDestroyTarget(Render_Target *target);
 RENDERAPI void RenderDestroyTexture(Texture *tex);
 RENDERAPI Texture RenderCreateTextureFromSurface(SDL_Surface *surf);
 RENDERAPI Font *RenderLoadFont(const char *fp, int size);
@@ -111,7 +112,8 @@ RENDERAPI void RenderPresent(int target);
 RENDERAPI void RenderTexture(int target, Texture *texture, SDL_Rect *src, SDL_Rect *dst);
 RENDERAPI void RenderTextureEx(int target, Texture *texture, SDL_Rect *src, SDL_Rect *dst, f64 angle, SDL_Point *center, SDL_RendererFlip flip);
 RENDERAPI void RenderDrawText(int target, Render_Text_Data *text_data);
-RENDERAPI void RenderDrawTextQuick(int , const char *identifier, Font *font, const char *str, SDL_Color color, int x, int y, int *w, int *h, Uint8 alpha);
+RENDERAPI void RenderDrawTextQuick(int target_enum, const char *identifier, Font *font, const char *str, SDL_Color color, Uint8 alpha, int x, int y, int *w, int *h, bool force_redraw);
+RENDERAPI void RenderCleanupNonCachedText(Render_Text_Data_Cache *cache);
 RENDERAPI void RenderSetFontSize(Font *font, int size);
 RENDERAPI void RenderReadPixels(int target, Uint8 *pixels, int pitch);
 RENDERAPI void RenderTextureColorMod(Texture *texture, Uint8 r, Uint8 g, Uint8 b);

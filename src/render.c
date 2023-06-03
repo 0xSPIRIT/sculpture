@@ -15,10 +15,25 @@ RENDERAPI Render RenderInit(SDL_Renderer *sdl_renderer) {
 }
 
 RENDERAPI void RenderCleanup(Render *render) {
-    // Only free the surfaces.
-    // Textures are deleted by default by SDL upon SDL_DestroyRenderer.
+    // Cleanup render targets.
+    for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
+        RenderDestroyTarget(&render->render_targets[i]);
+    }
     
-    (void)render;
+    // Cleanup textures.
+    for (int i = 0; i < TEXTURE_COUNT; i++) {
+        if (gs->textures.texs[i].handle)
+            RenderDestroyTexture(&gs->textures.texs[i]);
+    }
+    
+    // Cleanup surfaces.
+    for (size_t i = 0; i < SURFACE_COUNT; i++) {
+        if (gs->surfaces.surfaces[i])
+            SDL_FreeSurface(gs->surfaces.surfaces[i]);
+    }
+    
+    // Cleanup text data cache. Non-cached text rendering calls
+    // area cleaned up after its call when it's identifier is NULL.
 }
 
 RENDERAPI SDL_Surface *RenderLoadSurface(const char *fp) {
@@ -76,8 +91,6 @@ RENDERAPI Texture RenderCreateTextureFromSurface(SDL_Surface *surf) {
 RENDERAPI void RenderDestroyTexture(Texture *tex) {
     SDL_DestroyTexture(tex->handle);
     memset(tex, 0, sizeof(Texture));
-    tex->width = -1;
-    tex->height = -1;
 }
 
 RENDERAPI Font *RenderLoadFont(const char *fp, int size) {
@@ -142,6 +155,12 @@ RENDERAPI Render_Target RenderMakeTarget(int width,
     return RenderMakeTargetEx(width, height, view, use_negative_coords, false);
 }
 
+RENDERAPI void RenderDestroyTarget(Render_Target *target) {
+    if (target && target->texture.handle) {
+        SDL_DestroyTexture(target->texture.handle);
+    }
+    memset(target, 0, sizeof(Render_Target));
+}
 
 //~ Actual Rendering Code
 
@@ -205,13 +224,14 @@ RENDERAPI void RenderSetFontSize(Font *font, int size) {
     Assert(size>0);
     Assert(font);
     TTF_SetFontSize(font->handle, size);
+    TTF_SizeText(font->handle, "A", &font->char_width, &font->char_height);
 }
 
 // Returns the index, or -1 if the identifier is not found.
 static int _find_render_text_data_in_cache(const char identifier[]) {
     Render_Text_Data_Cache *cache = &gs->render.text_cache;
     
-    for (int i = 0; i < cache->count; i++) {
+    for (int i = 0; i < cache->size; i++) {
         if (strcmp(cache->data[i].identifier, identifier) == 0)
             return i;
     }
@@ -234,6 +254,8 @@ static bool _has_text_data_changed(Render_Text_Data text_old,
     if (text_old.alignment != text_new.alignment)
         return true;
     if (text_old.render_type != text_new.render_type)
+        return true;
+    if (text_old.game_scale != text_new.game_scale)
         return true;
     
     // Compare both foregroud and background.
@@ -280,11 +302,12 @@ RENDERAPI void RenderDrawTextQuick(int target_enum,
                                    Font *font,
                                    const char *str,
                                    SDL_Color color,
+                                   Uint8 alpha,
                                    int x,
                                    int y,
                                    int *w,
                                    int *h,
-                                   Uint8 alpha)
+                                   bool force_redraw)
 {
     Render_Text_Data text_data = {0};
     
@@ -297,11 +320,23 @@ RENDERAPI void RenderDrawTextQuick(int target_enum,
     text_data.alignment = ALIGNMENT_TOP_LEFT;
     text_data.render_type = TEXT_RENDER_BLENDED;
     text_data.alpha = alpha;
+    text_data.force_update = force_redraw;
     
     RenderDrawText(target_enum, &text_data);
     
     if (w) *w = text_data.texture.width;
     if (h) *h = text_data.texture.height;
+}
+
+RENDERAPI void RenderCleanupNonCachedText(Render_Text_Data_Cache *cache) {
+    for (int i = 0; i < cache->size; i++) {
+        Render_Text_Data *text_data = &cache->data[i];
+        Assert(text_data->identifier[0] == 0); // Non-cached shouldn't have identifiers
+        RenderDestroyTexture(&text_data->texture);
+        SDL_FreeSurface(text_data->surface);
+        memset(text_data, 0, sizeof(Render_Text_Data));
+    }
+    cache->size = 0;
 }
 
 RENDERAPI void RenderApplyAlignmentToRect(SDL_Rect *dst, Alignment alignment)
@@ -332,7 +367,9 @@ RENDERAPI void RenderDrawText(int target_enum, Render_Text_Data *text_data)
     Assert(text_data->font);
     if (!text_data->str[0]) return;
     
-    bool should_update = text_data->force_update || gs->resized;
+    bool should_redraw = text_data->force_update;
+    
+    text_data->game_scale = gs->S;
     
     Render_Text_Data *cache_object = NULL;
     
@@ -341,30 +378,33 @@ RENDERAPI void RenderDrawText(int target_enum, Render_Text_Data *text_data)
     if (text_data->identifier[0]) {
         int cache_index = _find_render_text_data_in_cache(text_data->identifier);
         if (cache_index < 0) {
-            cache_object = &gs->render.text_cache.data[gs->render.text_cache.count];
-            gs->render.text_cache.count++; 
-            should_update = true;
+            cache_object = &gs->render.text_cache.data[gs->render.text_cache.size];
+            gs->render.text_cache.size++; 
+            should_redraw = true;
         } else {
             // Compares the stored cache to the new one,
             // and see if anything has changed.
             cache_object = &gs->render.text_cache.data[cache_index];
             
+            // If the game's size has changed, it also returns true.
             bool changed = _has_text_data_changed(*cache_object, *text_data);
             
             // If so, we should redraw.
             if (changed) {
-                should_update = true;
+                should_redraw = true;
             } else { // Otherwise, set up our new texture and GTFO.
                 text_data->texture = cache_object->texture;
             }
         }
     } else {
-        should_update = true;
+        Render_Text_Data_Cache *temp_cache = &gs->render.temp_text_cache;
+        cache_object = &temp_cache->data[temp_cache->size++];
+        should_redraw = true;
     }
     
     Assert(cache_object);
     
-    if (!should_update) {
+    if (!should_redraw) {
         SDL_Rect dst = {
             text_data->x,
             text_data->y,

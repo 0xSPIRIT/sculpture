@@ -1,6 +1,6 @@
 TODO
 
-  - Delete surfaces.
+  x Delete surfaces.
   x Make cursor invisible in ending.
   - Remember that this is all just so we can 1. have cleaner shit and
     2. be able to have negative coordinates on render targets, without

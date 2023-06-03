@@ -29,11 +29,8 @@ commands = {
    .win = "build.bat",
    .linux = "./build.sh",
    .mac = "./build.sh", },
- .run = { .out = "*run*", .footer_panel = true, .save_dirty_files = false,
-   .win = "pushd bin\ && alaska.exe" },
 };
 
 fkey_command = {
 .F5 = "build",
-.F6 = "run"
 };

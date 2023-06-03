@@ -408,8 +408,10 @@ static void inventory_draw(int target) {
     
     GUI *gui = &gs->gui;
     
-    if (gs->resized)
+    if (gs->gui.stored_game_scale != gs->S)
         inventory_setup_slots();
+    
+    gs->gui.stored_game_scale = gs->S;
     
     const f32 y = -GUI_H + gui->popup_inventory_y;
     

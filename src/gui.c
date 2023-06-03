@@ -247,7 +247,7 @@ static void gui_init(void) {
                                                    name,
                                                    click_gui_tool_button);
             gui->tool_buttons[i]->w = gui->tool_buttons[i]->h = GUI_H;
-            //SDL_SetTextureScaleMode(gui->tool_buttons[i]->texture, 1);
+            SDL_SetTextureScaleMode(gui->tool_buttons[i]->texture->handle, 1); // filering
             if (gs->tool_previews[i].length)
                 gui->tool_buttons[i]->preview = &gs->tool_previews[i];
         }
@@ -558,9 +558,10 @@ static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup) {
                         col,
                         popup->r.x + Scale(16),
                         popup->r.y + Scale(10),
+                        255,
                         NULL,
                         NULL,
-                        255);
+                        false);
     
     col = (SDL_Color){255, 255, 255, 255};    
     RenderDrawTextQuick(target,
@@ -570,9 +571,10 @@ static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup) {
                         col,
                         popup->r.x + popup->r.w/2 - w/2,
                         popup->r.y + Scale(70),
+                        255,
                         NULL,
                         NULL,
-                        255);
+                        false);
     
     
     if (!can_goto_next_level()) {
@@ -605,9 +607,10 @@ static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup) {
                             color,
                             xoff + popup->r.x + popup->r.w/2 - w/2,
                             popup->r.y + popup->r.h - 2.7*h,
+                            255,
                             NULL,
                             NULL,
-                            255);
+                            false);
     }
     
 }

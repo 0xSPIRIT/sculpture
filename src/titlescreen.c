@@ -27,9 +27,10 @@ static void titlescreen_draw(void) {
                         BLACK,
                         gs->window_width/2 - gs->titlescreen.text_width/2,
                         gs->window_height/7,
+                        255,
                         NULL,
                         NULL,
-                        255);
+                        false);
     
     char *string = "Press RETURN";
     int w;
@@ -45,9 +46,10 @@ static void titlescreen_draw(void) {
                         (SDL_Color){a, a, a, 255},
                         gs->window_width/2 - w/2,
                         2*gs->window_height/3,
+                        255,
                         NULL,
                         NULL,
-                        255);
+                        false);
     RenderDrawTextQuick(RENDER_TARGET_GLOBAL,
                         "another",
                         gs->fonts.font_times,
@@ -55,7 +57,8 @@ static void titlescreen_draw(void) {
                         BLACK,
                         gs->window_width-8,
                         gs->window_height-8,
+                        255,
                         NULL,
                         NULL,
-                        255);
+                        false);
 }
