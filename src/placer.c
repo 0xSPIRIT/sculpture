@@ -12,8 +12,9 @@ static void placer_init(int num) {
     placer->x = gs->gw/2;
     placer->y = gs->gh/2;
     
-    placer->texture = GetTexture(TEXTURE_PLACER);
-    SDL_QueryTexture(placer->texture, NULL, NULL, &placer->w, &placer->h);
+    placer->texture = &GetTexture(TEXTURE_PLACER);
+    placer->w = placer->texture->width;
+    placer->h = placer->texture->height;
     
     placer->object_index = -1;
     placer->did_click = 0;
@@ -452,7 +453,7 @@ static void placer_tick(Placer *placer) {
     }
 }
 
-static void placer_draw(Placer *placer, bool full_size) {
+static void placer_draw(int target, Placer *placer, bool full_size) {
     const int scale = full_size ? gs->S : 1;
     int y_off = full_size ? GUI_H : 0;
     
@@ -467,14 +468,14 @@ static void placer_draw(Placer *placer, bool full_size) {
                 if (x+fx < 0 || x+fx >= gs->gw || y+fy < 0 || y+fy >= gs->gh) continue;
                 
                 if (placer->state == PLACER_SUCK_MODE) {
-                    SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 64);
+                    RenderColor(255, 0, 0, 64);
                 } else {
-                    SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 64);
+                    RenderColor(0, 255, 0, 64);
                 }
                 
                 int gx = x+fx;
                 int gy = y+fy;
-                SDL_RenderDrawPoint(gs->renderer, scale*gx, scale*gy + y_off);
+                RenderPoint(target, scale*gx, scale*gy + y_off);
             }
         }
     }
@@ -492,18 +493,24 @@ static void placer_draw(Placer *placer, bool full_size) {
     dst.y += y_off;
     
     switch (placer->index) {
-        case 0:
-        SDL_SetTextureColorMod(placer->texture, 255, 0, 0);
-        break;
-        case 1:
-        SDL_SetTextureColorMod(placer->texture, 0, 255, 0);
-        break;
-        case 2:
-        SDL_SetTextureColorMod(placer->texture, 0, 0, 255);
-        break;
+        case 0: {
+            RenderTextureColorMod(placer->texture, 255, 0, 0);
+            break;
+        }
+        case 1: {
+            RenderTextureColorMod(placer->texture, 0, 255, 0);
+            break;
+        }
+        case 2: {
+            RenderTextureColorMod(placer->texture, 0, 0, 255);
+            break;
+        }
     }
     
-    SDL_RenderCopy(gs->renderer, placer->texture, NULL, &dst);
+    RenderTexture(target,
+                  placer->texture,
+                  NULL,
+                  &dst);
     
     if (placer->rect.x != -1) {
         // Make sure the area is enough before you start drawing the rectangle.
@@ -512,20 +519,20 @@ static void placer_draw(Placer *placer, bool full_size) {
         bool able_to_place = placer_is_able_to_place(placer, &c, NULL);
         
         if (able_to_place) {
-            SDL_SetRenderDrawColor(gs->renderer, 255, 255, 0, 255);
+            RenderColor(255, 255, 0, 255);
         } else {
-            SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
+            RenderColor(255, 0, 0, 255);
         }
         
-        SDL_RenderDrawRect(gs->renderer, &placer->rect);
+        RenderDrawRect(target, placer->rect);
     }
     
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 64);
+    RenderColor(255, 255, 255, 64);
     
-    SDL_RenderDrawLine(gs->renderer, 0, placer->y, gs->gw, placer->y);
-    SDL_RenderDrawLine(gs->renderer, placer->x, 0, placer->x, gs->gh);
+    RenderLine(target, 0, placer->y, gs->gw, placer->y);
+    RenderLine(target, placer->x, 0, placer->x, gs->gh);
     
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+    RenderColor(255, 255, 255, 255);
 }
 
 static bool is_mouse_in_placer(Placer *placer) {

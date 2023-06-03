@@ -14,5 +14,5 @@ typedef struct Overlay_Interface {
 
 static void click_overlay_interface(void *ptr);
 static void overlay_interface_init(void);
-static void overlay_interface_draw(void);
+static void overlay_interface_draw(int target);
 static void overlay_interface_tick(void);

@@ -56,13 +56,13 @@ static void inventory_setup_slots(void);
 static void item_tick(Item *item, Slot *slot, int x, int y, int w, int h);
 static void slot_tick(Slot *slot);
 static void inventory_tick();
-static void inventory_draw(void);
+static void inventory_draw(int target);
 
 static bool can_add_item_to_inventory(enum Cell_Type type);
 static bool add_item_to_inventory_slot(enum Cell_Type type, int amount);
 
-static void item_draw(Item *item, int x, int y, int w, int h);
-static void slot_draw(Slot *slot, f32 rx, f32 ry);
+static void item_draw(int target, Item *item, int x, int y, int w, int h);
+static void slot_draw(int target, Slot *slot, f32 rx, f32 ry);
 
 static bool is_cell_fuel(int type);
 static bool can_place_item_in_slot(int type, enum Slot_Type slot);

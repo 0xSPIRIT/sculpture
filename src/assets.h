@@ -40,7 +40,6 @@ enum {
     TEXT_INDEX_COUNT = 128
 };
 
-// Index into textures.render_targets[]
 enum {
     RENDER_TARGET_MASTER, // The final full-screen resolution target.
     RENDER_TARGET_GLOBAL, // The main pixel art render target
@@ -72,8 +71,6 @@ typedef struct Audio {
 } Audio;
 
 enum {
-    TEXTURE_RENDER_TARGETS = 0,
-    TEXTURE_RENDER_TARGET_END = LEVEL_COUNT*RENDER_TARGET_COUNT,
     TEXTURE_LEVEL_BACKGROUNDS,
     TEXTURE_LEVEL_BACKGROUNDS_END = TEXTURE_LEVEL_BACKGROUNDS+LEVEL_COUNT,
     TEXTURE_TEXT,
@@ -112,9 +109,9 @@ enum {
 
 #define GetTexture(x) (gs->textures.texs[x])
 
-typedef struct GetTextures {
-    SDL_Texture *texs[TEXTURE_COUNT];
-} GetTextures;
+typedef struct Textures {
+    Texture texs[TEXTURE_COUNT];
+} Textures;
 
 #define SURFACE_COUNT 1024
 
@@ -153,9 +150,10 @@ typedef struct Surfaces {
 #define FONT_COUNT 9
 
 typedef union Fonts {
-    TTF_Font *fonts[FONT_COUNT];
+    Font *fonts[FONT_COUNT];
     struct {
-        TTF_Font *font,
+        Font
+        *font,
         *font_times,
         *font_consolas,
         *font_courier,

@@ -1,4 +1,4 @@
-static void credits_run(void) {
+static void credits_run(int target) {
     Credits *c = &gs->credits;
     
     if (c->state == CREDITS_OFF) return;
@@ -24,7 +24,21 @@ static void credits_run(void) {
                 255-co, 255-co, 255-co, 255
             };
             
-            draw_text(gs->fonts.font_times,
+            Render_Text_Data text_data = {0};
+            strcpy(text_data.identifier, "Ending text");
+            text_data.font = gs->fonts.font_times;
+            strcpy(text_data.str, "Created by spiritwolf");
+            text_data.x = Scale(128);
+            text_data.y = Scale(128);
+            text_data.foreground = col;
+            text_data.background = WHITE;
+            text_data.alignment = ALIGNMENT_TOP_LEFT;
+            text_data.render_type = TEXT_RENDER_BLENDED;
+            
+            RenderDrawText(target,
+                           &text_data);
+#if 0
+            draw_text(gs->fonts.font_times->handle,
                       "Created by spiritwolf",
                       col,
                       WHITE,
@@ -34,6 +48,7 @@ static void credits_run(void) {
                       Scale(128),
                       NULL,
                       NULL);
+#endif
             break;
         }
     }

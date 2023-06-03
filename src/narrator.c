@@ -1,71 +1,25 @@
 static void narrator_draw_text_blended(int i, // 0 to 10
-                                TTF_Font *font,
-                                const char *str,
-                                SDL_Color col,
-                                bool align_right,
-                                bool align_bottom,
-                                int x,
-                                int y,
-                                int *out_w,
-                                int *out_h,
-                                bool update) 
+                                       Font *font,
+                                       const char *str,
+                                       SDL_Color col,
+                                       int x,
+                                       int y,
+                                       int *out_w,
+                                       int *out_h)
 {
-    if (!*str) {
-        TTF_SizeText(font, "+", out_w, out_h);
-        return;
-    }
+    char identifier[64] = {0};
+    sprintf(identifier, "narrator %d", i);
     
-    if (gs->resized) {
-        update=true;
-    }
-    
-    SDL_Surface *surf = gs->surfaces.narrator_line[i];
-    SDL_Texture *texture = GetTexture(TEXTURE_NARRATOR_LINE+i);
-    
-    if (!surf || update) {
-        if (surf) SDL_FreeSurface(surf);
-        gs->surfaces.narrator_line[i] = TTF_RenderText_Blended(font, str, col);
-    }
-    if (!texture || update) {
-        if (texture) SDL_DestroyTexture(texture);
-        GetTexture(TEXTURE_NARRATOR_LINE+i) = SDL_CreateTextureFromSurface(gs->renderer, gs->surfaces.narrator_line[i]);
-    }
-    surf = gs->surfaces.narrator_line[i];    
-    texture = GetTexture(TEXTURE_NARRATOR_LINE+i);
-    
-    SDL_Rect dst = { x, y + gs->window_height/2 - surf->h/2, surf->w, surf->h };
-    
-    if (align_right) dst.x -= surf->w;
-    if (align_bottom) dst.y -= surf->h;
-    
-    if (out_w)
-        *out_w = surf->w;
-    if (out_h)
-        *out_h = surf->h;
-    
-    SDL_SetTextureAlphaMod(GetTexture(TEXTURE_NARRATOR_LINE+i), max(min(gs->narrator.alpha, 255), 0));
-#if 0
-    Narrator *n = &gs->narrator;
-    if (gs->level_current+1 == 8) {
-        // All of these are in ms.
-        if (n->glitch_time <= n->target_time) {
-            n->glitch_time = randf(1000);
-            n->target_time = -randf(1000);
-            n->red = rand()<RAND_MAX/10;
-        }
-        n->glitch_time -= gs->dt * 1000;
-        
-        if (n->glitch_time>0) {
-            if (n->red)
-                SDL_SetTextureColorMod(GetTexture(TEXTURE_NARRATOR_LINE+i), 255, 64, 64);
-            else
-                SDL_SetTextureColorMod(GetTexture(TEXTURE_NARRATOR_LINE+i), 255, 220, 200);
-        } else {
-            SDL_SetTextureColorMod(GetTexture(TEXTURE_NARRATOR_LINE+i), 255, 255, 255);
-        }
-    }
-#endif
-    SDL_RenderCopy(gs->renderer, GetTexture(TEXTURE_NARRATOR_LINE+i), NULL, &dst);
+    RenderDrawTextQuick(RENDER_TARGET_MASTER,
+                        identifier,
+                        font,
+                        str,
+                        col,
+                        x,
+                        y,
+                        out_w,
+                        out_h,
+                        max(min(gs->narrator.alpha, 255), 0));
 }
 
 static char* get_narration(int level) {
@@ -201,8 +155,10 @@ static int get_glitched_offset(void) {
     return xoff;
 }
 
-static void narrator_run(SDL_Color col) {
+static void narrator_run(int target, SDL_Color col) {
     Narrator *n = &gs->narrator;
+    
+    RenderMaybeSwitchToTarget(target);
     
     if (n->off) return;
     if (n->delay > 0) return;
@@ -221,14 +177,14 @@ static void narrator_run(SDL_Color col) {
         return;
     }
     
-    TTF_Font *font = gs->fonts.font_times;
+    Font *font = gs->fonts.font_times;
     
     for (int i = 0; i < n->current_line_count; i++) {
         char *s = PushArray(gs->transient_memory, n->curr_len, sizeof(char));
         strcpy(s, n->current_lines[i]);
         
         int w, h;
-        TTF_SizeText(font, s, &w, &h);
+        TTF_SizeText(font->handle, s, &w, &h);
         
         const int pad = 8;
         
@@ -247,13 +203,10 @@ static void narrator_run(SDL_Color col) {
                                    font,
                                    s,
                                    c,
-                                   false,
-                                   false,
                                    xoff + gs->window_width/2 - w/2,
-                                   16 + i*(h+pad) - (h+pad)*n->current_line_count/2,
+                                   gs->window_height/2 + 16 + i*(h+pad) - (h+pad)*n->current_line_count/2,
                                    NULL,
-                                   &surf_h,
-                                   n->update);
+                                   &surf_h);
     }
     
     n->update = false;

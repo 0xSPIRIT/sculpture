@@ -115,7 +115,7 @@ static void particle_tick(Effect *effect, int i) {
     }
 }
 
-static void effect_draw(Effect *effect, bool draw_points, int only_slow) {
+static void effect_draw(int target, Effect *effect, bool draw_points, int only_slow) {
     if (effect->type == EFFECT_NONE)
         return;
     
@@ -147,26 +147,26 @@ static void effect_draw(Effect *effect, bool draw_points, int only_slow) {
                 int px = (int)particle->x;
                 int py = (int)particle->y;
                 
-                //SDL_SetRenderDrawColor(gs->renderer, my_rand(px), my_rand(py), my_rand(px*py), (Uint8) (255 * (length/max)));
+                //RenderColor(my_rand(px), my_rand(py), my_rand(px*py), (Uint8) (255 * (length/max)));
                 float coeff = 0.4f;
                 if (effect->w > gs->gw) coeff = 0.6f;
                 
                 Uint8 col = (Uint8) (255 * coeff*length/max);
                 if (effect->w > gs->gw) {
-                    SDL_SetRenderDrawColor(gs->renderer, col, col, col, 255);
+                    RenderColor(col, col, col, 255);
                 } else {
-                    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, col);
+                    RenderColor(255, 255, 255, col);
                 }
                 
                 if (draw_points) {
-                    SDL_RenderDrawPoint(gs->renderer, px, py);
+                    RenderPoint(target, px, py);
                 } else {
                     
                     if (gs->levels[gs->level_current].state == LEVEL_STATE_NARRATION) {
-                        fill_circle(gs->renderer,
-                                    gs->window_width * px/effect->w,
-                                    gs->window_height * py/effect->h,
-                                    Scale(6 * (length/max)));
+                        RenderFillCircle(target,
+                                         gs->window_width * px/effect->w,
+                                         gs->window_height * py/effect->h,
+                                         Scale(6 * (length/max)));
                     }
                 }
             }
@@ -184,7 +184,7 @@ static void effect_draw(Effect *effect, bool draw_points, int only_slow) {
                 int p2x = (int) (px - particle->vx*3);
                 int p2y = (int) (py - particle->vy*3);
                 
-                SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 32);
+                RenderColor(255, 255, 255, 32);
                 SDL_RenderDrawLine(gs->renderer, px, py, p2x, p2y);
             }
             break;

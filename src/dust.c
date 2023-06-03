@@ -77,13 +77,13 @@ static void dust_grid_tick(void) {
 
 static SDL_Color pixel_from_index(enum Cell_Type type, int i);
 
-static void dust_grid_draw(void) {
+static void dust_grid_draw(int target) {
     Dust_Data *data = &gs->dust_data;
     
     for (int i = 0; i < data->count; i++) {
         SDL_Color c = pixel_from_index(data->types[i], (int)data->xs[i] + (int)data->ys[i]*gs->gw);
         const f64 coeff = 0.5;
-        SDL_SetRenderDrawColor(gs->renderer, c.r*coeff, c.g*coeff, c.b*coeff, c.a);
-        SDL_RenderDrawPoint(gs->renderer, data->xs[i], data->ys[i]);
+        RenderColor(c.r*coeff, c.g*coeff, c.b*coeff, c.a);
+        RenderPoint(target, data->xs[i], data->ys[i]);
     }
 }

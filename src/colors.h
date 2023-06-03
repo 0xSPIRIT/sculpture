@@ -12,6 +12,8 @@
 #define Green(x) ((Uint8)((x >> 8) & 0xFF))
 #define Blue(x) ((Uint8)(x & 0xFF))
 
+#define ColorFromInt(x) (SDL_Color){Red(x), Green(x), Blue(x), 255}
+
 // When you want to change colors on the fly,
 // uncomment the #define and comment the #undef.
 // That makes it so that text updates every

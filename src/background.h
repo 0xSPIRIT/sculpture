@@ -4,4 +4,4 @@ typedef struct {
 } Background;
 
 static Background background_init(void);
-static void background_draw(Background *background);
+static void background_draw(int target, Background *bg);

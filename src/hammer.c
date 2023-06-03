@@ -1,9 +1,8 @@
 static Hammer hammer_init(void) {
     Hammer hammer = {0};
     
-    hammer.tex = GetTexture(TEXTURE_CHISEL_HAMMER);
+    hammer.tex = &GetTexture(TEXTURE_CHISEL_HAMMER);
     hammer.dir = 1;
-    SDL_QueryTexture(hammer.tex, NULL, NULL, &hammer.w, &hammer.h);
     
     return hammer;
 }
@@ -16,7 +15,7 @@ static void hammer_tick(Hammer *hammer) {
         hammer->angle = 180 + 360 * atan2f(rmy - hammer->y, rmx - hammer->x) / (f32)(2*M_PI);
         hammer->temp_angle = hammer->angle;
     } else {
-        f64 dist = gs->chisel->w;
+        f64 dist = gs->chisel->texture->width;
         
         hammer->x = gs->chisel->x + dist;
         hammer->y = gs->chisel->y;
@@ -81,26 +80,22 @@ static void hammer_tick(Hammer *hammer) {
 // entire hammer to the chisel's angle, and position
 // it accordingly.
 //
-static void hammer_draw(Hammer *hammer) {
+static void hammer_draw(int final_target, Hammer *hammer) {
     {
-        SDL_Texture *old_target = SDL_GetRenderTarget(gs->renderer);
-        
-        SDL_SetRenderTarget(gs->renderer,
-                            RenderTarget(RENDER_TARGET_HAMMER));
-        
+        const int target = RENDER_TARGET_HAMMER;
         SDL_Point center = {
-            hammer->w/2,
-            7*hammer->h/8.0
+            hammer->tex->width/2,
+            7*hammer->tex->height/8.0
         };
         
         SDL_Rect dst = {
             hammer->x + 1,
             hammer->y - 2,
-            hammer->w, hammer->h
+            hammer->tex->width, hammer->tex->height
         };
         
-        SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
-        SDL_RenderClear(gs->renderer);
+        RenderColor(0, 0, 0, 0);
+        RenderClear(target);
         
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         
@@ -108,30 +103,27 @@ static void hammer_draw(Hammer *hammer) {
         
         if (gs->chisel->angle < 90 && gs->chisel->angle > -90) {
             flip |= SDL_FLIP_VERTICAL;
-            dst.y -= hammer->h - 4;
-            center.y -= hammer->h - 4;
+            dst.y -= hammer->tex->height - 4;
+            center.y -= hammer->tex->height - 4;
             angle *= -1;
         }
         
-        SDL_RenderCopyEx(gs->renderer,
-                         hammer->tex,
-                         NULL,
-                         &dst,
-                         angle,
-                         &center,
-                         flip);
-        
-        SDL_SetRenderTarget(gs->renderer, old_target);
+        RenderTextureEx(target,
+                        hammer->tex,
+                        NULL,
+                        &dst,
+                        angle,
+                        &center,
+                        flip);
     }
     
     // Now we render the target.
     
     {
-        SDL_Texture *old_target = SDL_GetRenderTarget(gs->renderer);
-        SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_HAMMER2));
+        const int target = RENDER_TARGET_HAMMER2;
         
-        SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
-        SDL_RenderClear(gs->renderer);
+        RenderColor(0, 0, 0, 0);
+        RenderClear(target);
         
         SDL_Point center = {
             gs->chisel->x,
@@ -146,16 +138,17 @@ static void hammer_draw(Hammer *hammer) {
             gs->gw, gs->gh
         };
         
-        SDL_RenderCopyEx(gs->renderer,
-                         RenderTarget(RENDER_TARGET_HAMMER),
-                         NULL,
-                         NULL,
-                         180+gs->chisel->angle,
-                         &center,
-                         SDL_FLIP_NONE);
+        RenderTextureEx(target,
+                        &RenderTarget(RENDER_TARGET_HAMMER)->texture,
+                        NULL,
+                        NULL,
+                        180+gs->chisel->angle,
+                        &center,
+                        SDL_FLIP_NONE);
         
-        SDL_SetRenderTarget(gs->renderer, old_target);
-        
-        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_HAMMER2), &src, &dst);
+        RenderTexture(final_target,
+                      &RenderTarget(target)->texture,
+                      &src,
+                      &dst);
     }
 }

@@ -50,7 +50,7 @@ static void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
         int x = i%gs->gw, y = i/gs->gw;
         
         SDL_Color c = pixel_from_index_grid(grid, grid[i].type, i);
-        SDL_SetRenderDrawColor(gs->renderer, c.r, c.g, c.b, 255);
+        RenderColor(c.r, c.g, c.b, 255);
         SDL_Rect r = { xx + x*cw, yy + y*ch, cw, ch };
         SDL_RenderFillRect(gs->renderer, &r);
     }

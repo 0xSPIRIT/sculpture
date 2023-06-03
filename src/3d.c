@@ -104,11 +104,15 @@ static void object_activate(Object3D *obj) {
     // Drawing the grid's pixels to a texture, then
     // memcpying that into the surface's pixel buffer.
     
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GRID));
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-    SDL_RenderClear(gs->renderer);
+    //SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GRID));
+    const int target = RENDER_TARGET_GRID;
     
-    grid_array_draw(gs->grid, 255);
+    SDL_ShowCursor(SDL_DISABLE);
+    
+    RenderColor(0, 0, 0, 255);
+    RenderClear(target);
+    
+    grid_array_draw(target, gs->grid, 255);
 #endif
     
     void *pixels = PushArray(gs->transient_memory, gs->gw*gs->gh, 4); // sizeof(Uint32)
@@ -146,8 +150,8 @@ static void object_draw(Object3D *obj) {
     if (obj->state == OBJECT_DONE) {
         if (obj->timer == -1) {
             narrator_tick();
-            narrator_run(BLACK);
-            credits_run();
+            narrator_run(RENDER_TARGET_MASTER, BLACK);
+            credits_run(RENDER_TARGET_MASTER);
         } else {
             obj->timer++;
         }
@@ -316,10 +320,10 @@ static void object_draw(Object3D *obj) {
     
     Uint32 *pixels;
     int pitch;
-    if (SDL_LockTexture(RenderTarget(RENDER_TARGET_3D),
-                        NULL,
-                        &pixels,
-                        &pitch) != 0) {
+    if (RenderLockTexture(&RenderTarget(RENDER_TARGET_3D)->texture,
+                          NULL,
+                          &pixels,
+                          &pitch) != 0) {
         Log("%s\n", SDL_GetError());
         Assert(0);
     }
@@ -336,16 +340,19 @@ static void object_draw(Object3D *obj) {
     draw_image_skew(w, h, gs->surfaces.a, pixels, final_points);
     draw_image_skew(w, h, gs->surfaces.a, pixels, final_points+1);
     
-    SDL_UnlockTexture(RenderTarget(RENDER_TARGET_3D));
+    RenderUnlockTexture(&RenderTarget(RENDER_TARGET_3D)->texture);
     
-    const SDL_Rect dst = {
+    SDL_Rect dst = {
         0, GUI_H,
         gs->window_width, gs->window_width
     };
-    const SDL_Rect src = {
+    SDL_Rect src = {
         0, 0,
         SCALE_3D*gs->window_width,
         SCALE_3D*gs->window_height
     };
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_3D), &src, &dst);
+    RenderTexture(RENDER_TARGET_MASTER, // TODO
+                  &RenderTarget(RENDER_TARGET_3D)->texture,
+                  &src,
+                  &dst);
 }

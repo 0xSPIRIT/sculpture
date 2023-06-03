@@ -400,20 +400,20 @@ static bool int_array_any_neighbours_not_same(int *array, int x, int y) {
     return false;
 }
 
-static void overlay_draw_missed_pixels(int *grid) {
-    SDL_SetRenderDrawColor(gs->renderer, 255, 128, 0, 255 * 0.5*(sin(SDL_GetTicks()/500.0)+1));
+static void overlay_draw_missed_pixels(int target, int *grid) {
+    RenderColor(255, 128, 0, 255 * 0.5*(sin(SDL_GetTicks()/500.0)+1));
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             int i = x+y*gs->gw;
             
             if (gs->grid[i].type != grid[i]) {
-                SDL_RenderDrawPoint(gs->renderer, x, y);
+                RenderPoint(target, x, y);
             }
         }
     }
 }
 
-static void overlay_draw_grid(int *grid, f32 alpha_coeff) {
+static void overlay_draw_grid(int target, int *grid, f32 alpha_coeff) {
     f32 alpha;
     alpha = 100;
     alpha *= alpha_coeff;
@@ -453,14 +453,14 @@ static void overlay_draw_grid(int *grid, f32 alpha_coeff) {
                 c.b = min(255, c.b+add);
             }
             
-            SDL_SetRenderDrawColor(gs->renderer, c.r, c.g, c.b, a);
+            RenderColor(c.r, c.g, c.b, a);
             
-            SDL_RenderDrawPoint(gs->renderer, x, y);
+            RenderPoint(target, x, y);
         }
     }
 }
 
-static void overlay_draw(void) {
+static void overlay_draw(int target) {
     Overlay *overlay = &gs->overlay;
     
     if (!overlay->show)
@@ -468,14 +468,16 @@ static void overlay_draw(void) {
     
     if (overlay->changes.index+1 < overlay->changes.count) {
         Assert(overlay->changes.alpha < 1);
-        overlay_draw_grid(overlay->grid, 1.0f - overlay->changes.alpha);
-        overlay_draw_grid(overlay->changes.grids[overlay->changes.index+1],
+        overlay_draw_grid(target,
+                          overlay->grid, 1.0f - overlay->changes.alpha);
+        overlay_draw_grid(target,
+                          overlay->changes.grids[overlay->changes.index+1],
                           overlay->changes.alpha);
     } else {
-        overlay_draw_grid(overlay->grid, 1.0f);
+        overlay_draw_grid(target, overlay->grid, 1.0f);
     }
     
     if (compare_cells_to_int_count(gs->grid, overlay->grid) <= 15) {
-        overlay_draw_missed_pixels(overlay->grid);
+        overlay_draw_missed_pixels(target, overlay->grid);
     }
 }

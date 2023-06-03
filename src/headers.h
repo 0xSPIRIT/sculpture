@@ -17,8 +17,8 @@
 #include <math.h>
 
 #include "typedefs.h"
-#include "colors.h"
 #include "render.h"
+#include "colors.h"
 #include "cursor.h"
 #include "view.h"
 #include "fades.h"

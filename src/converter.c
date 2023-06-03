@@ -80,28 +80,31 @@ static void converter_set_state(Converter *converter, enum Converter_State state
     converter->state = state;
     if (state == CONVERTER_OFF) {
         converter->state = CONVERTER_OFF;
-        SDL_SetTextureColorMod(converter->arrow.texture, 255, 255, 255);
+        RenderTextureColorMod(converter->arrow.texture, 255, 255, 255);
     }
 }
 
-static void converter_draw(Converter *converter) {
+static void converter_draw(int target, Converter *converter) {
     if (converter->state == CONVERTER_INACTIVE)
+        return;
+    
+    if (converter->y >= gs->window_height-GUI_H)
         return;
     
     converter->w = (f32) (gs->window_width/2);
     converter->h = GUI_POPUP_H;
     
-    SDL_SetRenderDrawColor(gs->renderer, 
-                           Red(CONVERTER_LINE_COLOR),
-                           Green(CONVERTER_LINE_COLOR),
-                           Blue(CONVERTER_LINE_COLOR),
-                           255);
-    SDL_RenderDrawLine(gs->renderer, converter->x+converter->w,
-                       converter->y+GUI_H, converter->x+converter->w,
-                       converter->y+GUI_H+converter->h);
+    RenderColor(Red(CONVERTER_LINE_COLOR),
+                Green(CONVERTER_LINE_COLOR),
+                Blue(CONVERTER_LINE_COLOR),
+                255);
+    RenderLine(target,
+               converter->x+converter->w,
+               converter->y+GUI_H, converter->x+converter->w,
+               converter->y+GUI_H+converter->h);
     
     for (int i = 0; i < converter->slot_count; i++) {
-        slot_draw(&converter->slots[i], converter->x, converter->y);
+        slot_draw(target, &converter->slots[i], converter->x, converter->y);
     }
     
     SDL_Rect arrow_dst = {
@@ -117,26 +120,47 @@ static void converter_draw(Converter *converter) {
         Uint8 a = (SDL_GetTicks()/period) % 2 == 0;
         a = a ? 255 : 190;
         
-        SDL_SetTextureColorMod(converter->arrow.texture, a, a, a);
+        RenderTextureColorMod(converter->arrow.texture, a, a, a);
     }
     // Since we use the same texture for both converters,
     // we need to reset it every time as well.
     else {
-        SDL_SetTextureColorMod(converter->arrow.texture, 255, 255, 255);
+        RenderTextureColorMod(converter->arrow.texture, 255, 255, 255);
     }
     
-    SDL_RenderCopy(gs->renderer, converter->arrow.texture, NULL, &arrow_dst);
+    RenderTexture(target,
+                  converter->arrow.texture,
+                  NULL,
+                  &arrow_dst);
     
-    SDL_Surface **surf = &gs->surfaces.converter_names[converter->type];
-    SDL_Texture **tex = &GetTexture(TEXTURE_CONVERTER_NAMES+converter->type);
+    // TODO:
+    // Draw converter->name using gs->fonts.font_courier,
+    // with CONVERTER_NAME_COLOR,  at 
+    //  (int) (converter->x + margin),
+    //  (int) (converter->y + margin + GUI_H),
     
+    char identifier[64] = {0};
+    sprintf(identifier, "%p", converter);
+    int margin = 8;
+    RenderDrawTextQuick(RENDER_TARGET_MASTER,
+                        identifier,
+                        gs->fonts.font_courier,
+                        converter->name,
+                        ColorFromInt(CONVERTER_NAME_COLOR),
+                        (int) (converter->x + margin),                
+                        (int) (converter->y + margin + GUI_H),
+                        NULL,
+                        NULL,
+                        255);
+    
+#if 0
 #ifndef MODIFYING_COLORS
     if (!*surf || gs->resized) {
 #else
         if (*surf) SDL_FreeSurface(*surf);
 #endif
         
-        *surf = TTF_RenderText_Blended(gs->fonts.font_courier,
+        *surf = TTF_RenderText_Blended(gs->fonts.font_courier->handle,
                                        converter->name, 
                                        (SDL_Color){
                                            Red(CONVERTER_NAME_COLOR),
@@ -177,13 +201,14 @@ static void converter_draw(Converter *converter) {
     };
     
     SDL_RenderCopy(gs->renderer, *tex, NULL, &r);
+#endif
     
-    button_draw(converter->go_button);
+    button_draw(target, converter->go_button);
 }
 
-static void all_converters_draw(void) {
-    converter_draw(gs->material_converter);
-    converter_draw(gs->fuel_converter);    
+static void all_converters_draw(int target) {
+    converter_draw(target, gs->material_converter);
+    converter_draw(target, gs->fuel_converter);    
 }
 
 static bool converter_is_layout_valid(Converter *converter) {
@@ -226,7 +251,7 @@ static void converter_gui_setup_rectangle(bool really_update) {
     
     int h;
     
-    TTF_SizeText(gs->fonts.font_small, "A", NULL, &h);
+    TTF_SizeText(gs->fonts.font_small->handle, "A", NULL, &h);
     c->r.h = h*c->line_count + Scale(32);
 }
 
@@ -262,6 +287,7 @@ static void converter_gui_draw(void) {
     Conversions *c = &gs->converter;
     
     const SDL_Color bg = {0, 0, 0, 200};
+    const int target = RENDER_TARGET_CONVERSION_PANEL;
     
     if (!c->active) return;
     
@@ -273,54 +299,46 @@ static void converter_gui_draw(void) {
         c->calculated_render_target = true;
         int cum = 0;
         
-        SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
-        SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_CONVERSION_PANEL));
+        RenderColor(0, 0, 0, 0);
+        RenderClear(target);
         
-        SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
-        SDL_RenderClear(gs->renderer);
+        RenderColor(bg.r, bg.g, bg.b, bg.a);
+        RenderFillRect(target, c->r);
         
-        SDL_SetRenderDrawColor(gs->renderer, bg.r, bg.g, bg.b, bg.a);
-        SDL_RenderFillRect(gs->renderer, &c->r);
-        
-        SDL_SetRenderDrawColor(gs->renderer, 128, 128, 128, 255);
-        SDL_RenderDrawRect(gs->renderer, &c->r);
+        RenderColor(128, 128, 128, 255);
+        RenderDrawRect(target, c->r);
         
         int count = 0;
         
         for (int i = 0; i < c->line_count; i++) {
             count++;
             
-            int h;
+            Render_Text_Data text_data = {0};
+            text_data.font = gs->fonts.font_small;
+            strcpy(text_data.str, c->lines[i]);
+            text_data.foreground = (SDL_Color){255, 255, 255, 255};
+            text_data.alignment = ALIGNMENT_TOP_LEFT;
+            text_data.x = c->r.x + 16;
+            text_data.y = c->r.y + 16 + cum;
             
-            draw_text_blended_indexed(i,
-                                      gs->fonts.font_small,
-                                      c->lines[i],
-                                      (SDL_Color){255, 255, 255, 255},
-                                      false,
-                                      false,
-                                      c->r.x + 16,
-                                      c->r.y + 16 + cum,
-                                      NULL,
-                                      &h);
-            cum += h;
+            RenderDrawText(target, &text_data);
+            cum += text_data.texture.height;
         }
         
         {
-            SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
+            RenderColor(0, 0, 0, 0);
             SDL_Rect a = {
                 0, c->r.y + c->r.h,
                 gs->window_width, gs->window_height - (c->r.y + c->r.h+GUI_H)
             };
-            SDL_RenderFillRect(gs->renderer, &a);
+            RenderFillRect(target, a);
             
             SDL_Rect b = {
                 c->r.x+c->r.w, 0,
                 gs->window_width - (c->r.x + c->r.w), gs->window_height-GUI_H
             };
-            SDL_RenderFillRect(gs->renderer, &b);
+            RenderFillRect(target, b);
         }
-        
-        SDL_SetRenderTarget(gs->renderer, prev);
     }
     
     SDL_Rect src = {
@@ -331,8 +349,11 @@ static void converter_gui_draw(void) {
         0, GUI_H,
         gs->window_width, gs->window_height-GUI_H
     };
-    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_CONVERSION_PANEL), SDL_BLENDMODE_BLEND);
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_CONVERSION_PANEL), &src, &dst);
+    
+    RenderTexture(RENDER_TARGET_MASTER,
+                  &RenderTarget(target)->texture,
+                  &src,
+                  &dst);
 }
 
 static void auto_set_material_converter_slots(Converter *converter) {
@@ -389,11 +410,10 @@ static void converter_setup_position(Converter *converter) {
         converter->slots[i].inventory_index = -1;
     }
     
-    converter->arrow.texture = GetTexture(TEXTURE_CONVERTER_ARROW);
+    converter->arrow.texture = &GetTexture(TEXTURE_CONVERTER_ARROW);
     
-    SDL_QueryTexture(converter->arrow.texture, NULL, NULL, &converter->arrow.w, &converter->arrow.h);
-    converter->arrow.w = Scale(converter->arrow.w);
-    converter->arrow.h = Scale(converter->arrow.h);
+    converter->arrow.w = converter->arrow.texture->width;
+    converter->arrow.h = converter->arrow.texture->height;
     
     converter->arrow.x = (int) (converter->w/2);
     converter->arrow.y = (int) (converter->h/2 + 24);
@@ -401,7 +421,10 @@ static void converter_setup_position(Converter *converter) {
     
     // Both X and Y-coordinates are updated in converter_tick.
     if (converter->go_button == NULL) {
-        converter->go_button = button_allocate(BUTTON_TYPE_CONVERTER, GetTexture(TEXTURE_CONVERT_BUTTON), "Convert", converter_begin_converting);
+        converter->go_button = button_allocate(BUTTON_TYPE_CONVERTER,
+                                               &GetTexture(TEXTURE_CONVERT_BUTTON),
+                                               "Convert",
+                                               converter_begin_converting);
     }
     converter->go_button->w = Scale(48);
     converter->go_button->h = Scale(48);

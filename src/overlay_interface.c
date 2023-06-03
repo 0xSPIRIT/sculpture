@@ -86,14 +86,10 @@ static void overlay_interface_init(void) {
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
         Button *b = 0;
         
-        SDL_Texture *texture = GetTexture(TEXTURE_TOOL_BUTTONS + TOOL_GRABBER);
-        
-        b = button_allocate(
-                            BUTTON_TYPE_OVERLAY_INTERFACE,
-                            texture,
+        b = button_allocate(BUTTON_TYPE_OVERLAY_INTERFACE,
+                            &GetTexture(TEXTURE_TOOL_BUTTONS + TOOL_GRABBER),
                             overlay_interface_names[i],
-                            click_overlay_interface
-                            );
+                            click_overlay_interface);
         
         b->x = 20;
         b->y = 110 + cum;
@@ -115,10 +111,10 @@ static void overlay_interface_tick(void) {
     }
 }
 
-static void overlay_interface_draw(void) {
+static void overlay_interface_draw(int target) {
     Overlay_Interface *interf = &gs->gui.overlay_interface;
     
     for (int i = 0; i < OVERLAY_INTERFACE_BUTTONS; i++) {
-        button_draw(interf->buttons[i]);
+        button_draw(target, interf->buttons[i]);
     }
 }

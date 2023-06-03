@@ -2,21 +2,14 @@ static Chisel chisel_init(enum Chisel_Size size) {
     Chisel chisel = {0};
     
     chisel.size = size;
-    chisel.texture = GetTexture(TEXTURE_CHISEL+size);
+    chisel.texture = &GetTexture(TEXTURE_CHISEL+size);
     chisel.lookahead = 5;
-    
-    SDL_QueryTexture(chisel.texture, NULL, NULL, &chisel.w, &chisel.h);
     
     return chisel;
 }
 
 static void chisel_init_render_target(Chisel *chisel) {
     chisel->render_target = RenderTarget(RENDER_TARGET_CHISEL);
-    SDL_QueryTexture(chisel->render_target,
-                     NULL,
-                     NULL,
-                     &chisel->target_w,
-                     &chisel->target_h);
 }
 
 static void chisel_play_sound(int size) {
@@ -411,7 +404,12 @@ static void chisel_calculate_highlights(Chisel *chisel) {
 }
 
 
-static void chisel_draw_highlights(int *highlights, int count, int xoff, int yoff) {
+static void chisel_draw_highlights(int target,
+                                   int *highlights,
+                                   int count,
+                                   int xoff,
+                                   int yoff)
+{
     bool hit = false;
     
     for (int i = 0; i < count; i++) {
@@ -431,18 +429,18 @@ static void chisel_draw_highlights(int *highlights, int count, int xoff, int yof
         if (gs->overlay.show) {
             if (hit) {
                 if (gs->overlay.grid[x+y*gs->gw]) {
-                    SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
+                    RenderColor(255, 0, 0, 255);
                 } else {
-                    SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 60);
+                    RenderColor(255, 0, 0, 60);
                 }
             } else {
-                SDL_SetRenderDrawColor(gs->renderer, 0, 255, 0, 150);
+                RenderColor(0, 255, 0, 150);
             }
         } else {
-            SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 55);
+            RenderColor(0, 0, 0, 55);
         }
         
-        SDL_RenderDrawPoint(gs->renderer, xoff+x, yoff+y);
+        RenderPoint(target, xoff+x, yoff+y);
     }
 }
 
@@ -552,39 +550,43 @@ static void chisel_get_adjusted_positions(int angle, int size, int *x, int *y) {
     }
 }
 
-static void chisel_draw(Chisel *chisel) {
+static void chisel_draw(int target, Chisel *chisel) {
     int x, y;
     
     x = chisel->x;
     y = chisel->y;
     
     if (chisel->x == -1 || chisel->y == -1) {
-        SDL_SetTextureColorMod(chisel->texture, 127, 127, 127);
+        RenderTextureColorMod(chisel->texture, 127, 127, 127);
         x = gs->input.mx;
         y = gs->input.my;
     } else {
-        SDL_SetTextureColorMod(chisel->texture, 255, 255, 255);
+        RenderTextureColorMod(chisel->texture, 255, 255, 255);
     }
     
     SDL_Rect dst = {
-        x, y - chisel->h/2,
-        chisel->w, chisel->h
+        x, y - chisel->texture->height/2,
+        chisel->texture->width, chisel->texture->height
     };
     chisel_get_adjusted_positions(chisel->angle, chisel->size, &dst.x, &dst.y);
     
-    SDL_Point center = { 0, chisel->h/2 };
+    SDL_Point center = { 0, chisel->texture->height/2 };
     
-    SDL_RenderCopyEx(gs->renderer,
-                     chisel->texture,
-                     NULL,
-                     &dst,
-                     180+chisel->angle,
-                     &center,
-                     SDL_FLIP_NONE);
+    RenderTextureEx(target,
+                    chisel->texture,
+                    NULL,
+                    &dst,
+                    180+chisel->angle,
+                    &center,
+                    SDL_FLIP_NONE);
     
-    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
-    SDL_RenderDrawPoint(gs->renderer, (int)chisel->x, (int)chisel->y);
+    RenderColor(127, 127, 127, 255);
+    RenderPoint(target, (int)chisel->x, (int)chisel->y);
     
     if (chisel->state == CHISEL_STATE_IDLE)
-        chisel_draw_highlights(chisel->highlights, chisel->highlight_count, 0, 0);
+        chisel_draw_highlights(target,
+                               chisel->highlights,
+                               chisel->highlight_count,
+                               0,
+                               0);
 }

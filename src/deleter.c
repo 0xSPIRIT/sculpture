@@ -1,7 +1,8 @@
 static void deleter_init(void) {
     Deleter *deleter = &gs->deleter;
-    deleter->texture = GetTexture(TEXTURE_DELETER);
-    SDL_QueryTexture(deleter->texture, NULL, NULL, &deleter->w, &deleter->h);
+    deleter->texture = &GetTexture(TEXTURE_DELETER);
+    deleter->w = deleter->texture->width;
+    deleter->h = deleter->texture->height;
 }
 
 static void deleter_delete(void) {
@@ -49,25 +50,25 @@ static void deleter_tick(void) {
     }
 }
 
-static void deleter_draw(void) {
+static void deleter_draw(int target) {
     Deleter *deleter = &gs->deleter;
     
-    const SDL_Rect dst = {
+    SDL_Rect dst = {
         (int) deleter->x, (int) deleter->y,
         deleter->w, deleter->h
     };
     
-    SDL_SetTextureAlphaMod(deleter->texture, 128);
+    RenderTextureAlphaMod(deleter->texture, 128);
     
-    const SDL_Point center = { 0, 0 };
-    SDL_RenderCopyEx(gs->renderer,
-                     deleter->texture,
-                     NULL,
-                     &dst,
-                     deleter->angle,
-                     &center,
-                     SDL_FLIP_NONE);
+    SDL_Point center = { 0, 0 };
+    RenderTextureEx(target,
+                    deleter->texture,
+                    NULL,
+                    &dst,
+                    deleter->angle,
+                    &center,
+                    SDL_FLIP_NONE);
     
-    SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 64);
-    SDL_RenderDrawPoint(gs->renderer, (int)deleter->x, (int)deleter->y);
+    RenderColor(255, 0, 0, 64);
+    RenderPoint(target, (int)deleter->x, (int)deleter->y);
 }

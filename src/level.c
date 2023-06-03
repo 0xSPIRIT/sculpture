@@ -355,52 +355,51 @@ static void level_tick_play(Level *level) {
     hammer_tick(&gs->hammer);
 }
 
-static void level_draw_confirm(void) {
-    popup_confirm_tick_and_draw(&gs->gui.popup_confirm);
+static void level_draw_confirm(int target) {
+    popup_confirm_tick_and_draw(target, &gs->gui.popup_confirm);
 }
 
 static void level_draw(Level *level) {
     switch (level->state) {
-        case LEVEL_STATE_NARRATION:    { level_draw_narration();          break; }
+        case LEVEL_STATE_NARRATION:    { level_draw_narration(RENDER_TARGET_MASTER); break; }
         case LEVEL_STATE_INTRO:        { level_draw_intro(level);         break; }
         case LEVEL_STATE_OUTRO:        { level_draw_outro_or_play(level); break; }
         case LEVEL_STATE_PLAY:         { level_draw_outro_or_play(level); break; }
-        case LEVEL_STATE_CONFIRMATION: { level_draw_confirm();            break; }
+        case LEVEL_STATE_CONFIRMATION: { level_draw_confirm(RENDER_TARGET_MASTER); break; }
     }
     
-    text_field_draw();
+    text_field_draw(RENDER_TARGET_MASTER);
 }
 
 static void level_draw_intro(Level *level) {
-    Assert(RenderTarget(RENDER_TARGET_GLOBAL));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
-    
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-    SDL_RenderClear(gs->renderer);
+    RenderColor(0, 0, 0, 255);
+    RenderClear(RENDER_TARGET_GLOBAL);
     
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (level->desired_grid[x+y*gs->gw].type == 0) continue;
             SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
-            SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, 255);
-            SDL_RenderDrawPoint(gs->renderer, x, y);
+            RenderColor(col.r, col.g, col.b, 255);
+            RenderPoint(RENDER_TARGET_GLOBAL, x, y);
         }
     }
     
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
-    
-    const SDL_Rect global_dst = {
+    SDL_Rect global_dst = {
         0, GUI_H,
         gs->window_width, gs->window_height-GUI_H
     };
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &global_dst);
+    RenderTexture(RENDER_TARGET_MASTER,
+                  &RenderTarget(RENDER_TARGET_GLOBAL)->texture,
+                  NULL,
+                  &global_dst);
     
     char name[256] = {0};
     sprintf(name, "%d. %s", level->index+1, level->name);
     
-    TTF_Font *font = gs->fonts.font_title;
+    // TODO: Replace this with the new font renderer.
+    TTF_Font *font = gs->fonts.font_title->handle;
     if (gs->level_current+1 == 8)
-        font = gs->fonts.font_title_2;
+        font = gs->fonts.font_title_2->handle;
     
     SDL_Surface *surf = TTF_RenderText_Blended(font,
                                                name,
@@ -416,13 +415,11 @@ static void level_draw_intro(Level *level) {
     
     SDL_FreeSurface(surf);
     SDL_DestroyTexture(texture);
-    
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
 }
 
 #define LEVEL_MARGIN Scale(36)
 
-static void level_draw_name_intro(Level *level, SDL_Rect rect) {
+static void level_draw_name_intro(int target, Level *level, SDL_Rect rect) {
     // Level name
     char string[256] = {0};
     sprintf(string, "Level %d - \"%s\"", gs->level_current+1, level->name);
@@ -430,19 +427,19 @@ static void level_draw_name_intro(Level *level, SDL_Rect rect) {
     int x = rect.x + LEVEL_MARGIN;
     int y = rect.y + LEVEL_MARGIN;
     
-    draw_text_indexed(TEXT_OUTRO_LEVEL_NAME,
-                      gs->fonts.font,
-                      string,
-                      WHITE,
-                      BLACK,
-                      255,
-                      0,
-                      0,
-                      x,
-                      y,
-                      NULL,
-                      NULL,
-                      false);
+    char identifier[64] = {0};
+    sprintf(identifier, "erhejrh %d",TEXT_OUTRO_LEVEL_NAME);
+    
+    RenderDrawTextQuick(target,
+                        identifier,
+                        gs->fonts.font,
+                        string,
+                        WHITE,
+                        x,
+                        y,
+                        NULL,
+                        NULL,
+                        255);
 }
 
 #define LEVEL_DESIRED_GRID_SCALE Scale(3)
@@ -455,10 +452,10 @@ static void level_draw_desired_grid(Level *level, int dx, int dy) {
             SDL_Rect r;
             
             if (!level->desired_grid[x+y*gs->gw].type) {
-                SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+                RenderColor(0, 0, 0, 255);
             } else {
                 SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
-                SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, 255);
+                RenderColor(col.r, col.g, col.b, 255);
             }
             
             r = (SDL_Rect){ scale*x + dx, scale*y + dy + 32, scale, scale };
@@ -467,22 +464,24 @@ static void level_draw_desired_grid(Level *level, int dx, int dy) {
     }
 }
 
-static void level_draw_outro(Level *level) {
-    SDL_Texture *previous = SDL_GetRenderTarget(gs->renderer);
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO));
+static void level_draw_outro(int target, Level *level) {
+    //SDL_Texture *previous = SDL_GetRenderTarget(gs->renderer);
+    //SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO));
     
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
-    SDL_RenderClear(gs->renderer);
+    int outro = RENDER_TARGET_OUTRO;
+    
+    RenderColor(0, 0, 0, 0);
+    RenderClear(outro);
     
     Uint8 alpha = 255;
     
     SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, alpha);
-    SDL_RenderFillRect(gs->renderer, &rect);
-    SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
-    SDL_RenderDrawRect(gs->renderer, &rect);
+    RenderColor(0, 0, 0, alpha);
+    RenderFillRect(outro, rect);
+    RenderColor(91, 91, 91, alpha);
+    RenderDrawRect(outro, rect);
     
-    level_draw_name_intro(level, rect);
+    level_draw_name_intro(outro, level, rect);
     
     //~ Desired and Your grid.
     
@@ -492,22 +491,37 @@ static void level_draw_outro(Level *level) {
     int dx = rect.x + LEVEL_MARGIN;
     int dy = rect.y + Scale(100);
     
-    draw_text_indexed(TEXT_OUTRO_INTENDED,
-                      gs->fonts.font,
-                      "What you intended", WHITE, BLACK, alpha, 0, 0, dx, dy, NULL, NULL, false);
-    draw_text_indexed(TEXT_OUTRO_RESULT,
-                      gs->fonts.font,
-                      "The result", WHITE, BLACK, alpha, 0, 0, dx+rect.w - LEVEL_MARGIN - scale*level->w - margin, dy, NULL, NULL, false);
+    
+    RenderDrawTextQuick(outro,
+                        "AAAAAj",
+                        gs->fonts.font,
+                        "What you intended",
+                        WHITE,
+                        dx,
+                        dy,
+                        NULL,
+                        NULL,
+                        alpha);
+    RenderDrawTextQuick(outro,
+                        "Result",
+                        gs->fonts.font,
+                        "The result",
+                        WHITE,
+                        dx+rect.w - LEVEL_MARGIN - scale*level->w - margin,
+                        dy,
+                        NULL,
+                        NULL,
+                        alpha);
     
     //~
     level_draw_desired_grid(level, dx, dy);
     
-    SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
+    RenderColor(91, 91, 91, alpha);
     SDL_Rect desired_rect = (SDL_Rect){
         dx, dy+32,
         scale*gs->gw, scale*gs->gh
     };
-    SDL_RenderDrawRect(gs->renderer, &desired_rect);
+    RenderDrawRect(outro, desired_rect);
     
     dx += rect.w - margin - scale*level->w - margin;
     
@@ -515,44 +529,37 @@ static void level_draw_outro(Level *level) {
     
     timelapse_tick_and_draw(dx, dy+32, scale, scale);
     
-    SDL_SetRenderDrawColor(gs->renderer, 91, 91, 91, alpha);
+    RenderColor(91, 91, 91, alpha);
     desired_rect = (SDL_Rect){
         dx, dy+32,
         scale*gs->gw, scale*gs->gh
     };
-    SDL_RenderDrawRect(gs->renderer, &desired_rect);
-    
-    bool update = false;
+    RenderDrawRect(outro, desired_rect);
     
     SDL_Color color_next_level = (SDL_Color){255,255,255,255};
     
-    draw_text_indexed(TEXT_OUTRO_NEXT_LEVEL,
-                      gs->fonts.font,
-                      "Next Level [n]",
-                      color_next_level,
-                      (SDL_Color){0, 0, 0, 255},
-                      255,
-                      1, 1,
-                      rect.x + rect.w - margin,
-                      rect.y + rect.h - margin,
-                      NULL,
-                      NULL,
-                      update);
-    draw_text_indexed(TEXT_OUTRO_PREV_LEVEL,
-                      gs->fonts.font,
-                      "Close [f]",
-                      (SDL_Color){128, 128, 128, alpha},
-                      (SDL_Color){0, 0, 0, alpha}, 
-                      alpha,
-                      0, 1,
-                      rect.x + margin,
-                      rect.y + rect.h - margin,
-                      NULL,
-                      NULL,
-                      false);
+    RenderDrawTextQuick(outro,
+                        "next level",
+                        gs->fonts.font,
+                        "Next Level [n]",
+                        color_next_level,
+                        rect.x + rect.w - Scale(200),
+                        rect.y + rect.h - margin - Scale(20),
+                        NULL,
+                        NULL,
+                        255);
+    RenderDrawTextQuick(outro,
+                        "close",
+                        gs->fonts.font,
+                        "Close [f]",
+                        (SDL_Color){128, 128, 128, alpha},
+                        rect.x + margin,
+                        rect.y + rect.h - margin - Scale(20),
+                        NULL,
+                        NULL,
+                        alpha);
     
-    SDL_SetRenderTarget(gs->renderer, previous);
-    SDL_SetTextureAlphaMod(RenderTarget(RENDER_TARGET_OUTRO), level->outro_alpha);
+    RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_OUTRO)->texture, level->outro_alpha);
     SDL_Rect dst = {
         0, 0,
         gs->window_width, gs->window_height - GUI_H
@@ -561,7 +568,10 @@ static void level_draw_outro(Level *level) {
         0, 0,
         gs->window_width, gs->window_height - GUI_H
     };
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO), &src, &dst);
+    RenderTexture(target,
+                  &RenderTarget(RENDER_TARGET_OUTRO)->texture,
+                  &src,
+                  &dst);
 }
 
 static void level_get_cells_from_image(const char *path,
@@ -629,55 +639,46 @@ static void level_get_cells_from_image(const char *path,
     SDL_DestroyTexture(texture);
 }
 
-static void level_draw_narration(void) {
-    SDL_SetRenderDrawColor(gs->renderer, 20, 20, 20, 255);
-    SDL_RenderClear(gs->renderer);
+static void level_draw_narration(int target) {
+    RenderColor(20, 20, 20, 255);
+    RenderClear(target);
     
-    effect_draw(&gs->current_effect, false, ONLY_SLOW_SLOW);
-    narrator_run(WHITE);
-    effect_draw(&gs->current_effect, false, ONLY_SLOW_FAST);
+    effect_draw(target, &gs->current_effect, false, ONLY_SLOW_SLOW);
+    narrator_run(target, WHITE);
+    effect_draw(target, &gs->current_effect, false, ONLY_SLOW_FAST);
 }
 
 static void level_draw_outro_or_play(Level *level) {
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-    SDL_RenderClear(gs->renderer);
-    
-    SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
-    
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
-    
     if (gs->current_preview.recording)
-        SDL_SetRenderDrawColor(gs->renderer, 53, 20, 20, 255);
+        RenderColor(53, 20, 20, 255);
     else
-        SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-    SDL_RenderClear(gs->renderer);
+        RenderColor(0, 0, 0, 255);
+    RenderClear(RENDER_TARGET_GLOBAL);
     
-    background_draw(&gs->background);
+    background_draw(RENDER_TARGET_GLOBAL, &gs->background);
     
-    effect_draw(&gs->current_effect, true, ONLY_SLOW_ALL);
+    effect_draw(RENDER_TARGET_GLOBAL, &gs->current_effect, true, ONLY_SLOW_ALL);
     
-    grid_draw();
+    grid_draw(RENDER_TARGET_GLOBAL);
     
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-            chisel_draw(gs->chisel);
-            hammer_draw(&gs->hammer);
+            chisel_draw(RENDER_TARGET_GLOBAL, gs->chisel);
+            hammer_draw(RENDER_TARGET_GLOBAL, &gs->hammer);
             break;
         }
         case TOOL_DELETER: {
-            deleter_draw();
+            deleter_draw(RENDER_TARGET_GLOBAL);
             break;
         }
         case TOOL_PLACER: {
             if (!gs->gui.popup) // When gui.popup = true, we draw in converter
-                placer_draw(&gs->placers[gs->current_placer], false);
+                placer_draw(RENDER_TARGET_GLOBAL, &gs->placers[gs->current_placer], false);
             break;
         }
     }
     
-    draw_objects();
-    
-    SDL_SetRenderTarget(gs->renderer, prev);
+    draw_objects(RENDER_TARGET_GLOBAL);
     
     view_update();
     
@@ -688,23 +689,26 @@ static void level_draw_outro_or_play(Level *level) {
     };
     
     if (level->state == LEVEL_STATE_OUTRO) {
-        SDL_RenderCopy(gs->renderer,
-                       RenderTarget(RENDER_TARGET_GLOBAL),
-                       NULL,
-                       &dst);
-        level_draw_outro(level);
-        gui_draw();
+        RenderTexture(RENDER_TARGET_MASTER,
+                      &RenderTarget(RENDER_TARGET_GLOBAL)->texture,
+                      NULL,
+                      &dst);
+        level_draw_outro(RENDER_TARGET_MASTER, level);
+        gui_draw(RENDER_TARGET_MASTER);
     } else {
-        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL), NULL, &dst);
+        RenderTexture(RENDER_TARGET_MASTER,
+                      &RenderTarget(RENDER_TARGET_GLOBAL)->texture,
+                      NULL,
+                      &dst);
         
-        gui_draw();
+        gui_draw(RENDER_TARGET_MASTER);
         
-        gui_popup_draw();
-        tutorial_rect_run();
-        tooltip_draw(&gs->gui.tooltip);
+        gui_popup_draw(RENDER_TARGET_MASTER);
+        tutorial_rect_run(RENDER_TARGET_MASTER);
+        tooltip_draw(RENDER_TARGET_MASTER, &gs->gui.tooltip);
         
         if (gs->gui.popup)
-            gui_draw_profile();
+            gui_draw_profile(RENDER_TARGET_MASTER);
     }
 }
 

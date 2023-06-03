@@ -19,7 +19,7 @@ static void tooltip_set_position(Tooltip *tooltip, int x, int y, int type) {
     tooltip->type = type;
 }
 
-static void tooltip_draw_box(Tooltip *tooltip, int w, int h) {
+static void tooltip_draw_box(int target, Tooltip *tooltip, int w, int h) {
     tooltip->w = w;
     tooltip->h = h;
 
@@ -30,10 +30,10 @@ static void tooltip_draw_box(Tooltip *tooltip, int w, int h) {
         h
     };
     
-    SDL_SetRenderDrawColor(gs->renderer, 12, 12, 12, 255);
-    SDL_RenderFillRect(gs->renderer, &r);
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
-    SDL_RenderDrawRect(gs->renderer, &r);
+    RenderColor(12, 12, 12, 255);
+    RenderFillRect(target, r);
+    RenderColor(255, 255, 255, 255);
+    RenderDrawRect(target, r);
 }
 
 static void tooltip_get_string(int type, int amt, char *out_str) {
@@ -53,8 +53,10 @@ static void tooltip_get_string(int type, int amt, char *out_str) {
 
 // This happens outside of the pixel-art texture, so we must
 // multiply all positions by scale.
-static void tooltip_draw(Tooltip *tooltip) {
+static void tooltip_draw(int target, Tooltip *tooltip) {
     if (tooltip->x == -1 && tooltip->y == -1) return;
+    
+    RenderMaybeSwitchToTarget(target);
     
     const int margin = 8; // In real pixels.
     
@@ -79,7 +81,7 @@ static void tooltip_draw(Tooltip *tooltip) {
         }
 
         // @Performance
-        surfaces[i] = TTF_RenderText_Blended(gs->fonts.font,
+        surfaces[i] = TTF_RenderText_Blended(gs->fonts.font->handle,
                                          tooltip->str[i],
                                              color);
         
@@ -119,12 +121,13 @@ static void tooltip_draw(Tooltip *tooltip) {
         clamped = true;
     }
 
-    tooltip_draw_box(tooltip, highest_w + margin*2, height + margin*2);
-
+    tooltip_draw_box(target, tooltip, highest_w + margin*2, height + margin*2);
+    
     if (tooltip->preview)
-        preview_draw(tooltip->preview,
-                 gs->S*tooltip->x+margin,
-                 gs->S*tooltip->y+(old_h)+margin*2, s);
+        preview_draw(target,
+                     tooltip->preview,
+                     gs->S*tooltip->x+margin,
+                     gs->S*tooltip->y+(old_h)+margin*2, s);
     
     if (clamped) {
         tooltip->x += highest_w;

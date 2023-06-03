@@ -56,8 +56,8 @@ static void converter_set_state(Converter *converter, enum Converter_State state
 static bool converter_is_layout_valid(Converter *converter);
 static void converter_begin_converting(void *converter_ptr);
 
-static void converter_draw(Converter *converter);
-static void all_converters_draw(void);
+static void converter_draw(int target, Converter *converter);
+static void all_converters_draw(int target);
 
 static void auto_set_material_converter_slots(Converter *converter);
 static void converter_setup_position(Converter *converter);

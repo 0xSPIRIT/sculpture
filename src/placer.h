@@ -20,7 +20,7 @@ typedef struct Placer {
     
     int x, y, px, py;
     int w, h;
-    SDL_Texture *texture;
+    Texture *texture;
 
     int radius;
 

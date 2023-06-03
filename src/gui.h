@@ -37,7 +37,7 @@ typedef struct GUI {
     bool popup;
     f32 popup_y, popup_y_vel, popup_h; // For the bottom part
     f32 popup_inventory_y, popup_inventory_y_vel, popup_inventory_h;
-    SDL_Texture *popup_texture;
+    Texture *popup_texture;
     Tooltip tooltip;
     
     Overlay_Interface overlay_interface;
@@ -54,7 +54,7 @@ typedef struct Button {
     enum Button_Type type;
     int x, y, w, h;
     int index;
-    SDL_Texture *texture;
+    Texture *texture;
     char tooltip_text[128];
     bool active;
     bool disabled;
@@ -65,29 +65,28 @@ typedef struct Button {
 } Button;
 
 typedef struct Arrow {
-    SDL_Texture *texture;
+    Texture *texture;
     int x, y, w, h;
 } Arrow;
 
-static Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *tooltip_text, void (*on_pressed)(void*));
+static Button *button_allocate(enum Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*));
 static void tool_button_set_disabled(int level);
 static void click_gui_tool_button(void *type_ptr);
 static void button_tick(Button *b, void *data);
-static void button_draw_prefer_color(Button *b, SDL_Color color);
-static void button_draw(Button *b);
+static void button_draw_prefer_color(int target, Button *b, SDL_Color color);
+static void button_draw(int target, Button *b);
 static void gui_message_stack_push(const char *str);
-static void gui_message_stack_tick_and_draw(void);
 static Popup_Confirm popup_confirm_init(void);
 static void gui_init(void);
 static void gui_tick(void);
 static void profile_array(Cell *desired, char out[64][CELL_TYPE_COUNT], int *count);
 static void gui_draw_profile();
-static void gui_draw(void);
+static void gui_draw(int target);
 static void popup_confirm_confirm(void* ptr);
 static void popup_confirm_cancel(void* ptr);
 static Popup_Confirm popup_confirm_init();
-static void popup_confirm_tick_and_draw(Popup_Confirm *popup);
-static void gui_popup_draw(void);
+static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup);
+static void gui_popup_draw(int target);
 static bool is_cell_stone(int type);
 static int get_cell_tier(int type);
 static int get_number_unique_inputs(Item *input1, Item *input2);

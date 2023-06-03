@@ -14,22 +14,22 @@ static void titlescreen_tick(void) {
 }
 
 static void titlescreen_draw(void) {
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+    RenderColor(255, 255, 255, 255);
     SDL_RenderClear(gs->renderer);
     
     if (gs->titlescreen.stop) return;
     
-    TTF_SizeText(gs->fonts.font_titlescreen, "Alaska", &gs->titlescreen.text_width, NULL);
-    draw_text_blended_indexed(TEXT_TITLESCREEN,
-                              gs->fonts.font_titlescreen,
-                              "Alaska",
-                              BLACK,
-                              false,
-                              false,
-                              gs->window_width/2 - gs->titlescreen.text_width/2,
-                              gs->window_height/7,
-                              NULL,
-                              NULL);
+    TTF_SizeText(gs->fonts.font_titlescreen->handle, "Alaska", &gs->titlescreen.text_width, NULL);
+    RenderDrawTextQuick(RENDER_TARGET_GLOBAL,
+                        "titlescreen",
+                        gs->fonts.font_titlescreen,
+                        "Alaska",
+                        BLACK,
+                        gs->window_width/2 - gs->titlescreen.text_width/2,
+                        gs->window_height/7,
+                        NULL,
+                        NULL,
+                        255);
     
     char *string = "Press RETURN";
     int w;
@@ -37,25 +37,25 @@ static void titlescreen_draw(void) {
     f64 a = (1+sin(3*SDL_GetTicks()/1000.0))/2;
     a *= 255;
     
-    TTF_SizeText(gs->fonts.font_times, string, &w, NULL);
-    draw_text( gs->fonts.font_times,
-              string,
-              (SDL_Color){a, a, a, 255},
-              (SDL_Color){255, 255, 255, 255},
-              false,
-              false,
-              gs->window_width/2 - w/2,
-              2*gs->window_height/3,
-              NULL,
-              NULL);
-    draw_text(gs->fonts.font_times,
-              "F11 - Fullscreen",
-              BLACK,
-              WHITE,
-              true,
-              true,
-              gs->window_width-8,
-              gs->window_height-8,
-              NULL,
-              NULL);
+    TTF_SizeText(gs->fonts.font_times->handle, string, &w, NULL);
+    RenderDrawTextQuick(RENDER_TARGET_GLOBAL, //TODO
+                        "something else",
+                        gs->fonts.font_times,
+                        string,
+                        (SDL_Color){a, a, a, 255},
+                        gs->window_width/2 - w/2,
+                        2*gs->window_height/3,
+                        NULL,
+                        NULL,
+                        255);
+    RenderDrawTextQuick(RENDER_TARGET_GLOBAL,
+                        "another",
+                        gs->fonts.font_times,
+                        "F11 - Fullscreen",
+                        BLACK,
+                        gs->window_width-8,
+                        gs->window_height-8,
+                        NULL,
+                        NULL,
+                        255);
 }

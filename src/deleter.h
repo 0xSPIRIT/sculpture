@@ -5,5 +5,5 @@ typedef struct Deleter {
     int w, h;
     f64 angle;
     bool is_rotating;
-    SDL_Texture *texture;
+    Texture *texture;
 } Deleter;

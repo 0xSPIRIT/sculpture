@@ -11,9 +11,9 @@ typedef struct Hammer {
     int dir;
     bool flip;
     
-    int x, y, w, h;
+    int x, y;
     f64 base_angle, angle, temp_angle;
-    SDL_Texture *tex;
+    Texture *tex;
     
     f64 t;
 } Hammer;

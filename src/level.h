@@ -9,7 +9,7 @@
 
 #define COMPARE_LEEWAY 3
 
-#define SHOW_NARRATION ALASKA_RELEASE_MODE
+#define SHOW_NARRATION 1
 
 enum Level_State {
     LEVEL_STATE_INTRO,
@@ -62,12 +62,12 @@ static void level_tick_intro(Level *level);
 static void level_tick_outro(Level *level);
 static void level_tick_play(Level *level);
     
-static void level_draw_confirm(void);
-static void level_draw_narration(void);
-static void level_draw_name_intro(Level *level, SDL_Rect rect);
+static void level_draw_confirm(int target);
+static void level_draw_narration(int target);
+static void level_draw_name_intro(int target, Level *level, SDL_Rect rect);
 static void level_draw_desired_grid(Level *level, int dx, int dy);
 static void level_draw_intro(Level *level);
-static void level_draw_outro(Level *level);
+static void level_draw_outro(int target, Level *level);
 static void level_draw_outro_or_play(Level *level);
     
 static void level_draw(Level *level);

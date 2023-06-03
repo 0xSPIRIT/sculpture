@@ -43,14 +43,14 @@ static Tutorial_Rect* tutorial_rect(const char *str,
 {
     Tutorial_Rect *tut = PushSize(gs->persistent_memory, sizeof(Tutorial_Rect));
     
-    tut->font = gs->fonts.font;
+    tut->font = gs->fonts.font->handle;
     tut->active = gs->show_tutorials;
     tut->next = next;
     
     strcpy(tut->str, str);
     memset(tut->lines, 0, MAX_TUTORIAL_LINES*64);
     
-    tut->ok_button = button_allocate(BUTTON_TYPE_TUTORIAL, GetTexture(TEXTURE_OK_BUTTON), "", NULL);
+    tut->ok_button = button_allocate(BUTTON_TYPE_TUTORIAL, &GetTexture(TEXTURE_OK_BUTTON), "", NULL);
     tut->ok_button->w = Scale(tut->ok_button->w);
     tut->ok_button->h = Scale(tut->ok_button->h);
     
@@ -94,7 +94,7 @@ static void tutorial_rect_close(void *ptr) {
     }
 }
 
-static void tutorial_rect_run() {
+static void tutorial_rect_run(int target) {
     Tutorial_Rect *tut = &gs->tutorial;
     
     if (!SHOW_TUTORIAL) {
@@ -113,12 +113,12 @@ static void tutorial_rect_run() {
     
     const SDL_Color bg = (SDL_Color){0, 0, 0, 255};
     
-    SDL_SetRenderDrawColor(gs->renderer, bg.r, bg.g, bg.b, 255);
-    SDL_RenderFillRect(gs->renderer, &tut->rect);
-    SDL_SetRenderDrawColor(gs->renderer, 127, 127, 127, 255);
-    SDL_RenderDrawRect(gs->renderer, &tut->rect);
+    RenderColor(bg.r, bg.g, bg.b, 255);
+    RenderFillRect(target, tut->rect);
+    RenderColor(127, 127, 127, 255);
+    RenderDrawRect(target, tut->rect);
     
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+    RenderColor(255, 255, 255, 255);
     
     int c = 0;
     SDL_Rect dst;
@@ -132,6 +132,7 @@ static void tutorial_rect_run() {
             continue;
         }
         
+        // TODO: Change to the new font renderer.
         if (!tut->textures[i]) {
             (void)bg;
             SDL_Surface *surf = TTF_RenderText_Blended(tut->font, tut->lines[i], WHITE);
@@ -146,7 +147,7 @@ static void tutorial_rect_run() {
         dst.x = tut->rect.x + tut->margin;
         dst.y = tut->rect.y + c + tut->margin;
         
-        SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+        RenderColor(255, 255, 255, 255);
         SDL_RenderCopy(gs->renderer, tut->textures[i], NULL, &dst);
         
         c += dst.h + 2;
@@ -154,7 +155,7 @@ static void tutorial_rect_run() {
     
     
     button_tick(tut->ok_button, NULL);
-    button_draw(tut->ok_button);
+    button_draw(target, tut->ok_button);
 }
 
 static void check_for_tutorial() {

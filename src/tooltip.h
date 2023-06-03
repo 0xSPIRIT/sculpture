@@ -16,7 +16,7 @@ typedef struct Tooltip {
 static void tooltip_reset(Tooltip *tooltip);
 static void tooltip_set_position_to_cursor(Tooltip *tooltip, int type);
 static void tooltip_set_position(Tooltip *tooltip, int x, int y, int type);
-static void tooltip_draw_box(Tooltip *tooltip, int w, int h);
+static void tooltip_draw_box(int target, Tooltip *tooltip, int w, int h);
 static void tooltip_get_string(int type, int amt, char *out_str);
-static void tooltip_draw(Tooltip *tooltip);
+static void tooltip_draw(int target, Tooltip *tooltip);
 

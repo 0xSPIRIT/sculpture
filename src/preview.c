@@ -87,110 +87,110 @@ static void preview_record(Preview *p) {
     p->length++;
 }
 
-static void preview_draw(Preview *p, int dx, int dy, int scale) {
+static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
     Assert(gs->gw == 64);
     Assert(gs->gh == 64);
     
-    SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_PREVIEW));
-    
-    for (int y = 0; y < gs->gh; y++) {
-        for (int x = 0; x < gs->gw; x++) {
-            if (!p->states[p->index].grid[x+y*gs->gw]) {
-                SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-            } else {
-                SDL_Color col = pixel_from_index(p->states[p->index].grid[x+y*gs->gw], x+y*gs->gw);
-                SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
-            }
-            
-            SDL_RenderDrawPoint(gs->renderer, x, y);
-        }
-    }
-    
-    for (int y = 0; y < gs->gh; y++) {
-        for (int x = 0; x < gs->gw; x++) {
-            int t = p->overlay[x+y*gs->gw];
-            if (!t) continue;
-            
-            SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 127);
-            SDL_RenderDrawPoint(gs->renderer, x, y);
-        }
-    }
-                      
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 0, 255);
-    
-    int tool = p->states[p->index].tool;
-    
-    switch (tool) {
-        case TOOL_PLACER: {
-            int x = p->states[p->index].x;
-            int y = p->states[p->index].y;
-            bool is_rect = p->states[p->index].angle == 1;
-            
-            SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 64);
-            
-            SDL_RenderDrawLine(gs->renderer, 0, y, gs->gw, y);
-            SDL_RenderDrawLine(gs->renderer, x, 0, x, gs->gh);
-            
-            if (is_rect) {
-                if (p->placer_rect.x == -1) {
-                    p->placer_rect.x = x;
-                    p->placer_rect.y = y;
+    {
+        for (int y = 0; y < gs->gh; y++) {
+            for (int x = 0; x < gs->gw; x++) {
+                if (!p->states[p->index].grid[x+y*gs->gw]) {
+                    RenderColor(0, 0, 0, 255);
+                } else {
+                    SDL_Color col = pixel_from_index(p->states[p->index].grid[x+y*gs->gw], x+y*gs->gw);
+                    RenderColor(col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
                 }
-                p->placer_rect.w = 1+x - p->placer_rect.x;
-                p->placer_rect.h = 1+y - p->placer_rect.y;
                 
-                SDL_SetRenderDrawColor(gs->renderer, 255, 0, 0, 255);
-                SDL_RenderDrawRect(gs->renderer, &p->placer_rect);
-            } else {
-                p->placer_rect.x = p->placer_rect.y = -1;
+                RenderPoint(RENDER_TARGET_PREVIEW, x, y);
             }
-            break;
         }
-        case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-            int x = p->states[p->index].x;
-            int y = p->states[p->index].y;
-            int angle = p->states[p->index].angle;
-            
-            Chisel *chisel = NULL;
-            if (tool == TOOL_CHISEL_SMALL)  chisel = &gs->chisel_small;
-            if (tool == TOOL_CHISEL_MEDIUM) chisel = &gs->chisel_medium;
-            if (tool == TOOL_CHISEL_LARGE)  chisel = &gs->chisel_large;
-            Assert(chisel);
-            
-            // Disgusting hardcoding to adjust the weird rotation SDL does.
-            
-            // @ChiselChange
-            //chisel_get_adjusted_positions(angle, tool, &x, &y);
-            if (angle == 270 && tool == TOOL_CHISEL_SMALL) {
-                y++;
+        
+        for (int y = 0; y < gs->gh; y++) {
+            for (int x = 0; x < gs->gw; x++) {
+                int t = p->overlay[x+y*gs->gw];
+                if (!t) continue;
+                
+                RenderColor(255, 255, 255, 127);
+                RenderPoint(RENDER_TARGET_PREVIEW, x, y);
             }
-            
-            const SDL_Rect dst = {
-                x, y - chisel->h/2,
-                chisel->w, chisel->h
-            };
-            const SDL_Point center = { 0, chisel->h/2 };
-            
-            SDL_RenderCopyEx(gs->renderer,
-                             chisel->texture,
-                             NULL,
-                             &dst,
-                             angle,
-                             &center,
-                             SDL_FLIP_NONE);
-            break;
         }
-    }
-    
-    SDL_SetRenderTarget(gs->renderer, prev);
+        
+        RenderColor(255, 255, 0, 255);
+        
+        int tool = p->states[p->index].tool;
+        
+        switch (tool) {
+            case TOOL_PLACER: {
+                int x = p->states[p->index].x;
+                int y = p->states[p->index].y;
+                bool is_rect = p->states[p->index].angle == 1;
+                
+                RenderColor(255, 255, 255, 64);
+                
+                SDL_RenderDrawLine(gs->renderer, 0, y, gs->gw, y);
+                SDL_RenderDrawLine(gs->renderer, x, 0, x, gs->gh);
+                
+                if (is_rect) {
+                    if (p->placer_rect.x == -1) {
+                        p->placer_rect.x = x;
+                        p->placer_rect.y = y;
+                    }
+                    p->placer_rect.w = 1+x - p->placer_rect.x;
+                    p->placer_rect.h = 1+y - p->placer_rect.y;
+                    
+                    RenderColor(255, 0, 0, 255);
+                    RenderDrawRect(RENDER_TARGET_PREVIEW, p->placer_rect);
+                } else {
+                    p->placer_rect.x = p->placer_rect.y = -1;
+                }
+                break;
+            }
+            case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
+                int x = p->states[p->index].x;
+                int y = p->states[p->index].y;
+                int angle = p->states[p->index].angle;
+                
+                Chisel *chisel = NULL;
+                if (tool == TOOL_CHISEL_SMALL)  chisel = &gs->chisel_small;
+                if (tool == TOOL_CHISEL_MEDIUM) chisel = &gs->chisel_medium;
+                if (tool == TOOL_CHISEL_LARGE)  chisel = &gs->chisel_large;
+                Assert(chisel);
+                
+                // Disgusting hardcoding to adjust the weird rotation SDL does.
+                
+                // @ChiselChange
+                //chisel_get_adjusted_positions(angle, tool, &x, &y);
+                if (angle == 270 && tool == TOOL_CHISEL_SMALL) {
+                    y++;
+                }
+                
+                SDL_Rect dst = {
+                    x, y - chisel->texture->height/2,
+                    chisel->texture->width, chisel->texture->height
+                };
+                SDL_Point center = { 0, chisel->texture->height/2 };
+                
+                RenderTextureEx(RENDER_TARGET_PREVIEW,
+                                chisel->texture,
+                                NULL,
+                                &dst,
+                                angle,
+                                &center,
+                                SDL_FLIP_NONE);
+                break;
+            }
+        }
+    }    
     
     SDL_Rect target_dst = {
         dx, dy+GUI_H,
         scale*gs->gw, scale*gs->gh
     };
     
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_PREVIEW), NULL, &target_dst);
+    RenderTexture(target, //TODO
+                  &RenderTarget(RENDER_TARGET_PREVIEW)->texture,
+                  NULL,
+                  &target_dst);
     
     p->index++;
     if (p->index >= p->length) p->index = 0;

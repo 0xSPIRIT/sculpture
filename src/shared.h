@@ -23,11 +23,6 @@
 #define PushSize(arena, size) (_push_array(arena, 1, size, __FILE__, __LINE__))
 #define PushArray(arena, count, size) (_push_array(arena, count, size, __FILE__, __LINE__))
 
-// 'which' is an enum in assets.h
-#define RenderTarget(which) (GetTexture(TEXTURE_RENDER_TARGETS+gs->level_current*RENDER_TARGET_COUNT+which))
-#define RenderTargetLvl(lvl, which) (GetTexture(TEXTURE_RENDER_TARGETS+lvl*RENDER_TARGET_COUNT+which))
-
-
 #include "headers.h" // Used to get type size information.
 
 //
@@ -100,7 +95,7 @@ typedef struct Game_State {
     // the amount an item has at the time it was last drawn.
     // (The rendering data is stored in textures.items and surfaces.items)
     
-    GetTextures textures; // Contains pointers to SDL textures.
+    Textures textures;
     Surfaces surfaces;
     Fonts fonts;
     char texts[TEXT_INDEX_COUNT][128];
@@ -181,6 +176,8 @@ typedef struct Game_State {
     bool did_placer_rectangle_tutorial;
     
     Hammer hammer;
+    
+    SDL_Surface *pixel_format_surf;
     
     Chisel chisel_small, chisel_medium, chisel_large;
     Chisel *chisel;

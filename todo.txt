@@ -1,4 +1,10 @@
 TODO
+
+  - Delete surfaces.
+  x Make cursor invisible in ending.
+  - Remember that this is all just so we can 1. have cleaner shit and
+    2. be able to have negative coordinates on render targets, without
+    the original calls having to do anything.
  
   - Redo all rendering code to allow for larger textures.
      - Implement an abstraction layer for rendering, which we desperately need.
@@ -9,6 +15,7 @@ TODO
        so most of our actual rendering code can stay the same, and just allow
        for negative coordinates.
      - Also, redo the entire asset file. Horrible stuff.
+  - Make a proper UI system. Redo all that code as well.
 
   - Redo all levels.
     - Add another level 7 thing but in reverse? Perhaps do it before 7.

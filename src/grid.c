@@ -718,7 +718,7 @@ static void simulation_tick(void) {
     grid_array_tick(gs->gas_grid, 1, 1);
 }
 
-static void grid_array_draw(Cell *array, Uint8 alpha) {
+static void grid_array_draw(int target, Cell *array, Uint8 alpha) {
     for (int i = 0; i < gs->gw*gs->gh; i++)
         array[i].updated = 0;
     
@@ -734,30 +734,30 @@ static void grid_array_draw(Cell *array, Uint8 alpha) {
             }
             
             f64 a = alpha/255.0;
-            SDL_SetRenderDrawColor(gs->renderer, col.r, col.g, col.b, col.a * a);
+            RenderColor(col.r, col.g, col.b, col.a * a);
             
             const bool draw_lines = false;
             if (draw_lines) {
                 Line l = {x, y, array[x+y*gs->gw].px, array[x+y*gs->gw].py};
                 if (array[x+y*gs->gw].px != 0 && array[x+y*gs->gw].py != 0 && array[x+y*gs->gw].type == CELL_WATER) {
-                    SDL_RenderDrawLine(gs->renderer, l.x1, l.y1, l.x2, l.y2);
+                    RenderLine(target, l.x1, l.y1, l.x2, l.y2);
                 } else {
-                    SDL_RenderDrawPoint(gs->renderer, l.x1, l.y1);
+                    RenderPoint(target, l.x1, l.y1);
                 }
             } else {
-                SDL_RenderDrawPoint(gs->renderer, x, y);
+                RenderPoint(target, x, y);
             }
         }
     }
 }
 
-static void grid_draw(void) {
+static void grid_draw(int target) {
     // Draw all the grids in a layered order.
-    grid_array_draw(gs->gas_grid, 255);
-    grid_array_draw(gs->grid, 255);
-    dust_grid_draw();
+    grid_array_draw(target, gs->gas_grid, 255);
+    grid_array_draw(target, gs->grid, 255);
+    dust_grid_draw(target);
     
-    overlay_draw();
+    overlay_draw(target);
     
     // Draw inspiration ghost
     if (gs->grid_show_ghost) {
@@ -777,12 +777,11 @@ static void grid_draw(void) {
                 f32 b = (f32) (col.r + col.g + col.b);
                 b /= 3.;
                 b = (f32) clamp((int)b, 0, 255);
-                SDL_SetRenderDrawColor(gs->renderer,
-                                       (Uint8) (b/2),
-                                       (Uint8) (b/4),
-                                       (Uint8) (b),
-                                       (Uint8) (alpha));
-                SDL_RenderDrawPoint(gs->renderer, x, y);
+                RenderColor((Uint8) (b/2),
+                            (Uint8) (b/4),
+                            (Uint8) (b),
+                            (Uint8) (alpha));
+                RenderPoint(target, x, y);
             }
         }
     } 
@@ -791,7 +790,8 @@ static void grid_draw(void) {
         gs->current_tool <= TOOL_CHISEL_LARGE &&
         gs->chisel->state == CHISEL_STATE_IDLE)
     {
-        chisel_draw_highlights(gs->chisel->highlights,
+        chisel_draw_highlights(target,
+                               gs->chisel->highlights,
                                gs->chisel->highlight_count,
                                0,
                                0);
@@ -979,7 +979,7 @@ static void convert_object_to_dust(int object) {
     }
 }
 
-static void draw_objects(void) {
+static void draw_objects(int target) {
     if (!gs->do_draw_objects) return;
     
     for (int y = 0; y < gs->gh; y++) {
@@ -987,8 +987,8 @@ static void draw_objects(void) {
             if (gs->grid[x+y*gs->gw].object == -1) continue;
             int b = gs->grid[x+y*gs->gw].object + 10;
             b *= b;
-            SDL_SetRenderDrawColor(gs->renderer, randR(b), randG(b), randB(b), 255);
-            SDL_RenderDrawPoint(gs->renderer, x, y);
+            RenderColor(randR(b), randG(b), randB(b), 255);
+            RenderPoint(target, x, y);
         }
     }
 }

@@ -4,45 +4,88 @@
 
 //~ Initializations and Creations
 
-static Render RenderInit(SDL_Renderer *sdl_renderer) {
+RENDERAPI Render RenderInit(SDL_Renderer *sdl_renderer) {
     Render result = {0};
     result.sdl = sdl_renderer;
     result.view = VIEW_STATE_SCREENSPACE;
+    result.render_targets = PushArray(gs->persistent_memory,
+                                      RENDER_TARGET_COUNT,
+                                      sizeof(Render_Target));
     return result;
 }
 
-static SDL_Surface *RenderLoadSurface(const char *fp) {
+RENDERAPI void RenderCleanup(Render *render) {
+    // Only free the surfaces.
+    // Textures are deleted by default by SDL upon SDL_DestroyRenderer.
+    
+    (void)render;
+}
+
+RENDERAPI SDL_Surface *RenderLoadSurface(const char *fp) {
+    if (!gs->pixel_format_surf) {
+        gs->pixel_format_surf = SDL_CreateRGBSurfaceWithFormat(0, 16, 16, 32,
+                                                               ALASKA_PIXELFORMAT);
+    }
+    
     char filepath[8192] = {0};
     strcat(filepath, RES_DIR);
     strcat(filepath, fp);
     SDL_Surface *surf = IMG_Load(filepath);
+    if (!surf) puts(SDL_GetError());
+    
+    if (surf->format->format != ALASKA_PIXELFORMAT) {
+        SDL_Surface *new_surf = SDL_ConvertSurface(surf,
+                                                   gs->pixel_format_surf->format,
+                                                   0);
+        SDL_FreeSurface(surf);
+        surf = new_surf;
+    }
+    
     Assert(surf);
     return surf;
 }
 
-static Texture *RenderLoadTexture(const char *fp) {
-    Texture *texture = PushSize(gs->persistent_memory, sizeof(Texture));
+RENDERAPI Texture RenderLoadTexture(const char *fp) {
+    Texture texture = {0};
+    
     SDL_Surface *surf = RenderLoadSurface(fp);
     Assert(surf);
     
-    texture->width = surf->w;
-    texture->height = surf->h;
-    texture->handle = SDL_CreateTextureFromSurface(gs->render.sdl, surf);
-    Assert(texture->handle);
+    texture.width = surf->w;
+    texture.height = surf->h;
+    texture.handle = SDL_CreateTextureFromSurface(gs->render.sdl, surf);
+    Assert(texture.handle);
+    
+    SDL_FreeSurface(surf);
     
     return texture;
 }
 
-static Texture *RenderCreateTextureFromSurface(SDL_Surface *surf) {
-    Texture *texture = PushSize(gs->persistent_memory, sizeof(Texture));
-    texture->handle = SDL_CreateTextureFromSurface(gs->render.sdl, surf);
-    Assert(texture->handle);
+RENDERAPI Texture RenderCreateTextureFromSurface(SDL_Surface *surf) {
+    Texture texture = {0};
+    
+    texture.handle = SDL_CreateTextureFromSurface(gs->render.sdl, surf);
+    Assert(texture.handle);
+    
+    texture.width = surf->w;
+    texture.height = surf->h;
+    
     return texture;
 }
 
-static Font *RenderLoadFont(const char *fp, int size) {
+RENDERAPI void RenderDestroyTexture(Texture *tex) {
+    SDL_DestroyTexture(tex->handle);
+    memset(tex, 0, sizeof(Texture));
+    tex->width = -1;
+    tex->height = -1;
+}
+
+RENDERAPI Font *RenderLoadFont(const char *fp, int size) {
     Font *font = PushSize(gs->persistent_memory, sizeof(Font));
-    font->handle = TTF_OpenFont(fp, size);
+    char filename[MAX_PATH] = {0};
+    strcat(filename, RES_DIR);
+    strcat(filename, fp);
+    font->handle = TTF_OpenFont(filename, size);
     Assert(font->handle);
     
     TTF_SizeText(font->handle, "A", &font->char_width, &font->char_height);
@@ -51,100 +94,390 @@ static Font *RenderLoadFont(const char *fp, int size) {
 
 //~ Render Targets
 
-static Render_Target *RenderMakeRenderTarget(View_State view,
-                                      bool use_negative_coords,
-                                      int width,
-                                      int height)
+RENDERAPI Render_Target RenderMakeTargetEx(int width,
+                                           int height,
+                                           View_State view,
+                                           bool use_negative_coords,
+                                           bool streaming)
 {
-    Render_Target *target = PushSize(gs->persistent_memory,
-                                     sizeof(Render_Target));
+    Render_Target target = {0};
     
     if (!use_negative_coords) {
-        target->full_width = target->working_width = width;
-        target->full_height = target->working_height = height;
+        target.full_width = target.working_width = width;
+        target.full_height = target.working_height = height;
         
-        target->top_left = (Point){0, 0};
+        target.top_left = (SDL_Point){0, 0};
     } else {
-        target->full_width = width*2;
-        target->full_height = height*2;
-        target->working_width = width;
-        target->working_height = height;
+        target.full_width = width*2;
+        target.full_height = height*2;
+        target.working_width = width;
+        target.working_height = height;
         
-        target->top_left = (Point){
-            target->full_width/2 - target->working_width/2,
-            target->full_height/2 - target->working_height/2
+        target.top_left = (SDL_Point){
+            target.full_width/2 - target.working_width/2,
+            target.full_height/2 - target.working_height/2
         };
     }
     
-    target->view = view;
+    target.view = view;
     
-    target->handle = SDL_CreateTexture(gs->render.sdl,
-                                       ALASKA_PIXELFORMAT,
-                                       SDL_TEXTUREACCESS_TARGET,
-                                       target->full_width,
-                                       target->full_height);
+    target.texture.handle = SDL_CreateTexture(gs->render.sdl,
+                                              ALASKA_PIXELFORMAT,
+                                              streaming ? SDL_TEXTUREACCESS_TARGET : SDL_TEXTUREACCESS_TARGET,
+                                              target.full_width,
+                                              target.full_height);
+    SDL_SetTextureBlendMode(target.texture.handle, SDL_BLENDMODE_BLEND);
+    
+    target.texture.width = target.full_width;
+    target.texture.height = target.full_height;
     
     return target;
 }
 
-    
+RENDERAPI Render_Target RenderMakeTarget(int width,
+                                         int height,
+                                         View_State view,
+                                         bool use_negative_coords)
+{
+    return RenderMakeTargetEx(width, height, view, use_negative_coords, false);
+}
+
+
 //~ Actual Rendering Code
 
-static void RenderColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+RENDERAPI void RenderColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
     SDL_SetRenderDrawColor(gs->render.sdl, r, g, b, a);
 }
 
-static void RenderColorStruct(SDL_Color rgba) {
+RENDERAPI void RenderColorStruct(SDL_Color rgba) {
     SDL_SetRenderDrawColor(gs->render.sdl, rgba.r, rgba.g, rgba.b, rgba.a);
 }
 
 // When target is NULL, the render target is inferred to be the screen.
-static void _maybe_switch_to_target(Render_Target *target) {
+static void RenderMaybeSwitchToTarget(int target_enum) {
+    if (target_enum < 0) {
+        SDL_SetRenderTarget(gs->render.sdl, NULL);
+        gs->render.current_target = NULL;
+        return;
+    }
+    
+    Render_Target *target = RenderTarget(target_enum);
     if (gs->render.current_target != target) {
-        SDL_Texture *texture_target = NULL;
-        if (target) texture_target = target->handle;
-        
-        SDL_SetRenderTarget(gs->render.sdl, target->handle);
+        SDL_Texture *texture_target = target->texture.handle;
+        SDL_SetRenderTarget(gs->render.sdl, texture_target);
         gs->render.current_target = target;
     }
 }
 
-static void RenderLine(Render_Target *target, int x1, int y1, int x2, int y2) {
-    _maybe_switch_to_target(target);
+RENDERAPI void RenderLine(int target_enum, int x1, int y1, int x2, int y2) {
+    RenderMaybeSwitchToTarget(target_enum);
     SDL_RenderDrawLine(gs->render.sdl, x1, y1, x2, y2);
 }
-    
-static void RenderPoint(Render_Target *target, int x1, int y1) {
-    _maybe_switch_to_target(target);
+
+RENDERAPI void RenderPoint(int target_enum, int x1, int y1) {
+    RenderMaybeSwitchToTarget(target_enum);
     SDL_RenderDrawPoint(gs->render.sdl, x1, y1);
 }
 
-static void RenderDrawRect(Render_Target *target, Rect rect) {
-    _maybe_switch_to_target(target);
-    SDL_Rect sdl_rect = {rect.x, rect.y, rect.width, rect.height};
-    SDL_RenderDrawRect(gs->render.sdl, &sdl_rect);
+RENDERAPI void RenderDrawRect(int target_enum, SDL_Rect rect) {
+    RenderMaybeSwitchToTarget(target_enum);
+    SDL_RenderDrawRect(gs->render.sdl, &rect);
 }
 
-static void RenderFillRect(Render_Target *target, Rect rect) {
-    _maybe_switch_to_target(target);
-    SDL_Rect sdl_rect = {rect.x, rect.y, rect.width, rect.height};
-    SDL_RenderFillRect(gs->render.sdl, &sdl_rect);
+RENDERAPI void RenderFillRect(int target_enum, SDL_Rect rect) {
+    RenderMaybeSwitchToTarget(target_enum);
+    SDL_RenderFillRect(gs->render.sdl, &rect);
 }
 
-static void RenderClear(Render_Target *target) {
-    _maybe_switch_to_target(target);
+RENDERAPI void RenderClear(int target_enum) {
+    RenderMaybeSwitchToTarget(target_enum);
     SDL_RenderClear(gs->render.sdl);
 }
 
-static void RenderPresent(Render_Target *target) {
-    _maybe_switch_to_target(target);
+RENDERAPI void RenderPresent(int target_enum) {
+    RenderMaybeSwitchToTarget(target_enum);
     SDL_RenderPresent(gs->render.sdl);
 }
 
 //~ Fonts
 
-static void RenderSetFontSize(Font *font, int size) {
+RENDERAPI void RenderSetFontSize(Font *font, int size) {
     Assert(size>0);
     Assert(font);
     TTF_SetFontSize(font->handle, size);
+}
+
+// Returns the index, or -1 if the identifier is not found.
+static int _find_render_text_data_in_cache(const char identifier[]) {
+    Render_Text_Data_Cache *cache = &gs->render.text_cache;
+    
+    for (int i = 0; i < cache->count; i++) {
+        if (strcmp(cache->data[i].identifier, identifier) == 0)
+            return i;
+    }
+    
+    return -1;
+}
+
+static bool _has_text_data_changed(Render_Text_Data text_old,
+                                   Render_Text_Data text_new)
+{
+    // We should only be checking if the data has changed
+    // if both structures we're comparing are the same identifier.
+    Assert(0 == strcmp(text_old.identifier, text_new.identifier));
+    Assert(!text_new.force_update); // We shouldn't be in here if this is true
+    
+    if (text_old.font != text_new.font)
+        return true;
+    if (strcmp(text_old.str, text_new.str) != 0)
+        return true;
+    if (text_old.alignment != text_new.alignment)
+        return true;
+    if (text_old.render_type != text_new.render_type)
+        return true;
+    
+    // Compare both foregroud and background.
+    if (memcmp(&text_old.foreground,
+               &text_new.foreground,
+               sizeof(SDL_Color)*2) != 0)
+        return true;
+    
+    return false;
+}
+
+RENDERAPI void RenderTexture(int target,
+                             Texture *texture,
+                             SDL_Rect *src,
+                             SDL_Rect *dst)
+{
+    RenderMaybeSwitchToTarget(target);
+    SDL_RenderCopy(gs->render.sdl,
+                   texture->handle,
+                   src,
+                   dst);
+}
+
+RENDERAPI void RenderTextureEx(int target,
+                               Texture *texture,
+                               SDL_Rect *src,
+                               SDL_Rect *dst,
+                               f64 angle,
+                               SDL_Point *center,
+                               SDL_RendererFlip flip)
+{
+    RenderMaybeSwitchToTarget(target);
+    SDL_RenderCopyEx(gs->render.sdl,
+                     texture->handle,
+                     src,
+                     dst,
+                     angle,
+                     center,
+                     flip);
+}
+
+RENDERAPI void RenderDrawTextQuick(int target_enum,
+                                   const char *identifier,
+                                   Font *font,
+                                   const char *str,
+                                   SDL_Color color,
+                                   int x,
+                                   int y,
+                                   int *w,
+                                   int *h,
+                                   Uint8 alpha)
+{
+    Render_Text_Data text_data = {0};
+    
+    strcpy(text_data.identifier, identifier);
+    text_data.font = font;
+    strcpy(text_data.str, str);
+    text_data.foreground = color;
+    text_data.x = x;
+    text_data.y = y;
+    text_data.alignment = ALIGNMENT_TOP_LEFT;
+    text_data.render_type = TEXT_RENDER_BLENDED;
+    text_data.alpha = alpha;
+    
+    RenderDrawText(target_enum, &text_data);
+    
+    if (w) *w = text_data.texture.width;
+    if (h) *h = text_data.texture.height;
+}
+
+RENDERAPI void RenderApplyAlignmentToRect(SDL_Rect *dst, Alignment alignment)
+{
+    switch(alignment) {
+        case ALIGNMENT_TOP_LEFT: {
+            break;
+        }
+        case ALIGNMENT_TOP_RIGHT: {
+            dst->x -= dst->w;
+        } break;
+        case ALIGNMENT_BOTTOM_LEFT: {
+            dst->y -= dst->h;
+        } break;
+        case ALIGNMENT_BOTTOM_RIGHT: {
+            dst->y -= dst->h;
+            dst->x -= dst->w;
+        } break;
+        case ALIGNMENT_CENTER: {
+            dst->x -= dst->w/2;
+            dst->y -= dst->h/2;
+        } break;
+    }
+}
+        
+RENDERAPI void RenderDrawText(int target_enum, Render_Text_Data *text_data)
+{
+    Assert(text_data->font);
+    if (!text_data->str[0]) return;
+    
+    bool should_update = text_data->force_update || gs->resized;
+    
+    Render_Text_Data *cache_object = NULL;
+    
+    // Caching stuff, but only if we care. If they don't set any identifier,
+    // then just draw it always.
+    if (text_data->identifier[0]) {
+        int cache_index = _find_render_text_data_in_cache(text_data->identifier);
+        if (cache_index < 0) {
+            cache_object = &gs->render.text_cache.data[gs->render.text_cache.count];
+            gs->render.text_cache.count++; 
+            should_update = true;
+        } else {
+            // Compares the stored cache to the new one,
+            // and see if anything has changed.
+            cache_object = &gs->render.text_cache.data[cache_index];
+            
+            bool changed = _has_text_data_changed(*cache_object, *text_data);
+            
+            // If so, we should redraw.
+            if (changed) {
+                should_update = true;
+            } else { // Otherwise, set up our new texture and GTFO.
+                text_data->texture = cache_object->texture;
+            }
+        }
+    } else {
+        should_update = true;
+    }
+    
+    Assert(cache_object);
+    
+    if (!should_update) {
+        SDL_Rect dst = {
+            text_data->x,
+            text_data->y,
+            text_data->texture.width,  // text_data and cache_object
+            text_data->texture.height  // should be the same for w&h
+        };
+        
+        RenderApplyAlignmentToRect(&dst, text_data->alignment);
+        
+        Uint8 text_data_alpha = text_data->alpha;
+
+        // NOTE: We use the text data's alpha here, not the cached alpha,
+        //       since it may have changed. We obviously don't update
+        //       the cache if the alpha of the draw call changed.
+        //       Same concept behind using text_data's x and y for the
+        //       dst rect.
+        RenderTextureAlphaMod(&cache_object->texture, text_data->alpha);
+        RenderTexture(target_enum, &cache_object->texture, NULL, &dst);
+
+        *text_data = *cache_object;
+        text_data->alpha = text_data_alpha;
+
+        return;
+    }
+    
+    RenderMaybeSwitchToTarget(target_enum);
+    
+    if (cache_object && cache_object->surface) {
+        SDL_FreeSurface(cache_object->surface);
+        cache_object->surface = NULL;
+    }
+    if (cache_object && cache_object->texture.handle) {
+        RenderDestroyTexture(&cache_object->texture);
+    }
+
+    switch(text_data->render_type){
+        case TEXT_RENDER_BLENDED:
+        {
+            text_data->surface = TTF_RenderText_Blended(text_data->font->handle,
+                                                        text_data->str,
+                                                        text_data->foreground);
+        } break;
+        case TEXT_RENDER_LCD:
+        {
+            text_data->surface = TTF_RenderText_LCD(text_data->font->handle,
+                                                    text_data->str,
+                                                    text_data->foreground,
+                                                    text_data->background);
+        } break;
+        case TEXT_RENDER_SOLID:
+        {
+            text_data->surface = TTF_RenderText_Solid(text_data->font->handle,
+                                                      text_data->str,
+                                                      text_data->foreground);
+        } break;
+    }
+    
+    Assert(text_data->surface);
+    
+    text_data->texture = RenderCreateTextureFromSurface(text_data->surface);
+    
+    *cache_object = *text_data;
+    
+    SDL_Rect dst = {
+        text_data->x,
+        text_data->y,
+        text_data->texture.width,
+        text_data->texture.height
+    };
+    
+    RenderApplyAlignmentToRect(&dst, text_data->alignment);
+        
+    RenderTextureAlphaMod(&text_data->texture, text_data->alpha);
+    RenderTexture(target_enum, &text_data->texture, NULL, &dst);
+}
+
+RENDERAPI void RenderReadPixels(int target, Uint8 *pixels, int pitch) {
+    RenderMaybeSwitchToTarget(target);
+    SDL_RenderReadPixels(gs->render.sdl, NULL, ALASKA_PIXELFORMAT, pixels, pitch);
+}
+
+RENDERAPI void RenderTextureColorMod(Texture *texture,
+                                     Uint8 r,
+                                     Uint8 g,
+                                     Uint8 b)
+{
+    SDL_SetTextureColorMod(texture->handle, r, g, b);
+}
+
+RENDERAPI void RenderTextureAlphaMod(Texture *texture, Uint8 a) {
+    SDL_SetTextureAlphaMod(texture->handle, a);
+}
+
+RENDERAPI int RenderLockTexture(Texture *texture,
+                                SDL_Rect *rect,
+                                void **pixels,
+                                int *pitch)
+{
+    return SDL_LockTexture(texture->handle, rect, pixels, pitch);
+}
+
+RENDERAPI void RenderUnlockTexture(Texture *texture) {
+    SDL_UnlockTexture(texture->handle);
+}
+
+RENDERAPI void RenderFillCircle(int target, int x, int y, int size) {
+    RenderMaybeSwitchToTarget(target);
+    
+    for (int yy = -size; yy <= size; yy++) {
+        for (int xx = -size; xx <= size; xx++) {
+            if (xx*xx + yy*yy > size*size) continue;
+            
+            SDL_RenderDrawPoint(gs->render.sdl, x+xx, y+yy);
+        }
+    }
 }

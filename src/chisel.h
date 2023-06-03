@@ -15,7 +15,7 @@ enum Chisel_State {
 typedef struct Chisel {
     enum Chisel_State state;
     enum Chisel_Size size;
-    int x, y, w, h;
+    int x, y;
     
     int lookahead;
     bool is_calculating_highlight;
@@ -24,14 +24,13 @@ typedef struct Chisel {
     int highlight_count;
     
     f64 angle;
-    SDL_Texture *texture;
+    Texture *texture;
     
-    SDL_Texture *render_target;
-    int target_w, target_h;
-    
+    Render_Target *render_target;
+   
     int did_chisel_this_frame;
     int num_times_chiseled;
 } Chisel;
 
 // Called in grid_draw.
-static void chisel_draw_highlights(int *highlights, int count, int xoff, int yoff);
+static void chisel_draw_highlights(int target, int *highlights, int count, int xoff, int yoff);

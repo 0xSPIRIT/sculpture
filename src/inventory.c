@@ -89,15 +89,12 @@ static void inventory_init(void) {
     inventory_setup_slots();
 }
 
-static void item_draw(Item *item, int x, int y, int w, int h) {
+static void item_draw(int target, Item *item, int x, int y, int w, int h) {
     if (!item->type) return;
     if (!item->amount) {
         item->type = 0;
         return;
     }
-    
-    GetTextures *texs = &gs->textures;
-    Surfaces *surfs = &gs->surfaces;
     
     SDL_Rect r = {
         x, y,
@@ -105,51 +102,34 @@ static void item_draw(Item *item, int x, int y, int w, int h) {
     };
     
     if (y >= GUI_H && y <= gs->gui.popup_y) {
-        SDL_SetTextureColorMod(texs->texs[TEXTURE_ITEMS+item->type], 255, 0, 0);
+        RenderTextureColorMod(&GetTexture(TEXTURE_ITEMS+item->type), 255, 0, 0);
     } else {
-        SDL_SetTextureColorMod(texs->texs[TEXTURE_ITEMS+item->type], 255, 255, 255);
-    }
-    SDL_RenderCopy(gs->renderer, texs->texs[TEXTURE_ITEMS+item->type], NULL, &r);
-    
-    if (gs->item_prev_amounts[item->index] != item->amount) {
-        gs->item_prev_amounts[item->index] = item->amount;
-        
-        char number[32] = {0};
-        sprintf(number, "%d", item->amount);
-        
-        SDL_Color color = WHITE;
-        
-        if (surfs->item_nums[item->index])
-            SDL_FreeSurface(surfs->item_nums[item->index]);
-        if (texs->texs[TEXTURE_ITEM_NUMS+item->index])
-            SDL_DestroyTexture(texs->texs[TEXTURE_ITEM_NUMS+item->index]);
-        
-        surfs->item_nums[item->index] = TTF_RenderText_LCD(gs->fonts.font_bold_small,
-                                                           number,
-                                                           color,
-                                                           BLACK);
-        texs->texs[TEXTURE_ITEM_NUMS+item->index] = SDL_CreateTextureFromSurface(gs->renderer,
-                                                                                 surfs->item_nums[item->index]);
+        RenderTextureColorMod(&GetTexture(TEXTURE_ITEMS+item->type), 255, 255, 255);
     }
     
+    RenderTexture(target,
+                  &GetTexture(TEXTURE_ITEMS+item->type),
+                  NULL,
+                  &r);
     
-    SDL_Rect dst = {
-        x + w - surfs->item_nums[item->index]->w - 1,
-        y + h - surfs->item_nums[item->index]->h - 1,
-        surfs->item_nums[item->index]->w,
-        surfs->item_nums[item->index]->h
-    };
-    
+    Render_Text_Data text_data = {0};
+    sprintf(text_data.identifier, "item %d", item->index);
+    text_data.font = gs->fonts.font_bold_small;
+    sprintf(text_data.str, "%d", item->amount);
     if (y >= GUI_H && y <= gs->gui.popup_y) {
-        SDL_SetTextureColorMod(texs->texs[TEXTURE_ITEM_NUMS+item->index], 255, 0, 0);
+        text_data.foreground = (SDL_Color){255, 0, 0, 255};
     } else {
-        SDL_SetTextureColorMod(texs->texs[TEXTURE_ITEM_NUMS+item->index], 255, 255, 255);
+        text_data.foreground = WHITE;
     }
-    SDL_RenderCopy(gs->renderer, texs->texs[TEXTURE_ITEM_NUMS+item->index], NULL, &dst);
+    text_data.background = BLACK;
+    text_data.x = x+w;
+    text_data.y = y+h;
+    text_data.alignment = ALIGNMENT_BOTTOM_RIGHT;
+    RenderDrawText(target, &text_data);
 }
 
 // rx, ry are relative values.
-static void slot_draw(Slot *slot, f32 rx, f32 ry) {
+static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
     SDL_Rect bounds = {
         (int) (rx + slot->x - slot->w/2),
         (int) (ry + slot->y - slot->h/2),
@@ -157,25 +137,22 @@ static void slot_draw(Slot *slot, f32 rx, f32 ry) {
         (int) slot->h
     };
     
-    SDL_SetRenderDrawColor(gs->renderer,
-                           Red(SLOT_COLOR),
-                           Green(SLOT_COLOR),
-                           Blue(SLOT_COLOR),
-                           255);
-    SDL_RenderFillRect(gs->renderer, &bounds);
+    RenderColor(Red(SLOT_COLOR),
+                Green(SLOT_COLOR),
+                Blue(SLOT_COLOR),
+                255);
+    RenderFillRect(target, bounds);
     
     if (slot->inventory_index != -1 && slot->inventory_index == gs->current_placer) {
-        SDL_SetRenderDrawColor(gs->renderer, 
-                               255,
-                               255,
-                               0,
-                               255);
+        RenderColor(255,
+                    255,
+                    0,
+                    255);
     } else {
-        SDL_SetRenderDrawColor(gs->renderer, 
-                               Red(SLOT_OUTLINE_COLOR),
-                               Green(SLOT_OUTLINE_COLOR),
-                               Blue(SLOT_OUTLINE_COLOR),
-                               255);
+        RenderColor(Red(SLOT_OUTLINE_COLOR),
+                    Green(SLOT_OUTLINE_COLOR),
+                    Blue(SLOT_OUTLINE_COLOR),
+                    255);
     }
     
     bounds.x--;
@@ -183,7 +160,7 @@ static void slot_draw(Slot *slot, f32 rx, f32 ry) {
     bounds.w += 2;
     bounds.h += 2;
     
-    SDL_RenderDrawRect(gs->renderer, &bounds);
+    RenderDrawRect(target, bounds);
     
     bounds.x++;
     bounds.y++;
@@ -192,71 +169,27 @@ static void slot_draw(Slot *slot, f32 rx, f32 ry) {
     
     // Drawing the slot's name.
     if (*slot->name) {
-        // Finding the allocated surface and textures to use for this.
+        Render_Text_Data text_data = {0};
         
-        Converter *c = slot->converter;
-        
-        SDL_Surface **surf;
-        SDL_Texture **texture;
-        
-        if (c) {
-            surf = &gs->surfaces.slot_names[INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT * c->type + slot->type];
-            texture = &GetTexture(TEXTURE_SLOT_NAMES + INVENTORY_SLOT_COUNT + SLOT_MAX_COUNT * c->type + slot->type);
-        } else {
-            surf = &gs->surfaces.slot_names[slot->inventory_index];
-            texture = &GetTexture(TEXTURE_SLOT_NAMES + slot->inventory_index);
-        }
-        
-        // TOOD: Just make your own proper text renderer for god's sake.
-        
-#ifndef MODIFYING_COLORS
-        if (!*surf || gs->resized) {
-#else
-            if (*surf) SDL_FreeSurface(*surf);
-#endif
-            *surf = TTF_RenderText_Blended(gs->fonts.font_small,
-                                           slot->name,
-                                           (SDL_Color){
-                                               Red(SLOT_TEXT_COLOR), 
-                                               Green(SLOT_TEXT_COLOR), 
-                                               Blue(SLOT_TEXT_COLOR), 
-                                               255
-                                           });
-#if 0
-            (SDL_Color){
-                Red(INVENTORY_COLOR),
-                Green(INVENTORY_COLOR),
-                Blue(INVENTORY_COLOR),
-                0});
-#endif
-#ifndef MODIFYING_COLORS
-        }
-#else
-        Assert(*surf);
-#endif
-        
-#ifndef MODIFYING_COLORS
-        if (!*texture) {
-#else
-            if (*texture) SDL_DestroyTexture(*texture);
-#endif
-            *texture = SDL_CreateTextureFromSurface(gs->renderer, *surf);
-#ifndef MODIFYING_COLORS
-        }
-#endif
-        
-        Assert(*texture);
-        
-        SDL_Rect dst = {
-            (int) (bounds.x + slot->w/2 - (*surf)->w/2),
-            (int) (bounds.y - (*surf)->h - 2),
-            (*surf)->w,
-            (*surf)->h
+        text_data.font = gs->fonts.font_small;
+        sprintf(text_data.identifier, "Slot %p thing", slot);
+        strcpy(text_data.str, slot->name);
+        text_data.foreground = (SDL_Color){
+            Red(SLOT_TEXT_COLOR), 
+            Green(SLOT_TEXT_COLOR), 
+            Blue(SLOT_TEXT_COLOR), 
+            255
         };
-        SDL_RenderCopy(gs->renderer, *texture, NULL, &dst);
+        text_data.x = (int) (bounds.x + slot->w/2);
+        text_data.y = (int) (bounds.y - Scale(10));
+        text_data.alignment = ALIGNMENT_CENTER;
+        text_data.render_type = TEXT_RENDER_BLENDED;
+        text_data.alpha = 255;
+        
+        RenderDrawText(target, &text_data);
     }
-    
-    item_draw(&slot->item, bounds.x, bounds.y, bounds.w, bounds.h);
+        
+    item_draw(target, &slot->item, bounds.x, bounds.y, bounds.w, bounds.h);
 }
 
 //////////////////////////////// Inventory Ticking
@@ -470,7 +403,7 @@ static void inventory_tick() {
 }
 
 // calls from gui_draw()
-static void inventory_draw(void) {
+static void inventory_draw(int target) {
     if (gs->gui.popup_inventory_y <= 0) return;
     
     GUI *gui = &gs->gui;
@@ -485,30 +418,29 @@ static void inventory_draw(void) {
         gs->S*gs->gw, GUI_H
     };
     
-    SDL_SetRenderDrawColor(gs->renderer, 
-                           Red(INVENTORY_COLOR),
-                           Green(INVENTORY_COLOR),
-                           Blue(INVENTORY_COLOR),
-                           255);
-    SDL_RenderFillRect(gs->renderer, &rect);
+    RenderColor(Red(INVENTORY_COLOR),
+                Green(INVENTORY_COLOR),
+                Blue(INVENTORY_COLOR),
+                255);
+    RenderFillRect(target, rect);
     
-    SDL_SetRenderDrawColor(gs->renderer, 
-                           Red(CONVERTER_LINE_COLOR),
-                           Green(CONVERTER_LINE_COLOR),
-                           Blue(CONVERTER_LINE_COLOR),
-                           255);
-    SDL_RenderDrawLine(gs->renderer,
-                       0,
-                       y+GUI_H,
-                       gs->window_width,
-                       y+GUI_H);
+    RenderColor(Red(CONVERTER_LINE_COLOR),
+                Green(CONVERTER_LINE_COLOR),
+                Blue(CONVERTER_LINE_COLOR),
+                255);
+    RenderLine(target,
+               0,
+               y+GUI_H,
+               gs->window_width,
+               y+GUI_H);
     
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
-        slot_draw(&gs->inventory.slots[i], 0, y);
+        slot_draw(target, &gs->inventory.slots[i], 0, y);
     }
     
     Input *input = &gs->input;
-    item_draw(&gs->item_holding,
+    item_draw(target,
+              &gs->item_holding,
               input->real_mx - ITEM_SIZE/2,
               y + input->real_my - ITEM_SIZE/2,
               ITEM_SIZE,

@@ -45,10 +45,12 @@ static void text_field_tick(void) {
     }
 }
 
-static void text_field_draw(void) {
+static void text_field_draw(int target) {
     Text_Field *text_field = &gs->text_field;
     
     if (!text_field->active) return;
+    
+    // TODO: Replace with our new font renderer.
     
     SDL_Surface *description_surf = 0, *text_surf = 0;
     SDL_Texture *description_texture = 0, *text_texture = 0;
@@ -56,9 +58,9 @@ static void text_field_draw(void) {
     SDL_Rect field_rect = {0}, text_field_rect = {0}, description_rect = {0};
     
     if (*text_field->description)
-        description_surf = TTF_RenderText_Blended(gs->fonts.font_consolas, text_field->description, (SDL_Color){180,180,180,255});
+        description_surf = TTF_RenderText_Blended(gs->fonts.font_consolas->handle, text_field->description, (SDL_Color){180,180,180,255});
     if (*text_field->text)
-        text_surf = TTF_RenderText_Blended(gs->fonts.font_consolas, text_field->text, WHITE);
+        text_surf = TTF_RenderText_Blended(gs->fonts.font_consolas->handle, text_field->text, WHITE);
 
     if (text_surf) {
         field_rect = (SDL_Rect){
@@ -70,20 +72,20 @@ static void text_field_draw(void) {
             text_surf->w, text_surf->h
         };
     }
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
+    RenderColor(0, 0, 0, 255);
 
     if (text_surf)
-        SDL_RenderFillRect(gs->renderer, &field_rect);
+        RenderFillRect(target, field_rect);
 
     if (description_surf)
         description_texture = SDL_CreateTextureFromSurface(gs->renderer, description_surf);
     if (text_surf)
         text_texture = SDL_CreateTextureFromSurface(gs->renderer, text_surf);
 
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
+    RenderColor(255, 255, 255, 255);
     
     if (text_surf) {
-        SDL_RenderDrawRect(gs->renderer, &field_rect);
+        RenderDrawRect(target, field_rect);
         SDL_RenderCopy(gs->renderer, text_texture, NULL, &text_field_rect);
     }
 
@@ -103,10 +105,13 @@ static void text_field_draw(void) {
             description_surf->w, description_surf->h
         };
 
-        SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-        SDL_RenderFillRect(gs->renderer, &description_rect);
-        SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
-        SDL_RenderCopy(gs->renderer, description_texture, NULL, &description_rect);
+        RenderColor(0, 0, 0, 255);
+        RenderFillRect(target, description_rect);
+        RenderColor(255, 255, 255, 255);
+        SDL_RenderCopy(gs->render.sdl,
+                       description_texture,
+                       NULL,
+                       &description_rect);
 
         SDL_DestroyTexture(description_texture);
         SDL_FreeSurface(description_surf);

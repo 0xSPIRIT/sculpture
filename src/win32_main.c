@@ -32,6 +32,7 @@
 #include "shared.h"
 #include "util.c"
 
+#include "render.c"
 #include "assets.c"
 #include "input.c"
 
@@ -67,7 +68,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
                                      SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     Assert(state->window);
     
-    SDL_Surface *window_icon = IMG_Load(RES_DIR "icon.png");
+    SDL_Surface *window_icon = RenderLoadSurface("icon.png");
     SDL_SetWindowIcon(state->window, window_icon);
     
     SDL_FreeSurface(window_icon);
@@ -86,6 +87,8 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
     
     state->renderer = SDL_CreateRenderer(state->window, -1, flags);
     Assert(state->renderer);
+    
+    state->render = RenderInit(state->renderer);
     
     if (state->fullscreen) {
         SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -156,7 +159,7 @@ static void game_init(Game_State *state) {
     // We can't create render targets until levels
     // are initialized.
     audio_init(&state->audio);
-    textures_init(state->renderer, &state->textures);
+    textures_init(&state->textures);
     surfaces_init(&state->surfaces);
     
     SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
@@ -329,7 +332,7 @@ int main(int argc, char **argv)
     // can we initialize render targets (since they depend
     // on each level's width/height)
     
-    render_targets_init(gs->renderer, gs->levels);
+    render_targets_init();
     
     bool running = true;
     

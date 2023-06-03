@@ -15,7 +15,7 @@ static void reset_fade() {
     memset(&gs->fade, 0, sizeof(Fade));
 }
 
-static void fade_draw() {
+static void fade_draw(int target) {
     if (!gs->fade.active) return;
     
     gs->fade.alpha = goto64(gs->fade.alpha, gs->fade.desired_alpha, 5);
@@ -29,13 +29,12 @@ static void fade_draw() {
     
     if (gs->obj.active) return; // Hack for ending. We need the fade to be active for other things to occur, but we don't want to draw the fade.
     
-    SDL_SetRenderDrawColor(gs->renderer,
-                           0, 0, 0, gs->fade.alpha);
+    RenderColor(0, 0, 0, gs->fade.alpha);
     
     SDL_Rect rect = {
         0, 0,
         gs->window_width, gs->window_height
     };
     
-    SDL_RenderFillRect(gs->renderer, &rect);
+    RenderFillRect(target, rect);
 }

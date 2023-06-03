@@ -48,19 +48,21 @@ static void game_resize(int h) {
     gs->view.h = gs->window_height-GUI_H;
     
     for (int i = 0; i < FONT_COUNT; i++) {
-        TTF_SetFontSize(gs->fonts.fonts[i], Scale(font_sizes[i]));
+        TTF_SetFontSize(gs->fonts.fonts[i]->handle, Scale(font_sizes[i]));
     }
     
     gs->resized = true;
     
-    int lvl = 10;
-    SDL_DestroyTexture(RenderTargetLvl(lvl, RENDER_TARGET_3D));
-    RenderTargetLvl(lvl, RENDER_TARGET_3D) = SDL_CreateTexture(gs->renderer,
-                                                               ALASKA_PIXELFORMAT,
-                                                               SDL_TEXTUREACCESS_STREAMING,
-                                                               SCALE_3D*gs->window_width,
-                                                               SCALE_3D*(gs->window_height-GUI_H));
-    SDL_SetTextureBlendMode(RenderTargetLvl(lvl, RENDER_TARGET_3D), SDL_BLENDMODE_BLEND);
+    SDL_DestroyTexture(RenderTarget(RENDER_TARGET_3D)->texture.handle);
+    RenderTarget(RENDER_TARGET_3D)->texture.handle = SDL_CreateTexture(gs->renderer,
+                                                                       ALASKA_PIXELFORMAT,
+                                                                       SDL_TEXTUREACCESS_STREAMING,
+                                                                       SCALE_3D*gs->window_width,
+                                                                       SCALE_3D*(gs->window_height-GUI_H));
+    RenderTarget(RENDER_TARGET_3D)->texture.width = SCALE_3D * gs->window_width;
+    RenderTarget(RENDER_TARGET_3D)->texture.height = SCALE_3D * gs->window_height;
+    
+    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_3D)->texture.handle, SDL_BLENDMODE_BLEND);
 }
 
 export void game_init(Game_State *state, int level) {
@@ -335,8 +337,6 @@ export void game_run(Game_State *state) {
     
     gs->gui.tooltip.set_this_frame = false;
     
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
-    
     switch (gs->gamestate) {
         case GAME_STATE_TITLESCREEN: {
             titlescreen_tick();
@@ -345,11 +345,11 @@ export void game_run(Game_State *state) {
         }
         case GAME_STATE_PLAY: {
             if (gs->obj.active) {
-                SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
-                SDL_RenderClear(gs->renderer);
+                RenderColor(255, 255, 255, 255);
+                RenderClear(RENDER_TARGET_MASTER);
                 
                 object_draw(&gs->obj);
-                fade_draw();
+                fade_draw(RENDER_TARGET_MASTER);
                 
                 SDL_Rect dst = {
                     0, 0,
@@ -360,8 +360,11 @@ export void game_run(Game_State *state) {
                     gs->window_width, GUI_H
                 };
                 
-                SDL_SetTextureAlphaMod(RenderTarget(RENDER_TARGET_GUI_TOOLBAR), 255 - 255 * min(240,gs->obj.t) / 240.0);
-                SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR), &src, &dst);
+                RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture, 255 - 255 * min(240,gs->obj.t) / 240.0);
+                RenderTexture(RENDER_TARGET_MASTER,
+                              &RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture,
+                              &src,
+                              &dst);
             } else {
                 //view_tick(&gs->view, &gs->input);
                 
@@ -373,20 +376,22 @@ export void game_run(Game_State *state) {
                 level_tick(&gs->levels[gs->level_current]);
                 level_draw(&gs->levels[gs->level_current]);
                 
-                fade_draw();
+                fade_draw(RENDER_TARGET_MASTER);
                 
                 preview_tick();
                 if (gs->current_preview.play)
-                    preview_draw(&gs->current_preview, 0, 0, 6);
+                    preview_draw(RENDER_TARGET_MASTER,
+                                 &gs->current_preview,
+                                 0,
+                                 0,
+                                 6);
             }
             break;
         }
     }
     
-    SDL_SetRenderTarget(gs->renderer, NULL);
-    
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-    SDL_RenderClear(gs->renderer);
+    RenderColor(0, 0, 0, 255);
+    RenderClear(-1);
     
     SDL_Rect src = {
         0, 0,
@@ -399,7 +404,11 @@ export void game_run(Game_State *state) {
         gs->window_width,
         gs->window_height
     };
-    SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_MASTER), &src, &dst);
+    
+    RenderTexture(-1,
+                  &RenderTarget(RENDER_TARGET_MASTER)->texture,
+                  &src,
+                  &dst);
     
     SDL_RenderPresent(gs->renderer);
     

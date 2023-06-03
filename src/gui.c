@@ -1,4 +1,4 @@
-static Button *button_allocate(enum Button_Type type, SDL_Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
+static Button *button_allocate(enum Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
     Button *b = PushSize(gs->persistent_memory, sizeof(Button));
     b->type = type;
     b->texture = texture;
@@ -6,7 +6,8 @@ static Button *button_allocate(enum Button_Type type, SDL_Texture *texture, cons
     
     b->index=-1;
     
-    SDL_QueryTexture(texture, NULL, NULL, &b->w, &b->h);
+    b->w = b->texture->width;
+    b->h = b->texture->height;
     
     strcpy(b->tooltip_text, tooltip_text);
     b->on_pressed = on_pressed;
@@ -164,7 +165,7 @@ static void button_tick(Button *b, void *data) {
     }
 }
 
-static void button_draw_prefer_color(Button *b, SDL_Color color) {
+static void button_draw_prefer_color(int target, Button *b, SDL_Color color) {
     Input *input = &gs->input;
     
     int gui_input_mx = input->real_mx;// / gs->S;
@@ -180,25 +181,28 @@ static void button_draw_prefer_color(Button *b, SDL_Color color) {
     };
     
     if (b->disabled) {
-        SDL_SetTextureColorMod(b->texture, 90, 90, 90);
+        RenderTextureColorMod(b->texture, 90, 90, 90);
     } else if (b->active) {
-        SDL_SetTextureColorMod(b->texture, 200, 200, 200);
+        RenderTextureColorMod(b->texture, 200, 200, 200);
     } else if (b->highlighted) {
         f64 c = (sin(SDL_GetTicks()/100.0)+1)/2.0;
         c *= 128;
-        SDL_SetTextureColorMod(b->texture, 255-c, 255, 255-c);
+        RenderTextureColorMod(b->texture, 255-c, 255, 255-c);
     } else if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
                gui_input_my >= b->y && gui_input_my < b->y+b->h) {
-        SDL_SetTextureColorMod(b->texture, 230, 230, 230);
+        RenderTextureColorMod(b->texture, 230, 230, 230);
     } else {
-        SDL_SetTextureColorMod(b->texture, color.r, color.g, color.b);
+        RenderTextureColorMod(b->texture, color.r, color.g, color.b);
     }
     
-    SDL_RenderCopy(gs->renderer, b->texture, NULL, &dst);
+    RenderTexture(target,
+                  b->texture,
+                  NULL,
+                  &dst);
 }
 
-static void button_draw(Button *b) {
-    button_draw_prefer_color(b, (SDL_Color){255,255,255,255});
+static void button_draw(int target, Button *b) {
+    button_draw_prefer_color(target, b, (SDL_Color){255,255,255,255});
 }
 
 static void gui_message_stack_push(const char *str) {
@@ -219,33 +223,13 @@ static void gui_message_stack_push(const char *str) {
     msg->alpha = 255;
 }
 
-static void gui_message_stack_tick_and_draw(void) {
-    GUI *gui = &gs->gui;
-    
-    for (int i = 0; i < gui->message_count; i++) {
-        Message *msg = &gui->message_stack[i];
-        
-        SDL_Color col = { 255, 255, 255, msg->alpha };
-        draw_text(gs->fonts.font_consolas, msg->str, col, (SDL_Color){0, 0, 0, 255}, true, true, 0, GUI_H+gs->S*gs->gh - i*32, NULL, NULL);
-        
-        msg->alpha--;
-        if (msg->alpha == 127) {
-            gui->message_count--;
-            for (int j = i; j < gui->message_count; j++) {
-                gui->message_stack[j] = gui->message_stack[j+1];
-            }
-            i--;
-        }
-    }
-}
-
 static void gui_init(void) {
     GUI *gui = &gs->gui;
     
     gui->popup_y = (f32) (gs->gh*gs->S);
     gui->popup_y_vel = 0;
     gui->popup = 0;
-    gui->popup_texture = GetTexture(TEXTURE_POPUP);
+    gui->popup_texture = &GetTexture(TEXTURE_POPUP);
     
     gs->gui.popup_confirm = popup_confirm_init();
     
@@ -259,11 +243,11 @@ static void gui_init(void) {
         
         if (gui->tool_buttons[i] == NULL) {
             gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR,
-                                                   GetTexture(TEXTURE_TOOL_BUTTONS + i),
+                                                   &GetTexture(TEXTURE_TOOL_BUTTONS + i),
                                                    name,
                                                    click_gui_tool_button);
             gui->tool_buttons[i]->w = gui->tool_buttons[i]->h = GUI_H;
-            SDL_SetTextureScaleMode(gui->tool_buttons[i]->texture, 1);
+            //SDL_SetTextureScaleMode(gui->tool_buttons[i]->texture, 1);
             if (gs->tool_previews[i].length)
                 gui->tool_buttons[i]->preview = &gs->tool_previews[i];
         }
@@ -275,11 +259,6 @@ static void gui_init(void) {
         
         cum += gui->tool_buttons[i]->w;
     }
-    
-#if 0
-    SDL_SetTextureScaleMode(RenderTarget(RENDER_TARGET_GUI_TOOLBAR),
-                            2);
-#endif
     
     //overlay_interface_init();
 }
@@ -395,64 +374,50 @@ static void gui_draw_profile() {
     
     profile_array(level->desired_grid, level->profile_lines, &count);
     
-    int ah = 0;
-    draw_text_indexed(TEXT_CONVERTER_REQUIRED_START,
-                      gs->fonts.font,
-                      "Required Amounts:",
-                      (SDL_Color){
-                          255,
-                          255,
-                          0,
-                          255
-                      },
-                      BLACK,
-                      255,
-                      false,
-                      false,
-                      50,
-                      GUI_H+50,
-                      NULL,
-                      &ah,
-                      false);
+    Render_Text_Data text_data = {0};
     
-    int c = ah;
+    sprintf(text_data.identifier, "Thing");
+    text_data.font = gs->fonts.font;
+    strcpy(text_data.str, "Required Amounts:");
+    text_data.x = Scale(50);
+    text_data.y = GUI_H+Scale(50);
+    text_data.foreground = (SDL_Color){
+        255,
+        255,
+        0,
+        255
+    };
+    text_data.background = BLACK;
+    text_data.render_type = TEXT_RENDER_LCD;
+    
+    int c = text_data.texture.height;
     for (int i = 0; i < count; i++) {
-        int h;
-        draw_text_indexed(TEXT_CONVERTER_REQUIRED_START+1+i,
-                          gs->fonts.font,
-                          level->profile_lines[i],
-                          WHITE,
-                          BLACK,
-                          255,
-                          false,
-                          false,
-                          50,
-                          GUI_H+50+c,
-                          NULL,
-                          &h,
-                          false);
-        c += h;
+        Render_Text_Data text_data2 = {0};
+        
+        sprintf(text_data2.identifier, "Converter thing %d", i);
+        text_data2.font = gs->fonts.font;
+        text_data2.foreground = WHITE;
+        text_data2.background = BLACK;
+        text_data2.x = Scale(50);
+        text_data2.y = GUI_H+Scale(50)+c;
+        strcpy(text_data2.str, level->profile_lines[i]);
+        
+        c += text_data2.texture.height;
     }
 }
 
-static void gui_draw(void) {
+static void gui_draw(int target) {
     GUI *gui = &gs->gui;
     
     // Draw the toolbar buttons.
-    SDL_Texture *old = SDL_GetRenderTarget(gs->renderer);
     
-    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_GUI_TOOLBAR), SDL_BLENDMODE_BLEND);
-    
-    Assert(RenderTarget(RENDER_TARGET_GUI_TOOLBAR));
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR));
-    
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 0);
-    SDL_RenderClear(gs->renderer);
+    RenderColor(0, 0, 0, 0);
+    RenderClear(RENDER_TARGET_GUI_TOOLBAR);
     
     // Tool bar
     if (gs->gui.popup_inventory_y < GUI_H) {
         for (int i = 0; i < TOOL_COUNT; i++) {
-            button_draw(gui->tool_buttons[i]);
+            button_draw(RENDER_TARGET_GUI_TOOLBAR, gui->tool_buttons[i]);
         }
         
         SDL_Rect dst = {
@@ -460,13 +425,13 @@ static void gui_draw(void) {
             gs->window_width, GUI_H
         };
         
-        SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_MASTER));
-        SDL_RenderCopy(gs->renderer, RenderTarget(RENDER_TARGET_GUI_TOOLBAR), &dst, &dst);
+        RenderTexture(target,
+                      &RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture,
+                      &dst,
+                      &dst);
     }
     
-    popup_confirm_tick_and_draw(&gs->gui.popup_confirm);
-    
-    SDL_SetRenderTarget(gs->renderer, old);
+    popup_confirm_tick_and_draw(target, &gs->gui.popup_confirm);
 }
 
 
@@ -478,11 +443,11 @@ static Popup_Confirm popup_confirm_init() {
     result.active = false;
     
     result.a = button_allocate(BUTTON_TYPE_POPUP_CONFIRM,
-                               GetTexture(TEXTURE_CONFIRM_BUTTON),
+                               &GetTexture(TEXTURE_CONFIRM_BUTTON),
                                "",
                                popup_confirm_confirm);
     result.b = button_allocate(BUTTON_TYPE_POPUP_CANCEL,
-                               GetTexture(TEXTURE_CANCEL_BUTTON),
+                               &GetTexture(TEXTURE_CANCEL_BUTTON),
                                "",
                                popup_confirm_cancel);
     
@@ -544,7 +509,7 @@ static void popup_confirm_cancel(void* ptr) {
     c->active = false;
 }
 
-static void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
+static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup) {
     if (wait_for_fade(FADE_LEVEL_FINISH)) {
         reset_fade();
         goto_level(++gs->level_current);
@@ -560,11 +525,11 @@ static void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
         gs->window_height/4
     };
     
-    SDL_SetRenderDrawColor(gs->renderer, 0, 0, 0, 255);
-    SDL_RenderFillRect(gs->renderer, &popup->r);
+    RenderColor(0, 0, 0, 255);
+    RenderFillRect(target, popup->r);
     
-    SDL_SetRenderDrawColor(gs->renderer, 255, 255, 255, 255);
-    SDL_RenderDrawRect(gs->renderer, &popup->r);
+    RenderColor(255, 255, 255, 255);
+    RenderDrawRect(target, popup->r);
     
     popup->a->x = 1*gs->window_width/5 + popup->b->w*1;
     popup->a->y = popup->r.y + popup->r.h - Scale(50);
@@ -575,46 +540,39 @@ static void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
     button_tick(popup->a, NULL);
     button_tick(popup->b, NULL);
     
-    button_draw_prefer_color(popup->a, can_goto_next_level() ? (SDL_Color){255,255,255,255} : (SDL_Color){127,127,127,255});
-    button_draw(popup->b);
+    button_draw_prefer_color(target, popup->a, can_goto_next_level() ? (SDL_Color){255,255,255,255} : (SDL_Color){127,127,127,255});
+    button_draw(target, popup->b);
     
     SDL_Color col = (SDL_Color){175, 175, 175, 255};
-    SDL_Color bg = (SDL_Color){32,32,32,255};
     
     int w;
     
     char *text = "Are you satisfied with this result?";
     
-    TTF_SizeText(gs->fonts.font_times, text, &w, NULL);
+    TTF_SizeText(gs->fonts.font_times->handle, text, &w, NULL);
     
-    draw_text_indexed(TEXT_CONFIRM,
-                      gs->fonts.font_times,
-                      "Confirmation",
-                      col,
-                      bg,
-                      255,
-                      false,
-                      false,
-                      popup->r.x + Scale(16),
-                      popup->r.y + Scale(10),
-                      NULL,
-                      NULL,
-                      false);
+    RenderDrawTextQuick(target,
+                        "confirm text",
+                        gs->fonts.font_times,
+                        "Confirmation",
+                        col,
+                        popup->r.x + Scale(16),
+                        popup->r.y + Scale(10),
+                        NULL,
+                        NULL,
+                        255);
     
     col = (SDL_Color){255, 255, 255, 255};    
-    draw_text_indexed(TEXT_CONFIRM,
-                      gs->fonts.font_times,
-                      text,
-                      col,
-                      bg,
-                      255,
-                      false,
-                      false,
-                      popup->r.x + popup->r.w/2 - w/2,
-                      popup->r.y + Scale(70),
-                      NULL,
-                      NULL,
-                      false);
+    RenderDrawTextQuick(target,
+                        "sdfsdf",
+                        gs->fonts.font_times,
+                        text,
+                        col,
+                        popup->r.x + popup->r.w/2 - w/2,
+                        popup->r.y + Scale(70),
+                        NULL,
+                        NULL,
+                        255);
     
     
     if (!can_goto_next_level()) {
@@ -625,7 +583,7 @@ static void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
         
         int h;
         
-        TTF_SizeText(gs->fonts.font_times, comment, &w, &h);
+        TTF_SizeText(gs->fonts.font_times->handle, comment, &w, &h);
         
         int xoff = get_glitched_offset();
         
@@ -640,22 +598,21 @@ static void popup_confirm_tick_and_draw(Popup_Confirm *popup) {
         if (gs->level_current+1 > 7)
             color = (SDL_Color){180, 0, 0, 255};
         
-        draw_text_indexed(TEXT_NOT_GOOD_ENOUGH,
-                          gs->fonts.font_times,
-                          comment,
-                          color,
-                          BLACK,
-                          255,
-                          0, 0,
-                          xoff + popup->r.x + popup->r.w/2 - w/2,
-                          popup->r.y + popup->r.h - 2.7*h,
-                          NULL, NULL,
-                          false);
+        RenderDrawTextQuick(target,
+                            "Not good enough",
+                            gs->fonts.font_times,
+                            comment,
+                            color,
+                            xoff + popup->r.x + popup->r.w/2 - w/2,
+                            popup->r.y + popup->r.h - 2.7*h,
+                            NULL,
+                            NULL,
+                            255);
     }
     
 }
 
-static void gui_popup_draw(void) {
+static void gui_popup_draw(int target) {
     GUI *gui = &gs->gui;
     
     SDL_Rect popup = {
@@ -663,50 +620,48 @@ static void gui_popup_draw(void) {
         gs->gw*gs->S, (int)GUI_POPUP_H
     };
     
-    SDL_SetRenderDrawColor(gs->renderer,
-                           Red(INVENTORY_COLOR),
-                           Green(INVENTORY_COLOR),
-                           Blue(INVENTORY_COLOR),
-                           255);
-    SDL_RenderFillRect(gs->renderer, &popup);
+    RenderColor(Red(INVENTORY_COLOR),
+                Green(INVENTORY_COLOR),
+                Blue(INVENTORY_COLOR),
+                255);
+    RenderFillRect(target, popup);
     
-    SDL_SetRenderDrawColor(gs->renderer, 
-                           Red(CONVERTER_LINE_COLOR),
-                           Green(CONVERTER_LINE_COLOR),
-                           Blue(CONVERTER_LINE_COLOR),
-                           255);
+    RenderColor(Red(CONVERTER_LINE_COLOR),
+                Green(CONVERTER_LINE_COLOR),
+                Blue(CONVERTER_LINE_COLOR),
+                255);
+    
     if (gs->gui.popup_y+GUI_H < gs->window_height) {
-        SDL_RenderDrawLine(gs->renderer,
-                           0, GUI_H+gui->popup_y-1,
-                           gs->window_width, GUI_H+gui->popup_y-1);
+        RenderLine(target,
+                   0, GUI_H+gui->popup_y-1,
+                   gs->window_width,
+                   GUI_H+gui->popup_y-1);
     }
     
     int w, h;
-    SDL_QueryTexture(GetTexture(TEXTURE_TAB), NULL, NULL, &w, &h);
+    w = GetTexture(TEXTURE_TAB).width;
+    h = GetTexture(TEXTURE_TAB).height;
     
     SDL_Rect bar = {
         0, popup.y,
         gs->gw*gs->S, Scale(36)
     };
     
-    SDL_SetRenderDrawColor(gs->renderer,
-                           Red(INVENTORY_COLOR2),
-                           Green(INVENTORY_COLOR2), 
-                           Blue(INVENTORY_COLOR2), 255);
-    SDL_RenderFillRect(gs->renderer, &bar);
+    RenderColorStruct(ColorFromInt(INVENTORY_COLOR2));
+    RenderFillRect(target, bar);
     
     SDL_Rect tab_icon = {
         gs->gw*gs->S - 128, (int)(GUI_H + gui->popup_y) - h,
         w, h
     };
     
-    SDL_SetTextureAlphaMod(GetTexture(TEXTURE_TAB), 127);
+    RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 127);
     
     if (gs->level_current >= 4-1)
-        SDL_RenderCopy(gs->renderer, GetTexture(TEXTURE_TAB), NULL, &tab_icon);
+        RenderTexture(target, &GetTexture(TEXTURE_TAB), NULL, &tab_icon); // TODO
     
-    all_converters_draw();
-    inventory_draw();
+    all_converters_draw(target);
+    inventory_draw(target);
     converter_gui_draw();
 }
 
