@@ -379,7 +379,7 @@ int main(int argc, char **argv)
         memset(transient_memory.data, 0, transient_memory.size);
         transient_memory.cursor = transient_memory.data;
         
-        RenderCleanupNonCachedText(&gs->render.temp_text_cache);
+        RenderCleanupTextCache(&gs->render.temp_text_cache);
         
         QueryPerformanceCounter(&time_elapsed);
         

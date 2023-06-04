@@ -25,9 +25,9 @@ static void titlescreen_draw(void) {
                         gs->fonts.font_titlescreen,
                         "Alaska",
                         BLACK,
+                        255,
                         gs->window_width/2 - gs->titlescreen.text_width/2,
                         gs->window_height/7,
-                        255,
                         NULL,
                         NULL,
                         false);
@@ -44,9 +44,9 @@ static void titlescreen_draw(void) {
                         gs->fonts.font_times,
                         string,
                         (SDL_Color){a, a, a, 255},
+                        255,
                         gs->window_width/2 - w/2,
                         2*gs->window_height/3,
-                        255,
                         NULL,
                         NULL,
                         false);
@@ -55,9 +55,9 @@ static void titlescreen_draw(void) {
                         gs->fonts.font_times,
                         "F11 - Fullscreen",
                         BLACK,
+                        255,
                         gs->window_width-8,
                         gs->window_height-8,
-                        255,
                         NULL,
                         NULL,
                         false);

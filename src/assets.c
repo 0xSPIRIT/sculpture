@@ -21,21 +21,24 @@ static void render_targets_init(void) {
                 continue;
             }
             case RENDER_TARGET_CONVERSION_PANEL: case RENDER_TARGET_OUTRO:
-            case RENDER_TARGET_GUI_TOOLBAR: case RENDER_TARGET_HAMMER:
-            case RENDER_TARGET_HAMMER2: case RENDER_TARGET_CHISEL: {
+            case RENDER_TARGET_GUI_TOOLBAR: case RENDER_TARGET_CHISEL: {
                 gs->render.render_targets[i] = RenderMakeTarget(width, height, VIEW_STATE_UNDEFINED, false);
                 continue;
             }
+            case RENDER_TARGET_HAMMER: case RENDER_TARGET_HAMMER2: {
+                gs->render.render_targets[i] = RenderMakeTarget(gs->gw, gs->gh, VIEW_STATE_PIXELS, true);
+				continue;
+            }
             case RENDER_TARGET_3D: {
                 gs->render.render_targets[i] = RenderMakeTargetEx(SCALE_3D*gs->window_width,
-                                                                  SCALE_3D*gs->window_height,
+                                                                  SCALE_3D*gs->window_width,
                                                                   VIEW_STATE_SCREENSPACE,
                                                                   false,
                                                                   true);
                 continue;
             }
         }
-        gs->render.render_targets[i] = RenderMakeTarget(gs->gw, gs->gh, VIEW_STATE_PIXELS, false); // TODO: Have negative coords
+        gs->render.render_targets[i] = RenderMakeTarget(gs->gw, gs->gh, VIEW_STATE_PIXELS, true);
     }
 }
 

@@ -25,8 +25,8 @@ static void input_tick(Game_State *state) {
             !(in->mouse & SDL_BUTTON(i)) && (in->mouse_previous & SDL_BUTTON(i));
     }
 
-    in->mx = (in->real_mx+state->view.x)/state->S;
-    in->my = (in->real_my+state->view.y)/state->S;
+    in->mx = (in->real_mx+state->render.view.x)/state->S;
+    in->my = (in->real_my+state->render.view.y)/state->S;
         
     in->my -= GUI_H/state->S;
 

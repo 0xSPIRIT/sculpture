@@ -1,20 +1,14 @@
 TODO
-
-  x Delete surfaces.
-  x Make cursor invisible in ending.
-  - Remember that this is all just so we can 1. have cleaner shit and
-    2. be able to have negative coordinates on render targets, without
-    the original calls having to do anything.
  
+  - Bug with toggling fullscreen in the ending. The tool bar disappears.
+    Also in fullscreen, the 3D goes out of view, rendering past the
+    visible portion.
+
   - Redo all rendering code to allow for larger textures.
-     - Implement an abstraction layer for rendering, which we desperately need.
-     - We'd simplify rendering targets.
-     - And make things more explicit when we're working with pixel-level or
-       screenspace-level.
-     - Implement the feature of adding negative positions into rendering targets,
+     x Implement the feature of adding negative positions into rendering targets,
        so most of our actual rendering code can stay the same, and just allow
        for negative coordinates.
-     - Also, redo the entire asset file. Horrible stuff.
+     x Also, redo the entire asset file. Horrible stuff.
   - Make a proper UI system. Redo all that code as well.
 
   - Redo all levels.

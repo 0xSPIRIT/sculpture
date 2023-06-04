@@ -8,10 +8,6 @@ static Chisel chisel_init(enum Chisel_Size size) {
     return chisel;
 }
 
-static void chisel_init_render_target(Chisel *chisel) {
-    chisel->render_target = RenderTarget(RENDER_TARGET_CHISEL);
-}
-
 static void chisel_play_sound(int size) {
     switch (size) {
         case CHISEL_SMALL: {

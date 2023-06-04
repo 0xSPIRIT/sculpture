@@ -89,8 +89,6 @@ typedef struct Game_State {
     Narrator narrator;
     Object3D obj;
     
-    View view;
-    
     Timelapse timelapse;
     
     Audio audio;

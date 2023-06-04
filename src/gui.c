@@ -556,9 +556,9 @@ static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup) {
                         gs->fonts.font_times,
                         "Confirmation",
                         col,
+                        255,
                         popup->r.x + Scale(16),
                         popup->r.y + Scale(10),
-                        255,
                         NULL,
                         NULL,
                         false);
@@ -569,9 +569,9 @@ static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup) {
                         gs->fonts.font_times,
                         text,
                         col,
+                        255,
                         popup->r.x + popup->r.w/2 - w/2,
                         popup->r.y + Scale(70),
-                        255,
                         NULL,
                         NULL,
                         false);
@@ -605,9 +605,9 @@ static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup) {
                             gs->fonts.font_times,
                             comment,
                             color,
+                            255,
                             xoff + popup->r.x + popup->r.w/2 - w/2,
                             popup->r.y + popup->r.h - 2.7*h,
-                            255,
                             NULL,
                             NULL,
                             false);

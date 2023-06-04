@@ -28,12 +28,13 @@ static void credits_run(int target) {
             strcpy(text_data.identifier, "Ending text");
             text_data.font = gs->fonts.font_times;
             strcpy(text_data.str, "Created by spiritwolf");
-            text_data.x = Scale(128);
-            text_data.y = Scale(128);
+            text_data.x = gs->window_width/2;
+            text_data.y = gs->window_height/2 - 100;
             text_data.foreground = col;
             text_data.background = WHITE;
-            text_data.alignment = ALIGNMENT_TOP_LEFT;
+            text_data.alignment = ALIGNMENT_CENTER;
             text_data.render_type = TEXT_RENDER_BLENDED;
+            text_data.alpha = co;
             
             RenderDrawText(target,
                            &text_data);

@@ -367,8 +367,6 @@ static void level_draw(Level *level) {
         case LEVEL_STATE_PLAY:         { level_draw_outro_or_play(level); break; }
         case LEVEL_STATE_CONFIRMATION: { level_draw_confirm(RENDER_TARGET_MASTER); break; }
     }
-    
-    text_field_draw(RENDER_TARGET_MASTER);
 }
 
 static void level_draw_intro(Level *level) {
@@ -388,10 +386,10 @@ static void level_draw_intro(Level *level) {
         0, GUI_H,
         gs->window_width, gs->window_height-GUI_H
     };
-    RenderTexture(RENDER_TARGET_MASTER,
-                  &RenderTarget(RENDER_TARGET_GLOBAL)->texture,
-                  NULL,
-                  &global_dst);
+    RenderTargetToTarget(RENDER_TARGET_MASTER,
+                         RENDER_TARGET_GLOBAL,
+                         NULL,
+                         &global_dst);
     
     char name[256] = {0};
     sprintf(name, "%d. %s", level->index+1, level->name);
@@ -435,9 +433,9 @@ static void level_draw_name_intro(int target, Level *level, SDL_Rect rect) {
                         gs->fonts.font,
                         string,
                         WHITE,
+                        255,
                         x,
                         y,
-                        255,
                         NULL,
                         NULL,
                         false);
@@ -498,9 +496,9 @@ static void level_draw_outro(int target, Level *level) {
                         gs->fonts.font,
                         "What you intended",
                         WHITE,
+                        alpha,
                         dx,
                         dy,
-                        alpha,
                         NULL,
                         NULL,
                         false);
@@ -509,9 +507,9 @@ static void level_draw_outro(int target, Level *level) {
                         gs->fonts.font,
                         "The result",
                         WHITE,
+                        alpha,
                         dx+rect.w - LEVEL_MARGIN - scale*level->w - margin,
                         dy,
-                        alpha,
                         NULL,
                         NULL,
                         false);
@@ -546,9 +544,9 @@ static void level_draw_outro(int target, Level *level) {
                         gs->fonts.font,
                         "Next Level [n]",
                         color_next_level,
+                        255,
                         rect.x + rect.w - Scale(200),
                         rect.y + rect.h - margin - Scale(20),
-                        255,
                         NULL,
                         NULL,
                         false);
@@ -557,40 +555,32 @@ static void level_draw_outro(int target, Level *level) {
                         gs->fonts.font,
                         "Close [f]",
                         (SDL_Color){128, 128, 128, alpha},
+                        255,
                         rect.x + margin,
                         rect.y + rect.h - margin - Scale(20),
-                        255,
                         NULL,
                         NULL,
                         false);
     
     RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_OUTRO)->texture, level->outro_alpha);
-    SDL_Rect dst = {
-        0, 0,
-        gs->window_width, gs->window_height - GUI_H
-    };
-    SDL_Rect src = {
-        0, 0,
-        gs->window_width, gs->window_height - GUI_H
-    };
-    RenderTexture(target,
-                  &RenderTarget(RENDER_TARGET_OUTRO)->texture,
-                  &src,
-                  &dst);
+    RenderTargetToTarget(target,
+                         RENDER_TARGET_OUTRO,
+                         NULL,
+                         NULL);
 }
 
 static void level_get_cells_from_image(const char *path,
-                                Cell **out,
-                                Source_Cell *source_cells,
-                                int *out_source_cell_count,
-                                int *out_w,
-                                int *out_h)
+                                       Cell **out,
+                                       Source_Cell *source_cells,
+                                       int *out_source_cell_count,
+                                       int *out_w,
+                                       int *out_h)
 {
     SDL_Surface *surface = IMG_Load(path);
     Assert(surface);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surface);
     Assert(texture);
-
+    
     int w = surface->w;
     int h = surface->h;
     
@@ -685,26 +675,38 @@ static void level_draw_outro_or_play(Level *level) {
     
     draw_objects(RENDER_TARGET_GLOBAL);
     
-    view_update();
+    gs->render.view.x = 0;
+    gs->render.view.y = 0;
+    
+    RenderColor(0,0,0,255);
+    RenderClear(RENDER_TARGET_MASTER);
+    
+    SDL_Rect src = {
+        -gs->gw,
+        0,
+        gs->gw*2,
+        gs->gh
+    };
     
     SDL_Rect dst = {
-        -gs->view.x,
-        -gs->view.y + GUI_H,
-        gs->view.w, gs->view.h
+        -gs->render.view.x - 0.5*gs->window_width,
+        -gs->render.view.y + GUI_H,
+        1.5*gs->window_width,
+        gs->window_height-GUI_H,
     };
     
     if (level->state == LEVEL_STATE_OUTRO) {
-        RenderTexture(RENDER_TARGET_MASTER,
-                      &RenderTarget(RENDER_TARGET_GLOBAL)->texture,
-                      NULL,
-                      &dst);
+        RenderTargetToTarget(RENDER_TARGET_MASTER,
+                             RENDER_TARGET_GLOBAL,
+                             &src,
+                             &dst);
         level_draw_outro(RENDER_TARGET_MASTER, level);
         gui_draw(RENDER_TARGET_MASTER);
     } else {
-        RenderTexture(RENDER_TARGET_MASTER,
-                      &RenderTarget(RENDER_TARGET_GLOBAL)->texture,
-                      NULL,
-                      &dst);
+        RenderTargetToTarget(RENDER_TARGET_MASTER,
+                             RENDER_TARGET_GLOBAL,
+                             &src,
+                             &dst);
         
         gui_draw(RENDER_TARGET_MASTER);
         

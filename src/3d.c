@@ -115,8 +115,13 @@ static void object_activate(Object3D *obj) {
     grid_array_draw(target, gs->grid, 255);
 #endif
     
+    const SDL_Rect rect = {
+        32, 32,
+        64, 64
+    };
+    
     void *pixels = PushArray(gs->transient_memory, gs->gw*gs->gh, 4); // sizeof(Uint32)
-    SDL_RenderReadPixels(gs->renderer, NULL, ALASKA_PIXELFORMAT, pixels, gs->gw*4);
+    SDL_RenderReadPixels(gs->renderer, &rect, ALASKA_PIXELFORMAT, pixels, gs->gw*4);
     
     gs->surfaces.a = SDL_CreateRGBSurfaceWithFormat(0,
                                                     gs->gw,
@@ -344,15 +349,11 @@ static void object_draw(Object3D *obj) {
     
     SDL_Rect dst = {
         0, GUI_H,
-        gs->window_width, gs->window_width
+        gs->window_width,
+        gs->window_width
     };
-    SDL_Rect src = {
-        0, 0,
-        SCALE_3D*gs->window_width,
-        SCALE_3D*gs->window_height
-    };
-    RenderTexture(RENDER_TARGET_MASTER, // TODO
-                  &RenderTarget(RENDER_TARGET_3D)->texture,
-                  &src,
-                  &dst);
+    RenderTargetToTarget(RENDER_TARGET_MASTER,
+                         RENDER_TARGET_3D,
+                         NULL,
+                         &dst);
 }

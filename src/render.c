@@ -7,7 +7,7 @@
 RENDERAPI Render RenderInit(SDL_Renderer *sdl_renderer) {
     Render result = {0};
     result.sdl = sdl_renderer;
-    result.view = VIEW_STATE_SCREENSPACE;
+    result.view_type = VIEW_STATE_SCREENSPACE;
     result.render_targets = PushArray(gs->persistent_memory,
                                       RENDER_TARGET_COUNT,
                                       sizeof(Render_Target));
@@ -32,8 +32,9 @@ RENDERAPI void RenderCleanup(Render *render) {
             SDL_FreeSurface(gs->surfaces.surfaces[i]);
     }
     
-    // Cleanup text data cache. Non-cached text rendering calls
-    // area cleaned up after its call when it's identifier is NULL.
+    // Cleanup text data cache. Non-cached temporary text rendering calls
+    // are cleaned up at end-of-frame.
+    RenderCleanupTextCache(&gs->render.text_cache);
 }
 
 RENDERAPI SDL_Surface *RenderLoadSurface(const char *fp) {
@@ -107,6 +108,31 @@ RENDERAPI Font *RenderLoadFont(const char *fp, int size) {
 
 //~ Render Targets
 
+RENDERAPI SDL_Rect RenderGetUpdatedRect(Render_Target *target, SDL_Rect *rect) {
+    if (!target) return *rect;
+    
+    SDL_Rect result;
+    SDL_Rect actual_rect;
+    
+    if (!rect) {
+        return (SDL_Rect){
+            target->top_left.x,
+            target->top_left.y,
+            target->working_width,
+            target->working_height
+        };
+    } else {
+        actual_rect = *rect;
+    }
+    
+    result.x = actual_rect.x + target->top_left.x;
+    result.y = actual_rect.y + target->top_left.y;
+    result.w = actual_rect.w;
+    result.h = actual_rect.h;
+    
+    return result;
+}
+
 RENDERAPI Render_Target RenderMakeTargetEx(int width,
                                            int height,
                                            View_State view,
@@ -115,20 +141,23 @@ RENDERAPI Render_Target RenderMakeTargetEx(int width,
 {
     Render_Target target = {0};
     
+    int full_width, full_height;
+    
     if (!use_negative_coords) {
-        target.full_width = target.working_width = width;
-        target.full_height = target.working_height = height;
+        target.working_width = full_width = width;
+        target.working_height = full_height = height;
         
         target.top_left = (SDL_Point){0, 0};
     } else {
-        target.full_width = width*2;
-        target.full_height = height*2;
         target.working_width = width;
         target.working_height = height;
         
+        full_width = width*2;
+        full_height = height*2;
+        
         target.top_left = (SDL_Point){
-            target.full_width/2 - target.working_width/2,
-            target.full_height/2 - target.working_height/2
+            width  - target.working_width/2,
+            height - target.working_height/2
         };
     }
     
@@ -136,13 +165,13 @@ RENDERAPI Render_Target RenderMakeTargetEx(int width,
     
     target.texture.handle = SDL_CreateTexture(gs->render.sdl,
                                               ALASKA_PIXELFORMAT,
-                                              streaming ? SDL_TEXTUREACCESS_TARGET : SDL_TEXTUREACCESS_TARGET,
-                                              target.full_width,
-                                              target.full_height);
+                                              streaming ? SDL_TEXTUREACCESS_STREAMING : SDL_TEXTUREACCESS_TARGET,
+                                              full_width,
+                                              full_height);
     SDL_SetTextureBlendMode(target.texture.handle, SDL_BLENDMODE_BLEND);
     
-    target.texture.width = target.full_width;
-    target.texture.height = target.full_height;
+    target.texture.width = full_width;
+    target.texture.height = full_height;
     
     return target;
 }
@@ -153,6 +182,50 @@ RENDERAPI Render_Target RenderMakeTarget(int width,
                                          bool use_negative_coords)
 {
     return RenderMakeTargetEx(width, height, view, use_negative_coords, false);
+}
+
+RENDERAPI void RenderTargetToTarget(int target_dst,
+                                    int target_src,
+                                    SDL_Rect *src,
+                                    SDL_Rect *dst)
+{
+    RenderMaybeSwitchToTarget(target_dst);
+    
+    SDL_Rect updated_src = RenderGetUpdatedRect(RenderTarget(target_src), src);
+    SDL_Rect updated_dst = RenderGetUpdatedRect(RenderTarget(target_dst), dst);
+    
+    SDL_RenderCopy(gs->render.sdl,
+                   RenderTarget(target_src)->texture.handle,
+                   &updated_src,
+                   &updated_dst);
+}
+
+RENDERAPI void RenderTargetToTargetEx(int target_dst,
+                                      int target_src,
+                                      SDL_Rect *src,
+                                      SDL_Rect *dst,
+                                      f64 angle,
+                                      SDL_Point *center,
+                                      SDL_RendererFlip flip)
+{
+    // Note: we dont modify src and dst to target_dst's top_left.
+    //       If you want to do that, do it yourself before the call.
+    
+    RenderMaybeSwitchToTarget(target_dst);
+    SDL_Point output_center = *center;
+    
+    output_center = (SDL_Point){
+        center->x + RenderTarget(target_dst)->top_left.x,
+        center->y + RenderTarget(target_dst)->top_left.y
+    };
+    
+    SDL_RenderCopyEx(gs->render.sdl,
+                     RenderTarget(target_src)->texture.handle,
+                     src,
+                     dst,
+                     angle,
+                     &output_center,
+                     flip);
 }
 
 RENDERAPI void RenderDestroyTarget(Render_Target *target) {
@@ -173,11 +246,11 @@ RENDERAPI void RenderColorStruct(SDL_Color rgba) {
 }
 
 // When target is NULL, the render target is inferred to be the screen.
-static void RenderMaybeSwitchToTarget(int target_enum) {
+static Render_Target *RenderMaybeSwitchToTarget(int target_enum) {
     if (target_enum < 0) {
         SDL_SetRenderTarget(gs->render.sdl, NULL);
         gs->render.current_target = NULL;
-        return;
+        return NULL;
     }
     
     Render_Target *target = RenderTarget(target_enum);
@@ -186,25 +259,34 @@ static void RenderMaybeSwitchToTarget(int target_enum) {
         SDL_SetRenderTarget(gs->render.sdl, texture_target);
         gs->render.current_target = target;
     }
+    return gs->render.current_target;
 }
 
 RENDERAPI void RenderLine(int target_enum, int x1, int y1, int x2, int y2) {
-    RenderMaybeSwitchToTarget(target_enum);
+    Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
+    x1 += target->top_left.x;
+    y1 += target->top_left.y;
+    x2 += target->top_left.x;
+    y2 += target->top_left.y;
     SDL_RenderDrawLine(gs->render.sdl, x1, y1, x2, y2);
 }
 
-RENDERAPI void RenderPoint(int target_enum, int x1, int y1) {
-    RenderMaybeSwitchToTarget(target_enum);
-    SDL_RenderDrawPoint(gs->render.sdl, x1, y1);
+RENDERAPI void RenderPoint(int target_enum, int x, int y) {
+    Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
+    x += target->top_left.x;
+    y += target->top_left.y;
+    SDL_RenderDrawPoint(gs->render.sdl, x, y);
 }
 
 RENDERAPI void RenderDrawRect(int target_enum, SDL_Rect rect) {
-    RenderMaybeSwitchToTarget(target_enum);
+    Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
+    rect = RenderGetUpdatedRect(target, &rect);
     SDL_RenderDrawRect(gs->render.sdl, &rect);
 }
 
 RENDERAPI void RenderFillRect(int target_enum, SDL_Rect rect) {
-    RenderMaybeSwitchToTarget(target_enum);
+    Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
+    rect = RenderGetUpdatedRect(target, &rect);
     SDL_RenderFillRect(gs->render.sdl, &rect);
 }
 
@@ -267,19 +349,22 @@ static bool _has_text_data_changed(Render_Text_Data text_old,
     return false;
 }
 
-RENDERAPI void RenderTexture(int target,
+RENDERAPI void RenderTexture(int target_enum,
                              Texture *texture,
                              SDL_Rect *src,
                              SDL_Rect *dst)
 {
-    RenderMaybeSwitchToTarget(target);
+    Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
+    
+    SDL_Rect output_dst = RenderGetUpdatedRect(target, dst);
+        
     SDL_RenderCopy(gs->render.sdl,
                    texture->handle,
                    src,
-                   dst);
+                   &output_dst);
 }
 
-RENDERAPI void RenderTextureEx(int target,
+RENDERAPI void RenderTextureEx(int target_enum,
                                Texture *texture,
                                SDL_Rect *src,
                                SDL_Rect *dst,
@@ -287,11 +372,22 @@ RENDERAPI void RenderTextureEx(int target,
                                SDL_Point *center,
                                SDL_RendererFlip flip)
 {
-    RenderMaybeSwitchToTarget(target);
+    Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
+    
+    SDL_Rect output_dst = RenderGetUpdatedRect(target, dst);
+    
+    SDL_Point output_center = *center;
+    if (target) {
+        output_center = (SDL_Point){
+            center->x + target->top_left.x,
+            center->y + target->top_left.y
+        };
+    }
+    
     SDL_RenderCopyEx(gs->render.sdl,
                      texture->handle,
                      src,
-                     dst,
+                     &output_dst,
                      angle,
                      center,
                      flip);
@@ -328,10 +424,9 @@ RENDERAPI void RenderDrawTextQuick(int target_enum,
     if (h) *h = text_data.texture.height;
 }
 
-RENDERAPI void RenderCleanupNonCachedText(Render_Text_Data_Cache *cache) {
+RENDERAPI void RenderCleanupTextCache(Render_Text_Data_Cache *cache) {
     for (int i = 0; i < cache->size; i++) {
         Render_Text_Data *text_data = &cache->data[i];
-        Assert(text_data->identifier[0] == 0); // Non-cached shouldn't have identifiers
         RenderDestroyTexture(&text_data->texture);
         SDL_FreeSurface(text_data->surface);
         memset(text_data, 0, sizeof(Render_Text_Data));

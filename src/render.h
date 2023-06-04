@@ -21,8 +21,6 @@ typedef struct {
 
 typedef struct {
     Texture texture;        // Contains the full size of the texture = full_width, full_height
-    int full_width;         // These full size parameters
-    int full_height;        // refer to the actual size of the texture...
     int working_width;      // Whereas the working size parameters are less,
     int working_height;     // enabling the use of negative texture positions.
     SDL_Point top_left;
@@ -76,7 +74,9 @@ typedef struct {
 
 typedef struct {
     SDL_Renderer *sdl;
-    View_State view;
+    View_State view_type;
+    
+    SDL_Rect view;
     
     Render_Target *current_target;
     Render_Target *render_targets;
@@ -89,7 +89,7 @@ typedef struct {
 RENDERAPI Render RenderInit(SDL_Renderer *sdl_renderer);
 RENDERAPI void RenderCleanup(Render *render);
 
-static void RenderMaybeSwitchToTarget(int );
+static Render_Target *RenderMaybeSwitchToTarget(int target_enum);
 
 RENDERAPI SDL_Surface *RenderLoadSurface(const char *fp);
 RENDERAPI Texture RenderLoadTexture(const char *fp);
@@ -98,8 +98,11 @@ RENDERAPI void RenderDestroyTexture(Texture *tex);
 RENDERAPI Texture RenderCreateTextureFromSurface(SDL_Surface *surf);
 RENDERAPI Font *RenderLoadFont(const char *fp, int size);
 
+RENDERAPI SDL_Rect RenderGetUpdatedRect(Render_Target *target, SDL_Rect *rect);
 RENDERAPI Render_Target RenderMakeTarget(int width, int height, View_State view, bool use_negative_coords);
 RENDERAPI Render_Target RenderMakeTargetEx(int width, int height, View_State view, bool use_negative_coords, bool streaming);
+RENDERAPI void RenderTargetToTarget(int target_dst, int target_src, SDL_Rect *src, SDL_Rect *dst);
+RENDERAPI void RenderTargetToTargetEx(int target_dst, int target_src, SDL_Rect *src, SDL_Rect *dst, f64 angle, SDL_Point *center, SDL_RendererFlip flip);
 
 RENDERAPI void RenderColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 RENDERAPI void RenderColorStruct(SDL_Color rgba);
@@ -113,7 +116,7 @@ RENDERAPI void RenderTexture(int target, Texture *texture, SDL_Rect *src, SDL_Re
 RENDERAPI void RenderTextureEx(int target, Texture *texture, SDL_Rect *src, SDL_Rect *dst, f64 angle, SDL_Point *center, SDL_RendererFlip flip);
 RENDERAPI void RenderDrawText(int target, Render_Text_Data *text_data);
 RENDERAPI void RenderDrawTextQuick(int target_enum, const char *identifier, Font *font, const char *str, SDL_Color color, Uint8 alpha, int x, int y, int *w, int *h, bool force_redraw);
-RENDERAPI void RenderCleanupNonCachedText(Render_Text_Data_Cache *cache);
+RENDERAPI void RenderCleanupTextCache(Render_Text_Data_Cache *cache);
 RENDERAPI void RenderSetFontSize(Font *font, int size);
 RENDERAPI void RenderReadPixels(int target, Uint8 *pixels, int pitch);
 RENDERAPI void RenderTextureColorMod(Texture *texture, Uint8 r, Uint8 g, Uint8 b);

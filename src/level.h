@@ -9,7 +9,7 @@
 
 #define COMPARE_LEEWAY 3
 
-#define SHOW_NARRATION 1
+#define SHOW_NARRATION ALASKA_RELEASE_MODE
 
 enum Level_State {
     LEVEL_STATE_INTRO,

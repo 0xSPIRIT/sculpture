@@ -30,7 +30,6 @@
 #include "titlescreen.c"
 #include "background.c"
 #include "render.c"
-#include "view.c"
 
 static void game_resize(int h) {
     gs->gui.popup_y /= gs->gh*gs->S;
@@ -42,10 +41,10 @@ static void game_resize(int h) {
     
     gs->gui.popup_y *= gs->gh*gs->S;
     
-    gs->view.x = 0;
-    gs->view.y = 0;
-    gs->view.w = gs->window_width;
-    gs->view.h = gs->window_height-GUI_H;
+    gs->render.view.x = 0;
+    gs->render.view.y = 0;
+    gs->render.view.w = gs->window_width;
+    gs->render.view.h = gs->window_height-GUI_H;
     
     for (int i = 0; i < FONT_COUNT; i++) {
         RenderSetFontSize(gs->fonts.fonts[i], Scale(font_sizes[i]));
@@ -58,9 +57,9 @@ static void game_resize(int h) {
                                                                        ALASKA_PIXELFORMAT,
                                                                        SDL_TEXTUREACCESS_STREAMING,
                                                                        SCALE_3D*gs->window_width,
-                                                                       SCALE_3D*(gs->window_height-GUI_H));
+                                                                       SCALE_3D*gs->window_width);
     RenderTarget(RENDER_TARGET_3D)->texture.width = SCALE_3D * gs->window_width;
-    RenderTarget(RENDER_TARGET_3D)->texture.height = SCALE_3D * gs->window_height;
+    RenderTarget(RENDER_TARGET_3D)->texture.height = SCALE_3D * gs->window_width;
     
     SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_3D)->texture.handle, SDL_BLENDMODE_BLEND);
 }
@@ -68,10 +67,10 @@ static void game_resize(int h) {
 export void game_init(Game_State *state, int level) {
     gs = state;
     
-    gs->view.x = 0;
-    gs->view.y = 0;
-    gs->view.w = gs->window_width;
-    gs->view.h = gs->window_height-GUI_H;
+    gs->render.view.x = 0;
+    gs->render.view.y = 0;
+    gs->render.view.w = gs->window_width;
+    gs->render.view.h = gs->window_height-GUI_H;
     
     gs->show_tutorials = true;
     
@@ -351,20 +350,19 @@ export void game_run(Game_State *state) {
                 object_draw(&gs->obj);
                 fade_draw(RENDER_TARGET_MASTER);
                 
+                Log("%d, %d\n", RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_width, RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_height);
+                
                 SDL_Rect dst = {
                     0, 0,
-                    gs->gw*gs->S, GUI_H+SCALE_3D
-                };
-                SDL_Rect src = {
-                    0, 0,
-                    gs->window_width, GUI_H
+                    RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_width,
+                    RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_height
                 };
                 
                 RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture, 255 - 255 * min(240,gs->obj.t) / 240.0);
-                RenderTexture(RENDER_TARGET_MASTER,
-                              &RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture,
-                              &src,
-                              &dst);
+                RenderTargetToTarget(RENDER_TARGET_MASTER,
+                                     RENDER_TARGET_GUI_TOOLBAR,
+                                     NULL,
+                                     &dst);
             } else {
                 //view_tick(&gs->view, &gs->input);
                 
@@ -375,7 +373,8 @@ export void game_run(Game_State *state) {
                 
                 level_tick(&gs->levels[gs->level_current]);
                 level_draw(&gs->levels[gs->level_current]);
-                
+                text_field_draw(RENDER_TARGET_MASTER);
+
                 fade_draw(RENDER_TARGET_MASTER);
                 
                 preview_tick();
@@ -405,10 +404,10 @@ export void game_run(Game_State *state) {
         gs->window_height
     };
     
-    RenderTexture(-1,
-                  &RenderTarget(RENDER_TARGET_MASTER)->texture,
-                  &src,
-                  &dst);
+    RenderTargetToTarget(-1,
+                         RENDER_TARGET_MASTER,
+                         &src,
+                         &dst);
     
     SDL_RenderPresent(gs->renderer);
     

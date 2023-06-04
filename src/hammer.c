@@ -82,7 +82,6 @@ static void hammer_tick(Hammer *hammer) {
 //
 static void hammer_draw(int final_target, Hammer *hammer) {
     {
-        const int target = RENDER_TARGET_HAMMER;
         SDL_Point center = {
             hammer->tex->width/2,
             7*hammer->tex->height/8.0
@@ -95,7 +94,7 @@ static void hammer_draw(int final_target, Hammer *hammer) {
         };
         
         RenderColor(0, 0, 0, 0);
-        RenderClear(target);
+        RenderClear(RENDER_TARGET_HAMMER);
         
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         
@@ -108,7 +107,7 @@ static void hammer_draw(int final_target, Hammer *hammer) {
             angle *= -1;
         }
         
-        RenderTextureEx(target,
+        RenderTextureEx(RENDER_TARGET_HAMMER,
                         hammer->tex,
                         NULL,
                         &dst,
@@ -119,36 +118,65 @@ static void hammer_draw(int final_target, Hammer *hammer) {
     
     // Now we render the target.
     
-    {
-        const int target = RENDER_TARGET_HAMMER2;
-        
+    if (0) {
         RenderColor(0, 0, 0, 0);
-        RenderClear(target);
+        RenderClear(RENDER_TARGET_HAMMER2);
         
         SDL_Point center = {
             gs->chisel->x,
             gs->chisel->y
         };
+        
+        RenderTargetToTargetEx(RENDER_TARGET_HAMMER2,
+                               RENDER_TARGET_HAMMER,
+                               NULL,
+                               NULL,
+                               180+gs->chisel->angle,
+                               &center,
+                               SDL_FLIP_NONE);
+        
+        RenderTargetToTarget(final_target,
+                             RENDER_TARGET_HAMMER2,
+                             NULL,
+                             NULL);
+    } else {
+        RenderColor(0, 0, 0, 0);
+        RenderClear(RENDER_TARGET_HAMMER2);
+        
+        SDL_Point center = {
+            gs->chisel->x,
+            gs->chisel->y,
+        };
         SDL_Rect src = {
             0, 0,
-            gs->gw, gs->gh
+            64, 64
         };
         SDL_Rect dst = {
             0, 0,
-            gs->gw, gs->gh
+            64, 64
         };
         
-        RenderTextureEx(target,
-                        &RenderTarget(RENDER_TARGET_HAMMER)->texture,
-                        NULL,
-                        NULL,
-                        180+gs->chisel->angle,
-                        &center,
-                        SDL_FLIP_NONE);
-        
-        RenderTexture(final_target,
-                      &RenderTarget(target)->texture,
-                      &src,
-                      &dst);
+        RenderTargetToTargetEx(RENDER_TARGET_HAMMER2,
+                               RENDER_TARGET_HAMMER,
+                               NULL,
+                               NULL,
+                               180+gs->chisel->angle,
+                               &center,
+                               SDL_FLIP_NONE);
+
+#if 0
+        SDL_RenderCopyEx(gs->renderer,
+                         RenderTarget(RENDER_TARGET_HAMMER)->texture.handle,
+                         NULL,
+                         NULL,
+                         180+gs->chisel->angle,
+                         &center,
+                         SDL_FLIP_NONE);
+#endif
+
+        RenderTargetToTarget(final_target,
+                             RENDER_TARGET_HAMMER2,
+                             &src,
+                             &dst);
     }
 }

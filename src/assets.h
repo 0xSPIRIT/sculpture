@@ -40,7 +40,7 @@ enum {
     TEXT_INDEX_COUNT = 128
 };
 
-enum {
+typedef enum {
     RENDER_TARGET_MASTER, // The final full-screen resolution target.
     RENDER_TARGET_GLOBAL, // The main pixel art render target
     RENDER_TARGET_GUI_TOOLBAR, // The render target showing the tool buttons
@@ -54,7 +54,7 @@ enum {
     RENDER_TARGET_PREVIEW,
     RENDER_TARGET_OUTRO,
     RENDER_TARGET_COUNT 
-};
+} RenderTargetType;
 
 typedef struct Audio {
     Mix_Music *music_titlescreen;

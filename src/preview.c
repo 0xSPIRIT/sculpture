@@ -187,10 +187,10 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
         scale*gs->gw, scale*gs->gh
     };
     
-    RenderTexture(target, //TODO
-                  &RenderTarget(RENDER_TARGET_PREVIEW)->texture,
-                  NULL,
-                  &target_dst);
+    RenderTargetToTarget(target,
+                         RENDER_TARGET_PREVIEW,
+                         NULL,
+                         &target_dst);
     
     p->index++;
     if (p->index >= p->length) p->index = 0;
