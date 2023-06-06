@@ -46,6 +46,9 @@ static void game_resize(int h) {
     gs->render.view.w = gs->window_width;
     gs->render.view.h = gs->window_height-GUI_H;
     
+    gs->real_top_left.x = gs->window_width/4;
+    gs->real_top_left.y = gs->window_height/4;
+    
     for (int i = 0; i < FONT_COUNT; i++) {
         RenderSetFontSize(gs->fonts.fonts[i], Scale(font_sizes[i]));
     }
@@ -71,6 +74,9 @@ export void game_init(Game_State *state, int level) {
     gs->render.view.y = 0;
     gs->render.view.w = gs->window_width;
     gs->render.view.h = gs->window_height-GUI_H;
+    
+    gs->real_top_left.x = gs->window_width/4;
+    gs->real_top_left.y = gs->window_height/4;
     
     gs->show_tutorials = true;
     
@@ -119,7 +125,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
         }
     }
     
-    if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_F11) {
+    if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_F11 && !gs->obj.active) {
         if (!gs->fullscreen) {
             SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
             gs->fullscreen = true;
@@ -350,19 +356,19 @@ export void game_run(Game_State *state) {
                 object_draw(&gs->obj);
                 fade_draw(RENDER_TARGET_MASTER);
                 
-                Log("%d, %d\n", RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_width, RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_height);
-                
                 SDL_Rect dst = {
                     0, 0,
                     RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_width,
                     RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_height
                 };
                 
-                RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture, 255 - 255 * min(240,gs->obj.t) / 240.0);
-                RenderTargetToTarget(RENDER_TARGET_MASTER,
-                                     RENDER_TARGET_GUI_TOOLBAR,
-                                     NULL,
-                                     &dst);
+                Uint8 alpha = 255 - 255 * min(240,gs->obj.t) / 240.0;
+                RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture, alpha);
+                RenderMaybeSwitchToTarget(RENDER_TARGET_MASTER);
+                SDL_RenderCopy(gs->render.sdl,
+                               RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture.handle,
+                               NULL,
+                               &dst);
             } else {
                 //view_tick(&gs->view, &gs->input);
                 
@@ -374,7 +380,7 @@ export void game_run(Game_State *state) {
                 level_tick(&gs->levels[gs->level_current]);
                 level_draw(&gs->levels[gs->level_current]);
                 text_field_draw(RENDER_TARGET_MASTER);
-
+                
                 fade_draw(RENDER_TARGET_MASTER);
                 
                 preview_tick();
@@ -404,10 +410,10 @@ export void game_run(Game_State *state) {
         gs->window_height
     };
     
-    RenderTargetToTarget(-1,
-                         RENDER_TARGET_MASTER,
-                         &src,
-                         &dst);
+    SDL_RenderCopy(gs->render.sdl,
+                   RenderTarget(RENDER_TARGET_MASTER)->texture.handle,
+                   &src,
+                   &dst);
     
     SDL_RenderPresent(gs->renderer);
     

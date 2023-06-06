@@ -252,10 +252,10 @@ static void converter_gui_draw(void) {
         RenderClear(target);
         
         RenderColor(bg.r, bg.g, bg.b, bg.a);
-        RenderFillRect(target, c->r);
+        RenderFillRectRelative(target, c->r);
         
         RenderColor(128, 128, 128, 255);
-        RenderDrawRect(target, c->r);
+        RenderDrawRectRelative(target, c->r);
         
         int count = 0;
         
@@ -281,13 +281,13 @@ static void converter_gui_draw(void) {
                 0, c->r.y + c->r.h,
                 gs->window_width, gs->window_height - (c->r.y + c->r.h+GUI_H)
             };
-            RenderFillRect(target, a);
+            RenderFillRectRelative(target, a);
             
             SDL_Rect b = {
                 c->r.x+c->r.w, 0,
                 gs->window_width - (c->r.x + c->r.w), gs->window_height-GUI_H
             };
-            RenderFillRect(target, b);
+            RenderFillRectRelative(target, b);
         }
     }
     

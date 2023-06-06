@@ -42,7 +42,7 @@ enum {
 
 typedef enum {
     RENDER_TARGET_MASTER, // The final full-screen resolution target.
-    RENDER_TARGET_GLOBAL, // The main pixel art render target
+    RENDER_TARGET_PIXELGRID, // The main pixel art render target
     RENDER_TARGET_GUI_TOOLBAR, // The render target showing the tool buttons
     RENDER_TARGET_CHISEL_BLOCKER,
     RENDER_TARGET_CHISEL, // Use the same render target for each chisel.

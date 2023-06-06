@@ -76,7 +76,8 @@ typedef struct {
     SDL_Renderer *sdl;
     View_State view_type;
     
-    SDL_Rect view;
+    SDL_FRect view;
+    SDL_FPoint to;
     
     Render_Target *current_target;
     Render_Target *render_targets;
@@ -101,19 +102,23 @@ RENDERAPI Font *RenderLoadFont(const char *fp, int size);
 RENDERAPI SDL_Rect RenderGetUpdatedRect(Render_Target *target, SDL_Rect *rect);
 RENDERAPI Render_Target RenderMakeTarget(int width, int height, View_State view, bool use_negative_coords);
 RENDERAPI Render_Target RenderMakeTargetEx(int width, int height, View_State view, bool use_negative_coords, bool streaming);
-RENDERAPI void RenderTargetToTarget(int target_dst, int target_src, SDL_Rect *src, SDL_Rect *dst);
-RENDERAPI void RenderTargetToTargetEx(int target_dst, int target_src, SDL_Rect *src, SDL_Rect *dst, f64 angle, SDL_Point *center, SDL_RendererFlip flip);
+RENDERAPI void RenderTargetToTargetRelative(int target_dst, int target_src, SDL_Rect *src, SDL_Rect *dst);
+RENDERAPI void RenderTargetToTargetRelativeEx(int target_dst, int target_src, SDL_Rect *src, SDL_Rect *dst, f64 angle, SDL_Point *center, SDL_RendererFlip flip);
 
 RENDERAPI void RenderColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 RENDERAPI void RenderColorStruct(SDL_Color rgba);
 RENDERAPI void RenderLine(int target, int x1, int y1, int x2, int y2);
-RENDERAPI void RenderPoint(int target, int x1, int y1);
-RENDERAPI void RenderDrawRect(int target, SDL_Rect rect);
-RENDERAPI void RenderFillRect(int target, SDL_Rect rect);
+RENDERAPI void RenderPointRelative(int target, int x1, int y1);
+RENDERAPI void RenderDrawRectRelative(int target, SDL_Rect rect);
+RENDERAPI void RenderFillRectRelative(int target, SDL_Rect rect);
 RENDERAPI void RenderClear(int target);
 RENDERAPI void RenderPresent(int target);
+
 RENDERAPI void RenderTexture(int target, Texture *texture, SDL_Rect *src, SDL_Rect *dst);
 RENDERAPI void RenderTextureEx(int target, Texture *texture, SDL_Rect *src, SDL_Rect *dst, f64 angle, SDL_Point *center, SDL_RendererFlip flip);
+
+RENDERAPI void RenderTextureRelative(int target, Texture *texture, SDL_Rect *src, SDL_Rect *dst);
+
 RENDERAPI void RenderDrawText(int target, Render_Text_Data *text_data);
 RENDERAPI void RenderDrawTextQuick(int target_enum, const char *identifier, Font *font, const char *str, SDL_Color color, Uint8 alpha, int x, int y, int *w, int *h, bool force_redraw);
 RENDERAPI void RenderCleanupTextCache(Render_Text_Data_Cache *cache);

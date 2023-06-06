@@ -420,15 +420,23 @@ static void gui_draw(int target) {
             button_draw(RENDER_TARGET_GUI_TOOLBAR, gui->tool_buttons[i]);
         }
         
-        SDL_Rect dst = {
+        SDL_Rect src = {
             0, 0,
-            gs->window_width, GUI_H
+            gs->window_width,
+            GUI_H
         };
         
-        RenderTexture(target,
-                      &RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture,
-                      &dst,
-                      &dst);
+        SDL_Rect dst = {
+            0,
+            0,
+            gs->window_width,
+            GUI_H
+        };
+        
+        RenderTargetToTargetRelative(target,
+                             RENDER_TARGET_GUI_TOOLBAR,
+                             &src,
+                             &dst);
     }
     
     popup_confirm_tick_and_draw(target, &gs->gui.popup_confirm);
@@ -526,10 +534,10 @@ static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup) {
     };
     
     RenderColor(0, 0, 0, 255);
-    RenderFillRect(target, popup->r);
+    RenderFillRectRelative(target, popup->r);
     
     RenderColor(255, 255, 255, 255);
-    RenderDrawRect(target, popup->r);
+    RenderDrawRectRelative(target, popup->r);
     
     popup->a->x = 1*gs->window_width/5 + popup->b->w*1;
     popup->a->y = popup->r.y + popup->r.h - Scale(50);
@@ -627,7 +635,7 @@ static void gui_popup_draw(int target) {
                 Green(INVENTORY_COLOR),
                 Blue(INVENTORY_COLOR),
                 255);
-    RenderFillRect(target, popup);
+    RenderFillRectRelative(target, popup);
     
     RenderColor(Red(CONVERTER_LINE_COLOR),
                 Green(CONVERTER_LINE_COLOR),
@@ -651,7 +659,7 @@ static void gui_popup_draw(int target) {
     };
     
     RenderColorStruct(ColorFromInt(INVENTORY_COLOR2));
-    RenderFillRect(target, bar);
+    RenderFillRectRelative(target, bar);
     
     SDL_Rect tab_icon = {
         gs->gw*gs->S - 128, (int)(GUI_H + gui->popup_y) - h,

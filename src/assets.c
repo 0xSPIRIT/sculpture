@@ -73,8 +73,6 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_POPUP)      = RenderLoadTexture("popup.png");
     GetTexture(TEXTURE_TEXT_ARROW) = RenderLoadTexture("text_arrow.png");
     
-    //textures->level_backgrounds[0] = RenderLoadTexture("bg0.png");
-    
     for (enum Tool_Type i = 0; i < TOOL_COUNT; i++) {
         char filename[128] = {0};
         char path[128] = {0};
@@ -128,10 +126,10 @@ static void surfaces_init(Surfaces *surfaces) {
     surfaces->grass_surface = RenderLoadSurface("grass.png");
     
     // TODO: Hack. 64,64 should be gs->gw, gs->gh, but they're not 
-    //       defined as yet here.
+    //       initialized as yet here.
     surfaces->background = SDL_CreateRGBSurfaceWithFormat(0,
-                                                          64,
-                                                          64,
+                                                          64*2,
+                                                          64*2,
                                                           32,
                                                           ALASKA_PIXELFORMAT);
     

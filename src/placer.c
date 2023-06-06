@@ -475,7 +475,7 @@ static void placer_draw(int target, Placer *placer, bool full_size) {
                 
                 int gx = x+fx;
                 int gy = y+fy;
-                RenderPoint(target, scale*gx, scale*gy + y_off);
+                RenderPointRelative(target, scale*gx, scale*gy + y_off);
             }
         }
     }
@@ -524,7 +524,7 @@ static void placer_draw(int target, Placer *placer, bool full_size) {
             RenderColor(255, 0, 0, 255);
         }
         
-        RenderDrawRect(target, placer->rect);
+        RenderDrawRectRelative(target, placer->rect);
     }
     
     RenderColor(255, 255, 255, 64);

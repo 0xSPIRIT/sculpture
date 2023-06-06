@@ -141,7 +141,7 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
                 Green(SLOT_COLOR),
                 Blue(SLOT_COLOR),
                 255);
-    RenderFillRect(target, bounds);
+    RenderFillRectRelative(target, bounds);
     
     if (slot->inventory_index != -1 && slot->inventory_index == gs->current_placer) {
         RenderColor(255,
@@ -160,7 +160,7 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
     bounds.w += 2;
     bounds.h += 2;
     
-    RenderDrawRect(target, bounds);
+    RenderDrawRectRelative(target, bounds);
     
     bounds.x++;
     bounds.y++;
@@ -424,7 +424,7 @@ static void inventory_draw(int target) {
                 Green(INVENTORY_COLOR),
                 Blue(INVENTORY_COLOR),
                 255);
-    RenderFillRect(target, rect);
+    RenderFillRectRelative(target, rect);
     
     RenderColor(Red(CONVERTER_LINE_COLOR),
                 Green(CONVERTER_LINE_COLOR),

@@ -61,6 +61,8 @@ typedef struct Game_State {
     SDL_Renderer *renderer;
     Render render;
     
+    SDL_Point real_top_left; // Probably should be in Render.
+    
     // All stored surfaces and textures.
     Textures textures;
     Surfaces surfaces;

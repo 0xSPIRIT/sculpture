@@ -184,10 +184,10 @@ RENDERAPI Render_Target RenderMakeTarget(int width,
     return RenderMakeTargetEx(width, height, view, use_negative_coords, false);
 }
 
-RENDERAPI void RenderTargetToTarget(int target_dst,
-                                    int target_src,
-                                    SDL_Rect *src,
-                                    SDL_Rect *dst)
+RENDERAPI void RenderTargetToTargetRelative(int target_dst,
+                                            int target_src,
+                                            SDL_Rect *src,
+                                            SDL_Rect *dst)
 {
     RenderMaybeSwitchToTarget(target_dst);
     
@@ -200,7 +200,7 @@ RENDERAPI void RenderTargetToTarget(int target_dst,
                    &updated_dst);
 }
 
-RENDERAPI void RenderTargetToTargetEx(int target_dst,
+RENDERAPI void RenderTargetToTargetRelativeEx(int target_dst,
                                       int target_src,
                                       SDL_Rect *src,
                                       SDL_Rect *dst,
@@ -271,20 +271,20 @@ RENDERAPI void RenderLine(int target_enum, int x1, int y1, int x2, int y2) {
     SDL_RenderDrawLine(gs->render.sdl, x1, y1, x2, y2);
 }
 
-RENDERAPI void RenderPoint(int target_enum, int x, int y) {
+RENDERAPI void RenderPointRelative(int target_enum, int x, int y) {
     Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
     x += target->top_left.x;
     y += target->top_left.y;
     SDL_RenderDrawPoint(gs->render.sdl, x, y);
 }
 
-RENDERAPI void RenderDrawRect(int target_enum, SDL_Rect rect) {
+RENDERAPI void RenderDrawRectRelative(int target_enum, SDL_Rect rect) {
     Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
     rect = RenderGetUpdatedRect(target, &rect);
     SDL_RenderDrawRect(gs->render.sdl, &rect);
 }
 
-RENDERAPI void RenderFillRect(int target_enum, SDL_Rect rect) {
+RENDERAPI void RenderFillRectRelative(int target_enum, SDL_Rect rect) {
     Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
     rect = RenderGetUpdatedRect(target, &rect);
     SDL_RenderFillRect(gs->render.sdl, &rect);
@@ -353,6 +353,18 @@ RENDERAPI void RenderTexture(int target_enum,
                              Texture *texture,
                              SDL_Rect *src,
                              SDL_Rect *dst)
+{
+    RenderMaybeSwitchToTarget(target_enum);
+    SDL_RenderCopy(gs->render.sdl,
+                   texture->handle,
+                   src,
+                   dst);
+}
+
+RENDERAPI void RenderTextureRelative(int target_enum,
+                                     Texture *texture,
+                                     SDL_Rect *src,
+                                     SDL_Rect *dst)
 {
     Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
     

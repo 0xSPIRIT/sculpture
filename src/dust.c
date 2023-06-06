@@ -84,6 +84,6 @@ static void dust_grid_draw(int target) {
         SDL_Color c = pixel_from_index(data->types[i], (int)data->xs[i] + (int)data->ys[i]*gs->gw);
         const f64 coeff = 0.5;
         RenderColor(c.r*coeff, c.g*coeff, c.b*coeff, c.a);
-        RenderPoint(target, data->xs[i], data->ys[i]);
+        RenderPointRelative(target, data->xs[i], data->ys[i]);
     }
 }

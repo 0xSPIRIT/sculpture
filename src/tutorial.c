@@ -114,9 +114,9 @@ static void tutorial_rect_run(int target) {
     const SDL_Color bg = (SDL_Color){0, 0, 0, 255};
     
     RenderColor(bg.r, bg.g, bg.b, 255);
-    RenderFillRect(target, tut->rect);
+    RenderFillRectRelative(target, tut->rect);
     RenderColor(127, 127, 127, 255);
-    RenderDrawRect(target, tut->rect);
+    RenderDrawRectRelative(target, tut->rect);
     
     RenderColor(255, 255, 255, 255);
     

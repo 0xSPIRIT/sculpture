@@ -4,6 +4,10 @@ TODO
     Also in fullscreen, the 3D goes out of view, rendering past the
     visible portion.
 
+  - Honestly, re-evaluate if the obfuscation of the output positions
+    are what you want... They seem much easier when the caller just puts
+    in the values directly.
+
   - Redo all rendering code to allow for larger textures.
      x Implement the feature of adding negative positions into rendering targets,
        so most of our actual rendering code can stay the same, and just allow

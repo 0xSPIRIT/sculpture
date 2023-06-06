@@ -127,7 +127,7 @@ static void hammer_draw(int final_target, Hammer *hammer) {
             gs->chisel->y
         };
         
-        RenderTargetToTargetEx(RENDER_TARGET_HAMMER2,
+        RenderTargetToTargetRelativeEx(RENDER_TARGET_HAMMER2,
                                RENDER_TARGET_HAMMER,
                                NULL,
                                NULL,
@@ -135,7 +135,7 @@ static void hammer_draw(int final_target, Hammer *hammer) {
                                &center,
                                SDL_FLIP_NONE);
         
-        RenderTargetToTarget(final_target,
+        RenderTargetToTargetRelative(final_target,
                              RENDER_TARGET_HAMMER2,
                              NULL,
                              NULL);
@@ -147,36 +147,19 @@ static void hammer_draw(int final_target, Hammer *hammer) {
             gs->chisel->x,
             gs->chisel->y,
         };
-        SDL_Rect src = {
-            0, 0,
-            64, 64
-        };
-        SDL_Rect dst = {
-            0, 0,
-            64, 64
-        };
         
-        RenderTargetToTargetEx(RENDER_TARGET_HAMMER2,
+        RenderTargetToTargetRelativeEx(RENDER_TARGET_HAMMER2,
                                RENDER_TARGET_HAMMER,
                                NULL,
                                NULL,
                                180+gs->chisel->angle,
                                &center,
                                SDL_FLIP_NONE);
-
-#if 0
-        SDL_RenderCopyEx(gs->renderer,
-                         RenderTarget(RENDER_TARGET_HAMMER)->texture.handle,
-                         NULL,
-                         NULL,
-                         180+gs->chisel->angle,
-                         &center,
-                         SDL_FLIP_NONE);
-#endif
-
-        RenderTargetToTarget(final_target,
-                             RENDER_TARGET_HAMMER2,
-                             &src,
-                             &dst);
+        
+        RenderMaybeSwitchToTarget(final_target);
+        SDL_RenderCopy(gs->render.sdl,
+                       RenderTarget(RENDER_TARGET_HAMMER2)->texture.handle,
+                       NULL,
+                       NULL);
     }
 }

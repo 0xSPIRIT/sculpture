@@ -407,7 +407,7 @@ static void overlay_draw_missed_pixels(int target, int *grid) {
             int i = x+y*gs->gw;
             
             if (gs->grid[i].type != grid[i]) {
-                RenderPoint(target, x, y);
+                RenderPointRelative(target, x, y);
             }
         }
     }
@@ -455,7 +455,7 @@ static void overlay_draw_grid(int target, int *grid, f32 alpha_coeff) {
             
             RenderColor(c.r, c.g, c.b, a);
             
-            RenderPoint(target, x, y);
+            RenderPointRelative(target, x, y);
         }
     }
 }

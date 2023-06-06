@@ -36,5 +36,5 @@ static void fade_draw(int target) {
         gs->window_width, gs->window_height
     };
     
-    RenderFillRect(target, rect);
+    RenderFillRectRelative(target, rect);
 }

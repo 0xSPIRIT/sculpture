@@ -20,7 +20,7 @@ static void titlescreen_draw(void) {
     if (gs->titlescreen.stop) return;
     
     TTF_SizeText(gs->fonts.font_titlescreen->handle, "Alaska", &gs->titlescreen.text_width, NULL);
-    RenderDrawTextQuick(RENDER_TARGET_GLOBAL,
+    RenderDrawTextQuick(RENDER_TARGET_PIXELGRID,
                         "titlescreen",
                         gs->fonts.font_titlescreen,
                         "Alaska",
@@ -39,7 +39,7 @@ static void titlescreen_draw(void) {
     a *= 255;
     
     TTF_SizeText(gs->fonts.font_times->handle, string, &w, NULL);
-    RenderDrawTextQuick(RENDER_TARGET_GLOBAL, //TODO
+    RenderDrawTextQuick(RENDER_TARGET_PIXELGRID, //TODO
                         "something else",
                         gs->fonts.font_times,
                         string,
@@ -50,7 +50,7 @@ static void titlescreen_draw(void) {
                         NULL,
                         NULL,
                         false);
-    RenderDrawTextQuick(RENDER_TARGET_GLOBAL,
+    RenderDrawTextQuick(RENDER_TARGET_PIXELGRID,
                         "another",
                         gs->fonts.font_times,
                         "F11 - Fullscreen",

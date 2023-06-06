@@ -172,7 +172,12 @@ static void narrator_run(int target, SDL_Color col) {
             gs->credits.state = CREDITS_DELAY;
         } else {
             level_set_state(gs->level_current, LEVEL_STATE_INTRO);
-            effect_set(gs->levels[gs->level_current].effect_type, gs->gw, gs->gh);
+            effect_set(gs->levels[gs->level_current].effect_type,
+                       false,
+                       -gs->gw/2,
+                       -gs->gh/2,
+                       2*gs->gw,
+                       2*gs->gh);
             memset(&gs->narrator, 0, sizeof(Narrator));
         }
         return;

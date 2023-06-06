@@ -742,10 +742,10 @@ static void grid_array_draw(int target, Cell *array, Uint8 alpha) {
                 if (array[x+y*gs->gw].px != 0 && array[x+y*gs->gw].py != 0 && array[x+y*gs->gw].type == CELL_WATER) {
                     RenderLine(target, l.x1, l.y1, l.x2, l.y2);
                 } else {
-                    RenderPoint(target, l.x1, l.y1);
+                    RenderPointRelative(target, l.x1, l.y1);
                 }
             } else {
-                RenderPoint(target, x, y);
+                RenderPointRelative(target, x, y);
             }
         }
     }
@@ -781,7 +781,7 @@ static void grid_draw(int target) {
                             (Uint8) (b/4),
                             (Uint8) (b),
                             (Uint8) (alpha));
-                RenderPoint(target, x, y);
+                RenderPointRelative(target, x, y);
             }
         }
     } 
@@ -988,7 +988,7 @@ static void draw_objects(int target) {
             int b = gs->grid[x+y*gs->gw].object + 10;
             b *= b;
             RenderColor(randR(b), randG(b), randB(b), 255);
-            RenderPoint(target, x, y);
+            RenderPointRelative(target, x, y);
         }
     }
 }

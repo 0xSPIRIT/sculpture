@@ -31,9 +31,9 @@ static void tooltip_draw_box(int target, Tooltip *tooltip, int w, int h) {
     };
     
     RenderColor(12, 12, 12, 255);
-    RenderFillRect(target, r);
+    RenderFillRectRelative(target, r);
     RenderColor(255, 255, 255, 255);
-    RenderDrawRect(target, r);
+    RenderDrawRectRelative(target, r);
 }
 
 static void tooltip_get_string(int type, int amt, char *out_str) {

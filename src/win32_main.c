@@ -145,7 +145,7 @@ static void game_init(Game_State *state) {
     
     state->window_width = (int)(64*state->S);
     state->window_height = (int)(64*state->S + GUI_H);
-    
+
     state->real_width = state->window_width;
     state->real_height = state->window_height;
     

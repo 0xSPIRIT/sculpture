@@ -70,5 +70,5 @@ static void deleter_draw(int target) {
                     SDL_FLIP_NONE);
     
     RenderColor(255, 0, 0, 64);
-    RenderPoint(target, (int)deleter->x, (int)deleter->y);
+    RenderPointRelative(target, (int)deleter->x, (int)deleter->y);
 }

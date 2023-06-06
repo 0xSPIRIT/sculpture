@@ -22,5 +22,7 @@ typedef struct Effect {
     Effect_Particle *particles;
     int particle_count;
     
-    int w, h;
+    bool high_fidelity;
+    
+    SDL_Rect bounds;
 } Effect;

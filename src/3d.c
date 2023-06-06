@@ -99,7 +99,7 @@ static void object_activate(Object3D *obj) {
 #if 0
     // When taking the pixels directly from the screen, and
     // memcpying it into the surface's pixel buffer.
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GLOBAL));
+    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_PIXELGRID));
 #else
     // Drawing the grid's pixels to a texture, then
     // memcpying that into the surface's pixel buffer.
@@ -352,8 +352,10 @@ static void object_draw(Object3D *obj) {
         gs->window_width,
         gs->window_width
     };
-    RenderTargetToTarget(RENDER_TARGET_MASTER,
-                         RENDER_TARGET_3D,
-                         NULL,
-                         &dst);
+    
+    RenderMaybeSwitchToTarget(RENDER_TARGET_MASTER);
+    SDL_RenderCopy(gs->render.sdl,
+                   RenderTarget(RENDER_TARGET_3D)->texture.handle,
+                   NULL,
+                   &dst);
 }

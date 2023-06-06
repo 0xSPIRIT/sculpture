@@ -101,7 +101,7 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
                     RenderColor(col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
                 }
                 
-                RenderPoint(RENDER_TARGET_PREVIEW, x, y);
+                RenderPointRelative(RENDER_TARGET_PREVIEW, x, y);
             }
         }
         
@@ -111,7 +111,7 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
                 if (!t) continue;
                 
                 RenderColor(255, 255, 255, 127);
-                RenderPoint(RENDER_TARGET_PREVIEW, x, y);
+                RenderPointRelative(RENDER_TARGET_PREVIEW, x, y);
             }
         }
         
@@ -139,7 +139,7 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
                     p->placer_rect.h = 1+y - p->placer_rect.y;
                     
                     RenderColor(255, 0, 0, 255);
-                    RenderDrawRect(RENDER_TARGET_PREVIEW, p->placer_rect);
+                    RenderDrawRectRelative(RENDER_TARGET_PREVIEW, p->placer_rect);
                 } else {
                     p->placer_rect.x = p->placer_rect.y = -1;
                 }
@@ -187,7 +187,7 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
         scale*gs->gw, scale*gs->gh
     };
     
-    RenderTargetToTarget(target,
+    RenderTargetToTargetRelative(target,
                          RENDER_TARGET_PREVIEW,
                          NULL,
                          &target_dst);

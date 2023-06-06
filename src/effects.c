@@ -1,11 +1,13 @@
-static void effect_reset_snow(bool big) {
+static void effect_reset_snow(bool high_fidelity) {
     for (int i = 0; i < gs->current_effect.particle_count; i++) {
         Effect_Particle *particle = &gs->current_effect.particles[i];
-        particle->x = (f32) (rand()%gs->current_effect.w);
-        particle->y = (f32) (rand()%gs->current_effect.h);
         
+        SDL_Rect bounds = gs->current_effect.bounds;
         
-        if(!big) {
+        particle->x = (f32) (bounds.x+(rand()%bounds.w));
+        particle->y = (f32) (bounds.y+(rand()%bounds.h));
+        
+        if (!high_fidelity) {
             f32 r1 = randf(0.5);
             f32 r2 = randf(1.0);
             particle->vx = 0.3f + r1*r1*r1;
@@ -18,7 +20,7 @@ static void effect_reset_snow(bool big) {
         }
         
         f64 spd = 0.3f;
-        if (big) {
+        if (high_fidelity) {
             spd = EFFECT_SCALE;
         }
         
@@ -27,42 +29,44 @@ static void effect_reset_snow(bool big) {
     }
 }
 
-static void effect_set(int type, int w, int h) {
-    gs->current_effect.type = type;
+static void effect_set(int type, bool high_fidelity, int x, int y, int w, int h) {
+    Effect *effect = &gs->current_effect;
     
-    gs->current_effect.w = w;
-    gs->current_effect.h = h;
+    effect->type = type;
+    effect->high_fidelity = high_fidelity;
+    
+    effect->bounds = (SDL_Rect){x, y, w, h};
     
     switch (type) {
         case EFFECT_NONE: {
-            gs->current_effect.particles = NULL;
+            effect->particles = NULL;
             return;
         }
         case EFFECT_SNOW: {
-            gs->current_effect.particle_count = 200;
-            if (w > gs->gw) {
-                gs->current_effect.particle_count = 650;
+            effect->particle_count = 200;
+            if (high_fidelity) {
+                effect->particle_count = 650;
             }
             break;
         }
         case EFFECT_RAIN: {
-            gs->current_effect.particle_count = 50;
+            effect->particle_count = 50;
             break;
         }
     }
     
-    if (gs->current_effect.particles == NULL) {
-        gs->current_effect.particles = PushArray(gs->persistent_memory, gs->current_effect.particle_count, sizeof(Effect_Particle));
+    if (effect->particles == NULL) {
+        effect->particles = PushArray(gs->persistent_memory, effect->particle_count, sizeof(Effect_Particle));
     }
     
     switch (type) {
         case EFFECT_SNOW: {
-            effect_reset_snow(w > gs->gw);
+            effect_reset_snow(high_fidelity);
             break;
         }
         case EFFECT_RAIN: {
-            for (int i = 0; i < gs->current_effect.particle_count; i++) {
-                Effect_Particle *particle = &gs->current_effect.particles[i];
+            for (int i = 0; i < effect->particle_count; i++) {
+                Effect_Particle *particle = &effect->particles[i];
                 particle->x = (f32) (rand()%gs->gw);
                 particle->y = (f32) (rand()%gs->gh);
                 
@@ -95,20 +99,12 @@ static void particle_tick(Effect *effect, int i) {
                 particle->vx += 0.003f * sinf(SDL_GetTicks() / 1000.f);
             }
             
-#if 0
-            if (gs->levels[gs->level_current].state == LEVEL_STATE_PLAY) {
-                if (is_in_bounds((int)particle->x, (int)particle->y) && gs->grid[(int)particle->x + ((int)particle->y)*gs->gw].type) {
-                    particle->x = (f32) (rand()%effect->w);
-                    particle->y = 0;
-                }
-            }
-#endif
+            if (particle->x < effect->bounds.x) particle->x = (f32) effect->bounds.w-1;
+            if (particle->y < effect->bounds.y) particle->y = (f32) effect->bounds.w-1;
             
-            if (particle->x < 0) particle->x = (f32) effect->w-1;
-            if (particle->y < 0) particle->y = (f32) effect->h-1;
+            if (particle->x-particle->vx*3 > effect->bounds.w-1) particle->x = effect->bounds.x;
+            if (particle->y-particle->vy*3 > effect->bounds.h-1) particle->y = effect->bounds.y;
             
-            if (particle->x-particle->vx*3 > effect->w-1) particle->x = 0;
-            if (particle->y-particle->vy*3 > effect->h-1) particle->y = 0;
             break;
         }
         default: break;
@@ -125,6 +121,8 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
     }
 #endif
     
+    int debugmax = 0;
+    
     switch (effect->type) {
         case EFFECT_SNOW: {
             for (int i = 0; i < effect->particle_count; i++) {
@@ -136,10 +134,13 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
                 
                 particle_tick(effect, i);
                 
+                if (particle->x > debugmax)
+                    debugmax = particle->x;
+                
                 f32 max;
                 
                 f32 spd = 0.3f;
-                if (effect->w > gs->gw) {
+                if (effect->high_fidelity) {
                     spd = EFFECT_SCALE;
                 }
                 max = sqrt((spd*spd*0.8*0.8) + (spd*spd*1.3*1.3));
@@ -149,23 +150,23 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
                 
                 //RenderColor(my_rand(px), my_rand(py), my_rand(px*py), (Uint8) (255 * (length/max)));
                 float coeff = 0.4f;
-                if (effect->w > gs->gw) coeff = 0.6f;
+                if (effect->bounds.w > gs->gw) coeff = 0.6f;
                 
                 Uint8 col = (Uint8) (255 * coeff*length/max);
-                if (effect->w > gs->gw) {
+                if (effect->high_fidelity) {
                     RenderColor(col, col, col, 255);
                 } else {
                     RenderColor(255, 255, 255, col);
                 }
                 
                 if (draw_points) {
-                    RenderPoint(target, px, py);
+                    RenderPointRelative(target, px, py);
                 } else {
                     
                     if (gs->levels[gs->level_current].state == LEVEL_STATE_NARRATION) {
                         RenderFillCircle(target,
-                                         gs->window_width * px/effect->w,
-                                         gs->window_height * py/effect->h,
+                                         gs->window_width * px/effect->bounds.w,
+                                         gs->window_height * py/effect->bounds.h,
                                          Scale(6 * (length/max)));
                     }
                 }
@@ -191,4 +192,6 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
         }
         default: break;
     }
+    
+    Log("%d\n", debugmax);
 }
