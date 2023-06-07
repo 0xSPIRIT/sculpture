@@ -67,6 +67,22 @@ static void game_resize(int h) {
     SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_3D)->texture.handle, SDL_BLENDMODE_BLEND);
 }
 
+static void game_update_view(void) {
+    gs->render.to.x = 0;
+    gs->render.to.y = 0;
+    
+    if (gs->input.keys[SDL_SCANCODE_D])
+        gs->render.to.x = gs->window_width*0.25;
+    if (gs->input.keys[SDL_SCANCODE_A])
+        gs->render.to.x = -gs->window_width*0.25;
+    
+    if (gs->input.keys[SDL_SCANCODE_LALT])
+        gs->render.to.x *= 2;
+    
+    gs->render.view.x = lerp64(gs->render.view.x, gs->render.to.x, 0.2);
+    gs->render.view.y = lerp64(gs->render.view.y, gs->render.to.y, 0.2);
+}
+
 export void game_init(Game_State *state, int level) {
     gs = state;
     
@@ -349,6 +365,8 @@ export void game_run(Game_State *state) {
             break;
         }
         case GAME_STATE_PLAY: {
+            game_update_view();
+            
             if (gs->obj.active) {
                 RenderColor(255, 255, 255, 255);
                 RenderClear(RENDER_TARGET_MASTER);
@@ -415,7 +433,20 @@ export void game_run(Game_State *state) {
                    &src,
                    &dst);
     
+#if 0
+    LARGE_INTEGER frequency, time_start, time_end;
+    QueryPerformanceFrequency(&frequency);
+    QueryPerformanceCounter(&time_start);
+#endif
+ 
     SDL_RenderPresent(gs->renderer);
     
+#if 0
+    QueryPerformanceCounter(&time_end);
+    Uint64 delta = time_end.QuadPart - time_start.QuadPart;
+    f64 d = (f64)delta / (f64)frequency.QuadPart;
+    Log("Time taken is: %lf\n", d);
+#endif
+
     gs->is_mouse_over_any_button = false;
 }

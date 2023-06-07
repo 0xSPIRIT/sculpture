@@ -17,7 +17,7 @@ static void render_targets_init(void) {
     for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
         switch (i) {
             case RENDER_TARGET_MASTER: {
-                gs->render.render_targets[i] = RenderMakeTarget(width, height, VIEW_STATE_SCREENSPACE, false);
+                gs->render.render_targets[i] = RenderMakeTarget(width, height, VIEW_STATE_SCREENSPACE, true);
                 continue;
             }
             case RENDER_TARGET_CONVERSION_PANEL: case RENDER_TARGET_OUTRO:
@@ -35,6 +35,10 @@ static void render_targets_init(void) {
                                                                   VIEW_STATE_SCREENSPACE,
                                                                   false,
                                                                   true);
+                continue;
+            }
+            case RENDER_TARGET_PREVIEW: {
+                gs->render.render_targets[i] = RenderMakeTarget(gs->gw, gs->gh, VIEW_STATE_PIXELS, false);
                 continue;
             }
         }

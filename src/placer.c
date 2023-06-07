@@ -529,8 +529,8 @@ static void placer_draw(int target, Placer *placer, bool full_size) {
     
     RenderColor(255, 255, 255, 64);
     
-    RenderLine(target, 0, placer->y, gs->gw, placer->y);
-    RenderLine(target, placer->x, 0, placer->x, gs->gh);
+    RenderLineRelative(target, 0, placer->y, gs->gw, placer->y);
+    RenderLineRelative(target, placer->x, 0, placer->x, gs->gh);
     
     RenderColor(255, 255, 255, 255);
 }

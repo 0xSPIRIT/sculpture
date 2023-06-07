@@ -24,16 +24,16 @@ static void tooltip_draw_box(int target, Tooltip *tooltip, int w, int h) {
     tooltip->h = h;
 
     SDL_Rect r = {
-        (int) (tooltip->x * gs->S),
-        (int) (tooltip->y * gs->S + GUI_H),
+        -gs->render.view.x + (int) (tooltip->x * gs->S),
+        -gs->render.view.y + (int) (tooltip->y * gs->S + GUI_H),
         w,
         h
     };
     
     RenderColor(12, 12, 12, 255);
-    RenderFillRectRelative(target, r);
+    RenderFillRect(target, r);
     RenderColor(255, 255, 255, 255);
-    RenderDrawRectRelative(target, r);
+    RenderDrawRect(target, r);
 }
 
 static void tooltip_get_string(int type, int amt, char *out_str) {
@@ -54,6 +54,8 @@ static void tooltip_get_string(int type, int amt, char *out_str) {
 // This happens outside of the pixel-art texture, so we must
 // multiply all positions by scale.
 static void tooltip_draw(int target, Tooltip *tooltip) {
+    Assert(target == RENDER_TARGET_MASTER);
+    
     if (tooltip->x == -1 && tooltip->y == -1) return;
     
     RenderMaybeSwitchToTarget(target);
@@ -80,9 +82,9 @@ static void tooltip_draw(int target, Tooltip *tooltip) {
             color = WHITE;
         }
 
-        // @Performance
+        // TODO: Performance
         surfaces[i] = TTF_RenderText_Blended(gs->fonts.font->handle,
-                                         tooltip->str[i],
+                                             tooltip->str[i],
                                              color);
         
         Assert(surfaces[i]);
@@ -90,8 +92,8 @@ static void tooltip_draw(int target, Tooltip *tooltip) {
         Assert(textures[i]);
         
         dsts[i] = (SDL_Rect){
-            (int) (gs->S * tooltip->x + margin),
-            (int) (height + gs->S * tooltip->y + margin),
+            -gs->render.view.x + (int) (gs->S * tooltip->x + margin),
+            -gs->render.view.y + (int) (height + gs->S * tooltip->y + margin),
             surfaces[i]->w,
             surfaces[i]->h
         };

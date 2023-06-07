@@ -43,7 +43,7 @@ static void effect_set(int type, bool high_fidelity, int x, int y, int w, int h)
             return;
         }
         case EFFECT_SNOW: {
-            effect->particle_count = 200;
+            effect->particle_count = 200*3;
             if (high_fidelity) {
                 effect->particle_count = 650;
             }
@@ -100,7 +100,7 @@ static void particle_tick(Effect *effect, int i) {
             }
             
             if (particle->x < effect->bounds.x) particle->x = (f32) effect->bounds.w-1;
-            if (particle->y < effect->bounds.y) particle->y = (f32) effect->bounds.w-1;
+            if (particle->y < effect->bounds.y) particle->y = (f32) effect->bounds.h-1;
             
             if (particle->x-particle->vx*3 > effect->bounds.w-1) particle->x = effect->bounds.x;
             if (particle->y-particle->vy*3 > effect->bounds.h-1) particle->y = effect->bounds.y;
@@ -112,7 +112,7 @@ static void particle_tick(Effect *effect, int i) {
 }
 
 static void effect_draw(int target, Effect *effect, bool draw_points, int only_slow) {
-    if (effect->type == EFFECT_NONE)
+        if (effect->type == EFFECT_NONE)
         return;
     
 #ifndef ALASKA_RELEASE_MODE
@@ -120,8 +120,6 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
         effect_reset_snow(false);
     }
 #endif
-    
-    int debugmax = 0;
     
     switch (effect->type) {
         case EFFECT_SNOW: {
@@ -134,8 +132,13 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
                 
                 particle_tick(effect, i);
                 
-                if (particle->x > debugmax)
-                    debugmax = particle->x;
+                if (!effect->high_fidelity) {
+                    if (particle->x < gs->gw/2 + gs->render.view.x/gs->S) continue;
+                    if (particle->y < gs->gw/2 + gs->render.view.y/gs->S) continue;
+                    if (particle->x > gs->gw/2 + gs->render.view.x/gs->S+64) continue;
+                    if (particle->y > gs->gw/2 + gs->render.view.y/gs->S+64) continue;
+                } else {
+                }
                 
                 f32 max;
                 
@@ -160,7 +163,7 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
                 }
                 
                 if (draw_points) {
-                    RenderPointRelative(target, px, py);
+                    RenderPoint(target, px, py);
                 } else {
                     
                     if (gs->levels[gs->level_current].state == LEVEL_STATE_NARRATION) {
@@ -192,6 +195,4 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
         }
         default: break;
     }
-    
-    Log("%d\n", debugmax);
 }

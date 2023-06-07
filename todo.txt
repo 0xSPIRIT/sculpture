@@ -1,19 +1,13 @@
 TODO
- 
-  - Bug with toggling fullscreen in the ending. The tool bar disappears.
-    Also in fullscreen, the 3D goes out of view, rendering past the
-    visible portion.
 
-  - Honestly, re-evaluate if the obfuscation of the output positions
-    are what you want... They seem much easier when the caller just puts
-    in the values directly.
+  Get address sanitizers to work.
+  https://devblogs.microsoft.com/cppblog/asan-for-windows-x64-and-debug-build-support/
 
-  - Redo all rendering code to allow for larger textures.
+  x Redo all rendering code to allow for larger textures.
      x Implement the feature of adding negative positions into rendering targets,
        so most of our actual rendering code can stay the same, and just allow
        for negative coordinates.
      x Also, redo the entire asset file. Horrible stuff.
-  - Make a proper UI system. Redo all that code as well.
 
   - Redo all levels.
     - Add another level 7 thing but in reverse? Perhaps do it before 7.

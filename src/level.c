@@ -153,6 +153,7 @@ static void goto_level(int lvl) {
     if (gs->narrator.line_count) {
         level_set_state(lvl, LEVEL_STATE_NARRATION);
         effect_set(EFFECT_SNOW,
+                   true,
                    0,
                    0,
                    gs->window_width,
@@ -160,8 +161,9 @@ static void goto_level(int lvl) {
     } else {
         level_set_state(lvl, LEVEL_STATE_INTRO);
         effect_set(gs->levels[gs->level_current].effect_type,
-                   -gs->gw/2,
-                   -gs->gh/2,
+                   false,
+                   0,
+                   0,
                    gs->gw*2,
                    gs->gh*2);
     }
@@ -194,8 +196,8 @@ static void level_set_state(int level, enum Level_State state) {
         if (gs->current_effect.type != l->effect_type) {
             effect_set(l->effect_type,
                        false,
-                       -gs->gw/2,
-                       -gs->gh/2,
+                       0,
+                       0,
                        2*gs->gw,
                        2*gs->gh);
         }
@@ -396,13 +398,17 @@ static void level_draw_intro(Level *level) {
         }
     }
     
+    SDL_Rect src = {
+        gs->gw/2, gs->gh/2,
+        gs->gw, gs->gh
+    };
     SDL_Rect global_dst = {
         0, GUI_H,
         gs->window_width, gs->window_height-GUI_H
     };
-    RenderTargetToTargetRelative(RENDER_TARGET_MASTER,
+    RenderTargetToTarget(RENDER_TARGET_MASTER,
                          RENDER_TARGET_PIXELGRID,
-                         NULL,
+                         &src,
                          &global_dst);
     
     char name[256] = {0};
@@ -478,8 +484,7 @@ static void level_draw_desired_grid(Level *level, int dx, int dy) {
 }
 
 static void level_draw_outro(int target, Level *level) {
-    //SDL_Texture *previous = SDL_GetRenderTarget(gs->renderer);
-    //SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_OUTRO));
+    Assert(target == RENDER_TARGET_MASTER);
     
     int outro = RENDER_TARGET_OUTRO;
     
@@ -490,9 +495,9 @@ static void level_draw_outro(int target, Level *level) {
     
     SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
     RenderColor(0, 0, 0, alpha);
-    RenderFillRectRelative(outro, rect);
+    RenderFillRect(outro, rect);
     RenderColor(91, 91, 91, alpha);
-    RenderDrawRectRelative(outro, rect);
+    RenderDrawRect(outro, rect);
     
     level_draw_name_intro(outro, level, rect);
     
@@ -536,7 +541,7 @@ static void level_draw_outro(int target, Level *level) {
         dx, dy+32,
         scale*gs->gw, scale*gs->gh
     };
-    RenderDrawRectRelative(outro, desired_rect);
+    RenderDrawRect(outro, desired_rect);
     
     dx += rect.w - margin - scale*level->w - margin;
     
@@ -549,7 +554,7 @@ static void level_draw_outro(int target, Level *level) {
         dx, dy+32,
         scale*gs->gw, scale*gs->gh
     };
-    RenderDrawRectRelative(outro, desired_rect);
+    RenderDrawRect(outro, desired_rect);
     
     SDL_Color color_next_level = (SDL_Color){255,255,255,255};
     
@@ -576,11 +581,23 @@ static void level_draw_outro(int target, Level *level) {
                         NULL,
                         false);
     
+    SDL_Rect src = {
+        0, 0,
+        gs->window_width,
+        gs->window_height
+    };
+    
+    SDL_Rect dst = {
+        0, 0,
+        gs->window_width,
+        gs->window_height
+    };
+    
     RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_OUTRO)->texture, level->outro_alpha);
-    RenderTargetToTargetRelative(target,
+    RenderTargetToTarget(target,
                          RENDER_TARGET_OUTRO,
-                         NULL,
-                         NULL);
+                         &src,
+                         &dst);
 }
 
 static void level_get_cells_from_image(const char *path,
@@ -689,37 +706,24 @@ static void level_draw_outro_or_play(Level *level) {
     
     draw_objects(RENDER_TARGET_PIXELGRID);
     
-    gs->render.to.x = 0;
-    gs->render.to.y = 0;
-    
-    if (gs->input.keys[SDL_SCANCODE_S])
-        gs->render.to.y = gs->window_width*0.5;
-    if (gs->input.keys[SDL_SCANCODE_D])
-        gs->render.to.x = gs->window_width*0.5;
-    if (gs->input.keys[SDL_SCANCODE_A])
-        gs->render.to.x = -gs->window_width*0.5;
-    
-    gs->render.view.x = lerp64(gs->render.view.x, gs->render.to.x, 0.2);
-    gs->render.view.y = lerp64(gs->render.view.y, gs->render.to.y, 0.2);
-    
     RenderColor(0,0,0,255);
     RenderClear(RENDER_TARGET_MASTER);
     
     SDL_Rect src = {
         0,
         0,
-        gs->gw,
-        gs->gh
+        2*gs->gw,
+        2*gs->gh
     };
     
     SDL_Rect dst = {
-        -gs->render.view.x,
-        -gs->render.view.y + GUI_H,
-        gs->window_width,
-        gs->window_height-GUI_H
+        -gs->window_width/2-gs->render.view.x,
+        -gs->window_height/2-gs->render.view.y + GUI_H*1.5,
+        gs->window_width*2,
+        2*(gs->window_height-GUI_H),
     };
     
-    RenderTargetToTargetRelative(RENDER_TARGET_MASTER,
+    RenderTargetToTarget(RENDER_TARGET_MASTER,
                          RENDER_TARGET_PIXELGRID,
                          &src,
                          &dst);

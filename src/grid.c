@@ -620,8 +620,6 @@ static int grid_array_tick(Cell *array, int x_direction, int y_direction) {
                     return cells_updated;
                 };
                 case CELL_STEAM: case CELL_SMOKE: {
-                    Assert(array == gs->gas_grid);
-                    
                     f32 fac = 0.4f*randf(1.f);
                     f32 amplitude = 1.0;
                     

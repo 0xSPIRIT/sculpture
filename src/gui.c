@@ -360,7 +360,9 @@ static void profile_array(Cell *desired,
     }
 }
 
-static void gui_draw_profile() {
+static void gui_draw_profile(int target) {
+    Assert(target == RENDER_TARGET_MASTER);
+    
     Level *level = &gs->levels[gs->level_current];
     int count = 0;
     
@@ -374,39 +376,51 @@ static void gui_draw_profile() {
     
     profile_array(level->desired_grid, level->profile_lines, &count);
     
-    Render_Text_Data text_data = {0};
+    int c = 0;
     
-    sprintf(text_data.identifier, "Thing");
-    text_data.font = gs->fonts.font;
-    strcpy(text_data.str, "Required Amounts:");
-    text_data.x = Scale(50);
-    text_data.y = GUI_H+Scale(50);
-    text_data.foreground = (SDL_Color){
-        255,
-        255,
-        0,
-        255
-    };
-    text_data.background = BLACK;
-    text_data.render_type = TEXT_RENDER_LCD;
+    {
+        Render_Text_Data text_data = {0};
+        
+        sprintf(text_data.identifier, "Thing");
+        text_data.font = gs->fonts.font;
+        strcpy(text_data.str, "Required Amounts:");
+        text_data.x = Scale(50);
+        text_data.y = GUI_H+Scale(50);
+        text_data.foreground = (SDL_Color){
+            255,
+            255,
+            0,
+        };
+        text_data.alpha = 255;
+        text_data.background = BLACK;
+        text_data.render_type = TEXT_RENDER_LCD;
+        
+        RenderDrawText(target, &text_data);
+        
+        c = text_data.texture.height;
+    }
     
-    int c = text_data.texture.height;
     for (int i = 0; i < count; i++) {
-        Render_Text_Data text_data2 = {0};
+        Render_Text_Data text_data = {0};
         
-        sprintf(text_data2.identifier, "Converter thing %d", i);
-        text_data2.font = gs->fonts.font;
-        text_data2.foreground = WHITE;
-        text_data2.background = BLACK;
-        text_data2.x = Scale(50);
-        text_data2.y = GUI_H+Scale(50)+c;
-        strcpy(text_data2.str, level->profile_lines[i]);
+        sprintf(text_data.identifier, "Converter thing %d", i);
+        text_data.font = gs->fonts.font;
+        strcpy(text_data.str, level->profile_lines[i]);
+        text_data.x = Scale(50);
+        text_data.y = GUI_H+Scale(50)+c;
+        text_data.foreground = WHITE;
+        text_data.background = BLACK;
+        text_data.alpha = 255;
         
-        c += text_data2.texture.height;
+        RenderDrawText(target, &text_data);
+        
+        c += text_data.texture.height;
     }
 }
 
 static void gui_draw(int target) {
+    Assert(target == RENDER_TARGET_MASTER);
+    
     GUI *gui = &gs->gui;
     
     // Draw the toolbar buttons.
@@ -433,7 +447,7 @@ static void gui_draw(int target) {
             GUI_H
         };
         
-        RenderTargetToTargetRelative(target,
+        RenderTargetToTarget(target,
                              RENDER_TARGET_GUI_TOOLBAR,
                              &src,
                              &dst);
@@ -534,10 +548,10 @@ static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup) {
     };
     
     RenderColor(0, 0, 0, 255);
-    RenderFillRectRelative(target, popup->r);
+    RenderFillRect(target, popup->r);
     
     RenderColor(255, 255, 255, 255);
-    RenderDrawRectRelative(target, popup->r);
+    RenderDrawRect(target, popup->r);
     
     popup->a->x = 1*gs->window_width/5 + popup->b->w*1;
     popup->a->y = popup->r.y + popup->r.h - Scale(50);
@@ -624,6 +638,8 @@ static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup) {
 }
 
 static void gui_popup_draw(int target) {
+    Assert(target == RENDER_TARGET_MASTER);
+    
     GUI *gui = &gs->gui;
     
     SDL_Rect popup = {
@@ -635,7 +651,7 @@ static void gui_popup_draw(int target) {
                 Green(INVENTORY_COLOR),
                 Blue(INVENTORY_COLOR),
                 255);
-    RenderFillRectRelative(target, popup);
+    RenderFillRect(target, popup);
     
     RenderColor(Red(CONVERTER_LINE_COLOR),
                 Green(CONVERTER_LINE_COLOR),
@@ -659,7 +675,7 @@ static void gui_popup_draw(int target) {
     };
     
     RenderColorStruct(ColorFromInt(INVENTORY_COLOR2));
-    RenderFillRectRelative(target, bar);
+    RenderFillRect(target, bar);
     
     SDL_Rect tab_icon = {
         gs->gw*gs->S - 128, (int)(GUI_H + gui->popup_y) - h,

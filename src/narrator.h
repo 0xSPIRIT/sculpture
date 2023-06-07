@@ -20,7 +20,7 @@
 "His single flame glares in bliss.\n"\
 
 #define NARRATION_LEVEL_4 \
-"Which shapes and patterns beg to be sculpted?\n"\
+"Which shapes beg to be sculpted?\n"\
 "Wondrous minutes went by, with Max daydreaming\r"\
 "fantastical possibilities.\n"\
 "He could fully picture it: A symbolic piece with\r"\

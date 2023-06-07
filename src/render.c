@@ -184,6 +184,18 @@ RENDERAPI Render_Target RenderMakeTarget(int width,
     return RenderMakeTargetEx(width, height, view, use_negative_coords, false);
 }
 
+RENDERAPI void RenderTargetToTarget(int target_dst,
+                                    int target_src,
+                                    SDL_Rect *src,
+                                    SDL_Rect *dst)
+{
+    RenderMaybeSwitchToTarget(target_dst);
+    SDL_RenderCopy(gs->render.sdl,
+                   RenderTarget(target_src)->texture.handle,
+                   src,
+                   dst);
+}
+
 RENDERAPI void RenderTargetToTargetRelative(int target_dst,
                                             int target_src,
                                             SDL_Rect *src,
@@ -262,12 +274,17 @@ static Render_Target *RenderMaybeSwitchToTarget(int target_enum) {
     return gs->render.current_target;
 }
 
-RENDERAPI void RenderLine(int target_enum, int x1, int y1, int x2, int y2) {
+RENDERAPI void RenderLineRelative(int target_enum, int x1, int y1, int x2, int y2) {
     Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
     x1 += target->top_left.x;
     y1 += target->top_left.y;
     x2 += target->top_left.x;
     y2 += target->top_left.y;
+    SDL_RenderDrawLine(gs->render.sdl, x1, y1, x2, y2);
+}
+
+RENDERAPI void RenderLine(int target_enum, int x1, int y1, int x2, int y2) {
+    RenderMaybeSwitchToTarget(target_enum);
     SDL_RenderDrawLine(gs->render.sdl, x1, y1, x2, y2);
 }
 
@@ -278,9 +295,19 @@ RENDERAPI void RenderPointRelative(int target_enum, int x, int y) {
     SDL_RenderDrawPoint(gs->render.sdl, x, y);
 }
 
+RENDERAPI void RenderPoint(int target_enum, int x, int y) {
+    RenderMaybeSwitchToTarget(target_enum);
+    SDL_RenderDrawPoint(gs->render.sdl, x, y);
+}
+
 RENDERAPI void RenderDrawRectRelative(int target_enum, SDL_Rect rect) {
     Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
     rect = RenderGetUpdatedRect(target, &rect);
+    SDL_RenderDrawRect(gs->render.sdl, &rect);
+}
+
+RENDERAPI void RenderDrawRect(int target_enum, SDL_Rect rect) {
+    RenderMaybeSwitchToTarget(target_enum);
     SDL_RenderDrawRect(gs->render.sdl, &rect);
 }
 
@@ -290,14 +317,14 @@ RENDERAPI void RenderFillRectRelative(int target_enum, SDL_Rect rect) {
     SDL_RenderFillRect(gs->render.sdl, &rect);
 }
 
+RENDERAPI void RenderFillRect(int target_enum, SDL_Rect rect) {
+    RenderMaybeSwitchToTarget(target_enum);
+    SDL_RenderFillRect(gs->render.sdl, &rect);
+}
+
 RENDERAPI void RenderClear(int target_enum) {
     RenderMaybeSwitchToTarget(target_enum);
     SDL_RenderClear(gs->render.sdl);
-}
-
-RENDERAPI void RenderPresent(int target_enum) {
-    RenderMaybeSwitchToTarget(target_enum);
-    SDL_RenderPresent(gs->render.sdl);
 }
 
 //~ Fonts
@@ -339,7 +366,7 @@ static bool _has_text_data_changed(Render_Text_Data text_old,
         return true;
     if (text_old.game_scale != text_new.game_scale)
         return true;
-    
+
     // Compare both foregroud and background.
     if (memcmp(&text_old.foreground,
                &text_new.foreground,
@@ -376,13 +403,13 @@ RENDERAPI void RenderTextureRelative(int target_enum,
                    &output_dst);
 }
 
-RENDERAPI void RenderTextureEx(int target_enum,
-                               Texture *texture,
-                               SDL_Rect *src,
-                               SDL_Rect *dst,
-                               f64 angle,
-                               SDL_Point *center,
-                               SDL_RendererFlip flip)
+RENDERAPI void RenderTextureExRelative(int target_enum,
+                                       Texture *texture,
+                                       SDL_Rect *src,
+                                       SDL_Rect *dst,
+                                       f64 angle,
+                                       SDL_Point *center,
+                                       SDL_RendererFlip flip)
 {
     Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
     
@@ -400,6 +427,24 @@ RENDERAPI void RenderTextureEx(int target_enum,
                      texture->handle,
                      src,
                      &output_dst,
+                     angle,
+                     center,
+                     flip);
+}
+
+RENDERAPI void RenderTextureEx(int target_enum,
+                               Texture *texture,
+                               SDL_Rect *src,
+                               SDL_Rect *dst,
+                               f64 angle,
+                               SDL_Point *center,
+                               SDL_RendererFlip flip)
+{
+    RenderMaybeSwitchToTarget(target_enum);
+    SDL_RenderCopyEx(gs->render.sdl,
+                     texture->handle,
+                     src,
+                     dst,
                      angle,
                      center,
                      flip);
@@ -520,8 +565,6 @@ RENDERAPI void RenderDrawText(int target_enum, Render_Text_Data *text_data)
         };
         
         RenderApplyAlignmentToRect(&dst, text_data->alignment);
-        
-        Uint8 text_data_alpha = text_data->alpha;
 
         // NOTE: We use the text data's alpha here, not the cached alpha,
         //       since it may have changed. We obviously don't update
@@ -530,7 +573,9 @@ RENDERAPI void RenderDrawText(int target_enum, Render_Text_Data *text_data)
         //       dst rect.
         RenderTextureAlphaMod(&cache_object->texture, text_data->alpha);
         RenderTexture(target_enum, &cache_object->texture, NULL, &dst);
-
+        
+        // Retain the text_data's alpha.
+        Uint8 text_data_alpha = text_data->alpha;
         *text_data = *cache_object;
         text_data->alpha = text_data_alpha;
 

@@ -125,6 +125,9 @@ static void item_draw(int target, Item *item, int x, int y, int w, int h) {
     text_data.x = x+w;
     text_data.y = y+h;
     text_data.alignment = ALIGNMENT_BOTTOM_RIGHT;
+    text_data.alpha = 255;
+    text_data.render_type = TEXT_RENDER_LCD;
+    
     RenderDrawText(target, &text_data);
 }
 
@@ -141,7 +144,7 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
                 Green(SLOT_COLOR),
                 Blue(SLOT_COLOR),
                 255);
-    RenderFillRectRelative(target, bounds);
+    RenderFillRect(target, bounds);
     
     if (slot->inventory_index != -1 && slot->inventory_index == gs->current_placer) {
         RenderColor(255,
@@ -160,7 +163,7 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
     bounds.w += 2;
     bounds.h += 2;
     
-    RenderDrawRectRelative(target, bounds);
+    RenderDrawRect(target, bounds);
     
     bounds.x++;
     bounds.y++;
@@ -424,17 +427,7 @@ static void inventory_draw(int target) {
                 Green(INVENTORY_COLOR),
                 Blue(INVENTORY_COLOR),
                 255);
-    RenderFillRectRelative(target, rect);
-    
-    RenderColor(Red(CONVERTER_LINE_COLOR),
-                Green(CONVERTER_LINE_COLOR),
-                Blue(CONVERTER_LINE_COLOR),
-                255);
-    RenderLine(target,
-               0,
-               y+GUI_H,
-               gs->window_width,
-               y+GUI_H);
+    RenderFillRect(target, rect);
     
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
         slot_draw(target, &gs->inventory.slots[i], 0, y);
@@ -447,4 +440,14 @@ static void inventory_draw(int target) {
               y + input->real_my - ITEM_SIZE/2,
               ITEM_SIZE,
               ITEM_SIZE);
+    
+    RenderColor(Red(CONVERTER_LINE_COLOR),
+                Green(CONVERTER_LINE_COLOR),
+                Blue(CONVERTER_LINE_COLOR),
+                255);
+    RenderLine(target,
+               0,
+               y+GUI_H,
+               gs->window_width,
+               y+GUI_H);
 }

@@ -75,7 +75,7 @@ static void text_field_draw(int target) {
     RenderColor(0, 0, 0, 255);
 
     if (text_surf)
-        RenderFillRectRelative(target, field_rect);
+        RenderFillRect(target, field_rect);
 
     if (description_surf)
         description_texture = SDL_CreateTextureFromSurface(gs->renderer, description_surf);
@@ -85,7 +85,7 @@ static void text_field_draw(int target) {
     RenderColor(255, 255, 255, 255);
     
     if (text_surf) {
-        RenderDrawRectRelative(target, field_rect);
+        RenderDrawRect(target, field_rect);
         SDL_RenderCopy(gs->renderer, text_texture, NULL, &text_field_rect);
     }
 

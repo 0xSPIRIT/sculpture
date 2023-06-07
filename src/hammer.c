@@ -107,13 +107,13 @@ static void hammer_draw(int final_target, Hammer *hammer) {
             angle *= -1;
         }
         
-        RenderTextureEx(RENDER_TARGET_HAMMER,
-                        hammer->tex,
-                        NULL,
-                        &dst,
-                        angle,
-                        &center,
-                        flip);
+        RenderTextureExRelative(RENDER_TARGET_HAMMER,
+                                hammer->tex,
+                                NULL,
+                                &dst,
+                                angle,
+                                &center,
+                                flip);
     }
     
     // Now we render the target.

@@ -18,7 +18,11 @@
 #endif
 
 // Assert using an SDL MessageBox popup. Prints to the console too.
-#define Assert(condition) if(!(condition)) {   _assert(__func__, __FILE__, __LINE__), __debugbreak(); }
+#ifndef ALASKA_RELEASE_MODE
+  #define Assert(cond) if(!(cond)) { _assert(__func__, __FILE__, __LINE__), __debugbreak(); }
+#else
+  #define Assert(cond) (void);
+#endif
 
 #define PushSize(arena, size) (_push_array(arena, 1, size, __FILE__, __LINE__))
 #define PushArray(arena, count, size) (_push_array(arena, count, size, __FILE__, __LINE__))
@@ -53,7 +57,7 @@ enum State_Game {
 typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
     
-    f64 dt;
+    f64 dt; // Time taken for previous frame.
     
     bool use_software_renderer;
     

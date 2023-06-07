@@ -27,7 +27,7 @@ static void background_draw(int target, Background *bg) {
     }
 
     Texture texture = RenderCreateTextureFromSurface(bg->surface);
-    RenderTextureActual(target, &texture, NULL, NULL);
+    RenderTexture(target, &texture, NULL, NULL);
     RenderDestroyTexture(&texture);
     #endif
 }

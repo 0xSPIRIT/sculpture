@@ -467,8 +467,8 @@ static void chisel_tick(Chisel *chisel) {
             break;
         }
         case CHISEL_STATE_ROTATING: {
-            f64 rmx = (f64)gs->input.real_mx / (f64)gs->S;
-            f64 rmy = (f64)(gs->input.real_my-GUI_H) / (f64)gs->S;
+            f64 rmx = (f64)(gs->input.real_mx + gs->render.view.x) / (f64)gs->S;
+            f64 rmy = (f64)(gs->input.real_my-GUI_H + gs->render.view.y) / (f64)gs->S;
             
             chisel->angle = 180 + 360 * atan2f(rmy - chisel->y, rmx - chisel->x) / (f32)(2*M_PI);
             
@@ -568,13 +568,13 @@ static void chisel_draw(int target, Chisel *chisel) {
     
     SDL_Point center = { 0, chisel->texture->height/2 };
     
-    RenderTextureEx(target,
-                    chisel->texture,
-                    NULL,
-                    &dst,
-                    180+chisel->angle,
-                    &center,
-                    SDL_FLIP_NONE);
+    RenderTextureExRelative(target,
+                            chisel->texture,
+                            NULL,
+                            &dst,
+                            180+chisel->angle,
+                            &center,
+                            SDL_FLIP_NONE);
     
     RenderColor(127, 127, 127, 255);
     RenderPointRelative(target, (int)chisel->x, (int)chisel->y);

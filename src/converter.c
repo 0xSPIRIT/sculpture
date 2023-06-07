@@ -235,7 +235,7 @@ static void converter_gui_tick(void) {
 static void converter_gui_draw(void) {
     Conversions *c = &gs->converter;
     
-    const SDL_Color bg = {0, 0, 0, 200};
+    const SDL_Color bg = ColorFromIntRGBA(CONVERSION_PANEL_COLOR);
     const int target = RENDER_TARGET_CONVERSION_PANEL;
     
     if (!c->active) return;
@@ -252,10 +252,10 @@ static void converter_gui_draw(void) {
         RenderClear(target);
         
         RenderColor(bg.r, bg.g, bg.b, bg.a);
-        RenderFillRectRelative(target, c->r);
+        RenderFillRect(target, c->r);
         
         RenderColor(128, 128, 128, 255);
-        RenderDrawRectRelative(target, c->r);
+        RenderDrawRect(target, c->r);
         
         int count = 0;
         
@@ -281,13 +281,13 @@ static void converter_gui_draw(void) {
                 0, c->r.y + c->r.h,
                 gs->window_width, gs->window_height - (c->r.y + c->r.h+GUI_H)
             };
-            RenderFillRectRelative(target, a);
+            RenderFillRect(target, a);
             
             SDL_Rect b = {
                 c->r.x+c->r.w, 0,
                 gs->window_width - (c->r.x + c->r.w), gs->window_height-GUI_H
             };
-            RenderFillRectRelative(target, b);
+            RenderFillRect(target, b);
         }
     }
     
