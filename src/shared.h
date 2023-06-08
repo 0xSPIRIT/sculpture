@@ -21,7 +21,7 @@
 #ifndef ALASKA_RELEASE_MODE
   #define Assert(cond) if(!(cond)) { _assert(__func__, __FILE__, __LINE__), __debugbreak(); }
 #else
-  #define Assert(cond) (void);
+  #define Assert(cond) if(!(cond)) { _assert(__func__, __FILE__, __LINE__), __debugbreak(); }
 #endif
 
 #define PushSize(arena, size) (_push_array(arena, 1, size, __FILE__, __LINE__))

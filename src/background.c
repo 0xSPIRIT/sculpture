@@ -9,18 +9,24 @@ static f64 NormalSine(f64 t) {
 }
 
 static void background_draw(int target, Background *bg) {
-    (void)target,bg;
-    return;
-#if 0
-    
     int w = bg->surface->w, h = bg->surface->h;
     
-    bg->time += gs->dt;
+    bg->time += gs->dt*0.1;
+    
+    f64 rcoeff, gcoeff, bcoeff;
+    
+    rcoeff = NormalSine(bg->time);
+    gcoeff = NormalSine(bg->time+M_PI);
+    bcoeff = NormalSine(bg->time+M_PI/2);
     
     for (int i = 0; i < w*h; i++) {
         f64 r, g, b;
         
-        r = g = b = 30*NormalSine(bg->time);
+        f64 coeff = (f64)3*(i+3*(i%w))/(w*h);
+        
+        r = rcoeff * 30 * NormalSine(coeff+bg->time);
+        g = gcoeff * 30 * NormalSine(coeff+bg->time);
+        b = bcoeff * 30 * NormalSine(coeff+bg->time);
         
         Uint32 pixel = 0xFF000000 | (Uint8)b << 16 | (Uint8)g << 8 | (Uint8)r;
         set_pixel(bg->surface, i%w, i/w, pixel);
@@ -29,5 +35,4 @@ static void background_draw(int target, Background *bg) {
     Texture texture = RenderCreateTextureFromSurface(bg->surface);
     RenderTexture(target, &texture, NULL, NULL);
     RenderDestroyTexture(&texture);
-    #endif
 }

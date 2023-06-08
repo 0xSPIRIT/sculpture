@@ -3,15 +3,10 @@ TODO
   Get address sanitizers to work.
   https://devblogs.microsoft.com/cppblog/asan-for-windows-x64-and-debug-build-support/
 
-  x Redo all rendering code to allow for larger textures.
-     x Implement the feature of adding negative positions into rendering targets,
-       so most of our actual rendering code can stay the same, and just allow
-       for negative coordinates.
-     x Also, redo the entire asset file. Horrible stuff.
-
   - Redo all levels.
     - Add another level 7 thing but in reverse? Perhaps do it before 7.
     - Ensure the progression is step-by-step.
+    - Ensure you have one space on either end of the grid.
 
   - Cool gradient background.
 

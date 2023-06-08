@@ -270,7 +270,7 @@ static void level_tick_outro(Level *level) {
     if (fabs(level->outro_alpha - level->desired_alpha) < 15)
         level->outro_alpha = level->desired_alpha;
     
-    if (!gs->gui.popup_confirm.active && gs->input.keys[SDL_SCANCODE_N]) {
+    if (!gs->gui.eol_popup_confirm.active && gs->input.keys[SDL_SCANCODE_N]) {
         if (gs->level_current+1 < 11) {
 #if 0
             int lvl = gs->level_current+1;
@@ -280,10 +280,10 @@ static void level_tick_outro(Level *level) {
 #if 0
             if ((lvl == 1 || lvl >= 8) && same) {
 #endif
-                gs->gui.popup_confirm.active = true;
+                popup_confirm_activate(&gs->gui.eol_popup_confirm);
 #if 0
             } else if (lvl > 1 && lvl < 8) {
-                gs->gui.popup_confirm.active = true;
+                popup_confirm_activate(&gs->gui.eol_popup_confirm);
             } else {
                 level_set_state(gs->level_current, LEVEL_STATE_PLAY);
                 if (lvl != 1)
@@ -305,7 +305,7 @@ static void level_tick_outro(Level *level) {
         }
     }
     
-    if (!gs->gui.popup_confirm.active && gs->input.keys_pressed[SDL_SCANCODE_F]) {
+    if (!gs->gui.eol_popup_confirm.active && gs->input.keys_pressed[SDL_SCANCODE_F]) {
         level->off = true;
         level->desired_alpha = 0;
     }
@@ -331,10 +331,6 @@ static void level_tick_play(Level *level) {
         for (int i = 0; i < gs->object_count; i++) {
             object_tick(i);
         }
-    }
-    
-    if (gs->step_one) {
-        gs->step_one = 0;
     }
     
     overlay_swap_tick();
@@ -371,8 +367,9 @@ static void level_tick_play(Level *level) {
     hammer_tick(&gs->hammer);
 }
 
-static void level_draw_confirm(int target) {
-    popup_confirm_tick_and_draw(target, &gs->gui.popup_confirm);
+static void level_draw_popup_confirms(int target) {
+    end_of_level_popup_confirm_run(target);
+    restart_popup_confirm_run(target);
 }
 
 static void level_draw(Level *level) {
@@ -381,8 +378,9 @@ static void level_draw(Level *level) {
         case LEVEL_STATE_INTRO:        { level_draw_intro(level);         break; }
         case LEVEL_STATE_OUTRO:        { level_draw_outro_or_play(level); break; }
         case LEVEL_STATE_PLAY:         { level_draw_outro_or_play(level); break; }
-        case LEVEL_STATE_CONFIRMATION: { level_draw_confirm(RENDER_TARGET_MASTER); break; }
     }
+    
+    level_draw_popup_confirms(RENDER_TARGET_MASTER);
 }
 
 static void level_draw_intro(Level *level) {

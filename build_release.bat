@@ -1,6 +1,6 @@
 @echo off
 
-set Common_Compiler_Flags=/nologo /O2 /GR- /GS- /EHa- /MD /FC /Fo:"obj\\" /DALASKA_RELEASE_MODE
+set Common_Compiler_Flags=/nologo /Zi /O2 /GR- /GS- /EHa- /MD /FC /Fo:"obj\\" /DALASKA_RELEASE_MODE
 set Linker_Flags=user32.lib shell32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib SDL2_mixer.lib
 
 if not exist src/win32_main.c goto INVALID_DIR

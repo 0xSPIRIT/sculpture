@@ -1,4 +1,4 @@
-static Button *button_allocate(enum Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
+static Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
     Button *b = PushSize(gs->persistent_memory, sizeof(Button));
     b->type = type;
     b->texture = texture;
@@ -79,18 +79,15 @@ static void click_gui_tool_button(void *type_ptr) {
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: {
             gs->chisel = &gs->chisel_small;
-            //gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+2);
             break;
         }
         case TOOL_CHISEL_MEDIUM: {
             gs->chisel = &gs->chisel_medium;
-            //gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+4);
             break;
         }
         case TOOL_CHISEL_LARGE: {
             gs->current_tool = TOOL_CHISEL_LARGE;
             gs->chisel = &gs->chisel_large;
-            //gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) (gs->chisel->w+4);
             break;
         }
         case TOOL_OVERLAY: {
@@ -133,8 +130,10 @@ static void button_tick(Button *b, void *data) {
         case BUTTON_TYPE_CONVERTER:     b->on_pressed = converter_begin_converting; break;
         case BUTTON_TYPE_TOOL_BAR:      b->on_pressed = click_gui_tool_button;      break;
         case BUTTON_TYPE_TUTORIAL:      b->on_pressed = tutorial_rect_close;        break;
-        case BUTTON_TYPE_POPUP_CONFIRM: b->on_pressed = popup_confirm_confirm;      break;
-        case BUTTON_TYPE_POPUP_CANCEL:  b->on_pressed = popup_confirm_cancel;       break;
+        case BUTTON_TYPE_EOL_POPUP_CONFIRM:     b->on_pressed = end_of_level_popup_confirm_confirm;  break;
+        case BUTTON_TYPE_EOL_POPUP_CANCEL:      b->on_pressed = end_of_level_popup_confirm_cancel;   break;
+        case BUTTON_TYPE_RESTART_POPUP_CONFIRM: b->on_pressed = restart_popup_confirm_confirm;  break;
+        case BUTTON_TYPE_RESTART_POPUP_CANCEL:  b->on_pressed = restart_popup_confirm_cancel;   break;
     }
     
     if (b->disabled) return;
@@ -158,6 +157,10 @@ static void button_tick(Button *b, void *data) {
             Mix_HaltChannel(AUDIO_CHANNEL_GUI);
             Mix_PlayChannel(AUDIO_CHANNEL_GUI, gs->audio.accept, 0);
             b->on_pressed(data);
+            
+            // Eat the input
+            input->mouse = input->mouse & !(input->mouse & SDL_BUTTON_LEFT);
+            input->mouse_pressed[SDL_BUTTON_LEFT] = 0;
         }
     } else if (b->just_had_tooltip) {
         b->just_had_tooltip = false;
@@ -231,7 +234,16 @@ static void gui_init(void) {
     gui->popup = 0;
     gui->popup_texture = &GetTexture(TEXTURE_POPUP);
     
-    gs->gui.popup_confirm = popup_confirm_init();
+    gs->gui.eol_popup_confirm = popup_confirm_init("Are you satisfied with this result?",
+                                                   BUTTON_TYPE_EOL_POPUP_CONFIRM,
+                                                   BUTTON_TYPE_EOL_POPUP_CANCEL,
+                                                   end_of_level_popup_confirm_confirm,
+                                                   end_of_level_popup_confirm_cancel);
+    gs->gui.restart_popup_confirm = popup_confirm_init("Restart level and lose all progress?",
+                                                       BUTTON_TYPE_RESTART_POPUP_CONFIRM,
+                                                       BUTTON_TYPE_RESTART_POPUP_CANCEL,
+                                                       restart_popup_confirm_confirm,
+                                                       restart_popup_confirm_cancel);
     
     tooltip_reset(&gui->tooltip);
     
@@ -315,7 +327,7 @@ static void gui_tick(void) {
         gui->popup_inventory_y_vel = 0;
     }
     
-    if (!gui->popup) {
+    if (!gui->popup  && !gs->gui.restart_popup_confirm.active) {
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_tick(gui->tool_buttons[i], &i);
         }
@@ -358,6 +370,23 @@ static void profile_array(Cell *desired,
             sprintf(out[(*count)++], "  %-15s%d", name, counts[i]);
         }
     }
+}
+
+static bool can_goto_next_level(void) {
+    int level = gs->level_current+1;
+    
+    if (level == 1 &&
+        !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY))
+    {
+        return false;
+    }
+    
+    if (level >= 8 &&
+        !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY))
+    {
+        return false;
+    }
+    return true;
 }
 
 static void gui_draw_profile(int target) {
@@ -452,189 +481,6 @@ static void gui_draw(int target) {
                              &src,
                              &dst);
     }
-    
-    popup_confirm_tick_and_draw(target, &gs->gui.popup_confirm);
-}
-
-
-//~ Popup Confirmation
-
-static Popup_Confirm popup_confirm_init() {
-    Popup_Confirm result = {0};
-    
-    result.active = false;
-    
-    result.a = button_allocate(BUTTON_TYPE_POPUP_CONFIRM,
-                               &GetTexture(TEXTURE_CONFIRM_BUTTON),
-                               "",
-                               popup_confirm_confirm);
-    result.b = button_allocate(BUTTON_TYPE_POPUP_CANCEL,
-                               &GetTexture(TEXTURE_CANCEL_BUTTON),
-                               "",
-                               popup_confirm_cancel);
-    
-    return result;
-}
-
-static bool can_goto_next_level(void) {
-    int level = gs->level_current+1;
-    
-    if (level == 1 &&
-        !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY))
-    {
-        return false;
-    }
-    
-    if (level >= 8 &&
-        !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY))
-    {
-        return false;
-    }
-    return true;
-}
-
-static void popup_confirm_confirm(void* ptr) {
-    (void)ptr;
-    Popup_Confirm *c = &gs->gui.popup_confirm;
-    Level *level = &gs->levels[gs->level_current];
-    
-    c->active = false;
-    
-    if (can_goto_next_level()) {
-        set_fade(FADE_LEVEL_FINISH, 0, 255);
-    }
-    
-    // Special thing for level 1.
-    if (gs->level_current+1 == 1) {
-        gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
-                                      NormX(32),
-                                      NormY((768.8/8.0)+32),
-                                      NULL);
-        Log("Happened!\n");
-    }; 
-    
-    level->off = false;
-    level->desired_alpha = 0;
-    level_set_state(gs->level_current, LEVEL_STATE_PLAY);
-}
-
-static void popup_confirm_cancel(void* ptr) {
-    (void)ptr;
-    
-    Popup_Confirm *c = &gs->gui.popup_confirm;
-    Level *level = &gs->levels[gs->level_current];
-    
-    level->off = false;
-    level->desired_alpha = 0;
-    level_set_state(gs->level_current, LEVEL_STATE_PLAY);
-    
-    c->active = false;
-}
-
-static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup) {
-    if (wait_for_fade(FADE_LEVEL_FINISH)) {
-        reset_fade();
-        goto_level(++gs->level_current);
-        return;
-    }
-    
-    if (!popup->active) return;
-    
-    popup->r = (SDL_Rect){
-        gs->window_width/6,
-        gs->window_height/3,
-        2*gs->window_width/3,
-        gs->window_height/4
-    };
-    
-    RenderColor(0, 0, 0, 255);
-    RenderFillRect(target, popup->r);
-    
-    RenderColor(255, 255, 255, 255);
-    RenderDrawRect(target, popup->r);
-    
-    popup->a->x = 1*gs->window_width/5 + popup->b->w*1;
-    popup->a->y = popup->r.y + popup->r.h - Scale(50);
-    
-    popup->b->x = 4*gs->window_width/5 - popup->a->w*2;
-    popup->b->y = popup->r.y + popup->r.h - Scale(50);
-    
-    button_tick(popup->a, NULL);
-    button_tick(popup->b, NULL);
-    
-    button_draw_prefer_color(target, popup->a, can_goto_next_level() ? (SDL_Color){255,255,255,255} : (SDL_Color){127,127,127,255});
-    button_draw(target, popup->b);
-    
-    SDL_Color col = (SDL_Color){175, 175, 175, 255};
-    
-    int w;
-    
-    char *text = "Are you satisfied with this result?";
-    
-    TTF_SizeText(gs->fonts.font_times->handle, text, &w, NULL);
-    
-    RenderDrawTextQuick(target,
-                        "confirm text",
-                        gs->fonts.font_times,
-                        "Confirmation",
-                        col,
-                        255,
-                        popup->r.x + Scale(16),
-                        popup->r.y + Scale(10),
-                        NULL,
-                        NULL,
-                        false);
-    
-    col = (SDL_Color){255, 255, 255, 255};    
-    RenderDrawTextQuick(target,
-                        "sdfsdf",
-                        gs->fonts.font_times,
-                        text,
-                        col,
-                        255,
-                        popup->r.x + popup->r.w/2 - w/2,
-                        popup->r.y + Scale(70),
-                        NULL,
-                        NULL,
-                        false);
-    
-    
-    if (!can_goto_next_level()) {
-        char comment[128]={0};
-        
-        if (gs->level_current+1 > 7)
-            strcpy(comment, "I cannot settle for this.");
-        
-        int h;
-        
-        TTF_SizeText(gs->fonts.font_times->handle, comment, &w, &h);
-        
-        int xoff = get_glitched_offset();
-        
-        f64 button_x = popup->a->x + popup->a->w/2;
-        f64 button_y = popup->a->y + popup->a->h/2;
-        
-        f64 norm_dist = sqrtf((button_x - gs->input.real_mx)*(button_x - gs->input.real_mx) + (button_y - gs->input.real_my)*(button_y - gs->input.real_my));
-        norm_dist /= gs->window_width;
-        norm_dist = 1 - norm_dist;
-        
-        SDL_Color color = (SDL_Color){180, 180, 180, 180};
-        if (gs->level_current+1 > 7)
-            color = (SDL_Color){180, 0, 0, 255};
-        
-        RenderDrawTextQuick(target,
-                            "Not good enough",
-                            gs->fonts.font_times,
-                            comment,
-                            color,
-                            255,
-                            xoff + popup->r.x + popup->r.w/2 - w/2,
-                            popup->r.y + popup->r.h - 2.7*h,
-                            NULL,
-                            NULL,
-                            false);
-    }
-    
 }
 
 static void gui_popup_draw(int target) {

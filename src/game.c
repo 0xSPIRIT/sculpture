@@ -17,6 +17,7 @@
 #include "placer.c"
 #include "inventory.c"
 #include "gui.c"
+#include "confirm_popup.c"
 #include "tutorial.c"
 #include "overlay_interface.c"
 #include "effects.c"
@@ -68,16 +69,21 @@ static void game_resize(int h) {
 }
 
 static void game_update_view(void) {
-    gs->render.to.x = 0;
-    gs->render.to.y = 0;
+    Input *input = &gs->input;
+    SDL_FPoint *to = &gs->render.to;
     
-    if (gs->input.keys[SDL_SCANCODE_D])
-        gs->render.to.x = gs->window_width*0.25;
-    if (gs->input.keys[SDL_SCANCODE_A])
-        gs->render.to.x = -gs->window_width*0.25;
+    if (input->keys_pressed[SDL_SCANCODE_D] || input->keys_pressed[SDL_SCANCODE_RIGHT])
+        to->x += gs->window_width*0.25;
+    if (input->keys_pressed[SDL_SCANCODE_A] || input->keys_pressed[SDL_SCANCODE_LEFT])
+        to->x -= gs->window_width*0.25;
+    to->x = clampf(to->x, -gs->window_width*0.5, gs->window_width*0.5);
     
-    if (gs->input.keys[SDL_SCANCODE_LALT])
-        gs->render.to.x *= 2;
+    // NOTE: This is not a typo, they are supposed to be width, not height.
+    if (input->keys_pressed[SDL_SCANCODE_S] || input->keys_pressed[SDL_SCANCODE_DOWN])
+        to->y += gs->window_width*0.25;
+    if (input->keys_pressed[SDL_SCANCODE_W] || input->keys_pressed[SDL_SCANCODE_UP])
+        to->y -= gs->window_width*0.25;
+    to->y = clampf(to->y, -gs->window_width*0.5, gs->window_width*0.5);
     
     gs->render.view.x = lerp64(gs->render.view.x, gs->render.to.x, 0.2);
     gs->render.view.y = lerp64(gs->render.view.y, gs->render.to.y, 0.2);
@@ -194,7 +200,9 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_SPACE: {
-                //gs->paused = !gs->paused;
+#ifndef ALASKA_RELEASE_MODE
+                gs->paused = !gs->paused;
+#endif
                 break;
             }
             case SDLK_n: {
@@ -206,9 +214,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_r: {
-                if (gs->input.keys[SDL_SCANCODE_LCTRL]) {
-                    goto_level(gs->level_current);
-                }
+                popup_confirm_activate(&gs->gui.restart_popup_confirm);
                 break;
             }
 #ifndef ALASKA_RELEASE_MODE
@@ -361,7 +367,7 @@ export void game_run(Game_State *state) {
     switch (gs->gamestate) {
         case GAME_STATE_TITLESCREEN: {
             titlescreen_tick();
-            titlescreen_draw();
+            titlescreen_draw(RENDER_TARGET_MASTER);
             break;
         }
         case GAME_STATE_PLAY: {
@@ -408,6 +414,8 @@ export void game_run(Game_State *state) {
                                  0,
                                  0,
                                  6);
+                
+                if (gs->step_one) gs->step_one = false;
             }
             break;
         }

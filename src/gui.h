@@ -5,33 +5,28 @@
 
 #define ITEM_SIZE (0.0625*gs->window_width)
 
-enum Tooltip_Type {
+typedef enum {
     TOOLTIP_TYPE_OFF,    // Off state
     TOOLTIP_TYPE_BUTTON, // From GUI Buttons
     TOOLTIP_TYPE_ITEM,   // From hovering over items
     TOOLTIP_TYPE_PLACER  // From the placer
-};
+} Tooltip_Type;
 
-enum Button_Type {
+typedef enum {
     BUTTON_TYPE_TOOL_BAR,
     BUTTON_TYPE_CONVERTER,
     BUTTON_TYPE_OVERLAY_INTERFACE,
     BUTTON_TYPE_TUTORIAL,
-    BUTTON_TYPE_POPUP_CONFIRM,
-    BUTTON_TYPE_POPUP_CANCEL
-};
+    BUTTON_TYPE_EOL_POPUP_CONFIRM,
+    BUTTON_TYPE_EOL_POPUP_CANCEL,
+    BUTTON_TYPE_RESTART_POPUP_CONFIRM,
+    BUTTON_TYPE_RESTART_POPUP_CANCEL
+} Button_Type;
 
 typedef struct Message {
     char str[100];
     Uint8 alpha;
 } Message;
-
-typedef struct {
-    bool active;
-    char text[128];
-    SDL_Rect r;
-    Button *a, *b;
-} Popup_Confirm;
 
 typedef struct GUI {
     bool popup;
@@ -46,14 +41,14 @@ typedef struct GUI {
     
     Button *tool_buttons[TOOL_COUNT];
     
-    Popup_Confirm popup_confirm;
+    Popup_Confirm eol_popup_confirm, restart_popup_confirm;
     
     Message message_stack[MAX_MESSAGE_STACK];
     int message_count;
 } GUI;
 
 typedef struct Button {
-    enum Button_Type type;
+    Button_Type type;
     int x, y, w, h;
     int index;
     Texture *texture;
@@ -71,23 +66,19 @@ typedef struct Arrow {
     int x, y, w, h;
 } Arrow;
 
-static Button *button_allocate(enum Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*));
+static Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*));
 static void tool_button_set_disabled(int level);
 static void click_gui_tool_button(void *type_ptr);
 static void button_tick(Button *b, void *data);
 static void button_draw_prefer_color(int target, Button *b, SDL_Color color);
 static void button_draw(int target, Button *b);
 static void gui_message_stack_push(const char *str);
-static Popup_Confirm popup_confirm_init(void);
 static void gui_init(void);
 static void gui_tick(void);
 static void profile_array(Cell *desired, char out[64][CELL_TYPE_COUNT], int *count);
 static void gui_draw_profile();
 static void gui_draw(int target);
-static void popup_confirm_confirm(void* ptr);
-static void popup_confirm_cancel(void* ptr);
 static Popup_Confirm popup_confirm_init();
-static void popup_confirm_tick_and_draw(int target, Popup_Confirm *popup);
 static void gui_popup_draw(int target);
 static bool is_cell_stone(int type);
 static int get_cell_tier(int type);

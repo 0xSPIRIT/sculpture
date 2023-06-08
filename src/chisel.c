@@ -430,10 +430,10 @@ static void chisel_draw_highlights(int target,
                     RenderColor(255, 0, 0, 60);
                 }
             } else {
-                RenderColor(0, 255, 0, 150);
+                RenderColor(0, 0, 0, 35);
             }
         } else {
-            RenderColor(0, 0, 0, 55);
+            RenderColor(0, 0, 0, 35);
         }
         
         RenderPointRelative(target, xoff+x, yoff+y);
@@ -441,6 +441,8 @@ static void chisel_draw_highlights(int target,
 }
 
 static void chisel_tick(Chisel *chisel) {
+    if (gs->gui.restart_popup_confirm.active) return;
+    
     chisel->did_chisel_this_frame = false;
     
     if (gs->hammer.state == HAMMER_STATE_WINDUP ||

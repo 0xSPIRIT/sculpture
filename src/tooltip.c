@@ -24,8 +24,8 @@ static void tooltip_draw_box(int target, Tooltip *tooltip, int w, int h) {
     tooltip->h = h;
 
     SDL_Rect r = {
-        -gs->render.view.x + (int) (tooltip->x * gs->S),
-        -gs->render.view.y + (int) (tooltip->y * gs->S + GUI_H),
+        (int) (tooltip->x * gs->S),
+        (int) (tooltip->y * gs->S + GUI_H),
         w,
         h
     };
@@ -92,8 +92,8 @@ static void tooltip_draw(int target, Tooltip *tooltip) {
         Assert(textures[i]);
         
         dsts[i] = (SDL_Rect){
-            -gs->render.view.x + (int) (gs->S * tooltip->x + margin),
-            -gs->render.view.y + (int) (height + gs->S * tooltip->y + margin),
+            (int) (gs->S * tooltip->x + margin),
+            (int) (height + gs->S * tooltip->y + margin),
             surfaces[i]->w,
             surfaces[i]->h
         };

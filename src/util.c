@@ -3,7 +3,12 @@ static int sign(int a) {
 }
 
 static f64 lerp64(f64 a, f64 b, f64 t) {
-    return a + t*(b-a); // or a(1-t) + tb -- same thing.
+    f64 result = a + t*(b-a); // or a(1-t) + tb -- same thing.
+    
+    const f64 epsilon = 0.01;
+    if (fabs(result-a) < epsilon) return a;
+    
+    return result; 
 }
 
 // a = start, b = end, t = x-value (0 to 1)
@@ -195,9 +200,9 @@ static void get_file_from_tool(int type, char *out) {
 
 // Stolen from stackoverflow somewhere.
 static void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel) {
-    Uint32 *const target_pixel = (Uint32 *) ((Uint8 *) surface->pixels
-                                             + y * surface->pitch
-                                             + x * surface->format->BytesPerPixel);
+    Uint32 *target_pixel = (Uint32 *) ((Uint8 *) surface->pixels
+                                       + y * surface->pitch
+                                       + x * surface->format->BytesPerPixel);
     *target_pixel = pixel;
 }
 
@@ -269,7 +274,7 @@ static int clamp(int a, int min, int max) {
     return a;
 }
 
-static f32 clampf(f32 a, f32 min, f32 max) {
+static f64 clampf(f64 a, f64 min, f64 max) {
     if (a < min) return min;
     if (a > max) return max;
     return a;

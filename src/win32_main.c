@@ -85,6 +85,8 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
         flags = SDL_RENDERER_ACCELERATED;
     }
     
+    flags |= SDL_RENDERER_PRESENTVSYNC;
+    
     state->renderer = SDL_CreateRenderer(state->window, -1, flags);
     Assert(state->renderer);
     

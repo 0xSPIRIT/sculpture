@@ -13,14 +13,15 @@ static void titlescreen_tick(void) {
     }
 }
 
-static void titlescreen_draw(void) {
+static void titlescreen_draw(int target) {
     RenderColor(255, 255, 255, 255);
-    SDL_RenderClear(gs->renderer);
+    RenderClear(target);
     
     if (gs->titlescreen.stop) return;
     
     TTF_SizeText(gs->fonts.font_titlescreen->handle, "Alaska", &gs->titlescreen.text_width, NULL);
-    RenderDrawTextQuick(RENDER_TARGET_PIXELGRID,
+    
+    RenderDrawTextQuick(target,
                         "titlescreen",
                         gs->fonts.font_titlescreen,
                         "Alaska",
@@ -39,7 +40,7 @@ static void titlescreen_draw(void) {
     a *= 255;
     
     TTF_SizeText(gs->fonts.font_times->handle, string, &w, NULL);
-    RenderDrawTextQuick(RENDER_TARGET_PIXELGRID, //TODO
+    RenderDrawTextQuick(target,
                         "something else",
                         gs->fonts.font_times,
                         string,
@@ -50,7 +51,7 @@ static void titlescreen_draw(void) {
                         NULL,
                         NULL,
                         false);
-    RenderDrawTextQuick(RENDER_TARGET_PIXELGRID,
+    RenderDrawTextQuick(target,
                         "another",
                         gs->fonts.font_times,
                         "F11 - Fullscreen",
