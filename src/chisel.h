@@ -26,8 +26,6 @@ typedef struct Chisel {
     f64 angle;
     Texture *texture;
     
-    Render_Target *render_target;
-   
     int did_chisel_this_frame;
     int num_times_chiseled;
 } Chisel;

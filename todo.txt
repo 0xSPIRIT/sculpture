@@ -1,14 +1,9 @@
 TODO
 
-  Get address sanitizers to work.
-  https://devblogs.microsoft.com/cppblog/asan-for-windows-x64-and-debug-build-support/
-
   - Redo all levels.
     - Add another level 7 thing but in reverse? Perhaps do it before 7.
     - Ensure the progression is step-by-step.
     - Ensure you have one space on either end of the grid.
-
-  - Cool gradient background.
 
   - Graphics :: make it have a rustic feel.
 
@@ -20,3 +15,6 @@ TODO
     of the mouse in the desktop version.
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
+
+  Get address sanitizers to work.
+  https://devblogs.microsoft.com/cppblog/asan-for-windows-x64-and-debug-build-support/

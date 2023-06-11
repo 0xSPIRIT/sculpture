@@ -158,7 +158,6 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
                 
                 // Disgusting hardcoding to adjust the weird rotation SDL does.
                 
-                // @ChiselChange
                 //chisel_get_adjusted_positions(angle, tool, &x, &y);
                 if (angle == 270 && tool == TOOL_CHISEL_SMALL) {
                     y++;

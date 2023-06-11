@@ -14,13 +14,6 @@ static void calculate_tutorial_rect_size(Tutorial_Rect *tut) {
     Assert(fw);
     Assert(fh);
     
-#if 0
-    int w, h;
-    SDL_QueryTexture(gs->textures.tutorial_ok_button, NULL, NULL, &w, &h);
-    tut->ok_button->w = w;
-    tut->ok_button->h = h;
-#endif
-    
     const int space_before_button = Scale(32);
     
     tut->rect.x = tut->x * gs->window_width;

@@ -3,6 +3,7 @@
 // Include all files to compile in one translation unit for
 // compilation speed's sake. ("Unity Build")
 #include "util.c"
+#include "render.c"
 #include "fades.c"
 #include "overlay.c"
 #include "converter.c"
@@ -30,7 +31,6 @@
 #include "level.c"
 #include "titlescreen.c"
 #include "background.c"
-#include "render.c"
 
 static void game_resize(int h) {
     gs->gui.popup_y /= gs->gh*gs->S;

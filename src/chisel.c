@@ -42,7 +42,7 @@ static int chisel_get_distance_from_facing_cell(int i, f64 angle) {
     while (true) {
         x += dir_x;
         y += dir_y;
-        
+
         if (!is_in_bounds(x, y) ||
             gs->grid[(int)round(x)+(int)round(y)*gs->gw].type != CELL_NONE)
         {
@@ -262,9 +262,6 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
         
         x -= dx;
         y -= dy;
-        
-        //x = chisel->x;
-        //y = chisel->y;
         
         for (int yy = -size; yy <= size; yy++) {
             for (int xx = -size; xx <= size; xx++) {

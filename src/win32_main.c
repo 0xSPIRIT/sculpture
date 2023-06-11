@@ -102,7 +102,7 @@ static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *tra
     transient_memory->size = Megabytes(8);
     
     Assert(persistent_memory->size >= sizeof(Game_State));
-    
+
     LPVOID base_address = (LPVOID) Terabytes(2);
     
     persistent_memory->data = VirtualAlloc(base_address,
@@ -309,7 +309,7 @@ int main(int argc, char **argv)
     
     Game_Code game_code = {0};
     load_game_code(&game_code);
-    
+
     Memory_Arena persistent_memory, transient_memory;
     make_memory_arena(&persistent_memory, &transient_memory);
     
@@ -416,32 +416,12 @@ int main(int argc, char **argv)
             
             char title[128] = {0};
             sprintf(title,
-                    "Alaska | Memory Used: %.2f/%.2f MB [%.2f%%] | FPS: %.2f | Frametime: %.2fms",
-                    size_current/1024.0/1024.0,
-                    size_max/1024.0/1024.0,
-                    percentage,
+                    "Alaska | FPS: %.2f | Frametime: %.2fms",
                     fps,
                     d*1000);
             
             SDL_SetWindowTitle(gs->window, title);
         }
-        
-#if 0
-        time_passed += d;
-        
-        if (time_passed >= 1) {
-            fps_draw = fps_count-1;
-            time_passed = 0;
-            fps_count=0;
-        }
-        
-        char title[128] = {0};
-        sprintf(title,
-                "Alaska | FPS: %d | Frametime: %.2fms",
-                fps_draw,
-                1000*d);
-        SDL_SetWindowTitle(gs->window, title);
-#endif
     }
     
     game_deinit(gs);

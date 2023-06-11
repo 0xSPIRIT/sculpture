@@ -103,6 +103,9 @@ static void levels_setup(void) {
 static void goto_level(int lvl) {
     gs->level_current = lvl;
     
+    gs->render.view.x = gs->render.to.x = 0;
+    gs->render.view.y = gs->render.to.y = 0;
+    
     gs->levels[lvl].first_frame_compare = false;
     
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);

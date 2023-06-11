@@ -11,7 +11,7 @@ static f64 NormalSine(f64 t) {
 static void background_draw(int target, Background *bg) {
     int w = bg->surface->w, h = bg->surface->h;
     
-    bg->time += gs->dt*0.1;
+    bg->time += gs->dt;
     
     f64 rcoeff, gcoeff, bcoeff;
     
@@ -24,9 +24,9 @@ static void background_draw(int target, Background *bg) {
         
         f64 coeff = (f64)3*(i+3*(i%w))/(w*h);
         
-        r = rcoeff * 30 * NormalSine(coeff+bg->time);
-        g = gcoeff * 30 * NormalSine(coeff+bg->time);
-        b = bcoeff * 30 * NormalSine(coeff+bg->time);
+        r = rcoeff * 50 * NormalSine(coeff+bg->time);
+        g = gcoeff * 50 * NormalSine(bg->time);
+        b = bcoeff * 50 * NormalSine(coeff+bg->time);
         
         Uint32 pixel = 0xFF000000 | (Uint8)b << 16 | (Uint8)g << 8 | (Uint8)r;
         set_pixel(bg->surface, i%w, i/w, pixel);
