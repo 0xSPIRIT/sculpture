@@ -21,8 +21,8 @@ typedef struct Effect {
     enum Effect_Type type;
     Effect_Particle *particles;
     int particle_count;
-    
+
     bool high_fidelity;
-    
+
     SDL_Rect bounds;
 } Effect;

@@ -34,15 +34,15 @@ typedef struct GUI {
     f32 popup_inventory_y, popup_inventory_y_vel, popup_inventory_h;
     Texture *popup_texture;
     Tooltip tooltip;
-    
+
     f64 stored_game_scale; // So we can know to resize if the scale changed.
-    
+
     Overlay_Interface overlay_interface;
-    
+
     Button *tool_buttons[TOOL_COUNT];
-    
+
     Popup_Confirm eol_popup_confirm, restart_popup_confirm;
-    
+
     Message message_stack[MAX_MESSAGE_STACK];
     int message_count;
 } GUI;

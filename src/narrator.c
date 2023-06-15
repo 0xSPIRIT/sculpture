@@ -9,7 +9,7 @@ static void narrator_draw_text_blended(int i, // 0 to 10
 {
     char identifier[64] = {0};
     sprintf(identifier, "narrator %d", i);
-    
+
     RenderDrawTextQuick(RENDER_TARGET_MASTER,
                         identifier,
                         font,
@@ -32,7 +32,7 @@ static char* get_narration(int level) {
         case 8:  return NARRATION_LEVEL_8;
         case 10: return NARRATION_LEVEL_10;
         case 11: return NARRATION_LEVEL_11;
-        
+
         case 12: return NARRATION_END;
     }
     return NULL;
@@ -40,18 +40,18 @@ static char* get_narration(int level) {
 
 static void narrator_init(int level) {
     Narrator *n = &gs->narrator;
-    
+
     memset(&gs->narrator, 0, sizeof(Narrator));
-    
+
     char *narration = NULL;
-    
+
     narration = get_narration(level);
-    
+
     if (!narration) return;
-    
+
     char *c = narration;
     int i = 0;
-    
+
     while (*c) {
         if (*c == '\n') {
             n->line_count++;
@@ -59,35 +59,35 @@ static void narrator_init(int level) {
             i = 0;
             continue;
         }
-        
+
         n->lines[n->line_count][i] = *c;
-        
+
         ++i;
         ++c;
     }
-    
+
     n->line_curr = 0;
     n->alpha = 0;
     n->fadeout = false;
     n->first_frame = true;
     n->delay = 30;
-    
+
     narrator_next_line(true);
 }
 
 static void narrator_next_line(bool init) {
     Narrator *n = &gs->narrator;
-    
+
     n->update = true; // Gets reset in narrator_run
-    
+
     if (!init)
         n->line_curr++;
-    
+
     int a = 0;
     int i = 0;
-    
+
     memset(n->current_lines, 0, 10*256);
-    
+
     char *s = n->lines[n->line_curr];
     while (true) {
         if (*s == '\r') {
@@ -110,26 +110,26 @@ static void narrator_next_line(bool init) {
 
 static void narrator_tick() {
     Narrator *n = &gs->narrator;
-    
+
     n->delay--;
     if (n->delay > 0) return;
-    
+
     if (n->off) return;
     if (gs->fade.active) return;
-    
+
     if (n->first_frame) {
         n->first_frame = false;
         return;
     }
-    
+
     if (gs->input.keys_pressed[SDL_SCANCODE_TAB]) {
         set_fade(FADE_NARRATOR, 0, 255);
     }
-    
+
     if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.keys_pressed[SDL_SCANCODE_SPACE])  {
         n->fadeout = true;
     }
-    
+
     if (n->fadeout) {
         n->alpha -= NARRATOR_ALPHA;
         if (n->alpha < -NARRATOR_ALPHA*NARRATOR_HANG_TIME) {
@@ -138,7 +138,7 @@ static void narrator_tick() {
             if (n->line_curr >= n->line_count) {
                 set_fade(FADE_NARRATOR, 0, 255);
             }
-            
+
             n->fadeout = false;
         }
     } else {
@@ -158,15 +158,15 @@ static int get_glitched_offset(void) {
 
 static void narrator_run(int target, SDL_Color col) {
     Narrator *n = &gs->narrator;
-    
+
     RenderMaybeSwitchToTarget(target);
-    
+
     if (n->off) return;
     if (n->delay > 0) return;
-    
+
     if (wait_for_fade(FADE_NARRATOR)) {
         reset_fade();
-        
+
         if (gs->level_current+1 == 11 && gs->obj.active) {
             n->off = true;
             gs->credits.state = CREDITS_DELAY;
@@ -182,20 +182,20 @@ static void narrator_run(int target, SDL_Color col) {
         }
         return;
     }
-    
+
     Font *font = gs->fonts.font_times;
-    
+
     for (int i = 0; i < n->current_line_count; i++) {
         char *s = PushArray(gs->transient_memory, n->curr_len, sizeof(char));
         strcpy(s, n->current_lines[i]);
-        
+
         int w, h;
         TTF_SizeText(font->handle, s, &w, &h);
-        
+
         const int pad = 8;
-        
+
         SDL_Color c = col;
-        
+
         int xoff = 0;
 #if 0
         if (gs->level_current+1 == 8 || gs->level_current+1 == 10) {
@@ -203,7 +203,7 @@ static void narrator_run(int target, SDL_Color col) {
             if (rand() < RAND_MAX/100) {xoff *= 25;}
         }
 #endif
-        
+
         int surf_h;
         narrator_draw_text_blended(i,
                                    font,
@@ -214,6 +214,6 @@ static void narrator_run(int target, SDL_Color col) {
                                    NULL,
                                    &surf_h);
     }
-    
+
     n->update = false;
 }

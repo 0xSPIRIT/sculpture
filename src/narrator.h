@@ -102,24 +102,24 @@
 typedef struct Narrator {
     char current_lines[10][256];
     int current_line_count;
-    
+
     char lines[MAX_LINES][256];
     int line_curr, line_count;
     size_t curr_len;
-    
+
     int delay;
     bool update; // Should we update the narrations text surface? narrator_next_line
-    
+
     bool fadeout; // This is for text
-    
+
     f64 alpha;
     f64 hang_time; // The hang time between each line
     bool first_frame;
-    
+
     f64 glitch_time;
     f64 target_time;
     bool red;
-    
+
     bool off;
 } Narrator;
 

@@ -16,19 +16,19 @@ enum Converter_State {
 typedef struct Converter {
     enum Converter_Type type;
     enum Converter_State state;
-    
+
     char name[CONVERTER_NAME_LEN];
-    
+
     f32 x, y, w, h;
     int speed; // Amount of cells converted per tick.
-    
+
     int timer_max, timer_current;
-    
+
     Slot *slots;
     int slot_count;
-    
+
     Button *go_button;
-    
+
     Arrow arrow;
 } Converter;
 
@@ -39,13 +39,13 @@ typedef struct Converter_Checker {
 
 typedef struct Conversions {
     bool active; // Is the panel active?
-    
+
     char *string;
     char lines[MAX_CONVERSION_LINES][100];
     int line_count;
-    
+
     bool calculated_render_target;
-    
+
     SDL_Rect r; // The panel position and size.
 } Conversions;
 
@@ -62,7 +62,7 @@ static void all_converters_draw(int target);
 static void auto_set_material_converter_slots(Converter *converter);
 static void converter_setup_position(Converter *converter);
 static int get_number_unique_inputs(Item *input1, Item *input2);
-    
+
 static Converter_Checker converter_checker(Item *input1, Item *input2);
 
 static bool is_either_input_type(Converter_Checker *checker, int type, bool restart);

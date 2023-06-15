@@ -56,135 +56,135 @@ enum State_Game {
 // in here and we don't want to mess that up.
 typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
-    
+
     f64 dt; // Time taken for previous frame.
-    
+
     bool use_software_renderer;
-    
+
     SDL_Window *window;
     SDL_Renderer *renderer;
     Render render;
-    
+
     SDL_Point real_top_left; // Probably should be in Render.
-    
+
     // All stored surfaces and textures.
     Textures textures;
     Surfaces surfaces;
-    
+
     Preview current_preview;
     Preview tool_previews[TOOL_COUNT];
-    
+
     Background background;
-    
+
     enum State_Game gamestate;
-    
+
     Titlescreen titlescreen;
-    
+
     SDL_Event *event;
-    
+
     Fade fade;
-    
+
     Conversions converter;
-    
+
     Tutorial_Rect tutorial;
     bool show_tutorials;
-    
+
     bool level1_set_highlighted;
-    
+
     Credits credits;
     Narrator narrator;
     Object3D obj;
-    
+
     Timelapse timelapse;
-    
+
     Audio audio;
-    
+
     int item_prev_amounts[ITEM_COUNT];
     // the amount an item has at the time it was last drawn.
     // (The rendering data is stored in textures.items and surfaces.items)
-    
+
     Fonts fonts;
     char texts[TEXT_INDEX_COUNT][128];
-    
+
     bool is_mouse_over_any_button;
-    
+
     f64 S;
     bool fullscreen;
     int window_width, window_height;
     int desktop_w, desktop_h;
     int real_width, real_height;
     f32 delta_time;
-    
+
     int current_tool, previous_tool;
-    
+
     SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
-    
+
     enum Blob_Type blob_type;
-    
+
     Dust_Data dust_data;
-    Cell *grid_layers[NUM_GRID_LAYERS]; 
+    Cell *grid_layers[NUM_GRID_LAYERS];
     Cell *grid, *gas_grid; // Pointers into grid_layers
-    
+
     // grid = regular everyday grid
     // gas_grid = only used for gases
-    
+
     bool resized;
-    
+
     int gw, gh; // Grid width, grid height
     int grid_show_ghost;
-    
+
     int object_count, object_current;
     int do_draw_blobs, do_draw_objects;
-    
+
     bool paused;
     int frames;
     bool step_one;
-    
+
     Inventory inventory;
-    
+
     Deleter deleter;
     Overlay overlay;
-    
+
     clock_t global_start, global_end;
-    
+
     bool undo_initialized;
-    
+
     Save_State save_states[MAX_UNDO];
     int save_state_count; // Number of states saved.
-    
+
     Text_Field text_field;
-    
+
     bool creative_mode;
-    
+
     Placer placers[PLACER_COUNT];
     int current_placer;
-    
+
     Level levels[LEVEL_COUNT];
     int level_current, level_count, new_level;
-    
+
     GUI gui;
     SDL_Texture *gui_texture;
-    
+
     Input input;
-    
+
     Grabber grabber;
     Effect current_effect;
-    
+
     Converter *material_converter, *fuel_converter;
-    
+
     Item item_holding;
-    
+
     bool did_chisel_tutorial;
     bool did_undo_tutorial;
     bool did_pressure_tutorial;
     bool did_inventory_tutorial;
     bool did_fuel_converter_tutorial;
     bool did_placer_rectangle_tutorial;
-    
+
     Hammer hammer;
-    
+
     SDL_Surface *pixel_format_surf;
-    
+
     Chisel chisel_small, chisel_medium, chisel_large;
     Chisel *chisel;
 } Game_State;
@@ -194,7 +194,7 @@ static Game_State *gs = NULL;
 static void _assert(const char *func, const char *file, const int line) {
     char message[64] = {0};
     char line_of_code[2048] = {0};
-    
+
     FILE *f = fopen(file, "r");
     if (f) {
         int i = 0;
@@ -208,9 +208,9 @@ static void _assert(const char *func, const char *file, const int line) {
     } else {
         sprintf(message, "%s :: at %s:%d", func, file, line);
     }
-    
+
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, NULL);
-    
+
     Error("\n:::: ASSERTION FAILED ::::\n%s", message);
 }
 
@@ -218,11 +218,11 @@ static void _assert(const char *func, const char *file, const int line) {
 static void *_push_array(Memory_Arena *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
     void *output = NULL;
-    
+
     size = num * size_individual;
-    
+
     const int debug_memory = false;
-    
+
     if (debug_memory && gs != NULL) {
         char memory_name[64] = {0};
         if (memory == gs->persistent_memory) {
@@ -232,10 +232,10 @@ static void *_push_array(Memory_Arena *memory, Uint64 num, Uint64 size_individua
         } else {
             Assert(0);
         }
-        
+
         Log("%s Memory_Arena :: Allocated %zd bytes at %s(%d)\n", memory_name, size, file, line);
     }
-    
+
     if (memory->cursor+size > memory->data+memory->size) {
         char message[256] = {0};
         sprintf(message, "Out of Memory_Arena!\nAllowed memory: %zd bytes, Attempted allocation to %zd bytes.\n%s:%d",
@@ -245,9 +245,9 @@ static void *_push_array(Memory_Arena *memory, Uint64 num, Uint64 size_individua
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Memory_Arena Error :(", message, gs->window);
         exit(1);
     }
-    
+
     output = memory->cursor;
     memory->cursor += size;
-    
+
     return output;
 }

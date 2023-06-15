@@ -16,11 +16,11 @@ static void titlescreen_tick(void) {
 static void titlescreen_draw(int target) {
     RenderColor(255, 255, 255, 255);
     RenderClear(target);
-    
+
     if (gs->titlescreen.stop) return;
-    
+
     TTF_SizeText(gs->fonts.font_titlescreen->handle, "Alaska", &gs->titlescreen.text_width, NULL);
-    
+
     RenderDrawTextQuick(target,
                         "titlescreen",
                         gs->fonts.font_titlescreen,
@@ -32,13 +32,13 @@ static void titlescreen_draw(int target) {
                         NULL,
                         NULL,
                         false);
-    
+
     char *string = "Press RETURN";
     int w;
-    
+
     f64 a = (1+sin(3*SDL_GetTicks()/1000.0))/2;
     a *= 255;
-    
+
     TTF_SizeText(gs->fonts.font_times->handle, string, &w, NULL);
     RenderDrawTextQuick(target,
                         "something else",

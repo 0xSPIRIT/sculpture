@@ -99,23 +99,23 @@
 // A rectangle containing text, and an "Okay" button.
 typedef struct Tutorial_Rect {
     bool active;
-    
+
     TTF_Font *font;
     SDL_Texture *textures[MAX_TUTORIAL_LINES];
     SDL_Rect texture_rects[MAX_TUTORIAL_LINES];
-    
+
     int margin;
-    
+
     char str[8*64];
     char lines[MAX_TUTORIAL_LINES][64];
-    
+
     int line_count;
-    
+
     f64 x, y; // 0 to 1
     SDL_Rect rect;
-    
+
     Button *ok_button;
-    
+
     struct Tutorial_Rect *next;
 } Tutorial_Rect;
 

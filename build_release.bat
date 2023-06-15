@@ -1,6 +1,6 @@
 @echo off
 
-set Common_Compiler_Flags=/nologo /Zi /O2 /GR- /GS- /EHa- /MD /FC /Fo:"obj\\" /DALASKA_RELEASE_MODE
+set Common_Compiler_Flags=/nologo /Z7 /O2 /GR- /GS- /EHa- /MT /FC /Fo:"obj\\" /DALASKA_RELEASE_MODE /D_CRT_SECURE_NO_WARNINGS
 set Linker_Flags=user32.lib shell32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib SDL2_mixer.lib
 
 if not exist src/win32_main.c goto INVALID_DIR
@@ -23,7 +23,7 @@ REM and we still retain the errorlevel from the DLL compilation.
 (>>alaska.exe call;) 2>nul || goto end
 
 REM Build the SDL layer (.exe)
-cl.exe %Common_Compiler_Flags% ..\src\win32_main.c %Linker_Flags% SDL2main.lib /link /incremental:no /out:alaska.exe /SUBSYSTEM:WINDOWS
+cl.exe %Common_Compiler_Flags% ..\src\win32_main.c %Linker_Flags% SDL2main.lib /link /NOIMPLIB /NOEXP /incremental:no /out:alaska.exe
 
 if NOT %errorlevel%==0 (set err=%errorlevel%)
 

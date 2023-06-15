@@ -4,11 +4,11 @@ static int sign(int a) {
 
 static f64 lerp64(f64 a, f64 b, f64 t) {
     f64 result = a + t*(b-a); // or a(1-t) + tb -- same thing.
-    
+
     const f64 epsilon = 0.01;
     if (fabs(result-a) < epsilon) return a;
-    
-    return result; 
+
+    return result;
 }
 
 // a = start, b = end, t = x-value (0 to 1)
@@ -102,32 +102,32 @@ static void get_filename_from_type(int type, char *out) {
         case CELL_NONE:        strcpy(out, "nothing"); break;
         case CELL_DIRT:        strcpy(out, RES_DIR "items/dirt.png"); break;
         case CELL_SAND:        strcpy(out, RES_DIR "items/sand.png"); break;
-        
+
         case CELL_WATER:       strcpy(out, RES_DIR "items/water.png"); break;
         case CELL_ICE:         strcpy(out, RES_DIR "items/ice.png"); break;
         case CELL_STEAM:       strcpy(out, RES_DIR "items/steam.png"); break;
-        
+
         case CELL_WOOD_LOG:    strcpy(out, RES_DIR "items/wood_log.png"); break;
         case CELL_WOOD_PLANK:  strcpy(out, RES_DIR "items/wood_plank.png"); break;
-        
+
         case CELL_COBBLESTONE: strcpy(out, RES_DIR "items/cobblestone.png"); break;
         case CELL_MARBLE:      strcpy(out, RES_DIR "items/marble.png"); break;
         case CELL_SANDSTONE:   strcpy(out, RES_DIR "items/sandstone.png"); break;
-        
+
         case CELL_CEMENT:      strcpy(out, RES_DIR "items/cement.png"); break;
         case CELL_CONCRETE:    strcpy(out, RES_DIR "items/concrete.png"); break;
-        
+
         case CELL_QUARTZ:      strcpy(out, RES_DIR "items/quartz.png"); break;
         case CELL_GLASS:       strcpy(out, RES_DIR "items/glass.png"); break;
-        
+
         case CELL_GRANITE:     strcpy(out, RES_DIR "items/granite.png"); break;
         case CELL_BASALT:      strcpy(out, RES_DIR "items/basalt.png"); break;
         case CELL_DIAMOND:     strcpy(out, RES_DIR "items/diamond.png"); break;
-        
+
         case CELL_UNREFINED_COAL: strcpy(out, RES_DIR "items/unref_coal.png"); break;
         case CELL_REFINED_COAL:   strcpy(out, RES_DIR "items/ref_coal.png"); break;
         case CELL_LAVA:           strcpy(out, RES_DIR "items/lava.png"); break;
-        
+
         case CELL_SMOKE:       strcpy(out, RES_DIR "items/smoke.png"); break;
         case CELL_DUST:        strcpy(out, RES_DIR "items/dust.png"); break;
     }
@@ -136,35 +136,35 @@ static void get_filename_from_type(int type, char *out) {
 static void get_name_from_type(int type, char *out) {
     switch (type) {
         case CELL_NONE:        strcpy(out, "nothing"); break;
-        
+
         case CELL_DIRT:        strcpy(out, "Dirt"); break;
         case CELL_SAND:        strcpy(out, "Sand"); break;
-        
+
         case CELL_WATER:       strcpy(out, "Water"); break;
         case CELL_ICE:         strcpy(out, "Ice"); break;
         case CELL_STEAM:       strcpy(out, "Steam"); break;
-        
+
         case CELL_WOOD_LOG:    strcpy(out, "Wood Log"); break;
         case CELL_WOOD_PLANK:  strcpy(out, "Wood Plank"); break;
-        
+
         case CELL_COBBLESTONE: strcpy(out, "Stone"); break;
         case CELL_MARBLE:      strcpy(out, "Marble"); break;
         case CELL_SANDSTONE:   strcpy(out, "Sandstone"); break;
-        
+
         case CELL_CEMENT:      strcpy(out, "Cement"); break;
         case CELL_CONCRETE:    strcpy(out, "Concrete"); break;
-        
+
         case CELL_QUARTZ:      strcpy(out, "Quartz"); break;
         case CELL_GLASS:       strcpy(out, "Glass"); break;
-        
+
         case CELL_GRANITE:     strcpy(out, "Granite"); break;
         case CELL_BASALT:      strcpy(out, "Basalt"); break;
         case CELL_DIAMOND:     strcpy(out, "Diamond"); break;
-        
+
         case CELL_UNREFINED_COAL: strcpy(out, "Unref. Coal"); break;
         case CELL_REFINED_COAL: strcpy(out, "Ref. Coal"); break;
         case CELL_LAVA:        strcpy(out, "Lava"); break;
-        
+
         case CELL_SMOKE:       strcpy(out, "Smoke"); break;
         case CELL_DUST:        strcpy(out, "Dust"); break;
     }
@@ -211,14 +211,14 @@ static SDL_Color get_pixel(SDL_Surface *surf, int x, int y) {
     if (y >= surf->h) y %= surf->h;
     int bpp = surf->format->BytesPerPixel;
     Assert(bpp == 4);
-    
+
     Uint32 *pixels = (Uint32*)surf->pixels;
     SDL_Color color;
-    
+
     Uint32 pixel = pixels[x+y*surf->w];
-    
+
     SDL_GetRGBA(pixel, surf->format, &color.r, &color.g, &color.b, &color.a);
-    
+
     return color;
 }
 
@@ -304,11 +304,11 @@ static bool is_point_on_line(SDL_Point p, SDL_Point a, SDL_Point b) {
 static SDL_Point closest_point_on_line(SDL_Point a, SDL_Point b, SDL_Point p) {
     SDL_Point AP = {p.x - a.x, p.y - a.y};
     SDL_Point AB = {b.x - a.x, b.y - a.y};
-    
+
     f32 magnitudeAB = (f32) (AB.x*AB.x + AB.y*AB.y);
     f32 ABAPproduct = (f32) (AP.x*AB.x + AP.y*AB.y);
     f32 distance = ABAPproduct / magnitudeAB;
-    
+
     if (distance < 0) {
         return a;
     } else if (distance > 1) {
@@ -325,10 +325,10 @@ static bool is_point_in_rect(SDL_Point p, SDL_Rect r) {
 #if 0
 static vec2 lerp_vec2(vec2 a, vec2 b, f64 t) {
     vec2 result;
-    
+
     result.x = a.x + (b.x-a.x)*t;
     result.y = a.y + (b.y-a.y)*t;
-    
+
     return result;
 }
 #endif
@@ -339,7 +339,7 @@ static void fill_circle_in_buffer(Uint32 *buffer, Uint32 value, int x, int y, in
             if (xx*xx + yy*yy > size*size) continue;
             if (x+xx < 0 || x+xx >= w) continue;
             if (y+yy < 0 || y+yy >= h) continue;
-            
+
             buffer[x+xx+(y+yy)*w] = value;
         }
     }

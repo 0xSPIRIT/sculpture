@@ -6,15 +6,15 @@ static int is_cell_hard(int type) {
         type == CELL_COBBLESTONE ||
         type == CELL_MARBLE      ||
         type == CELL_SANDSTONE   ||
-        
+
         type == CELL_CONCRETE    ||
         type == CELL_QUARTZ      ||
         type == CELL_GLASS       ||
-        
+
         type == CELL_GRANITE     ||
         type == CELL_BASALT      ||
         type == CELL_DIAMOND     ||
-        
+
         type == CELL_UNREFINED_COAL ||
         type == CELL_REFINED_COAL;
 }
@@ -79,7 +79,7 @@ static int is_any_neighbour_hard(int x, int y) {
 
 static int number_neighbours_of_object(int x, int y, int r, int obj) {
     int c = 0;
-    
+
     for (int xx = -r; xx <= r; xx++) {
         for (int yy = -r; yy <= r; yy++) {
             if (xx == 0 && yy == 0) continue;
@@ -87,33 +87,33 @@ static int number_neighbours_of_object(int x, int y, int r, int obj) {
             if (gs->grid[x+xx+(y+yy)*gs->gw].type && gs->grid[x+xx+(y+yy)*gs->gw].object == obj) c++;
         }
     }
-    
+
     return c;
 }
 
 static int get_neighbour_type_in_direction(int x, int y, f32 angle) {
     angle += 180;
-    
+
     f64 len = 2;
-    
+
     while (len <= 3) {
         f32 dx = len * cos(DEGTORAD*angle);
         f32 dy = len * sin(DEGTORAD*angle);
-        
+
         int xx = x+dx;
         int yy = y+dy;
-        
+
         if (!is_in_bounds(xx, yy)) {
             return -1;
         }
-        
+
         int type = gs->grid[xx+yy*gs->gw].type;
-        
+
         if (type) return type;
-        
+
         len++;
     }
-    
+
     return -1;
 }
 
@@ -171,11 +171,11 @@ static bool compare_cells(Cell *a, Cell *b) {
 //
 static void set_array(Cell *arr, int x, int y, int val, int object) {
     if (x < 0 || x >= gs->gw || y < 0 || y >= gs->gh) return;
-    
+
     arr[x+y*gs->gw].type = val;
     arr[x+y*gs->gw].time = 0;
     arr[x+y*gs->gw].is_initial = false;
-    
+
     if (object == -2) {
         arr[x+y*gs->gw].object = -1;
     } else if (object != -1) {
@@ -190,13 +190,13 @@ static void set_array(Cell *arr, int x, int y, int val, int object) {
             arr[x+y*gs->gw].object = gs->object_count++;
         }
     }
-    
+
     int obj = arr[x+y*gs->gw].object;
-    
+
     if (obj == -1 || obj >= MAX_OBJECTS) {
         return;
     }
-    
+
     if (val == 0) {
         arr[x+y*gs->gw].object = -1;
     }
@@ -211,13 +211,13 @@ static void set(int x, int y, int val, int object) {
 static void swap_array(Cell *arr, int x1, int y1, int x2, int y2) {
     if (x1 < 0 || x1 >= gs->gw || y1 < 0 || y1 >= gs->gh) return;
     if (x2 < 0 || x2 >= gs->gw || y2 < 0 || y2 >= gs->gh) return;
-    
+
     arr[x1+y1*gs->gw].px = x1;
     arr[x1+y1*gs->gw].py = y1;
-    
+
     arr[x2+y2*gs->gw].px = x2;
     arr[x2+y2*gs->gw].py = y2;
-    
+
     Cell temp = arr[x2+y2*gs->gw];
     arr[x2+y2*gs->gw] = arr[x1+y1*gs->gw];
     arr[x1+y1*gs->gw] = temp;
@@ -239,13 +239,13 @@ static f32 water_spread(void) {
 static void grid_init(int w, int h) {
     gs->gw = w;
     gs->gh = h;
-    
+
     if (gs->grid_layers[0] == NULL) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
             gs->grid_layers[i] = PushArray(gs->persistent_memory, w*h, sizeof(Cell));
         }
     }
-    
+
     for (int i = 0; i < w*h; i++) {
         for (int j = 0; j < NUM_GRID_LAYERS; j++) {
             gs->grid_layers[j][i] = (Cell){.type = 0, .object = -1 };
@@ -253,7 +253,7 @@ static void grid_init(int w, int h) {
             gs->grid_layers[j][i].id = i;
         }
     }
-    
+
     gs->grid = gs->grid_layers[0];
     gs->gas_grid = gs->grid_layers[1];
 }
@@ -271,11 +271,11 @@ static SDL_Color get_pressure_color(Cell *cell) {
 static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
     SDL_Color color = {0};
     int r, amt;
-    
+
     switch (type) {
         default:
         break;
-        
+
         case CELL_DIRT: {
             const int variance = 10;
             color = (SDL_Color){
@@ -300,7 +300,7 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             color = (SDL_Color){50, 50, 50, 255};
             break;
         }
-        
+
         case CELL_WATER: {
             color = (SDL_Color){131, 160, 226, 255};
             break;
@@ -309,17 +309,17 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             color = get_pixel(gs->surfaces.ice_surface, i%gs->gw, i/gs->gw);
             break;
         }
-        
+
         case CELL_WOOD_LOG: {
             color = get_pixel(gs->surfaces.bark_surface, i%gs->gw, i/gs->gh);
             break;
         }
-        
+
         case CELL_WOOD_PLANK: {
             color = get_pixel(gs->surfaces.wood_plank_surface, i%gs->gw, i/gs->gw);
             break;
         }
-        
+
         case CELL_COBBLESTONE: {
             r = randR(i) % 100 < 10;
             amt = 25;
@@ -327,14 +327,14 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             // color = (SDL_Color){127, 255, 0, 255};
             break;
         }
-        
+
         case CELL_MARBLE: {
             //color = (SDL_Color){245+randR(i)%10, 245+randG(i)%10, 245+randB(i)%10, 255};
             int id = grid[i].id*2;
             color = get_pixel(gs->surfaces.marble_surface, id%gs->gw, id/gs->gw);
             break;
         }
-        
+
         case CELL_SANDSTONE: {
             r = randR(i) % 100 < 10;
             amt = 25;
@@ -342,12 +342,12 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             /* color = (SDL_Color){127, 255, 0, 255}; */
             break;
         }
-        
+
         case CELL_CEMENT: {
             color = (SDL_Color){100, 100, 100, 255};
             break;
         }
-        
+
         case CELL_CONCRETE: {
             color = (SDL_Color){125, 125, 125, 255};
             break;
@@ -363,13 +363,13 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             };
             break;
         }
-        
+
         case CELL_GLASS: {
             color = get_pixel(gs->surfaces.glass_surface, i%gs->gw, i/gs->gw);
             color.a = 255;
             break;
         }
-        
+
         case CELL_GRANITE: {
             color = get_pixel(gs->surfaces.granite_surface, i%gs->gw, i/gs->gw);
             color.r *= 0.79;
@@ -377,7 +377,7 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             color.b *= 0.79;
             break;
         }
-        
+
         case CELL_BASALT: {
             color = (SDL_Color){64, 64, 64, 255};
             color.r += randR(i)%20;
@@ -385,30 +385,30 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             color.b += randR(i)%20;
             break;
         }
-        
+
         case CELL_DIAMOND: {
             int id = grid[i].id*2;
             color = get_pixel(gs->surfaces.diamond_surface, id%gs->gw, id/gs->gw);
             break;
         }
-        
+
         case CELL_UNREFINED_COAL: case CELL_REFINED_COAL: {
             r = randR(i) % 100 < 10;
             amt = 25;
             color = (SDL_Color){70-10 + r*amt + (randR(i)%20 - 10), 70-10 + r*amt + (randR(i)%20 - 10), 70-10 + r*amt + (randR(i)%20 - 10), 255};
             break;
         }
-        
+
         case CELL_LAVA: {
             color = (SDL_Color){255, 255, 255, 255};
             break;
         }
-        
+
         case CELL_SMOKE: {
             color = (SDL_Color){120, 120, 120, 255};
             break;
         }
-        
+
         case CELL_DUST: {
             color = (SDL_Color){100, 100, 100, 255};
             break;
@@ -426,19 +426,19 @@ static SDL_Color pixel_from_index(enum Cell_Type type, int i) {
 // In this function, we use vx_acc and vy_acc as a higher precision position value.
 static bool move_by_velocity_gas(Cell *arr, int x, int y) {
     Cell *p = &arr[x+y*gs->gw];
-    
+
     if (p->vx_acc == 0 && p->vy_acc == 0) {
         p->vx_acc = (f32) x;
         p->vy_acc = (f32) y;
         return false;
     }
-    
+
     p->vx_acc += p->vx;
     p->vy_acc += p->vy;
-    
+
     int tx = (int)p->vx_acc;
     int ty = (int)p->vy_acc;
-    
+
     if (!is_in_bounds(tx, ty) || (is_in_bounds(tx, ty) && arr[tx+ty*gs->gw].type && arr[tx+ty*gs->gw].type != p->type)) {
         p->vx_acc = (f32) x;
         p->vy_acc = (f32) y;
@@ -446,18 +446,18 @@ static bool move_by_velocity_gas(Cell *arr, int x, int y) {
         p->vy = 0;
         return true;
     }
-    
+
     swap_array(arr, x, y, (int)p->vx_acc, (int)p->vy_acc);
     return false;
 }
 
 static void move_by_velocity(Cell *arr, int x, int y) {
     Cell *p = &arr[x+y*gs->gw];
-    
+
     if (p->vx == 0 && p->vy == 0) {
         return;
     }
-    
+
     // If vel < 1, that means we should wait for it to accumulate before moving.
     if (fabsf(p->vx) < 1) {
         p->vx_acc += p->vx;
@@ -465,7 +465,7 @@ static void move_by_velocity(Cell *arr, int x, int y) {
     if (fabsf(p->vy) < 1) {
         p->vy_acc += p->vy;
     }
-    
+
     if (fabsf(p->vx_acc) >= 1) {
         p->vx = p->vx_acc;
         p->vx_acc = 0;
@@ -474,14 +474,14 @@ static void move_by_velocity(Cell *arr, int x, int y) {
         p->vy = p->vy_acc;
         p->vy_acc = 0;
     }
-    
+
     f32 xx = (f32) x;
     f32 yy = (f32) y;
-    
+
     f32 len = sqrtf(p->vx*p->vx + p->vy*p->vy);
     f32 ux = p->vx/len;
     f32 uy = p->vy/len;
-    
+
     while (sqrt((xx-x)*(xx-x) + (yy-y)*(yy-y)) <= len) {
         xx += ux;
         yy += uy;
@@ -512,13 +512,13 @@ static void move_by_velocity(Cell *arr, int x, int y) {
                     p->vx = 0;
                 }
             }
-            
+
             xx -= ux;
             yy -= uy;
             break;
         }
     }
-    
+
     swap_array(arr, x, y, (int)xx, (int)yy);
 }
 
@@ -542,33 +542,33 @@ static bool can_gas_cell_swap(int x, int y) {
 static int grid_array_tick(Cell *array, int x_direction, int y_direction) {
     int start_y = (y_direction == 1) ? 0 : gs->gh-1;
     int start_x = (x_direction == 1) ? 0 : gs->gw-1;
-    
+
 #define y_condition(y) ((start_y == 0) ? (y < gs->gh) : (y >= 0))
 #define x_condition(x) ((start_x == 0) ? (x < gs->gw) : (x >= 0))
-    
+
     int cells_updated = 0;
-    
+
     for (int y = start_y; y_condition(y); y += y_direction) {
         for (int q = start_x; x_condition(q); q += x_direction) {
             int x = q;
             if (gs->frames%2 == 0) {
                 x = gs->gw - 1 - x;
             }
-            
+
             Cell *c = &array[x+y*gs->gw];
-            
+
             // Make sure we're only dealing with non-objects.
             if (!c->type || c->object != -1 || c->updated) continue;
-            
+
             c->updated = true;
             c->time++;
-            
+
             cells_updated++;
-            
+
             switch (c->type) {
                 case CELL_WATER: {
                     f32 sp = 0.5;
-                    
+
                     if (is_in_bounds(x, y+1) && !array[x+(y+1)*gs->gw].type) {
                         c->vy += GRAV;
                         if (c->vy > MAX_GRAV) c->vy = MAX_GRAV;
@@ -622,7 +622,7 @@ static int grid_array_tick(Cell *array, int x_direction, int y_direction) {
                 case CELL_STEAM: case CELL_SMOKE: {
                     f32 fac = 0.4f*randf(1.f);
                     f32 amplitude = 1.0;
-                    
+
                     // If we hit something last frame...
                     if (is_in_bounds(x, y-1) && can_gas_cell_swap(x, y-1)) {
                         c->vy = -1;
@@ -638,21 +638,21 @@ static int grid_array_tick(Cell *array, int x_direction, int y_direction) {
                     } else if (is_in_bounds(x+1, y) && can_gas_cell_swap(x-1, y)) {
                         c->vx = 1;
                     }
-                    
+
                     /* for (int i = 1; i >= -1; i -= 2) { */
                     /*     int tx = x+(int)(i*c->vx); */
                     /*     if (!is_in_bounds(tx, y) || (is_in_bounds(tx, y) && gs->grid[tx+y*gs->gw].type && gs->grid[tx+y*gs->gw].type != c->type)) { */
                     /*         c->vx = 0; */
                     /*     } */
                     /* } */
-                    
+
                     if (y == 0 ||
                         (x == 0 && c->vx < 0) ||
                         (x == gs->gw-1 && c->vx > 0) ||
                         (y == gs->gw-1 && c->vy > 0)) {
                         set_array(array, x, y, 0, -1);
                     }
-                    
+
                     if (c->type) {
                         move_by_velocity_gas(array, x, y);
                     }
@@ -675,7 +675,7 @@ static int grid_array_tick(Cell *array, int x_direction, int y_direction) {
                     break;
                 }
             }
-            
+
             // Make sure the cell still exists, and wasn't destroyed
             // during this function (CELL_STEAM, CELL_SMOKE, and CELL_DUST)
             if (c->type) {
@@ -683,34 +683,34 @@ static int grid_array_tick(Cell *array, int x_direction, int y_direction) {
             }
         }
     }
-    
+
     return cells_updated;
 }
 
 static void simulation_tick(void) {
     if (!gs->step_one)
         if (gs->paused) return;
-    
+
     gs->frames++;
-    
+
     for (int i = 0; i < gs->levels[gs->level_current].source_cell_count; i++) {
         Source_Cell *sc = &gs->levels[gs->level_current].source_cell[i];
-        
+
         int x = sc->x;
         int y = sc->y;
         if (!gs->gas_grid[x+y*gs->gw].type && sc->type != 0) {
             char str[256] = {0};
             get_name_from_type(sc->type, str);
-            
+
             set_array(gs->gas_grid, x, y, sc->type, -1);
             gs->gas_grid[x+y*gs->gw].vy = -1;
-            
+
             if (!gs->gas_grid[x+y*gs->gw].type) {
                 gs->gas_grid[x+y*gs->gw].type = sc->type;
             }
         }
     }
-    
+
     grid_array_tick(gs->grid, 1, -1);
     dust_grid_tick();
     grid_array_tick(gs->gas_grid, 1, 1);
@@ -719,21 +719,21 @@ static void simulation_tick(void) {
 static void grid_array_draw(int target, Cell *array, Uint8 alpha) {
     for (int i = 0; i < gs->gw*gs->gh; i++)
         array[i].updated = 0;
-    
+
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (!array[x+y*gs->gw].type) continue;
-            
+
             SDL_Color col = pixel_from_index(array[x+y*gs->gw].type, x+y*gs->gw);
-            
+
             const int DRAW_PRESSURE = 0;
             if (DRAW_PRESSURE && array[x+y*gs->gw].type) {
                 col = get_pressure_color(&array[x+y*gs->gw]);
             }
-            
+
             f64 a = alpha/255.0;
             RenderColor(col.r, col.g, col.b, col.a * a);
-            
+
             const bool draw_lines = false;
             if (draw_lines) {
                 Line l = {x, y, array[x+y*gs->gw].px, array[x+y*gs->gw].py};
@@ -754,23 +754,23 @@ static void grid_draw(int target) {
     grid_array_draw(target, gs->gas_grid, 255);
     grid_array_draw(target, gs->grid, 255);
     dust_grid_draw(target);
-    
+
     overlay_draw(target);
-    
+
     // Draw inspiration ghost
     if (gs->grid_show_ghost) {
         for (int y = 0; y < gs->gh; y++) {
             for (int x = 0; x < gs->gw; x++) {
                 if (!gs->levels[gs->level_current].desired_grid[x+y*gs->gw].type) continue;
-                
+
                 const f32 strobe_speed = 3.5f;
-                
+
                 f32 alpha;
                 alpha = 1 + sinf(strobe_speed * SDL_GetTicks()/1000.0);
                 alpha /= 2;
                 alpha *= 16;
                 alpha += 180;
-                
+
                 SDL_Color col = pixel_from_index(gs->levels[gs->level_current].desired_grid[x+y*gs->gw].type, x+y*gs->gw);
                 f32 b = (f32) (col.r + col.g + col.b);
                 b /= 3.;
@@ -782,8 +782,8 @@ static void grid_draw(int target) {
                 RenderPointRelative(target, x, y);
             }
         }
-    } 
-    
+    }
+
     if (gs->current_tool >= TOOL_CHISEL_SMALL &&
         gs->current_tool <= TOOL_CHISEL_LARGE &&
         gs->chisel->state == CHISEL_STATE_IDLE)
@@ -815,17 +815,17 @@ static void calculate_pressure(Cell *grid) {
 // If any cell is unable to move, undo the work.
 static void object_tick(int obj) {
     if (gs->current_tool == TOOL_GRABBER && gs->grabber.object_holding == obj) return;
-    
+
     // Copy of grid to fall back to if we abort.
     Cell *grid_temp = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(Cell));
     memcpy(grid_temp, gs->grid, sizeof(Cell)*gs->gw*gs->gh);
-    
+
     int dy = 1;
-    
+
     for (int y = gs->gh-1; y >= 0; y--) {
         for (int x = 0; x < gs->gw; x++) {
             if (gs->grid[x+y*gs->gw].object != obj) continue;
-            
+
             if (y+1 >= gs->gh || gs->grid[x+(y+1)*gs->gw].type) {
                 // Abort!
                 memcpy(gs->grid, grid_temp, sizeof(Cell)*gs->gw*gs->gh);
@@ -835,7 +835,7 @@ static void object_tick(int obj) {
             }
         }
     }
-    
+
     if (!object_does_exist(obj)) {
         gs->object_count--;
     }
@@ -849,10 +849,10 @@ static void mark_neighbours(int x, int y, int obj, int pobj, int *cell_count) {
         gs->grid[x+y*gs->gw].object != pobj) {
         return;
     }
-    
+
     gs->grid[x+y*gs->gw].temp = obj;
     (*cell_count)++;
-    
+
     mark_neighbours(x+1, y, obj, gs->grid[x+y*gs->gw].object, cell_count);
     mark_neighbours(x-1, y, obj, gs->grid[x+y*gs->gw].object, cell_count);
     mark_neighbours(x, y+1, obj, gs->grid[x+y*gs->gw].object, cell_count);
@@ -870,7 +870,7 @@ static void objects_reevaluate(void) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         gs->grid[i].temp = -1;
     }
-    
+
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (!gs->grid[x+y*gs->gw].type || !is_cell_hard(gs->grid[x+y*gs->gw].type) || gs->grid[x+y*gs->gw].temp != -1) continue;
@@ -879,12 +879,12 @@ static void objects_reevaluate(void) {
             gs->object_count++;
         }
     }
-    
+
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         gs->grid[i].object = gs->grid[i].temp;
         gs->grid[i].temp = 0;
     }
-    
+
     calculate_pressure(gs->grid);
 }
 
@@ -898,17 +898,17 @@ static int condition(int a, int end, int dir) {
 static int object_attempt_move(int object, int dx, int dy) {
     f32 len = sqrtf((f32) (dx*dx + dy*dy));
     if (len == 0) return 0;
-    
+
     f32 ux = dx/len;
     f32 uy = dy/len;
-    
+
     int start_y = 0;
     int end_y = 0;
     int start_x = 0;
     int end_x = 0;
     int dir_x = 0;
     int dir_y = 0;
-    
+
     if (uy > 0) {
         start_y = gs->gh - 1;
         end_y = 0;
@@ -918,7 +918,7 @@ static int object_attempt_move(int object, int dx, int dy) {
         end_y = gs->gh - 1;
         dir_y = 1;
     }
-    
+
     if (ux > 0) {
         start_x = gs->gw - 1;
         end_x = 0;
@@ -928,13 +928,13 @@ static int object_attempt_move(int object, int dx, int dy) {
         end_x = gs->gw - 1;
         dir_x = 1;
     }
-    
+
     f32 vx = ux; // = 0;
     f32 vy = uy; // = 0;
-    
+
     Cell *grid_temp = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(Cell));
     memcpy(grid_temp, gs->grid, sizeof(Cell)*gs->gw*gs->gh);
-    
+
     /* while (sqrt(vx*vx + vy*vy) < len) { */
     /*     vx += ux; */
     /*     vy += uy; */
@@ -955,7 +955,7 @@ static int object_attempt_move(int object, int dx, int dy) {
         }
     }
     /* } */
-    
+
     return (int) (ux+uy*gs->gw);
 }
 
@@ -979,7 +979,7 @@ static void convert_object_to_dust(int object) {
 
 static void draw_objects(int target) {
     if (!gs->do_draw_objects) return;
-    
+
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (gs->grid[x+y*gs->gw].object == -1) continue;
@@ -992,19 +992,19 @@ static void draw_objects(int target) {
 }
 
 // Returns the index of the closest cell to the point (px, py)
-static int clamp_to_grid(int px, 
-                  int py, 
-                  bool outside, 
-                  bool on_edge, 
-                  bool set_current_object, 
-                  bool must_be_hard) 
+static int clamp_to_grid(int px,
+                  int py,
+                  bool outside,
+                  bool on_edge,
+                  bool set_current_object,
+                  bool must_be_hard)
 {
     int closest_index = -1;
     f32 closest_distance = (f32) (gs->gw*gs->gh); // Arbitrarily high number
-    
+
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
-            
+
             if (on_edge) {
                 if (!gs->grid[x+y*gs->gw].type) continue;
                 if (must_be_hard && !is_cell_hard(gs->grid[x+y*gs->gw].type)) continue;
@@ -1013,7 +1013,7 @@ static int clamp_to_grid(int px,
             } else {
                 if (!gs->grid[x+y*gs->gw].type) continue;
             }
-            
+
             int condition;
             if (outside) {
                 if (on_edge) {
@@ -1032,12 +1032,12 @@ static int clamp_to_grid(int px,
             } else {
                 condition = 1;
             }
-            
+
             if (condition) {
                 f32 dx = (f32) (px - x);
                 f32 dy = (f32) (py - y);
                 f32 dist = sqrtf(dx*dx + dy*dy);
-                
+
                 if (dist < closest_distance) {
                     closest_distance = dist;
                     closest_index = x+y*gs->gw;
@@ -1045,7 +1045,7 @@ static int clamp_to_grid(int px,
             }
         }
     }
-    
+
     if (set_current_object) {
         if (on_edge) {
             gs->object_current = gs->grid[closest_index].object;

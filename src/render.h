@@ -61,7 +61,7 @@ typedef struct {
     Text_Render_Type render_type;
     bool force_update;
     Uint8 alpha;
-    
+
     f64 game_scale;       // OUT: The scale of the game at the time of rendering.
     Texture texture;      // OUT: The texture generated
     SDL_Surface *surface; // OUT: The surface generated
@@ -75,13 +75,13 @@ typedef struct {
 typedef struct {
     SDL_Renderer *sdl;
     View_State view_type;
-    
+
     SDL_FRect view;
     SDL_FPoint to;
-    
+
     Render_Target *current_target;
     Render_Target *render_targets;
-    
+
     Render_Text_Data_Cache text_cache; // The permanent cache, destroyed upon RenderCleanup
     Render_Text_Data_Cache temp_text_cache; // Temporary cache, destroyed at end of frame.
     int unfreed_objects;

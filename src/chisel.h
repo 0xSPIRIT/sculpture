@@ -16,16 +16,16 @@ typedef struct Chisel {
     enum Chisel_State state;
     enum Chisel_Size size;
     int x, y;
-    
+
     int lookahead;
     bool is_calculating_highlight;
-    
+
     int highlights[HIGHLIGHT_MAX]; // Stores indices of each highlight.
     int highlight_count;
-    
+
     f64 angle;
     Texture *texture;
-    
+
     int did_chisel_this_frame;
     int num_times_chiseled;
 } Chisel;

@@ -1,6 +1,6 @@
 static void set_text_field(const char *description, const char *initial_text, void (*on_return)(const char *)) {
     Text_Field *text_field = &gs->text_field;
-    
+
     text_field->active = true;
     text_field->on_return = on_return;
     strcpy(text_field->description, description);
@@ -10,9 +10,9 @@ static void set_text_field(const char *description, const char *initial_text, vo
 
 static void text_field_tick(void) {
     Text_Field *text_field = &gs->text_field;
-    
+
     if (!text_field->active) return;
-    
+
     switch (gs->event->type) {
         case SDL_TEXTINPUT: {
             strcat(text_field->text, gs->event->text.text);
@@ -47,16 +47,16 @@ static void text_field_tick(void) {
 
 static void text_field_draw(int target) {
     Text_Field *text_field = &gs->text_field;
-    
+
     if (!text_field->active) return;
-    
+
     // TODO: Replace with our new font renderer.
-    
+
     SDL_Surface *description_surf = 0, *text_surf = 0;
     SDL_Texture *description_texture = 0, *text_texture = 0;
-    
+
     SDL_Rect field_rect = {0}, text_field_rect = {0}, description_rect = {0};
-    
+
     if (*text_field->description)
         description_surf = TTF_RenderText_Blended(gs->fonts.font_consolas->handle, text_field->description, (SDL_Color){180,180,180,255});
     if (*text_field->text)
@@ -83,7 +83,7 @@ static void text_field_draw(int target) {
         text_texture = SDL_CreateTextureFromSurface(gs->renderer, text_surf);
 
     RenderColor(255, 255, 255, 255);
-    
+
     if (text_surf) {
         RenderDrawRect(target, field_rect);
         SDL_RenderCopy(gs->renderer, text_texture, NULL, &text_field_rect);

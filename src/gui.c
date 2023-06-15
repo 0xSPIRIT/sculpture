@@ -3,12 +3,12 @@ static Button *button_allocate(Button_Type type, Texture *texture, const char *t
     b->type = type;
     b->texture = texture;
     b->disabled = false;
-    
+
     b->index=-1;
-    
+
     b->w = b->texture->width;
     b->h = b->texture->height;
-    
+
     strcpy(b->tooltip_text, tooltip_text);
     b->on_pressed = on_pressed;
     return b;
@@ -16,15 +16,23 @@ static Button *button_allocate(Button_Type type, Texture *texture, const char *t
 
 static void tool_button_set_disabled(int level) {
     Button **tools = gs->gui.tool_buttons;
-    
+
     //tools[TOOL_BLOCKER]->disabled = true;
     
-    if (compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY)) {
+    bool is_leeway_compared = compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY);
+    bool is_exactly = compare_cells_to_int(gs->grid, gs->overlay.grid, 0);
+    
+    if (is_exactly && !gs->levels[level].done) {
+        Mix_PlayChannel(AUDIO_CHANNEL_GUI, gs->audio.sprinkle, 0);
+        gs->levels[level].done = true;
+    }
+
+    if (is_leeway_compared) {
         tools[TOOL_FINISH_LEVEL]->highlighted = true;
     } else {
         tools[TOOL_FINISH_LEVEL]->highlighted = false;
     }
-    
+
     switch (level+1) {
         case 1: {
             if (!gs->gui.tool_buttons[TOOL_OVERLAY]->highlighted) {
@@ -33,7 +41,7 @@ static void tool_button_set_disabled(int level) {
                 else
                     tools[TOOL_CHISEL_SMALL]->highlighted = false;
             }
-            
+
             if (gs->chisel_small.num_times_chiseled < 10) {
                 tools[TOOL_CHISEL_MEDIUM]->disabled = true;
                 tools[TOOL_CHISEL_LARGE]->disabled = true;
@@ -65,17 +73,17 @@ static void tool_button_set_disabled(int level) {
 
 static void click_gui_tool_button(void *type_ptr) {
     int type = *(int*)type_ptr;
-    
+
     GUI *gui = &gs->gui;
-    
+
     if (gui->popup) return;
-    
+
     int p_tool = gs->current_tool;
-    
+
     gs->current_tool = type;
-    
+
     gui->tool_buttons[type]->highlighted = false;
-    
+
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: {
             gs->chisel = &gs->chisel_small;
@@ -105,24 +113,24 @@ static void click_gui_tool_button(void *type_ptr) {
             return;
         }
     }
-    
+
     gui->tool_buttons[type]->active = true;
-    
+
     for (int i = 0; i < TOOL_COUNT; i++) {
         if (type != i)
             gui->tool_buttons[i]->active = false;
     }
-    
+
     tooltip_reset(&gui->tooltip);
 }
 
 static void button_tick(Button *b, void *data) {
     Input *input = &gs->input;
     GUI *gui = &gs->gui;
-    
+
     int gui_input_mx = input->real_mx;
     int gui_input_my = input->real_my;
-    
+
     // This is a hack so that function pointers won't stop working
     // upon reloading the DLL... Honestly why don't we just do it
     // this way normally? Seems to work great.
@@ -135,29 +143,29 @@ static void button_tick(Button *b, void *data) {
         case BUTTON_TYPE_RESTART_POPUP_CONFIRM: b->on_pressed = restart_popup_confirm_confirm;  break;
         case BUTTON_TYPE_RESTART_POPUP_CANCEL:  b->on_pressed = restart_popup_confirm_cancel;   break;
     }
-    
+
     if (b->disabled) return;
-    
+
     if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
         gui_input_my >= b->y && gui_input_my < b->y+b->h) {
-        
+
         if (*b->tooltip_text) {
             tooltip_set_position_to_cursor(&gui->tooltip, TOOLTIP_TYPE_BUTTON);
             gui->tooltip.preview = b->preview;
         }
-        
+
         b->just_had_tooltip = true;
-        
+
         gs->is_mouse_over_any_button = true;
-        
+
         if (strlen(b->tooltip_text))
             strcpy(gui->tooltip.str[0], b->tooltip_text);
-        
+
         if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
             Mix_HaltChannel(AUDIO_CHANNEL_GUI);
             Mix_PlayChannel(AUDIO_CHANNEL_GUI, gs->audio.accept, 0);
             b->on_pressed(data);
-            
+
             // Eat the input
             input->mouse = input->mouse & !(input->mouse & SDL_BUTTON_LEFT);
             input->mouse_pressed[SDL_BUTTON_LEFT] = 0;
@@ -170,19 +178,19 @@ static void button_tick(Button *b, void *data) {
 
 static void button_draw_prefer_color(int target, Button *b, SDL_Color color) {
     Input *input = &gs->input;
-    
+
     int gui_input_mx = input->real_mx;// / gs->S;
     int gui_input_my = input->real_my;// / gs->S;
-    
+
     if (b->index != -1) {
         b->w = b->h = GUI_H;
         b->x = b->index * b->w;
     }
-    
+
     SDL_Rect dst = {
         b->x, b->y, b->w, b->h
     };
-    
+
     if (b->disabled) {
         RenderTextureColorMod(b->texture, 90, 90, 90);
     } else if (b->active) {
@@ -197,7 +205,7 @@ static void button_draw_prefer_color(int target, Button *b, SDL_Color color) {
     } else {
         RenderTextureColorMod(b->texture, color.r, color.g, color.b);
     }
-    
+
     RenderTexture(target,
                   b->texture,
                   NULL,
@@ -210,10 +218,10 @@ static void button_draw(int target, Button *b) {
 
 static void gui_message_stack_push(const char *str) {
     GUI *gui = &gs->gui;
-    
+
     Assert(strlen(str) <= 100);
     Assert(gui->message_count <= MAX_MESSAGE_STACK);
-    
+
     if (gui->message_count) {
         for (int i = 0; i < gui->message_count; i++) {
             gui->message_stack[i+1] = gui->message_stack[i];
@@ -221,19 +229,19 @@ static void gui_message_stack_push(const char *str) {
     }
     gui->message_count++;
     Message *msg = &gui->message_stack[0];
-    
+
     strcpy(msg->str, str);
     msg->alpha = 255;
 }
 
 static void gui_init(void) {
     GUI *gui = &gs->gui;
-    
+
     gui->popup_y = (f32) (gs->gh*gs->S);
     gui->popup_y_vel = 0;
     gui->popup = 0;
     gui->popup_texture = &GetTexture(TEXTURE_POPUP);
-    
+
     gs->gui.eol_popup_confirm = popup_confirm_init("Are you satisfied with this result?",
                                                    BUTTON_TYPE_EOL_POPUP_CONFIRM,
                                                    BUTTON_TYPE_EOL_POPUP_CANCEL,
@@ -244,15 +252,15 @@ static void gui_init(void) {
                                                        BUTTON_TYPE_RESTART_POPUP_CANCEL,
                                                        restart_popup_confirm_confirm,
                                                        restart_popup_confirm_cancel);
-    
+
     tooltip_reset(&gui->tooltip);
-    
+
     int cum = 0;
-    
+
     for (int i = 0; i < TOOL_COUNT; i++) {
         char name[128] = {0};
         get_name_from_tool(i, name);
-        
+
         if (gui->tool_buttons[i] == NULL) {
             gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR,
                                                    &GetTexture(TEXTURE_TOOL_BUTTONS + i),
@@ -263,39 +271,39 @@ static void gui_init(void) {
             if (gs->tool_previews[i].length)
                 gui->tool_buttons[i]->preview = &gs->tool_previews[i];
         }
-        
+
         gui->tool_buttons[i]->x = cum;
         gui->tool_buttons[i]->y = 0;
         gui->tool_buttons[i]->index = i;
         gui->tool_buttons[i]->active = i == gs->current_tool;
-        
+
         cum += gui->tool_buttons[i]->w;
     }
-    
+
     //overlay_interface_init();
 }
 
 static void gui_tick(void) {
     if (gs->levels[gs->level_current].state != LEVEL_STATE_PLAY)
         return;
-    
+
     GUI *gui = &gs->gui;
     Input *input = &gs->input;
-    
+
     tool_button_set_disabled(gs->level_current);
-    
-    if (input->keys_pressed[SDL_SCANCODE_TAB] && 
+
+    if (input->keys_pressed[SDL_SCANCODE_TAB] &&
         gs->levels[gs->level_current].state == LEVEL_STATE_PLAY &&
-        gs->level_current >= 4-1) 
+        gs->level_current >= 4-1)
     {
         gui->popup = !gui->popup;
         gui->popup_y_vel = 0;
         gui->popup_inventory_y_vel = 0;
         tooltip_reset(&gui->tooltip);
     }
-    
+
     const f32 speed = 3.0f;
-    
+
     // For the CONVERTER popup
     if (gui->popup) {
         if (gui->popup_y > 1+round(gs->S*gs->gh)-GUI_POPUP_H) {
@@ -310,7 +318,7 @@ static void gui_tick(void) {
         gui->popup_y = (f32) round(gs->S*gs->gh);
         gui->popup_y_vel = 0;
     }
-    
+
     // For the INVENTORY popup
     if (gui->popup) {
         if (gui->popup_inventory_y < gs->S*GUI_H) {
@@ -326,16 +334,16 @@ static void gui_tick(void) {
         gui->popup_inventory_y = 0;
         gui->popup_inventory_y_vel = 0;
     }
-    
+
     if (!gui->popup  && !gs->gui.restart_popup_confirm.active) {
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_tick(gui->tool_buttons[i], &i);
         }
     }
-    
+
     gui->popup_y += gui->popup_y_vel;
     gui->popup_y = (f32) clamp((int) gui->popup_y, (int) (1 + round(gs->S*gs->gh) - GUI_POPUP_H), gs->window_height);
-    
+
     gui->popup_inventory_y += gui->popup_inventory_y_vel;
     gui->popup_inventory_y = (f32) clamp((int) gui->popup_inventory_y, 0, GUI_H);
 }
@@ -344,22 +352,22 @@ static void gui_tick(void) {
 // in an array of cells.
 static void profile_array(Cell *desired,
                    char out[64][CELL_TYPE_COUNT],
-                   int *count) 
+                   int *count)
 {
     int counts[CELL_TYPE_COUNT] = {0};
-    
+
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (desired[i].type != 0) {
             counts[desired[i].type]++;
         }
     }
-    
+
     for (int i = 0; i < CELL_TYPE_COUNT; i++) {
         if (!counts[i]) continue;
-        
+
         char name[64];
         get_name_from_type(i, name);
-        
+
         if (gs->level_current+1 == 7) {
             sprintf(out[(*count)++], "  %-15s???", name);
         } else if (gs->level_current == 11-1) {
@@ -374,13 +382,13 @@ static void profile_array(Cell *desired,
 
 static bool can_goto_next_level(void) {
     int level = gs->level_current+1;
-    
+
     if (level == 1 &&
         !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY))
     {
         return false;
     }
-    
+
     if (level >= 8 &&
         !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY))
     {
@@ -391,25 +399,25 @@ static bool can_goto_next_level(void) {
 
 static void gui_draw_profile(int target) {
     Assert(target == RENDER_TARGET_MASTER);
-    
+
     Level *level = &gs->levels[gs->level_current];
     int count = 0;
-    
+
 #if 0
     Cell *overlay_grid = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(Cell));
-    
+
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         overlay_grid[i].type = gs->overlay.grid[i];
     }
 #endif
-    
+
     profile_array(level->desired_grid, level->profile_lines, &count);
-    
+
     int c = 0;
-    
+
     {
         Render_Text_Data text_data = {0};
-        
+
         sprintf(text_data.identifier, "Thing");
         text_data.font = gs->fonts.font;
         strcpy(text_data.str, "Required Amounts:");
@@ -423,15 +431,15 @@ static void gui_draw_profile(int target) {
         text_data.alpha = 255;
         text_data.background = BLACK;
         text_data.render_type = TEXT_RENDER_LCD;
-        
+
         RenderDrawText(target, &text_data);
-        
+
         c = text_data.texture.height;
     }
-    
+
     for (int i = 0; i < count; i++) {
         Render_Text_Data text_data = {0};
-        
+
         sprintf(text_data.identifier, "Converter thing %d", i);
         text_data.font = gs->fonts.font;
         strcpy(text_data.str, level->profile_lines[i]);
@@ -440,42 +448,42 @@ static void gui_draw_profile(int target) {
         text_data.foreground = WHITE;
         text_data.background = BLACK;
         text_data.alpha = 255;
-        
+
         RenderDrawText(target, &text_data);
-        
+
         c += text_data.texture.height;
     }
 }
 
 static void gui_draw(int target) {
     Assert(target == RENDER_TARGET_MASTER);
-    
+
     GUI *gui = &gs->gui;
-    
+
     // Draw the toolbar buttons.
-    
+
     RenderColor(0, 0, 0, 0);
     RenderClear(RENDER_TARGET_GUI_TOOLBAR);
-    
+
     // Tool bar
     if (gs->gui.popup_inventory_y < GUI_H) {
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_draw(RENDER_TARGET_GUI_TOOLBAR, gui->tool_buttons[i]);
         }
-        
+
         SDL_Rect src = {
             0, 0,
             gs->window_width,
             GUI_H
         };
-        
+
         SDL_Rect dst = {
             0,
             0,
             gs->window_width,
             GUI_H
         };
-        
+
         RenderTargetToTarget(target,
                              RENDER_TARGET_GUI_TOOLBAR,
                              &src,
@@ -485,54 +493,54 @@ static void gui_draw(int target) {
 
 static void gui_popup_draw(int target) {
     Assert(target == RENDER_TARGET_MASTER);
-    
+
     GUI *gui = &gs->gui;
-    
+
     SDL_Rect popup = {
         0, (int)(GUI_H + gui->popup_y),
         gs->gw*gs->S, (int)GUI_POPUP_H
     };
-    
+
     RenderColor(Red(INVENTORY_COLOR),
                 Green(INVENTORY_COLOR),
                 Blue(INVENTORY_COLOR),
                 255);
     RenderFillRect(target, popup);
-    
+
     RenderColor(Red(CONVERTER_LINE_COLOR),
                 Green(CONVERTER_LINE_COLOR),
                 Blue(CONVERTER_LINE_COLOR),
                 255);
-    
+
     if (gs->gui.popup_y+GUI_H < gs->window_height) {
         RenderLine(target,
                    0, GUI_H+gui->popup_y-1,
                    gs->window_width,
                    GUI_H+gui->popup_y-1);
     }
-    
+
     int w, h;
     w = GetTexture(TEXTURE_TAB).width;
     h = GetTexture(TEXTURE_TAB).height;
-    
+
     SDL_Rect bar = {
         0, popup.y,
         gs->gw*gs->S, Scale(36)
     };
-    
+
     RenderColorStruct(ColorFromInt(INVENTORY_COLOR2));
     RenderFillRect(target, bar);
-    
+
     SDL_Rect tab_icon = {
         gs->gw*gs->S - 128, (int)(GUI_H + gui->popup_y) - h,
         w, h
     };
-    
+
     RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 127);
-    
+
     if (gs->level_current >= 4-1)
         RenderTexture(target, &GetTexture(TEXTURE_TAB), NULL, &tab_icon); // TODO
-    
+
     all_converters_draw(target);
     inventory_draw(target);
     converter_gui_draw();
@@ -557,20 +565,20 @@ static int get_cell_tier(int type) {
         case CELL_MARBLE: case CELL_COBBLESTONE: case CELL_SANDSTONE: {
             return 1;
         }
-        
+
         case CELL_CEMENT: case CELL_CONCRETE: case CELL_QUARTZ:
         case CELL_GLASS: {
             return 2;
         }
-        
+
         case CELL_GRANITE: case CELL_BASALT: case CELL_DIAMOND: {
             return 3;
         }
-        
+
         case CELL_UNREFINED_COAL: return 1;
         case CELL_REFINED_COAL: return 2;
         case CELL_LAVA: return 3;
     }
-    
+
     return 0; // 0 = not specified in any tier.
 }

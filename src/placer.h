@@ -10,14 +10,14 @@ enum {
 
 typedef struct Placer {
     int index;
-    
+
     int state;
     bool escape_rect; // A flag for if we escape out of the setting of rectangle.
-    
+
     bool did_take_anything; // When taking up material, did we actually take any?
 
     SDL_Rect rect;
-    
+
     int x, y, px, py;
     int w, h;
     Texture *texture;

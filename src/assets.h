@@ -8,7 +8,7 @@
 
 #define ITEM_COUNT 32
 
-#define Volume(x) ((int) ((x) * MIX_MAX_VOLUME))
+#define Volume(x) ((int) ((f64)(x) * MIX_MAX_VOLUME))
 
 enum {
     AUDIO_CHANNEL_CHISEL,
@@ -53,19 +53,21 @@ typedef enum {
     RENDER_TARGET_CONVERSION_PANEL,
     RENDER_TARGET_PREVIEW,
     RENDER_TARGET_OUTRO,
-    RENDER_TARGET_COUNT 
+    RENDER_TARGET_COUNT
 } RenderTargetType;
 
 typedef struct Audio {
     Mix_Music *music_titlescreen;
     Mix_Music *music_creation;
     
-    Mix_Chunk *stinger_a, *stinger_b;
-    
+    Mix_Music *ambience1;
+
+    Mix_Chunk *sprinkle;
+
     Mix_Chunk *accept;
-    
+
     Mix_Chunk *pip;
-    
+
     Mix_Chunk *medium_chisel[6];
     Mix_Chunk *small_chisel, *large_chisel;
 } Audio;
@@ -118,7 +120,7 @@ typedef struct Textures {
 
 typedef union Surfaces {
     SDL_Surface *surfaces[SURFACE_COUNT];
-    
+
     struct {
         SDL_Surface *renderer_3d,
         *background,
@@ -132,14 +134,14 @@ typedef union Surfaces {
         *ice_surface,
         *grass_surface,
         *triangle_blob_surface;
-        
+
         SDL_Surface *item_nums[ITEM_COUNT];
-        
+
         // Any temp surfaces you might need to draw text or w/e goes here!
         SDL_Surface *slot_names[TOTAL_SLOT_COUNT];
         SDL_Surface *converter_names[CONVERTER_COUNT];
         SDL_Surface *narrator_line[10];
-        
+
         SDL_Surface *narrator;
     };
 } Surfaces;

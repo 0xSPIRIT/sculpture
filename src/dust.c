@@ -19,7 +19,7 @@ static void dust_init(void) {
                                          gs->gw*gs->gh,
                                          sizeof(int));
     }
-    
+
     memset(gs->dust_data.types, 0, sizeof(enum Cell_Type)*gs->gw*gs->gh);
     memset(gs->dust_data.xs, 0, sizeof(f64)*gs->gw*gs->gh);
     memset(gs->dust_data.ys, 0, sizeof(f64)*gs->gw*gs->gh);
@@ -51,15 +51,15 @@ static void swap_array(Cell *arr, int x1, int y1, int x2, int y2);
 
 static void dust_grid_tick(void) {
     Dust_Data *data = &gs->dust_data;
-    
+
     for (int i = 0; i < data->count; i++) {
         const f64 gravity = 0.2f;
         data->vys[i] += gravity;
-        
+
         data->xs[i] += data->vxs[i];
         data->ys[i] += data->vys[i];
         data->timers[i]++;
-        
+
         const int total = 30;
         if (data->timers[i] >= total || !is_in_boundsf(data->xs[i], data->ys[i])) {
             data->count--;
@@ -79,7 +79,7 @@ static SDL_Color pixel_from_index(enum Cell_Type type, int i);
 
 static void dust_grid_draw(int target) {
     Dust_Data *data = &gs->dust_data;
-    
+
     for (int i = 0; i < data->count; i++) {
         SDL_Color c = pixel_from_index(data->types[i], (int)data->xs[i] + (int)data->ys[i]*gs->gw);
         const f64 coeff = 0.5;

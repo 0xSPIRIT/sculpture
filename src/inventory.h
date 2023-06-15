@@ -31,12 +31,12 @@ typedef struct {
     Converter *converter; // Pointer to a converter if needed.
     int inventory_index; // 0 to INVENTORY_SLOT_COUNT
     Item item;
-    
+
     enum Slot_Type type;
-    
+
     char name[32];
     int dx, dy;                  // Orientation of the name string.
-    
+
     f32 x, y, w, h;              // If it's in a converter, this is relative to that.
 } Slot;
 
@@ -46,7 +46,7 @@ typedef struct Inventory {
 
 static bool add_item_to_inventory_slot(enum Cell_Type type, int amount);
 static bool can_add_item_to_inventory(enum Cell_Type type);
-    
+
 static bool is_mouse_in_slot(Slot *slot);
 static bool was_mouse_in_slot(Slot *slot);
 

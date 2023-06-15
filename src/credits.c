@@ -1,8 +1,8 @@
 static void credits_run(int target) {
     Credits *c = &gs->credits;
-    
+
     if (c->state == CREDITS_OFF) return;
-    
+
     switch (c->state) {
         case CREDITS_DELAY: {
             if (c->timer < 4*60) {
@@ -15,15 +15,15 @@ static void credits_run(int target) {
         }
         case CREDITS_SHOW: {
             f64 f = 18.f;
-            
+
             if (c->timer < f)
                 c->timer++;
-            
+
             Uint8 co = 255 * (c->timer/f);
             SDL_Color col = {
                 255-co, 255-co, 255-co, 255
             };
-            
+
             Render_Text_Data text_data = {0};
             strcpy(text_data.identifier, "Ending text");
             text_data.font = gs->fonts.font_times;
@@ -35,7 +35,7 @@ static void credits_run(int target) {
             text_data.alignment = ALIGNMENT_CENTER;
             text_data.render_type = TEXT_RENDER_BLENDED;
             text_data.alpha = co;
-            
+
             RenderDrawText(target,
                            &text_data);
 #if 0

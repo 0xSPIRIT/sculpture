@@ -17,6 +17,7 @@
 #include <math.h>
 
 #include "typedefs.h"
+#include "audio.h"
 #include "render.h"
 #include "colors.h"
 #include "cursor.h"

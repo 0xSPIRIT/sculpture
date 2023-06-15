@@ -20,7 +20,7 @@ typedef struct {
     f64 yrot;
     f64 xrot;
     f64 acc, vel, jerk;
-    
+
     int t, hold;
     f64 t2;
     int timer;

@@ -34,28 +34,28 @@
 
 static void game_resize(int h) {
     gs->gui.popup_y /= gs->gh*gs->S;
-    
+
     gs->S = h / 72.0;
-    
+
     gs->window_width = gs->S*64.0;
     gs->window_height = gs->S*64.0 + GUI_H;
-    
+
     gs->gui.popup_y *= gs->gh*gs->S;
-    
+
     gs->render.view.x = 0;
     gs->render.view.y = 0;
     gs->render.view.w = gs->window_width;
     gs->render.view.h = gs->window_height-GUI_H;
-    
+
     gs->real_top_left.x = gs->window_width/4;
     gs->real_top_left.y = gs->window_height/4;
-    
+
     for (int i = 0; i < FONT_COUNT; i++) {
         RenderSetFontSize(gs->fonts.fonts[i], Scale(font_sizes[i]));
     }
-    
+
     gs->resized = true;
-    
+
     SDL_DestroyTexture(RenderTarget(RENDER_TARGET_3D)->texture.handle);
     RenderTarget(RENDER_TARGET_3D)->texture.handle = SDL_CreateTexture(gs->renderer,
                                                                        ALASKA_PIXELFORMAT,
@@ -64,54 +64,56 @@ static void game_resize(int h) {
                                                                        SCALE_3D*gs->window_width);
     RenderTarget(RENDER_TARGET_3D)->texture.width = SCALE_3D * gs->window_width;
     RenderTarget(RENDER_TARGET_3D)->texture.height = SCALE_3D * gs->window_width;
-    
+
     SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_3D)->texture.handle, SDL_BLENDMODE_BLEND);
 }
 
 static void game_update_view(void) {
     Input *input = &gs->input;
     SDL_FPoint *to = &gs->render.to;
-    
+
     if (input->keys_pressed[SDL_SCANCODE_D] || input->keys_pressed[SDL_SCANCODE_RIGHT])
         to->x += gs->window_width*0.25;
     if (input->keys_pressed[SDL_SCANCODE_A] || input->keys_pressed[SDL_SCANCODE_LEFT])
         to->x -= gs->window_width*0.25;
     to->x = clampf(to->x, -gs->window_width*0.5, gs->window_width*0.5);
-    
+
     // NOTE: This is not a typo, they are supposed to be width, not height.
     if (input->keys_pressed[SDL_SCANCODE_S] || input->keys_pressed[SDL_SCANCODE_DOWN])
         to->y += gs->window_width*0.25;
     if (input->keys_pressed[SDL_SCANCODE_W] || input->keys_pressed[SDL_SCANCODE_UP])
         to->y -= gs->window_width*0.25;
     to->y = clampf(to->y, -gs->window_width*0.5, gs->window_width*0.5);
-    
+
     gs->render.view.x = lerp64(gs->render.view.x, gs->render.to.x, 0.2);
     gs->render.view.y = lerp64(gs->render.view.y, gs->render.to.y, 0.2);
 }
 
 export void game_init(Game_State *state, int level) {
     gs = state;
-    
+
     gs->render.view.x = 0;
     gs->render.view.y = 0;
     gs->render.view.w = gs->window_width;
     gs->render.view.h = gs->window_height-GUI_H;
-    
+
     gs->real_top_left.x = gs->window_width/4;
     gs->real_top_left.y = gs->window_height/4;
-    
+
     gs->show_tutorials = true;
-    
+
     converter_gui_init();
     levels_setup();
     previews_load();
     goto_level(level);
     titlescreen_init();
-    
+
 #ifndef ALASKA_RELEASE_MODE
     gs->gamestate = GAME_STATE_PLAY;
 #else
     gs->gamestate = GAME_STATE_TITLESCREEN;
+    
+    Mix_VolumeMusic(AUDIO_TITLESCREEN_VOLUME);
     if (Mix_PlayMusic(gs->audio.music_titlescreen, -1) == -1) {
         Log("%s\n", SDL_GetError());
         exit(1);
@@ -122,20 +124,20 @@ export void game_init(Game_State *state, int level) {
 export bool game_tick_event(Game_State *state, SDL_Event *event) {
     gs = state;
     gs->event = event;
-    
+
     bool is_running = true;
     Input *input = &gs->input;
-    
+
     if (event->type == SDL_QUIT) {
         is_running = false;
     }
-    
+
     if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) {
         gs->real_width = event->window.data1;
         gs->real_height = event->window.data2;
         game_resize(gs->real_height);
     }
-    
+
     if (event->type == SDL_MOUSEWHEEL) {
         if (gs->current_tool == TOOL_PLACER) {
             Placer *placer = &gs->placers[gs->current_placer];
@@ -146,7 +148,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
             }
         }
     }
-    
+
     if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_F11 && !gs->obj.active) {
         if (!gs->fullscreen) {
             SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -156,7 +158,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
             gs->fullscreen = false;
         }
     }
-    
+
     int selected_tool = 0;
     if (event->type == SDL_KEYDOWN && gs->gamestate == GAME_STATE_PLAY && !gs->text_field.active) {
         switch (event->key.keysym.sym) {
@@ -174,7 +176,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                     placer->rect.h = 0;
                 } else {
 #ifndef ALASKA_RELEASE_MODE
-                    is_running = false; 
+                    is_running = false;
 #endif
                 }
                 break;
@@ -266,13 +268,13 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 c = &gs->grid[input->mx+input->my*gs->gw];
                 char name[256] = {0};
                 get_name_from_type(c->type, name);
-                
+
                 int obj = c->object;
                 if (obj == -1) obj = 0;
-                
+
                 Assert(obj != -1);
-                
-                
+
+
                 Log("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f\n",
                     input->mx,
                     input->my,
@@ -341,29 +343,29 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 selected_tool = 1;
                 break;
             }
-            
+
             case SDLK_F1: case SDLK_F2: case SDLK_F3: case SDLK_F4: case SDLK_F5: {
                 gs->current_placer = event->key.keysym.sym - SDLK_F1;
                 break;
             }
         }
     }
-    
+
     text_field_tick();
-    
+
     if (selected_tool) {
         gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
         gs->gui.tool_buttons[gs->current_tool]->active = true;
     }
-    
+
     return is_running;
 }
 
 export void game_run(Game_State *state) {
     gs = state;
-    
+
     gs->gui.tooltip.set_this_frame = false;
-    
+
     switch (gs->gamestate) {
         case GAME_STATE_TITLESCREEN: {
             titlescreen_tick();
@@ -372,20 +374,20 @@ export void game_run(Game_State *state) {
         }
         case GAME_STATE_PLAY: {
             game_update_view();
-            
+
             if (gs->obj.active) {
                 RenderColor(255, 255, 255, 255);
                 RenderClear(RENDER_TARGET_MASTER);
-                
+
                 object_draw(&gs->obj);
                 fade_draw(RENDER_TARGET_MASTER);
-                
+
                 SDL_Rect dst = {
                     0, 0,
                     RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_width,
                     RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_height
                 };
-                
+
                 Uint8 alpha = 255 - 255 * min(240,gs->obj.t) / 240.0;
                 RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture, alpha);
                 RenderMaybeSwitchToTarget(RENDER_TARGET_MASTER);
@@ -395,18 +397,18 @@ export void game_run(Game_State *state) {
                                &dst);
             } else {
                 //view_tick(&gs->view, &gs->input);
-                
+
                 gui_tick();
                 converter_gui_tick();
                 inventory_tick();
                 all_converters_tick();
-                
+
                 level_tick(&gs->levels[gs->level_current]);
                 level_draw(&gs->levels[gs->level_current]);
                 text_field_draw(RENDER_TARGET_MASTER);
-                
+
                 fade_draw(RENDER_TARGET_MASTER);
-                
+
                 preview_tick();
                 if (gs->current_preview.play)
                     preview_draw(RENDER_TARGET_MASTER,
@@ -414,41 +416,41 @@ export void game_run(Game_State *state) {
                                  0,
                                  0,
                                  6);
-                
+
                 if (gs->step_one) gs->step_one = false;
             }
             break;
         }
     }
-    
+
     RenderColor(0, 0, 0, 255);
     RenderClear(-1);
-    
+
     SDL_Rect src = {
         0, 0,
         gs->window_width, gs->window_height
     };
-    
+
     SDL_Rect dst = {
         gs->real_width/2 - gs->window_width/2,
         gs->real_height/2 - gs->window_height/2,
         gs->window_width,
         gs->window_height
     };
-    
+
     SDL_RenderCopy(gs->render.sdl,
                    RenderTarget(RENDER_TARGET_MASTER)->texture.handle,
                    &src,
                    &dst);
-    
+
 #if 0
     LARGE_INTEGER frequency, time_start, time_end;
     QueryPerformanceFrequency(&frequency);
     QueryPerformanceCounter(&time_start);
 #endif
- 
+
     SDL_RenderPresent(gs->renderer);
-    
+
 #if 0
     QueryPerformanceCounter(&time_end);
     Uint64 delta = time_end.QuadPart - time_start.QuadPart;

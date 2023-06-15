@@ -22,7 +22,7 @@ static void tooltip_set_position(Tooltip *tooltip, int x, int y, int type) {
 static void tooltip_draw_box(int target, Tooltip *tooltip, int w, int h) {
     tooltip->w = w;
     tooltip->h = h;
-
+    
     SDL_Rect r = {
         (int) (tooltip->x * gs->S),
         (int) (tooltip->y * gs->S + GUI_H),
@@ -51,100 +51,96 @@ static void tooltip_get_string(int type, int amt, char *out_str) {
     }
 }
 
-// This happens outside of the pixel-art texture, so we must
-// multiply all positions by scale.
 static void tooltip_draw(int target, Tooltip *tooltip) {
-    Assert(target == RENDER_TARGET_MASTER);
+    if (tooltip->x == -1 || tooltip->y == -1) return;
     
-    if (tooltip->x == -1 && tooltip->y == -1) return;
+    int margin = 8; // In real pixels.
     
-    RenderMaybeSwitchToTarget(target);
-    
-    const int margin = 8; // In real pixels.
-    
-    SDL_Surface *surfaces[MAX_TOOLTIP_LINE_LEN] = {0};
-    SDL_Texture *textures[MAX_TOOLTIP_LINE_LEN] = {0};
-    SDL_Rect dsts[MAX_TOOLTIP_LINE_LEN];
-    int count = 0;
+    int line_count = 0;
+    SDL_Rect dsts[MAX_TOOLTIP_LINE_LEN]; // Destination rectangles
     
     int highest_w = 0;
-    int height = 0;
+    int cum_height = 0; // Cumulative height
     
     for (int i = 0; i < MAX_TOOLTIP_LINE_LEN; i++) {
-        if (!strlen(tooltip->str[i])) continue;
-        count++;
+        if (tooltip->str[i][0] == 0) continue;
         
-        SDL_Color color;
+        line_count++;
         
-        if (i == 0) {
-            color = (SDL_Color){200,200,200,255};
-        } else {
-            color = WHITE;
-        }
-
-        // TODO: Performance
-        surfaces[i] = TTF_RenderText_Blended(gs->fonts.font->handle,
-                                             tooltip->str[i],
-                                             color);
-        
-        Assert(surfaces[i]);
-        textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surfaces[i]);
-        Assert(textures[i]);
+        int w, h;
+        TTF_SizeText(gs->fonts.font->handle, tooltip->str[i], &w, &h);
         
         dsts[i] = (SDL_Rect){
             (int) (gs->S * tooltip->x + margin),
-            (int) (height + gs->S * tooltip->y + margin),
-            surfaces[i]->w,
-            surfaces[i]->h
+            GUI_H + (int) (cum_height + gs->S * tooltip->y + margin),
+            w,
+            h
         };
-        dsts[i].y += GUI_H;
-
-        height += surfaces[i]->h;
-
-        if (surfaces[i]->w > highest_w) highest_w = surfaces[i]->w;
+        
+        cum_height += h;
+        
+        if (w > highest_w) {
+            highest_w = w;
+        }
     }
     
-    const int s = 5;
-    
-    int old_h = height;
+    int preview_scale = Scale(5);
+    int old_h = cum_height;
     
     if (tooltip->preview) {
-        height += 64*s+margin*2;
-        if (64*s > highest_w) highest_w = 64*s;
+        cum_height += 64*preview_scale+margin*2;
+        if (preview_scale*64 > highest_w) highest_w = preview_scale*64;
     }
-
+    
     bool clamped = false;
-
+    
     // Clamp the tooltips if it goes outside the window.
     if (tooltip->x*gs->S + highest_w >= gs->S*gs->gw) {
         tooltip->x -= highest_w/gs->S;
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < line_count; i++)
             dsts[i].x -= highest_w - margin/2;
         clamped = true;
     }
-
-    tooltip_draw_box(target, tooltip, highest_w + margin*2, height + margin*2);
     
-    if (tooltip->preview)
+    tooltip_draw_box(target,
+                     tooltip,
+                     highest_w + margin*2,
+                     cum_height + margin*2);
+    
+    if (tooltip->preview) {
         preview_draw(target,
                      tooltip->preview,
                      gs->S*tooltip->x+margin,
-                     gs->S*tooltip->y+(old_h)+margin*2, s);
+                     gs->S*tooltip->y+(old_h)+margin*2,
+                     preview_scale);
+    }
     
     if (clamped) {
         tooltip->x += highest_w;
     }
-
-    for (int i = 0; i < count; i++) {
-        SDL_RenderCopy(gs->renderer, textures[i], NULL, &dsts[i]);
-    }
-
-    for (int i = 0; i < MAX_TOOLTIP_LINE_LEN; i++) {
-        if (surfaces[i]) {
-            SDL_FreeSurface(surfaces[i]);
+    
+    for (int i = 0; i < line_count; i++) {
+        char identifier[64] = {0};
+        sprintf(identifier, "tooltip %d", i);
+        
+        SDL_Color text_color;
+        
+        if (i == 0) {
+            text_color = (SDL_Color){200,200,200,255};
+        } else {
+            text_color = WHITE;
         }
-        if (textures[i]) {
-            SDL_DestroyTexture(textures[i]);
-        }
+        
+        RenderDrawTextQuick(target,
+                            identifier,
+                            gs->fonts.font,
+                            tooltip->str[i],
+                            text_color,
+                            255,
+                            dsts[i].x,
+                            dsts[i].y,
+                            NULL,
+                            NULL,
+                            false);
     }
 }

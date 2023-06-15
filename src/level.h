@@ -26,26 +26,28 @@ typedef struct Source_Cell {
 
 typedef struct Level {
     enum Level_State state;
-    
+
     int index;
     char name[256];
     
+    bool done;
+
     int effect_type;
-    
+
     Cell *desired_grid; // What the inspiration is
     Cell *initial_grid; // Starting state of grid
-    
+
     char profile_lines[64][CELL_TYPE_COUNT];
-    
+
     Source_Cell source_cell[SOURCE_CELL_MAX];
     Source_Cell default_source_cell[SOURCE_CELL_MAX];
-    
+
     int source_cell_count, default_source_cell_count;
     int w, h;
     int popup_time_current, popup_time_max;
-    
+
     bool first_frame_compare;
-    
+
     f64 outro_alpha, desired_alpha;
     bool off;
 } Level;
@@ -61,7 +63,7 @@ static void level_tick(Level *level);
 static void level_tick_intro(Level *level);
 static void level_tick_outro(Level *level);
 static void level_tick_play(Level *level);
-    
+
 static void level_draw_confirm(int target);
 static void level_draw_narration(int target);
 static void level_draw_name_intro(int target, Level *level, SDL_Rect rect);
@@ -69,7 +71,7 @@ static void level_draw_desired_grid(Level *level, int dx, int dy);
 static void level_draw_intro(Level *level);
 static void level_draw_outro(int target, Level *level);
 static void level_draw_outro_or_play(Level *level);
-    
+
 static void level_draw(Level *level);
 
 static SDL_Color type_to_rgb(int type);
@@ -83,32 +85,32 @@ Uint8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
     CELL_NONE,            0,   0,   0,
     CELL_DIRT,          200,   0,   0,
     CELL_SAND,          255, 255,   0,
-    
+
     CELL_WATER,           0,   0, 255,
     CELL_ICE,           188, 255, 255,
     CELL_STEAM,         225, 225, 225,
-    
+
     CELL_WOOD_LOG,      128,  80,   0,
     CELL_WOOD_PLANK,    200,  80,   0,
-    
+
     CELL_COBBLESTONE,   128, 128, 128,
     CELL_MARBLE,        255, 255, 255,
     CELL_SANDSTONE,     255, 128,   0,
-    
+
     CELL_CEMENT,        130, 130, 130,
     CELL_CONCRETE,      140, 140, 140,
-    
+
     CELL_QUARTZ,        200, 200, 200,
     CELL_GLASS,         180, 180, 180,
-    
+
     CELL_GRANITE,       132, 158, 183,
     CELL_BASALT,         32,  32,  32,
     CELL_DIAMOND,       150, 200, 200,
-    
+
     CELL_UNREFINED_COAL, 50,  50,  50,
     CELL_REFINED_COAL,   70,  70,  70,
     CELL_LAVA,          255,   0,   0,
-    
+
     CELL_SMOKE,         170, 170, 170,
     CELL_DUST,          150, 150, 150
 };
