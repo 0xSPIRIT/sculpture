@@ -4,6 +4,8 @@
 #define NARRATOR_ALPHA 10
 #define NARRATOR_HANG_TIME 14 // Frames
 
+#define SHOW_NARRATION 1
+
 ////////////////////////////////////////////////////////////////
 #define NARRATION_LEVEL_1 \
 "Max inches towards three blocks of stone,\r"\

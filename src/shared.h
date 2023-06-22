@@ -18,11 +18,7 @@
 #endif
 
 // Assert using an SDL MessageBox popup. Prints to the console too.
-#ifndef ALASKA_RELEASE_MODE
-  #define Assert(cond) if(!(cond)) { _assert(__func__, __FILE__, __LINE__), __debugbreak(); }
-#else
-  #define Assert(cond) if(!(cond)) { _assert(__func__, __FILE__, __LINE__), __debugbreak(); }
-#endif
+#define Assert(cond) if(!(cond)) { _assert(__func__, __FILE__, __LINE__), __debugbreak(); }
 
 #define PushSize(arena, size) (_push_array(arena, 1, size, __FILE__, __LINE__))
 #define PushArray(arena, count, size) (_push_array(arena, count, size, __FILE__, __LINE__))

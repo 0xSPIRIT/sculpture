@@ -6,6 +6,7 @@ typedef struct {
     int start_y, end_y;
     Uint32 *pixels;
     SDL_Surface *surf;
+
     int w;
     Vertex points[3];
 } TriangleDrawData;
@@ -239,6 +240,8 @@ static void object_draw(Object3D *obj) {
     }
 
     vec3 *points = PushArray(gs->transient_memory, count, sizeof(vec3));
+
+    // Do something else here!
 
     for (int i = 0; i < count; i++) {
         switch (obj->state) {

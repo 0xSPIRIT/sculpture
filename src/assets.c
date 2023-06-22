@@ -191,7 +191,7 @@ static void audio_deinit(Audio *audio) {
     Mix_FreeMusic(audio->music_titlescreen);
     Mix_FreeMusic(audio->music_creation);
     Mix_FreeMusic(audio->ambience1);
-    
+
     for (int i = 0; i < 6; i++)
         Mix_FreeChunk(audio->medium_chisel[i]);
     Mix_FreeChunk(audio->small_chisel);

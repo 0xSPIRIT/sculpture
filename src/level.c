@@ -204,7 +204,7 @@ static void level_set_state(int level, enum Level_State state) {
                        2*gs->gw,
                        2*gs->gh);
         }
-        
+
         if (!Mix_PlayingMusic()) {
             Mix_PlayMusic(gs->audio.ambience1, -1);
             Mix_VolumeMusic(AUDIO_AMBIANCE_VOLUME);
@@ -675,9 +675,9 @@ static void level_draw_narration(int target) {
     RenderColor(20, 20, 20, 255);
     RenderClear(target);
 
-    effect_draw(target, &gs->current_effect, false, ONLY_SLOW_SLOW);
+    effect_draw(target, &gs->current_effect, false, ONLY_SLOW_ALL);
     narrator_run(target, WHITE);
-    effect_draw(target, &gs->current_effect, false, ONLY_SLOW_FAST);
+    //effect_draw(target, &gs->current_effect, false, ONLY_SLOW_FAST);
 }
 
 static void level_draw_outro_or_play(Level *level) {

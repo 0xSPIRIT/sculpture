@@ -213,12 +213,12 @@ RENDERAPI void RenderTargetToTargetRelative(int target_dst,
 }
 
 RENDERAPI void RenderTargetToTargetRelativeEx(int target_dst,
-                                      int target_src,
-                                      SDL_Rect *src,
-                                      SDL_Rect *dst,
-                                      f64 angle,
-                                      SDL_Point *center,
-                                      SDL_RendererFlip flip)
+                                              int target_src,
+                                              SDL_Rect *src,
+                                              SDL_Rect *dst,
+                                              f64 angle,
+                                              SDL_Point *center,
+                                              SDL_RendererFlip flip)
 {
     // Note: we dont modify src and dst to target_dst's top_left.
     //       If you want to do that, do it yourself before the call.

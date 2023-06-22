@@ -18,10 +18,10 @@ static void tool_button_set_disabled(int level) {
     Button **tools = gs->gui.tool_buttons;
 
     //tools[TOOL_BLOCKER]->disabled = true;
-    
+
     bool is_leeway_compared = compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY);
     bool is_exactly = compare_cells_to_int(gs->grid, gs->overlay.grid, 0);
-    
+
     if (is_exactly && !gs->levels[level].done) {
         Mix_PlayChannel(AUDIO_CHANNEL_GUI, gs->audio.sprinkle, 0);
         gs->levels[level].done = true;
@@ -539,7 +539,7 @@ static void gui_popup_draw(int target) {
     RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 127);
 
     if (gs->level_current >= 4-1)
-        RenderTexture(target, &GetTexture(TEXTURE_TAB), NULL, &tab_icon); // TODO
+        RenderTexture(target, &GetTexture(TEXTURE_TAB), NULL, &tab_icon);
 
     all_converters_draw(target);
     inventory_draw(target);

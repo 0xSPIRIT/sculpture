@@ -59,7 +59,7 @@ typedef enum {
 typedef struct Audio {
     Mix_Music *music_titlescreen;
     Mix_Music *music_creation;
-    
+
     Mix_Music *ambience1;
 
     Mix_Chunk *sprinkle;

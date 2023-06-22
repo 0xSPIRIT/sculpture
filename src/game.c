@@ -112,7 +112,7 @@ export void game_init(Game_State *state, int level) {
     gs->gamestate = GAME_STATE_PLAY;
 #else
     gs->gamestate = GAME_STATE_TITLESCREEN;
-    
+
     Mix_VolumeMusic(AUDIO_TITLESCREEN_VOLUME);
     if (Mix_PlayMusic(gs->audio.music_titlescreen, -1) == -1) {
         Log("%s\n", SDL_GetError());
@@ -233,7 +233,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_g: {
-                if (input->keys[SDL_SCANCODE_LCTRL]) {
+                if (input->keys[SDL_SCANCODE_LCTRL] || input->keys[SDL_SCANCODE_RCTRL]) {
                     set_text_field("Goto Level", "", goto_level_string_hook);
                 } else {
                     //Mix_PlayChannel(-1, gs->audio.chisel[rand()%6], 0);

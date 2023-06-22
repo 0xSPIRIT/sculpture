@@ -3,10 +3,10 @@
 echo:
 echo ------ Nocheckins ------
 echo:
-rg "nocheckin" --line-number -tc
+search nocheckin src\*
 
 
 echo:
 echo ------ TODO ------
 echo:
-rg "TODO" --line-number -tc
+search TODO src\*

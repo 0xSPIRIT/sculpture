@@ -10,7 +10,7 @@ static f64 NormalSine(f64 t) {
 
 static void background_draw(int target, Background *bg) {
     int w = bg->surface->w, h = bg->surface->h;
-    
+
     bg->time += gs->dt;
 
     f64 rcoeff, gcoeff, bcoeff;

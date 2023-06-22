@@ -1,5 +1,9 @@
 TODO
 
+  - Improve tutorial
+     - Use shift to rotate chisel
+  - Make overlay highlighting work again.
+
   - Redo all levels.
     - Add another level 7 thing but in reverse? Perhaps do it before 7.
     - Ensure the progression is step-by-step.
@@ -7,14 +11,20 @@ TODO
 
   - Graphics :: make it have a rustic feel.
 
-  - Music.
+  - Music
+     - Ambient: piano, pads/synths, motifs?
 
   - Hand-make sprites for each rotation.
+
+  - Level 7's narration feels weird!
 
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
 
-  Get address sanitizers to work.
-  https://devblogs.microsoft.com/cppblog/asan-for-windows-x64-and-debug-build-support/
+Crashes:
+
+  - Crash on level 7 when trying to press N to go to the next
+    level. The buttons in the confirmations seem to be pointing to
+    nowhere useful.
