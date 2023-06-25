@@ -1,13 +1,14 @@
 TODO
 
-  x Improve tutorial
-     x Use shift to rotate chisel
-  x Make overlay highlighting work again.
+  - Test the new implemented placer.
+  - Add "destroy" button to essentially chisel everything in the level.
+  - Improve conversions (design by subtraction) - see test_notes.txt.
 
-  - Redo all levels.
-    - Add another level 7 thing but in reverse? Perhaps do it before 7.
-    - Ensure the progression is step-by-step.
-    - Ensure you have one space on either end of the grid.
+  - Redo all levels. Ensure:
+    - The progression is step-by-step.
+    - You have one space on either end of the grid.
+    - The difficulty curve is much smoother.
+    - All initial states are cool-looking and have a purpose. (test_notes.txt)
 
   - Graphics :: make it have a rustic feel.
 

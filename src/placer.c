@@ -27,6 +27,10 @@ static void placer_init(int num) {
     placer->contains = &gs->inventory.slots[num].item;
     placer->contains->type = 0;
     placer->contains->amount = 0;
+
+    placer->place_aspect = 24.0/16.0;
+    placer->place_width = 16;
+    placer->place_height = placer->place_width * placer->place_aspect;
 }
 
 static void placer_suck_circle(Placer *placer) {
@@ -182,28 +186,36 @@ static void fix_rectangle(SDL_Rect *c) {
 static bool placer_is_able_to_place(Placer *placer, SDL_Rect *c, int *area_out) {
     Assert(c);
 
+    if (placer->contains->amount == 0)
+        return false;
+
     fix_rectangle(c);
 
-    int area;
-    area = abs((c->w+1) * (c->h+1));
+    int area = abs((c->w+1) * (c->h+1));
 
     if (area_out)
         *area_out = area;
 
-    if (placer->contains->amount == 0)
+    // Test if we have enough by placing test cells into position
+    int free_cells = 0;
+    for (int y = c->y; y <= c->y+c->h; y++) {
+        for (int x = c->x; x <= c->x+c->w; x++) {
+            if (gs->grid[x+y*gs->gw].type == CELL_NONE) {
+                free_cells++;
+            }
+        }
+    }
+
+    if (placer->contains->amount < free_cells)
         return false;
+
     else if (placer->contains->amount <= PLACER_MINIMUM_AREA)
         return true;
 
     return area >= PLACER_MINIMUM_AREA;
 }
 
-static void placer_set_and_resize_rect(Placer *placer) {
-    Input *input = &gs->input;
-
-    int mx = input->mx;
-    int my = input->my;
-
+static void placer_set_and_resize_rect(Placer *placer, int mx, int my) {
     if (placer->rect.x == -1) {
         placer->rect.x = mx;
         placer->rect.y = my;
@@ -253,6 +265,8 @@ static void placer_place_rect(Placer *placer) {
         placer->rect.h = 0;
         return;
     }
+
+    save_state_to_next();
 
     int object_index = -1;
 
@@ -406,13 +420,13 @@ static void placer_tick(Placer *placer) {
                 gs->did_placer_rectangle_tutorial = true;
             }
 
-            if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
-                save_state_to_next();
-            }
+            //placer_set_and_resize_rect(placer, gs->input.mx, gs->input.my);
+            placer->rect.w = placer->place_width;
+            placer->rect.h = placer->place_height;
+            placer->rect.x = gs->input.mx - placer->rect.w/2;
+            placer->rect.y = gs->input.my - placer->rect.h/2;
 
-            if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-                placer_set_and_resize_rect(placer);
-            } else if (input->mouse_released[SDL_BUTTON_LEFT]) {
+            if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
                 placer_place_rect(placer);
             }
             break;
@@ -420,9 +434,10 @@ static void placer_tick(Placer *placer) {
     }
 
     // Set up the tooltip.
+    //Log("%d, %d\n", placer->x, placer->y);
     tooltip_set_position(&gs->gui.tooltip,
-                         placer->x + 3,
-                         placer->y + 3,
+                         placer->x + 3 - (gs->render.view.x / gs->S),
+                         placer->y + 3 - (gs->render.view.y / gs->S),
                          TOOLTIP_TYPE_PLACER);
 
     char name[64] = {0};
@@ -528,9 +543,6 @@ static void placer_draw(int target, Placer *placer, bool full_size) {
     }
 
     RenderColor(255, 255, 255, 64);
-
-    RenderLineRelative(target, 0, placer->y, gs->gw, placer->y);
-    RenderLineRelative(target, placer->x, 0, placer->x, gs->gh);
 
     RenderColor(255, 255, 255, 255);
 }

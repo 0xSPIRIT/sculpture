@@ -18,6 +18,9 @@ typedef struct Placer {
 
     SDL_Rect rect;
 
+    int place_width, place_height; // The size of the rectangle
+    f64 place_aspect;
+
     int x, y, px, py;
     int w, h;
     Texture *texture;

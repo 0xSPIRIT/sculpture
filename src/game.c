@@ -145,6 +145,10 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 placer->contains->type += event->wheel.y;
                 if (placer->contains->type < CELL_NONE+1) placer->contains->type = CELL_NONE+1;
                 if (placer->contains->type >= CELL_TYPE_COUNT) placer->contains->type = CELL_TYPE_COUNT-1;
+            } else {
+                placer->place_width += event->wheel.y;
+                placer->place_width = clamp(placer->place_width, 8, 20);
+                placer->place_height = placer->place_width * placer->place_aspect;
             }
         }
     }

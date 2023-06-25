@@ -205,10 +205,12 @@ static void level_set_state(int level, enum Level_State state) {
                        2*gs->gh);
         }
 
+#if AUDIO_PLAY_AMBIANCE
         if (!Mix_PlayingMusic()) {
             Mix_PlayMusic(gs->audio.ambience1, -1);
             Mix_VolumeMusic(AUDIO_AMBIANCE_VOLUME);
         }
+#endif
     } else if (state == LEVEL_STATE_OUTRO) {
         l->outro_alpha = 0;
         l->desired_alpha = 255;
