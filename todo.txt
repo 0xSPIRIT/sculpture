@@ -1,8 +1,8 @@
 TODO
 
-  - Improve tutorial
-     - Use shift to rotate chisel
-  - Make overlay highlighting work again.
+  x Improve tutorial
+     x Use shift to rotate chisel
+  x Make overlay highlighting work again.
 
   - Redo all levels.
     - Add another level 7 thing but in reverse? Perhaps do it before 7.

@@ -6,7 +6,7 @@ static f64 lerp64(f64 a, f64 b, f64 t) {
     f64 result = a + t*(b-a); // or a(1-t) + tb -- same thing.
 
     const f64 epsilon = 0.01;
-    if (fabs(result-a) < epsilon) return a;
+    if (fabs(result-a) < epsilon) return b;
 
     return result;
 }

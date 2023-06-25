@@ -245,7 +245,7 @@ static void reload_game_code(Game_Code *code) {
     load_game_code(code);
 }
 
-int main(int argc, char **argv) {
+int win32_main(int argc, char **argv) {
     // TODO: Change this to a more supported function.
     //       This only works for win10+
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_SYSTEM_AWARE);
@@ -403,6 +403,7 @@ int main(int argc, char **argv) {
             time_passed = 0;
         }
 
+#ifndef ALASKA_RELEASE_MODE
         {
             Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
             Uint64 size_max = persistent_memory.size;
@@ -417,6 +418,7 @@ int main(int argc, char **argv) {
 
             SDL_SetWindowTitle(gs->window, title);
         }
+#endif
     }
 
     game_deinit(gs);
@@ -425,3 +427,18 @@ int main(int argc, char **argv) {
 
     return 0;
 }
+
+#ifndef ALASKA_RELEASE_MODE
+int main(int argc, char **argv) {
+    win32_main(argc, argv);
+}
+#else
+int WINAPI WinMain(HINSTANCE hInstance,
+                   HINSTANCE hPrevInstance,
+                   LPSTR     lpCmdLine,
+                   int       nShowCmd)
+{
+    (void)hInstance, hPrevInstance, lpCmdLine, nShowCmd;
+    win32_main(0, NULL);
+}
+#endif

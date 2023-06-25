@@ -61,13 +61,13 @@ static void deleter_draw(int target) {
     RenderTextureAlphaMod(deleter->texture, 128);
 
     SDL_Point center = { 0, 0 };
-    RenderTextureEx(target,
-                    deleter->texture,
-                    NULL,
-                    &dst,
-                    deleter->angle,
-                    &center,
-                    SDL_FLIP_NONE);
+    RenderTextureExRelative(target,
+                            deleter->texture,
+                            NULL,
+                            &dst,
+                            deleter->angle,
+                            &center,
+                            SDL_FLIP_NONE);
 
     RenderColor(255, 0, 0, 64);
     RenderPointRelative(target, (int)deleter->x, (int)deleter->y);

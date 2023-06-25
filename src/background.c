@@ -22,7 +22,7 @@ static void background_draw(int target, Background *bg) {
     for (int i = 0; i < w*h; i++) {
         f64 r, g, b;
 
-        r = 20;
+        r = rcoeff * 35;
         g = 0;
         b = 0;
 

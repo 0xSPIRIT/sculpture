@@ -1,0 +1,79 @@
+# Notes
+
+- The limit on the size of a placement isn't useful.
+  You can break it, and sometimes you sort of have to,
+  to place single-pixels.
+x The deleter is wrong.
+- Tooltip text is at the wrong position! (defer)
+- Make tooltip band around properly. (defer)
+
+- Reinvision the plaeer to ensure maximum
+  satisfaction in the level.
+
+- Pressing shift when there's nothing in the grid
+  and you're holding a chisel causes the mouse to to
+  the top left.
+
+- When you move left/right and toggle fullscreen,
+  the position isn't kept properly.
+
+Level 3 - The fireplace isn't very good.
+        - It isn't cool enough.
+        - The actual chiseling doesn't feel satisfying.
+
+Level 5 - It's not clear what the thing you're taking
+          steam out from is.
+
+Level 6 - Super forgettable.
+        - The initial level doesn't say anything.
+          It's just some random shit.
+
+Level 7 - Make the initial like a completed painting.
+
+Level 8 - The initial state is not good. Make it interesting.
+
+Level 9 - Same as level 8.
+
+Level 10 - Initial state is not good.
+
+- Destroying the initial state of levels is not fun. It makes me
+  not want to play this game.
+- Have a better progression of difficulty. It gets too hard too fast.
+- -1 amount in the conversion! no!
+- Stop conversion if the output is stopped due to inefficient materials.
+- The overlay gets too dark when not on the correct material type.
+  See: level 8.
+- The conversions are not fun!!!! It makes me not want to play it.
+  Focus on the sculpting.
+
+
+
+# Main Issues
+
+- The converter isn't very good; we must re-evaluate it and possibly
+  remove many elements.
+    - The design has stayed the same for a long time, and the conversions
+      themselves were picked arbitrarily. We should employ a design-by-
+      subtraction philosophy here.
+    - So, remove many elements from the conversions and make it more
+      streamlined. The conversions GUI menu is obnoxious.
+
+- The placer is odd and finnicky, and should be much different. You can
+  essentially cheat the system by just doing tiny placements, removing
+  the entire purpose of the chisel... but also tiny placements are sort
+  of required for certain things...
+    Possibilities:
+    - Have a certain rectangle that you can change the dimensions of,
+      and that can't go smaller than a certain size.
+
+- The levels are too finnicky to create, and feel like you're breaking
+  the game by doing certain things. This is not at all ready.
+    - This must be improved. Rework all levels to feel like level 2,
+      which is the best level.
+
+- The levels have initial states that don't really say much, and are just
+  randomly placed. They should give insight into the narrative.
+
+- The initial states of levels are too tedious to destroy. They kill all my
+  enthusiasm. I even included a debug shortcut to delete the entire level
+  because of how terrible this is. That's a red flag right there.

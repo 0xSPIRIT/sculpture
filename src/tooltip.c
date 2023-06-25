@@ -92,14 +92,22 @@ static void tooltip_draw(int target, Tooltip *tooltip) {
         if (preview_scale*64 > highest_w) highest_w = preview_scale*64;
     }
 
-    bool clamped = false;
+    bool clamped_x = false, clamped_y = false;
 
     // Clamp the tooltips if it goes outside the window.
-    if (tooltip->x*gs->S + highest_w >= gs->S*gs->gw) {
-        tooltip->x -= highest_w/gs->S;
+    if (tooltip->x*gs->S + highest_w + margin*2 >= gs->S*gs->gw) {
+        int dx = (tooltip->x*gs->S + highest_w + margin*2) - gs->S*gs->gw;
+        tooltip->x -= dx/gs->S;
         for (int i = 0; i < line_count; i++)
-            dsts[i].x -= highest_w - margin/2;
-        clamped = true;
+            dsts[i].x -= dx;
+        clamped_x = true;
+    }
+    if (tooltip->y*gs->S + cum_height + margin*2 >= gs->S*gs->gh) {
+        int dy = (tooltip->y*gs->S + cum_height) - gs->S*gs->gh + margin*2;
+        tooltip->y -= dy/gs->S;
+        for (int i = 0; i < line_count; i++)
+            dsts[i].y -= dy;
+        clamped_y = true;
     }
 
     tooltip_draw_box(target,
@@ -115,8 +123,11 @@ static void tooltip_draw(int target, Tooltip *tooltip) {
                      preview_scale);
     }
 
-    if (clamped) {
+    if (clamped_x) {
         tooltip->x += highest_w;
+    }
+    if (clamped_y) {
+        tooltip->y += cum_height;
     }
 
     for (int i = 0; i < line_count; i++) {

@@ -238,9 +238,10 @@ static void converter_gui_draw(void) {
     const SDL_Color bg = ColorFromIntRGBA(CONVERSION_PANEL_COLOR);
     const int target = RENDER_TARGET_CONVERSION_PANEL;
 
-    if (!c->active) return;
-
-    converter_gui_setup_rectangle(false);
+    c->r.x = 0;
+    c->r.y = 0;
+    c->r.w = gs->window_width;
+    c->r.h = gs->window_height-GUI_H;
 
     const bool update = false;
 
@@ -263,11 +264,11 @@ static void converter_gui_draw(void) {
             count++;
 
             Render_Text_Data text_data = {0};
-            text_data.font = gs->fonts.font_small;
+            text_data.font = gs->fonts.font_converter_gui;
             strcpy(text_data.str, c->lines[i]);
             text_data.foreground = (SDL_Color){255, 255, 255, 255};
             text_data.alignment = ALIGNMENT_TOP_LEFT;
-            text_data.x = c->r.x + Scale(16);
+            text_data.x = c->r.x + Scale(140);
             text_data.y = c->r.y + Scale(16) + cum;
             text_data.alpha = 255;
 
@@ -290,6 +291,8 @@ static void converter_gui_draw(void) {
             RenderFillRect(target, b);
         }
     }
+
+    if (!c->active) return;
 
     SDL_Rect src = {
         0, 0,

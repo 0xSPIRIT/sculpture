@@ -42,8 +42,8 @@ static void game_resize(int h) {
 
     gs->gui.popup_y *= gs->gh*gs->S;
 
-    gs->render.view.x = 0;
-    gs->render.view.y = 0;
+    gs->render.view.x = gs->render.to.x = 0;
+    gs->render.view.y = gs->render.to.y = 0;
     gs->render.view.w = gs->window_width;
     gs->render.view.h = gs->window_height-GUI_H;
 

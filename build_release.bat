@@ -23,7 +23,7 @@ REM and we still retain the errorlevel from the DLL compilation.
 (>>alaska.exe call;) 2>nul || goto end
 
 REM Build the SDL layer (.exe)
-cl.exe %Common_Compiler_Flags% ..\src\win32_main.c %Linker_Flags% SDL2main.lib /link /NOIMPLIB /NOEXP /incremental:no /out:alaska.exe
+cl.exe %Common_Compiler_Flags% ..\src\win32_main.c %Linker_Flags% SDL2main.lib /link /NOIMPLIB /NOEXP /incremental:no /out:alaska.exe /SUBSYSTEM:windows
 
 if NOT %errorlevel%==0 (set err=%errorlevel%)
 

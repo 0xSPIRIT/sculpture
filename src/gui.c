@@ -400,6 +400,8 @@ static bool can_goto_next_level(void) {
 static void gui_draw_profile(int target) {
     Assert(target == RENDER_TARGET_MASTER);
 
+    if (gs->converter.active) return;
+
     Level *level = &gs->levels[gs->level_current];
     int count = 0;
 

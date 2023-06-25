@@ -4,8 +4,8 @@ static void effect_reset_snow(bool high_fidelity) {
 
         SDL_Rect bounds = gs->current_effect.bounds;
 
-        particle->x = (f32) (bounds.x+(rand()%bounds.w));
-        particle->y = (f32) (bounds.y+(rand()%bounds.h));
+        particle->x = (f32) (bounds.x+(rand()%(bounds.w-bounds.x)));
+        particle->y = (f32) (bounds.y+(rand()%(bounds.h-bounds.y)));
 
         if (!high_fidelity) {
             f32 r1 = randf(0.5);

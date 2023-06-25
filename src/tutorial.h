@@ -9,8 +9,9 @@
 #define TUTORIAL_CHISEL_STRING  \
     "Tutorial\n" \
     "--------\n\n" \
-    "Use the chisels (click or hold the left mouse button)\n" \
-    "to create your sculpture!\n" \
+    "Use the chisels to create your sculpture!\n"\
+    "  Left Click - Chisel\n"\
+    "  Hold SHIFT - Rotate\n\n"\
     "Click the checkmark when you're satisfied with a level.\n"
 
 #define TUTORIAL_OVERLAY_STRING \

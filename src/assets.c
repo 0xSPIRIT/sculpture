@@ -151,6 +151,7 @@ static void fonts_init(Fonts *fonts) {
     fonts->font_title    = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[6]));
     fonts->font_title_2  = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[7]));
     fonts->font_titlescreen = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[8]));
+    fonts->font_converter_gui = RenderLoadFont("consola.ttf", Scale(font_sizes[9]));
 
     for (size_t i = 0; i < FONT_COUNT; i++) {
         TTF_SetFontHinting(fonts->fonts[i]->handle, TTF_HINTING_LIGHT_SUBPIXEL);

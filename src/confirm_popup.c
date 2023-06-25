@@ -3,6 +3,8 @@
 static void end_of_level_popup_confirm_run(int target) {
     Popup_Confirm *popup = &gs->gui.eol_popup_confirm;
 
+    if (!popup->active) return;
+
     if (wait_for_fade(FADE_LEVEL_FINISH)) {
         reset_fade();
         goto_level(++gs->level_current);

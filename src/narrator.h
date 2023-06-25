@@ -4,7 +4,7 @@
 #define NARRATOR_ALPHA 10
 #define NARRATOR_HANG_TIME 14 // Frames
 
-#define SHOW_NARRATION 1
+#define SHOW_NARRATION 0
 
 ////////////////////////////////////////////////////////////////
 #define NARRATION_LEVEL_1 \
