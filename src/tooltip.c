@@ -10,7 +10,6 @@ static void tooltip_set_position_to_cursor(Tooltip *tooltip, int type) {
     Input *input = &gs->input;
     tooltip->x = (f32)input->real_mx/gs->S;
     tooltip->y = (f32)input->real_my/gs->S - GUI_H/gs->S;
-    Log("%d, %d\n", input->real_mx, input->real_my);
     tooltip->type = type;
 }
 

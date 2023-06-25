@@ -28,7 +28,6 @@
 #include "grid.h"
 #include "chisel.h"
 #include "hammer.h"
-#include "deleter.h"
 #include "narrator.h"
 #include "popup.h"
 #include "confirm_popup.h"

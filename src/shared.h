@@ -41,16 +41,16 @@ typedef struct Memory_Arena {
     Uint64 size;
 } Memory_Arena;
 
-enum State_Game {
+typedef enum  {
     GAME_STATE_TITLESCREEN,
     GAME_STATE_PLAY
-};
+} GameStateEnum;
 
 // Contains the entirety of the game's state.
 // If you're adding values at runtime into the struct, add it
 // to the end, because we have pointers pointing to variables
 // in here and we don't want to mess that up.
-typedef struct Game_State {
+typedef struct {
     Memory_Arena *persistent_memory, *transient_memory;
 
     f64 dt; // Time taken for previous frame.
@@ -72,7 +72,7 @@ typedef struct Game_State {
 
     Background background;
 
-    enum State_Game gamestate;
+    GameStateEnum gamestate;
 
     Titlescreen titlescreen;
 
@@ -138,7 +138,6 @@ typedef struct Game_State {
 
     Inventory inventory;
 
-    Deleter deleter;
     Overlay overlay;
 
     clock_t global_start, global_end;

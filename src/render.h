@@ -3,9 +3,7 @@
 // and to manage render targets better.
 
 #define RENDERAPI static inline
-
 #define MAX_TEXT_LENGTH 512
-
 #define RenderTarget(which) (gs->render.render_targets+which)
 
 typedef enum {

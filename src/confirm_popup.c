@@ -73,7 +73,6 @@ static void end_of_level_popup_confirm_confirm(void *unused) {
                                       NormX(32),
                                       NormY((768.8/8.0)+32),
                                       NULL);
-        Log("Happened!\n");
     };
 
     level->off = false;

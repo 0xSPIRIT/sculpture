@@ -4,7 +4,7 @@
 #define NARRATOR_ALPHA 10
 #define NARRATOR_HANG_TIME 14 // Frames
 
-#define SHOW_NARRATION 0
+#define SHOW_NARRATION 1
 
 ////////////////////////////////////////////////////////////////
 #define NARRATION_LEVEL_1 \
@@ -48,17 +48,16 @@
 "At the end he should be proud, but how could he?\n"\
 "Max turned away pointedly, his chisel clattering\r"\
 "to the hardwood floor in contempt.\n"\
-"His eyes flinched in an instinctual repulsion,\r"\
-"understanding what he had done.\n"\
+"His eyes flinched in an instinctual repulsion.\n"\
 "He'd never thought that something like this would have\r"\
 "affected him so deeply-- but it did.\n"\
-"It's a sudden jolt back to reality, to the detached\r"\
+"It's a sudden jolt back to the detached\r"\
 "and dispassionate.\n"\
 "He thought, with compromise after compromise,\r"\
-"this \"thing\" is all he could have settled for?\n"\
+"this is all he could have settled for?\n"\
 "A bastardized fraction of what it could have been-- no,\r"\
 "SHOULD have been?\n"\
-"Max, in a fit of rage, clasps the single flower in hands\r"\
+"Max, in a fit of rage, clenches the single flower in hands\r"\
 "and smashes it to the floor, chucking shards of marble\r"\
 "and quartz across his workshop.\n"\
 "\"I'll never make this mistake again,\" he declared.\n"\

@@ -177,7 +177,8 @@ static void get_name_from_tool(int type, char *out) {
         case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel"); break;
         case TOOL_OVERLAY:       strcpy(out, "Overlay [O]"); break;
         //case TOOL_BLOCKER:       strcpy(out, "Blocker"); break;
-        case TOOL_DELETER:       strcpy(out, "Deleter"); break;
+        //case TOOL_DELETER:       strcpy(out, "Deleter"); break;
+        case TOOL_DESTROY:       strcpy(out, "Destroy Level"); break;
         case TOOL_PLACER:        strcpy(out, "Placer"); break;
         case TOOL_GRABBER:       strcpy(out, "Pointer"); break;
         case TOOL_FINISH_LEVEL:  strcpy(out, "Finish Level"); break;
@@ -191,7 +192,8 @@ static void get_file_from_tool(int type, char *out) {
         case TOOL_CHISEL_LARGE:  strcpy(out, "chisel_large.png"); break;
         //case TOOL_BLOCKER:       strcpy(out, "blocker.png"); break;
         case TOOL_OVERLAY:       strcpy(out, "overlay.png"); break;
-        case TOOL_DELETER:       strcpy(out, "deleter.png"); break;
+        //case TOOL_DELETER:       strcpy(out, "deleter.png"); break;
+        case TOOL_DESTROY:       strcpy(out, "destroy.png"); break;
         case TOOL_PLACER:        strcpy(out, "placer.png"); break;
         case TOOL_GRABBER:       strcpy(out, "pointer.png"); break;
         case TOOL_FINISH_LEVEL:  strcpy(out, "finish_level.png"); break;

@@ -23,7 +23,6 @@
 #include "overlay_interface.c"
 #include "effects.c"
 #include "grabber.c"
-#include "deleter.c"
 #include "popup.c"
 #include "timelapse.c"
 #include "narrator.c"
@@ -244,7 +243,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
-            case SDLK_o: {
+            case SDLK_4: case SDLK_o: {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     set_text_field("Output current grid to image:", "../", level_output_to_png);
                 } else {
@@ -326,14 +325,9 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 selected_tool = 1;
                 break;
             }
-            case SDLK_4: {
-                gs->current_tool = TOOL_OVERLAY;
-                selected_tool = 1;
-                break;
-            }
 #endif
             case SDLK_5: {
-                gs->current_tool = TOOL_DELETER;
+                gs->current_tool = TOOL_DESTROY;
                 selected_tool = 1;
                 break;
             }

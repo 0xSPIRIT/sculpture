@@ -374,7 +374,7 @@ static void converter_setup_position(Converter *converter) {
 
     // Both X and Y-coordinates are updated in converter_tick.
     if (converter->go_button == NULL) {
-        converter->go_button = button_allocate(BUTTON_TYPE_CONVERTER,
+        converter->go_button = button_allocate(BUTTON_CONVERTER,
                                                &GetTexture(TEXTURE_CONVERT_BUTTON),
                                                "Convert",
                                                converter_begin_converting);

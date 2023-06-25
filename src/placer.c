@@ -434,7 +434,6 @@ static void placer_tick(Placer *placer) {
     }
 
     // Set up the tooltip.
-    //Log("%d, %d\n", placer->x, placer->y);
     tooltip_set_position(&gs->gui.tooltip,
                          placer->x + 3 - (gs->render.view.x / gs->S),
                          placer->y + 3 - (gs->render.view.y / gs->S),

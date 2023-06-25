@@ -56,7 +56,7 @@ static void tool_button_set_disabled(int level) {
             }
         }
         case 2: {
-            tools[TOOL_DELETER]->disabled = true;
+            //tools[TOOL_DELETER]->disabled = true;
             tools[TOOL_PLACER]->disabled = true;
             break;
         }
@@ -103,6 +103,19 @@ static void click_gui_tool_button(void *type_ptr) {
             gs->current_tool = p_tool;
             return;
         }
+        case TOOL_DESTROY: {
+            save_state_to_next();
+            for (int i = 0; i < gs->gw*gs->gh; i++) {
+                if (gs->grid[i].type) {
+                    add_item_to_inventory_slot(gs->grid[i].type, 1);
+                    emit_dust_explosion(gs->grid[i].type, i%gs->gw, i/gs->gw, 1);
+                }
+                gs->grid[i].type = gs->grid[i].object = 0;
+            }
+            
+            gs->current_tool = p_tool;
+            return;
+        }
         case TOOL_FINISH_LEVEL: {
             if (gs->level_current+1 != -1 ||
                 (gs->level_current+1 == 1 &&
@@ -135,13 +148,13 @@ static void button_tick(Button *b, void *data) {
     // upon reloading the DLL... Honestly why don't we just do it
     // this way normally? Seems to work great.
     switch (b->type) {
-        case BUTTON_TYPE_CONVERTER:     b->on_pressed = converter_begin_converting; break;
-        case BUTTON_TYPE_TOOL_BAR:      b->on_pressed = click_gui_tool_button;      break;
-        case BUTTON_TYPE_TUTORIAL:      b->on_pressed = tutorial_rect_close;        break;
-        case BUTTON_TYPE_EOL_POPUP_CONFIRM:     b->on_pressed = end_of_level_popup_confirm_confirm;  break;
-        case BUTTON_TYPE_EOL_POPUP_CANCEL:      b->on_pressed = end_of_level_popup_confirm_cancel;   break;
-        case BUTTON_TYPE_RESTART_POPUP_CONFIRM: b->on_pressed = restart_popup_confirm_confirm;  break;
-        case BUTTON_TYPE_RESTART_POPUP_CANCEL:  b->on_pressed = restart_popup_confirm_cancel;   break;
+        case BUTTON_CONVERTER:     b->on_pressed = converter_begin_converting; break;
+        case BUTTON_TOOL_BAR:      b->on_pressed = click_gui_tool_button;      break;
+        case BUTTON_TUTORIAL:      b->on_pressed = tutorial_rect_close;        break;
+        case BUTTON_EOL_POPUP_CONFIRM:     b->on_pressed = end_of_level_popup_confirm_confirm;  break;
+        case BUTTON_EOL_POPUP_CANCEL:      b->on_pressed = end_of_level_popup_confirm_cancel;   break;
+        case BUTTON_RESTART_POPUP_CONFIRM: b->on_pressed = restart_popup_confirm_confirm;  break;
+        case BUTTON_RESTART_POPUP_CANCEL:  b->on_pressed = restart_popup_confirm_cancel;   break;
     }
 
     if (b->disabled) return;
@@ -243,13 +256,13 @@ static void gui_init(void) {
     gui->popup_texture = &GetTexture(TEXTURE_POPUP);
 
     gs->gui.eol_popup_confirm = popup_confirm_init("Are you satisfied with this result?",
-                                                   BUTTON_TYPE_EOL_POPUP_CONFIRM,
-                                                   BUTTON_TYPE_EOL_POPUP_CANCEL,
+                                                   BUTTON_EOL_POPUP_CONFIRM,
+                                                   BUTTON_EOL_POPUP_CANCEL,
                                                    end_of_level_popup_confirm_confirm,
                                                    end_of_level_popup_confirm_cancel);
     gs->gui.restart_popup_confirm = popup_confirm_init("Restart level and lose all progress?",
-                                                       BUTTON_TYPE_RESTART_POPUP_CONFIRM,
-                                                       BUTTON_TYPE_RESTART_POPUP_CANCEL,
+                                                       BUTTON_RESTART_POPUP_CONFIRM,
+                                                       BUTTON_RESTART_POPUP_CANCEL,
                                                        restart_popup_confirm_confirm,
                                                        restart_popup_confirm_cancel);
 
@@ -262,7 +275,7 @@ static void gui_init(void) {
         get_name_from_tool(i, name);
 
         if (gui->tool_buttons[i] == NULL) {
-            gui->tool_buttons[i] = button_allocate(BUTTON_TYPE_TOOL_BAR,
+            gui->tool_buttons[i] = button_allocate(BUTTON_TOOL_BAR,
                                                    &GetTexture(TEXTURE_TOOL_BUTTONS + i),
                                                    name,
                                                    click_gui_tool_button);

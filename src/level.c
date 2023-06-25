@@ -105,7 +105,7 @@ static void goto_level(int lvl) {
 
     gs->render.view.x = gs->render.to.x = 0;
     gs->render.view.y = gs->render.to.y = 0;
-
+    
     gs->levels[lvl].first_frame_compare = false;
 
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
@@ -142,7 +142,6 @@ static void goto_level(int lvl) {
 
     gs->hammer = hammer_init();
 
-    deleter_init();
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_init(i);
     grabber_init();
@@ -357,10 +356,6 @@ static void level_tick_play(Level *level) {
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
             chisel_tick(gs->chisel);
-            break;
-        }
-        case TOOL_DELETER: {
-            deleter_tick();
             break;
         }
         case TOOL_PLACER: {
@@ -701,10 +696,6 @@ static void level_draw_outro_or_play(Level *level) {
             hammer_draw(RENDER_TARGET_PIXELGRID, &gs->hammer);
             break;
         }
-        case TOOL_DELETER: {
-            deleter_draw(RENDER_TARGET_PIXELGRID);
-            break;
-        }
         case TOOL_PLACER: {
             if (!gs->gui.popup) // When gui.popup = true, we draw in converter
                 placer_draw(RENDER_TARGET_PIXELGRID, &gs->placers[gs->current_placer], false);
@@ -713,7 +704,7 @@ static void level_draw_outro_or_play(Level *level) {
     }
 
     draw_objects(RENDER_TARGET_PIXELGRID);
-
+    
     RenderColor(0,0,0,255);
     RenderClear(RENDER_TARGET_MASTER);
 
@@ -735,7 +726,8 @@ static void level_draw_outro_or_play(Level *level) {
                          RENDER_TARGET_PIXELGRID,
                          &src,
                          &dst);
-
+    
+    draw_grid_outline(RENDER_TARGET_MASTER);
     if (level->state == LEVEL_STATE_OUTRO) {
         level_draw_outro(RENDER_TARGET_MASTER, level);
         gui_draw(RENDER_TARGET_MASTER);
