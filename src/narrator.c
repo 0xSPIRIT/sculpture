@@ -1,4 +1,4 @@
-static void narrator_draw_text_blended(int i, // 0 to 10
+static void narrator_draw_text_blended(int i,
                                        Font *font,
                                        const char *str,
                                        SDL_Color col,

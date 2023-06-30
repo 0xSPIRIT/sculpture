@@ -798,7 +798,7 @@ static void grid_draw(int target) {
 
 void draw_grid_outline(int target) {
     Assert(target == RENDER_TARGET_MASTER);
-    
+
     RenderColor(127, 200, 127, 127);
     RenderDrawRect(target, (SDL_Rect){ -gs->render.view.x-1, -gs->render.view.y + GUI_H - 1, gs->window_width+2, gs->window_height-GUI_H+2 });
 }

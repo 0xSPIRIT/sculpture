@@ -23,6 +23,7 @@ static void tool_button_set_disabled(int level) {
     bool is_exactly = compare_cells_to_int(gs->grid, gs->overlay.grid, 0);
 
     if (is_exactly && !gs->levels[level].done) {
+        Mix_HaltMusic();
         Mix_PlayChannel(AUDIO_CHANNEL_GUI, gs->audio.sprinkle, 0);
         gs->levels[level].done = true;
     }
@@ -112,7 +113,7 @@ static void click_gui_tool_button(void *type_ptr) {
                 }
                 gs->grid[i].type = gs->grid[i].object = 0;
             }
-            
+
             gs->current_tool = p_tool;
             return;
         }

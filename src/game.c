@@ -206,7 +206,8 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
             }
             case SDLK_SPACE: {
 #ifndef ALASKA_RELEASE_MODE
-                gs->paused = !gs->paused;
+                if (gs->input.keys[SDL_SCANCODE_LSHIFT])
+                    gs->paused = !gs->paused;
 #endif
                 break;
             }

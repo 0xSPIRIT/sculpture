@@ -63,29 +63,29 @@ RENDERAPI SDL_Surface *RenderLoadSurface(const char *fp) {
 
 RENDERAPI Texture RenderLoadTexture(const char *fp) {
     Texture texture = {0};
-    
+
     SDL_Surface *surf = RenderLoadSurface(fp);
     Assert(surf);
-    
+
     texture.width = surf->w;
     texture.height = surf->h;
     texture.handle = SDL_CreateTextureFromSurface(gs->render.sdl, surf);
     Assert(texture.handle);
-    
+
     SDL_FreeSurface(surf);
-    
+
     return texture;
 }
 
 RENDERAPI Texture RenderCreateTextureFromSurface(SDL_Surface *surf) {
     Texture texture = {0};
-    
+
     texture.handle = SDL_CreateTextureFromSurface(gs->render.sdl, surf);
     Assert(texture.handle);
-    
+
     texture.width = surf->w;
     texture.height = surf->h;
-    
+
     return texture;
 }
 
@@ -101,16 +101,12 @@ RENDERAPI Font *RenderLoadFont(const char *fp, int size) {
     strcat(filename, fp);
     font->handle = TTF_OpenFont(filename, size);
     Assert(font->handle);
-    
+
     TTF_SizeText(font->handle, "A", &font->char_width, &font->char_height);
     return font;
 }
 
 //~ Render Targets
-
-This is a thing that I am typing at the moment. Among other things I am writing some things that I like to write at the time, and wow this is a cool thing!
-
-#define AllocType(type) (type*)calloc(1, sizeof(type))
 
 RENDERAPI SDL_Rect RenderGetUpdatedRect(Render_Target *target, SDL_Rect *rect) {
     if (!target) return *rect;

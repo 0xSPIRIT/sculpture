@@ -105,7 +105,7 @@ static void goto_level(int lvl) {
 
     gs->render.view.x = gs->render.to.x = 0;
     gs->render.view.y = gs->render.to.y = 0;
-    
+
     gs->levels[lvl].first_frame_compare = false;
 
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
@@ -171,8 +171,9 @@ static void goto_level(int lvl) {
     }
 #else
     level_set_state(lvl, LEVEL_STATE_PLAY);
-    level_setup_initial_grid();
 #endif
+
+    level_setup_initial_grid();
 
     if (!gs->undo_initialized) {
         undo_system_init();
@@ -180,6 +181,7 @@ static void goto_level(int lvl) {
         undo_system_reset();
         save_state_to_next();
     }
+
 
     for (int i = 0; i < TOOL_COUNT; i++) {
         gs->gui.tool_buttons[i]->highlighted = false;
@@ -464,7 +466,7 @@ static void level_draw_name_intro(int target, Level *level, SDL_Rect rect) {
                         false);
 }
 
-#define LEVEL_DESIRED_GRID_SCALE Scale(3)
+#define LEVEL_DESIRED_GRID_SCALE Scale(3) // This is dumb. Just draw it to a texture at 64x64 scale, then draw the texture at the appropriate scale for the screen size.
 
 static void level_draw_desired_grid(Level *level, int dx, int dy) {
     const int scale = LEVEL_DESIRED_GRID_SCALE;
@@ -704,7 +706,7 @@ static void level_draw_outro_or_play(Level *level) {
     }
 
     draw_objects(RENDER_TARGET_PIXELGRID);
-    
+
     RenderColor(0,0,0,255);
     RenderClear(RENDER_TARGET_MASTER);
 
@@ -726,7 +728,7 @@ static void level_draw_outro_or_play(Level *level) {
                          RENDER_TARGET_PIXELGRID,
                          &src,
                          &dst);
-    
+
     draw_grid_outline(RENDER_TARGET_MASTER);
     if (level->state == LEVEL_STATE_OUTRO) {
         level_draw_outro(RENDER_TARGET_MASTER, level);

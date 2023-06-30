@@ -1,8 +1,6 @@
 TODO
 
-  x Remove the deleter
   - Level 5: put the thing on a separate layer.
-  x Add "destroy" button to essentially chisel everything in the level.
   - Test the new implemented placer.
   - Improve conversions (design by subtraction) - see test_notes.txt.
 

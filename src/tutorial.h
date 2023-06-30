@@ -11,7 +11,7 @@
     "--------\n\n" \
     "Use the chisels to create your sculpture!\n"\
     "  Left Click - Chisel\n"\
-    "  Hold SHIFT - Rotate\n\n"\
+    "  Hold SHIFT & Move Mouse - Rotate\n\n"\
     "Click the checkmark when you're satisfied with a level.\n"
 
 #define TUTORIAL_OVERLAY_STRING \

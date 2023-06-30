@@ -3,13 +3,14 @@
 static void end_of_level_popup_confirm_run(int target) {
     Popup_Confirm *popup = &gs->gui.eol_popup_confirm;
 
-    if (!popup->active) return;
-
     if (wait_for_fade(FADE_LEVEL_FINISH)) {
         reset_fade();
         goto_level(++gs->level_current);
         return;
     }
+
+
+    if (!popup->active) return;
 
     Popup_Confirm_Run_Data run_data = {0};
     run_data.confirm_color = can_goto_next_level() ? WHITE : (SDL_Color){127,127,127,255};
