@@ -1,1 +1,18 @@
+# Bugs
+
 - The text for the confirmation goes up to the top left in the restart-level popup.
+
+- Pressing shift when there's nothing in the grid
+  and you're holding a chisel causes the mouse to to
+  the top left.
+
+- -1 amount in the conversion! no!
+   Stop conversion if the output is stopped due to inefficient materials.
+
+- The overlay gets too dark when not on the correct material type. See: level 8
+  Improve overlay contrast in general. See: level 4 (heart of glass)
+
+- Crash on level 7 when trying to press N to go to the next
+  level. The buttons in the confirmations seem to be pointing to
+  nowhere useful.
+

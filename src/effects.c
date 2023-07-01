@@ -50,7 +50,7 @@ static void effect_set(int type, bool high_fidelity, int x, int y, int w, int h)
             break;
         }
         case EFFECT_RAIN: {
-            effect->particle_count = 50;
+            effect->particle_count = 200;
             break;
         }
     }
@@ -67,10 +67,12 @@ static void effect_set(int type, bool high_fidelity, int x, int y, int w, int h)
         case EFFECT_RAIN: {
             for (int i = 0; i < effect->particle_count; i++) {
                 Effect_Particle *particle = &effect->particles[i];
-                particle->x = (f32) (rand()%gs->gw);
-                particle->y = (f32) (rand()%gs->gh);
-
-                particle->vx = 0.3f + randf(0.3f);
+                SDL_Rect bounds = gs->current_effect.bounds;
+                
+                particle->x = (f32) (bounds.x+(rand()%(bounds.w-bounds.x)));
+                particle->y = (f32) (bounds.y+(rand()%(bounds.h-bounds.y)));
+                
+                particle->vx = 0.3f;
                 particle->vy = 1.f;
             }
             break;
@@ -96,7 +98,7 @@ static void particle_tick(Effect *effect, int i) {
             particle->y += reverse * particle->vy;
 
             if (effect->type == EFFECT_RAIN) {
-                particle->vx += 0.003f * sinf(SDL_GetTicks() / 1000.f);
+                //particle->vx += 0.003f * sinf(SDL_GetTicks() / 1000.f);
             }
 
             if (particle->x < effect->bounds.x) particle->x = (f32) effect->bounds.w-1;

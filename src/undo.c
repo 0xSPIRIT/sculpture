@@ -33,6 +33,8 @@ static void save_state_to_next(void) {
     if (gs->save_state_count == MAX_UNDO) {
         // Move everything back by one, destroying the first
         // save state and leaving the last slot open.
+        
+        Log("Happened!\n");
 
         gs->save_state_count--;
 

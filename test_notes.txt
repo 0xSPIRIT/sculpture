@@ -1,49 +1,29 @@
 # Notes
 
-x The deleter is wrong.
-x Tooltip text is at the wrong position! (defer)
-x Make tooltip band around properly. (defer)
-
-x Reinvision the placer to ensure maximum
-  satisfaction in the level.
-
-- Pressing shift when there's nothing in the grid
-  and you're holding a chisel causes the mouse to to
-  the top left.
-
-x When you move left/right and toggle fullscreen,
-  the position isn't kept properly.
-
+(Completed)
 Level 3 - The fireplace isn't very good. It isn't cool enough.
         - The actual chiseling doesn't feel satisfying here,
           but that's only due to the shape being insufficient.
 
-Level 5 - It's not clear what the thing you're taking
-          steam out from is.
+(Completed)
+Level 5 - It's not clear what the thing you're taking steam out from is.
+          It makes it really weird. Just remove this, honestly.
         - The sculpture is too difficult compared to 4!
 
 Level 6 - Super forgettable.
-        - The initial level doesn't say anything.
-          It's just some random shit.
+        - The initial level doesn't say anything. It's just some random shit.
 
 Level 7 - Make the initial like a completed painting.
 
-Level 8 - The initial state is not good. Make it interesting.
-
-Level 9 - Same as level 8.
-
-Level 10 - Initial state is not good.
+Level 8  - The initial state is not good. Make it interesting.
+Level 9  - Same as level 8.
+Level 10 - Same as level 9.
 
 - Destroying the initial state of levels is not fun. It makes me
   not want to play this game.
 - Have a better progression of difficulty. It gets too hard too fast.
-- -1 amount in the conversion! no!
-- Stop conversion if the output is stopped due to inefficient materials.
-- The overlay gets too dark when not on the correct material type.
-  See: level 8.
 - The conversions are not fun!!!! It makes me not want to play it.
   Focus on the sculpting.
-
 
 # Main Issues
 
@@ -55,6 +35,12 @@ Level 10 - Initial state is not good.
     - So, remove many elements from the conversions and make it more
       streamlined. The conversions GUI menu is obnoxious.
     - Do this one before reworking the levels.
+=========
+  (Update: I think the major parts like fuel types, marble, sandstone,
+   etc. are decent but just need to be refined, especially the later
+   levels which seem more tedious to create the later materials than
+   anything else.)
+=========
 
 - The placer is odd and finnicky, and should be much different. You can
   essentially cheat the system by just doing tiny placements, removing

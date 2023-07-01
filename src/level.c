@@ -62,15 +62,15 @@ static void levels_setup(void) {
               RES_DIR "lvl/desired/level 2.png",
               RES_DIR "lvl/initial/level 2.png",
               EFFECT_SNOW);
-    level_add("Fireplace",
+    level_add("Form",
               RES_DIR "lvl/desired/level 3.png",
               RES_DIR "lvl/initial/level 3.png",
               EFFECT_NONE);
-    level_add("Bliss",
+    level_add("Heart of Glass",
               RES_DIR "lvl/desired/level 4.png",
               RES_DIR "lvl/initial/level 4.png",
               EFFECT_NONE);
-    level_add("The Process",
+    level_add("Reformation",
               RES_DIR "lvl/desired/level 5.png",
               RES_DIR "lvl/initial/level 5.png",
               EFFECT_NONE);
@@ -466,10 +466,10 @@ static void level_draw_name_intro(int target, Level *level, SDL_Rect rect) {
                         false);
 }
 
-#define LEVEL_DESIRED_GRID_SCALE Scale(3) // This is dumb. Just draw it to a texture at 64x64 scale, then draw the texture at the appropriate scale for the screen size.
+#define LEVEL_DESIRED_GRID_SCALE Scale(4) // This is dumb. Just draw it to a texture at 64x64 scale, then draw the texture at the appropriate scale for the screen size.
 
 static void level_draw_desired_grid(Level *level, int dx, int dy) {
-    const int scale = LEVEL_DESIRED_GRID_SCALE;
+    const int scale = round(LEVEL_DESIRED_GRID_SCALE);
 
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
@@ -508,7 +508,7 @@ static void level_draw_outro(int target, Level *level) {
 
     //~ Desired and Your grid.
 
-    const int scale = LEVEL_DESIRED_GRID_SCALE;
+    const int scale = (int)round(LEVEL_DESIRED_GRID_SCALE);
     const int margin = LEVEL_MARGIN;
 
     int dx = rect.x + LEVEL_MARGIN;

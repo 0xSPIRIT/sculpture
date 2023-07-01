@@ -1,14 +1,32 @@
-TODO
+# TODO
 
-  - Level 5: put the thing on a separate layer.
-  - Test the new implemented placer.
+  - Redo levels 6-10's initial states, as well as the level itself where
+    necessary. Grind this down! See test_notes.txt.
+
+  Placers being awkward:
+  - Need a better way of single-placing cells.
+  - The placer tooltip gets in my way!!!!
+  - Needs a slightly larger minimum placer input.
+
+
+  Chiseling being awkward:
+  - Medium chisel still seems weird!
+  - Re-implement holding click to repeatedly chisel.
+  - For chisels, when in the vicinity of multiple possible points, auto-adjust
+    to the one that chisels correctly, rather than the multiple others which
+    do not.
+
+
+  - For undoing, instead of undoing via checking if the current grid is the
+    same as the last saved state, check via keeping track of if the player 
+    either placed anything, chiseled anything, or destroyed the level.
+    Doing it this way eliminates the weirdness of trying to undo a placement
+    of material in the air (which immediately falls, thereby changing the
+    state)
+
   - Improve conversions (design by subtraction) - see test_notes.txt.
 
-  - Redo all levels. Ensure:
-    - The progression is step-by-step.
-    - You have one space on either end of the grid.
-    - The difficulty curve is much smoother.
-    - All initial states are cool-looking and have a purpose. (test_notes.txt)
+  - Test the new implemented placer. // Must be done after levels are redone!
 
   - Graphics :: make it have a rustic feel.
 
@@ -23,9 +41,3 @@ TODO
     of the mouse in the desktop version.
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
-
-Crashes:
-
-  - Crash on level 7 when trying to press N to go to the next
-    level. The buttons in the confirmations seem to be pointing to
-    nowhere useful.

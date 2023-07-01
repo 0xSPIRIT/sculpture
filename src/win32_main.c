@@ -412,9 +412,10 @@ int win32_main(int argc, char **argv) {
 
             char title[128] = {0};
             sprintf(title,
-                    "Alaska | FPS: %.2f | Frametime: %.2fms",
+                    "Alaska | FPS: %.2f | Frametime: %.2fms | Memory Used: %.2f%%",
                     fps,
-                    d*1000);
+                    d*1000,
+                    percentage);
 
             SDL_SetWindowTitle(gs->window, title);
         }

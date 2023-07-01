@@ -1,3 +1,4 @@
+#define USE_PRESSURE false
 #define HIGHLIGHT_MAX 64
 
 enum Chisel_Size {

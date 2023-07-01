@@ -9,8 +9,8 @@ Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_WOOD_LOG,       13,   9, 249,
     CELL_WOOD_PLANK,    150,   6, 118,
     CELL_COBBLESTONE,   255, 255, 255,
-    CELL_MARBLE,        255,   0,   0,
-    CELL_SANDSTONE,     255, 255,  0,
+    CELL_MARBLE,          0,   0, 255,
+    CELL_SANDSTONE,       0, 255, 255,
     CELL_CEMENT,        190,  22,  46,
     CELL_CONCRETE,      127,  57, 185,
     CELL_QUARTZ,         00, 120,   0,
@@ -24,14 +24,6 @@ Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_SMOKE,         126,  22, 238,
     CELL_DUST,           77,   9, 249,
 };
-
-static void first(int a) {
-    (void)a;
-}
-
-static void second(int a) {
-    (void)a;
-}
 
 // name_generic is a formatted printf with a %d for the number, from 0 to num-1.
 static Overlay_Changes overlay_load_changes(const char *name_generic, int num) {
