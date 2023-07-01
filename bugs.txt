@@ -1,0 +1,1 @@
+- The text for the confirmation goes up to the top left in the restart-level popup.

@@ -1,7 +1,7 @@
 #ifdef ALASKA_RELEASE_MODE
   #define SHOW_TUTORIAL 1
 #else
-  #define SHOW_TUTORIAL 0
+  #define SHOW_TUTORIAL 1
 #endif
 
 #define MAX_TUTORIAL_LINES 10
@@ -57,9 +57,10 @@
 #define TUTORIAL_PLACER_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Use the PLACER to take up existing non-solid material,\n" \
-    "and place it into your INVENTORY [TAB].\n" \
-    "You may use F1-F5 to switch to a different Placer slot.\n"
+    "- Use the PLACER to take up the sand and place it into\n" \
+    "your INVENTORY [TAB].\n\n" \
+    "- To place material, scroll the mouse, then click.\n\n"\
+    "- You may use F1-F5 to switch to a different Placer slot.\n"
 
 #define TUTORIAL_INVENTORY_STRING \
     "Tutorial\n" \

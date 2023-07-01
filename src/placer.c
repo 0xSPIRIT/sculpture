@@ -373,9 +373,12 @@ static void placer_tick(Placer *placer) {
         placer->escape_rect = false;
         skip=true;
     }
-
+    
+    bool can_click = !gs->tutorial.active && !gs->gui.eol_popup_confirm.active && !gs->gui.restart_popup_confirm.active;
+    
     switch (placer->state) {
         case PLACER_SUCK_MODE: {
+            if (!can_click) break;
             if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                 placer_suck_circle(placer);
             } else if (input->mouse_released[SDL_BUTTON_LEFT]) {
@@ -388,6 +391,8 @@ static void placer_tick(Placer *placer) {
             break;
         }
         case PLACER_PLACE_CIRCLE_MODE: {
+            if (!can_click) break;
+            
             if (input->mouse_pressed[SDL_BUTTON_LEFT] &&
                 is_cell_hard(placer->contains->type) &&
                 placer->contains->amount > 0 &&
@@ -396,7 +401,7 @@ static void placer_tick(Placer *placer) {
                 save_state_to_next();
                 placer->object_index = gs->object_count++;
             }
-
+            
             if (placer->contains->amount > 0 && !gs->gui.popup && (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
                 placer_place_circle(placer);
             } else if (placer->did_click) {
@@ -410,7 +415,7 @@ static void placer_tick(Placer *placer) {
             if (gs->input.real_my < GUI_H) break;
             if (placer->escape_rect) break;
             if (skip) break;
-
+            
             if (!gs->did_placer_rectangle_tutorial) {
                 Tutorial_Rect *t = tutorial_rect(TUTORIAL_RECTANGLE_PLACE,
                                                  NormX(32),
@@ -419,20 +424,20 @@ static void placer_tick(Placer *placer) {
                 gs->tutorial = *t;
                 gs->did_placer_rectangle_tutorial = true;
             }
-
+            
             //placer_set_and_resize_rect(placer, gs->input.mx, gs->input.my);
             placer->rect.w = placer->place_width;
             placer->rect.h = placer->place_height;
             placer->rect.x = gs->input.mx - placer->rect.w/2;
             placer->rect.y = gs->input.my - placer->rect.h/2;
-
-            if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
+            
+            if (can_click && input->mouse_pressed[SDL_BUTTON_LEFT]) {
                 placer_place_rect(placer);
             }
             break;
         }
     }
-
+    
     // Set up the tooltip.
     tooltip_set_position(&gs->gui.tooltip,
                          placer->x + 3 - (gs->render.view.x / gs->S),
