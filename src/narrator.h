@@ -30,7 +30,12 @@
 "... No.\n"\
 "Only when he'd sharpened his skills will he\r"\
 "dare create something real.\n"\
-"His flame flickers for a moment.\n"\
+"For a moment, his flame flickers.\n"\
+
+// TODO: Do one for level 5.
+//       - Talk about taking in the processed remains
+//         of other works, and converting it into something
+//         new.
     
 #define NARRATION_LEVEL_7 \
 "Surely by now he must be ready.\n"\

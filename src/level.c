@@ -65,7 +65,7 @@ static void levels_setup(void) {
     level_add("Form",
               RES_DIR "lvl/desired/level 3.png",
               RES_DIR "lvl/initial/level 3.png",
-              EFFECT_NONE);
+              EFFECT_SNOW);
     level_add("Heart of Glass",
               RES_DIR "lvl/desired/level 4.png",
               RES_DIR "lvl/initial/level 4.png",
@@ -74,11 +74,11 @@ static void levels_setup(void) {
               RES_DIR "lvl/desired/level 5.png",
               RES_DIR "lvl/initial/level 5.png",
               EFFECT_NONE);
-    level_add("Premonition",
+    level_add("Monster",
               RES_DIR "lvl/desired/level 6.png",
               RES_DIR "lvl/initial/level 6.png",
               EFFECT_RAIN);
-    level_add("Metamorphosis",
+    level_add("Monster (II)",
               RES_DIR "lvl/desired/level 7.png",
               RES_DIR "lvl/initial/level 7.png",
               EFFECT_NONE);

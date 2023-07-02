@@ -184,6 +184,7 @@ static void check_for_tutorial() {
                                           NULL);
             break;
         }
+#if 0
         case 6: {
             gs->tutorial = *tutorial_rect(TUTORIAL_CHISEL_INVENTORY_STRING,
                                           NormX(32),
@@ -191,6 +192,7 @@ static void check_for_tutorial() {
                                           NULL);
             break;
         }
+#endif
         case 8: {
             gs->tutorial = *tutorial_rect(TUTORIAL_CAREFUL_STRING,
                                           NormX(32),

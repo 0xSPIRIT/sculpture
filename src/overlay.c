@@ -268,8 +268,8 @@ static void overlay_swap_tick(void) {
     }
 
     if (overlay->changes.was_grid_none) {
-        if (gs->chisel->did_chisel_this_frame) {
-            overlay->changes.temp++;
+        if (gs->overlay.show && !gs->gui.popup && !gs->converter.active) {
+            overlay->changes.temp += 0.02f;
         }
     }
 
@@ -280,7 +280,7 @@ static void overlay_swap_tick(void) {
         overlay->changes.temp = 0;
     }
 
-    overlay->changes.alpha = (f32)overlay->changes.temp/c;
+    overlay->changes.alpha = overlay->changes.temp/c;
 }
 
 static void overlay_tick(void) {

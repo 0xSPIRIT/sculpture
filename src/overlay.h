@@ -14,7 +14,7 @@ typedef struct Overlay_Changes {
     int *grids[MAX_GRID_CHANGES];
     int count, index;
 
-    int temp;
+    f32 temp;
     bool was_grid_none; // Was the games grid completely zeroed out at some point?
 
     f32 alpha;
@@ -33,7 +33,7 @@ typedef struct Overlay {
     f32 size;
 
     bool eraser_mode;
-    bool show;
+    bool show; // Why isn't this called active?
 
     int temp_x, temp_y;
 } Overlay;

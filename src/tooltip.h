@@ -1,5 +1,6 @@
 #define MAX_TOOLTIP_LEN 128
 #define MAX_TOOLTIP_LINE_LEN 128
+#define CLAMP_TOOLTIP false
 
 typedef struct Tooltip {
     enum Tooltip_Type type;

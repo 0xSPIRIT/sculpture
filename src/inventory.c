@@ -38,6 +38,19 @@ static bool was_mouse_in_slot(Slot *slot) {
                             });
 }
 
+static void auto_set_inventory_slots(void) {
+    int level = gs->level_current+1;
+    
+    switch (level) { 
+        case 6: {
+            gs->inventory.slots[0].item.type = CELL_COBBLESTONE;
+            gs->inventory.slots[0].item.amount = 1000;
+            gs->inventory.slots[1].item.type = CELL_SAND;
+            gs->inventory.slots[1].item.amount = 1000;
+        } break;
+    }
+}
+
 static void inventory_setup_slots(void) {
     const int startx = (gs->gw*gs->S)/2 - 0.5*INVENTORY_SLOT_COUNT*Scale(100);
     const int starty = GUI_H/2;
@@ -54,6 +67,8 @@ static void inventory_setup_slots(void) {
         sprintf(name, "Slot %d", i+1);
         strcpy(gs->inventory.slots[i].name, name);
     }
+    
+    auto_set_inventory_slots();
 }
 
 static bool can_add_item_to_inventory(enum Cell_Type type) {

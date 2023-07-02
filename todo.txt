@@ -1,13 +1,19 @@
 # TODO
 
+TODAY - {
   - Redo levels 6-10's initial states, as well as the level itself where
     necessary. Grind this down! See test_notes.txt.
+    x Level 6
+    - Level 7 - Make the initial like a completed painting.
+    - Level 8  }
+    - Level 9  } Make these interesting!
+    - Level 10 }
 
-  Placers being awkward:
-  - Need a better way of single-placing cells.
-  - The placer tooltip gets in my way!!!!
-  - Needs a slightly larger minimum placer input.
-
+  - Level 7's thing as a flower doesn't match. It's supposed to be a
+    sculpture that's much more difficult than the others. The level
+    before this is actually decently difficult. Sooooo Make it a
+    dragon or something at the start then slowly move lower and lower
+    until you get to a single flower, which is completely different.
 
   Chiseling being awkward:
   - Medium chisel still seems weird!
@@ -15,7 +21,9 @@
   - For chisels, when in the vicinity of multiple possible points, auto-adjust
     to the one that chisels correctly, rather than the multiple others which
     do not.
+}
 
+  - Evaluate if the placer is good.
 
   - For undoing, instead of undoing via checking if the current grid is the
     same as the last saved state, check via keeping track of if the player 

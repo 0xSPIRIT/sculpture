@@ -338,13 +338,8 @@ int win32_main(int argc, char **argv) {
     QueryPerformanceFrequency(&frequency);
     QueryPerformanceCounter(&time_start);
 
-    const f64 target_seconds_per_frame = 1.0/60.0;
     f64 time_passed = 0.0;
-    f32 fps = 0.f;
-    int fps_count = 0, fps_draw = 0;
-
-    (void)fps_count;
-    (void)fps_draw;
+    int fps = 0, fps_draw = 0;
 
     while (running) {
         LARGE_INTEGER time_elapsed_for_frame;
@@ -373,52 +368,43 @@ int win32_main(int argc, char **argv) {
         }
 
         game_code.game_run(gs);
-        ++fps_count;
 
         // Zero out the transient memory for next frame!
         memset(transient_memory.data, 0, transient_memory.size);
         transient_memory.cursor = transient_memory.data;
 
-        RenderCleanupTextCache(&gs->render.temp_text_cache);
-
         QueryPerformanceCounter(&time_elapsed);
 
         Uint64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
-        f64 d = (f64)delta / (f64)frequency.QuadPart;
-
-        gs->dt = d;
-
-        // Sleep until 16.6ms has passed.
-        while (d < target_seconds_per_frame) {
-            LARGE_INTEGER end;
-            QueryPerformanceCounter(&end);
-            d = (f64)(end.QuadPart - time_elapsed_for_frame.QuadPart) / (f64)frequency.QuadPart;
-        }
+        f64 d = (f64)delta / (f64)frequency.QuadPart; // ~16.67 ms due to SDL_RenderPresent.
+        
+        // NOTE: d != gs->dt.
+        //  d = Time taken with the vsync sleep taken into account.
+        //  gs->dt = Time taken for frame alone.
 
         time_passed += d;
-
-        // Only update FPS counter every 0.25s.
-        if (time_passed > 0.1) {
-            fps = 1.0/d;
+        
+        if (time_passed >= 1) {
+            fps_draw = fps;
             time_passed = 0;
+            fps = 0;
+        } else {
+            fps++;
         }
-
+        
 #ifndef ALASKA_RELEASE_MODE
-        {
-            Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
-            Uint64 size_max = persistent_memory.size;
-            f32 percentage = (f32)size_current / (f32)size_max;
-            percentage *= 100.f;
-
-            char title[128] = {0};
-            sprintf(title,
-                    "Alaska | FPS: %.2f | Frametime: %.2fms | Memory Used: %.2f%%",
-                    fps,
-                    d*1000,
-                    percentage);
-
-            SDL_SetWindowTitle(gs->window, title);
-        }
+        Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
+        Uint64 size_max = persistent_memory.size;
+        f32 percentage = (f32)size_current / (f32)size_max;
+        percentage *= 100.f;
+        
+        char title[128] = {0};
+        sprintf(title,
+                "Alaska | Frametime: %.2fms | Memory Used: %.2f%%",
+                gs->dt*1000,
+                percentage);
+        
+        SDL_SetWindowTitle(gs->window, title);
 #endif
     }
 

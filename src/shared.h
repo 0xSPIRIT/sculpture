@@ -50,9 +50,9 @@ typedef enum  {
 // If you're adding values at runtime into the struct, add it
 // to the end, because we have pointers pointing to variables
 // in here and we don't want to mess that up.
-typedef struct {
+typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
-
+    
     f64 dt; // Time taken for previous frame.
 
     bool use_software_renderer;
@@ -94,10 +94,6 @@ typedef struct {
     Timelapse timelapse;
 
     Audio audio;
-
-    int item_prev_amounts[ITEM_COUNT];
-    // the amount an item has at the time it was last drawn.
-    // (The rendering data is stored in textures.items and surfaces.items)
 
     Fonts fonts;
     char texts[TEXT_INDEX_COUNT][128];

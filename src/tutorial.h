@@ -72,7 +72,8 @@
     "--------\n\n" \
     "The FUEL CONVERTER can be used to create fuel from\n" \
     "existing material.\n" \
-    "You may use RIGHT CLICK to split an amount of material in two.\n" \
+    "You may use RIGHT CLICK to split an amount of\n"\
+    "material in two.\n" \
 
 #define TUTORIAL_TEXT_FILE_STRING \
     "Tutorial\n" \
@@ -92,11 +93,13 @@
     "--------\n\n" \
     "To place material down, click and drag a rectangle.\n"
 
+#if 0
 #define TUTORIAL_CHISEL_INVENTORY_STRING \
     "Tutorial\n" \
     "--------\n\n" \
     "Upon chiseling, the broken material gets placed into\n" \
     "your inventory.\n"
+#endif
 
 // A rectangle containing text, and an "Okay" button.
 typedef struct Tutorial_Rect {

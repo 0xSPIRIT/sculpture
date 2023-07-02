@@ -7,7 +7,7 @@
 // to know when we need to update the
 // texture.
 typedef struct Item {
-    int index; // Index into arrays such as gs->item_prev_amounts or the number textures.
+    int index; // I can't be bothered to check what this is for.
     enum Cell_Type type;
     int amount;
 } Item;

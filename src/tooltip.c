@@ -95,6 +95,7 @@ static void tooltip_draw(int target, Tooltip *tooltip) {
     bool clamped_x = false, clamped_y = false;
 
     // Clamp the tooltips if it goes outside the window.
+#if CLAMP_TOOLTIP
     if (tooltip->x*gs->S + highest_w + margin*2 >= gs->S*gs->gw) {
         int dx = (tooltip->x*gs->S + highest_w + margin*2) - gs->S*gs->gw;
         tooltip->x -= dx/gs->S;
@@ -109,6 +110,7 @@ static void tooltip_draw(int target, Tooltip *tooltip) {
             dsts[i].y -= dy;
         clamped_y = true;
     }
+#endif
 
     tooltip_draw_box(target,
                      tooltip,

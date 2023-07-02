@@ -310,9 +310,9 @@ static void converter_gui_draw(void) {
 }
 
 static void auto_set_material_converter_slots(Converter *converter) {
-    int level = gs->level_current;
+    int level = gs->level_current+1;
 
-    switch (level+1) {
+    switch (level) {
         case 4: {
             converter->slots[SLOT_FUEL].item = (Item)
             {

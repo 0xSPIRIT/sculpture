@@ -86,6 +86,8 @@ static void game_update_view(void) {
 
     gs->render.view.x = lerp64(gs->render.view.x, gs->render.to.x, 0.2);
     gs->render.view.y = lerp64(gs->render.view.y, gs->render.to.y, 0.2);
+    if (abs(gs->render.view.x - gs->render.to.x) <= 1) gs->render.view.x = gs->render.to.x;
+    if (abs(gs->render.view.y - gs->render.to.y) <= 1) gs->render.view.y = gs->render.to.y;
 }
 
 export void game_init(Game_State *state, int level) {
@@ -361,6 +363,10 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
 }
 
 export void game_run(Game_State *state) {
+    LARGE_INTEGER frequency, time_start, time_end;
+    QueryPerformanceFrequency(&frequency);
+    QueryPerformanceCounter(&time_start);
+    
     gs = state;
 
     gs->gui.tooltip.set_this_frame = false;
@@ -441,21 +447,15 @@ export void game_run(Game_State *state) {
                    RenderTarget(RENDER_TARGET_MASTER)->texture.handle,
                    &src,
                    &dst);
-
-#if 0
-    LARGE_INTEGER frequency, time_start, time_end;
-    QueryPerformanceFrequency(&frequency);
-    QueryPerformanceCounter(&time_start);
-#endif
-
-    SDL_RenderPresent(gs->renderer);
-
-#if 0
+    
     QueryPerformanceCounter(&time_end);
     Uint64 delta = time_end.QuadPart - time_start.QuadPart;
     f64 d = (f64)delta / (f64)frequency.QuadPart;
-    Log("Time taken is: %lf\n", d);
-#endif
+    gs->dt = d;
+
+    SDL_RenderPresent(gs->renderer);
 
     gs->is_mouse_over_any_button = false;
+    
+    RenderCleanupTextCache(&gs->render.temp_text_cache);
 }

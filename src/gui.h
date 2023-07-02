@@ -30,7 +30,7 @@ typedef struct Message {
 } Message;
 
 typedef struct GUI {
-    bool popup;
+    bool popup; // shouldn't this be called popup_active? Bad name!!
     f32 popup_y, popup_y_vel, popup_h; // For the bottom part
     f32 popup_inventory_y, popup_inventory_y_vel, popup_inventory_h;
     Texture *popup_texture;
