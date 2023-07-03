@@ -1,5 +1,5 @@
 #define MAX_PREVIEW_STATES 30*60 // 30 seconds
-#define PREVIEW_GRID_SIZE 4096 // 64*64
+#define PREVIEW_GRID_SIZE 4096 // all previews are hardcoded 64*64
 
 typedef struct Preview_State {
     Uint8 grid[PREVIEW_GRID_SIZE];

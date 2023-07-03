@@ -377,13 +377,13 @@ int win32_main(int argc, char **argv) {
 
         Uint64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
         f64 d = (f64)delta / (f64)frequency.QuadPart; // ~16.67 ms due to SDL_RenderPresent.
-        
+
         // NOTE: d != gs->dt.
         //  d = Time taken with the vsync sleep taken into account.
         //  gs->dt = Time taken for frame alone.
 
         time_passed += d;
-        
+
         if (time_passed >= 1) {
             fps_draw = fps;
             time_passed = 0;
@@ -391,19 +391,19 @@ int win32_main(int argc, char **argv) {
         } else {
             fps++;
         }
-        
+
 #ifndef ALASKA_RELEASE_MODE
         Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
         Uint64 size_max = persistent_memory.size;
         f32 percentage = (f32)size_current / (f32)size_max;
         percentage *= 100.f;
-        
+
         char title[128] = {0};
         sprintf(title,
                 "Alaska | Frametime: %.2fms | Memory Used: %.2f%%",
                 gs->dt*1000,
                 percentage);
-        
+
         SDL_SetWindowTitle(gs->window, title);
 #endif
     }

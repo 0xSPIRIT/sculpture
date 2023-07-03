@@ -173,7 +173,7 @@ static void popup_confirm_base_tick_and_draw(Popup_Confirm_Run_Data *data, int t
 
     button_tick(popup->a, NULL);
     button_tick(popup->b, NULL);
-    
+
     if (gs->input.keys_pressed[SDL_SCANCODE_RETURN]) {
         popup->a->on_pressed(NULL);
     } else if (gs->input.keys_pressed[SDL_SCANCODE_ESCAPE]) {

@@ -18,14 +18,17 @@ typedef struct Chisel {
     enum Chisel_Size size;
     int x, y;
     
+    int temp_idx;
+
     int click_delay;
+    bool repeated;
 
     int lookahead;
     bool is_calculating_highlight;
 
     int highlights[HIGHLIGHT_MAX]; // Stores indices of each highlight.
     int highlight_count;
-    
+
     Uint8 *mask;
 
     f64 angle;

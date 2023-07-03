@@ -10,13 +10,13 @@ static Hammer hammer_init(void) {
 static bool chisel_click_repeatedly(Chisel *chisel) {
     if (!(gs->input.mouse & SDL_BUTTON_LEFT))
         chisel->click_delay = -1;
-    
-    if (gs->input.mouse_pressed[SDL_BUTTON_LEFT] ||
-        chisel->click_delay == 0) {
+
+    if (gs->input.mouse_pressed[SDL_BUTTON_LEFT] || chisel->click_delay == 0) {
+        chisel->repeated = chisel->click_delay == 0;
         chisel->click_delay = 10;
         return true;
     }
-    
+
     return false;
 }
 
@@ -54,8 +54,8 @@ static void hammer_tick(Hammer *hammer) {
     switch (hammer->state) {
         case HAMMER_STATE_WINDUP: {
             hammer->angle += speed * hammer->dir * 6;
-            
-            if (!(gs->input.mouse & SDL_BUTTON_LEFT)) {
+
+            if (gs->chisel->repeated && !(gs->input.mouse & SDL_BUTTON_LEFT)) {
                 hammer->state = HAMMER_STATE_IDLE;
                 hammer->angle = hammer->temp_angle;
             }

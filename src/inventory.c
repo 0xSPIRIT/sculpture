@@ -40,10 +40,10 @@ static bool was_mouse_in_slot(Slot *slot) {
 
 static void auto_set_inventory_slots(void) {
     int level = gs->level_current+1;
-    
+
     Slot *slots = gs->inventory.slots;
-    
-    switch (level) { 
+
+    switch (level) {
         case 6: {
             slots[0].item.type = CELL_COBBLESTONE;
             slots[0].item.amount = 1000;

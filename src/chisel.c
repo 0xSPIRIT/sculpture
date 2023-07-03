@@ -255,6 +255,30 @@ static bool is_cell_in_front_of_chisel(Chisel *chisel,
     return chisel->mask[cell_x + cell_y * gs->gw];
 }
 
+// Returns the index of the nearest successful hit.
+static int find_nearest_successful_hit(int x, int y, int radius) {
+    int result = -1;
+    int max_dist_sq = radius*radius+1;
+    
+    for (int dy = -radius; dy < radius; dy++) {
+        for (int dx = -radius; dx < radius; dx++) {
+            int dist_sq = dx*dx+dy*dy;
+            if (dist_sq > radius*radius) continue;
+            if (!is_in_bounds(x+dx, y+dy)) continue;
+            
+            int idx = x+dx + (y+dy)*gs->gw;
+            
+            bool success = (gs->grid[idx].type != gs->overlay.grid[idx]);
+            if (success && dist_sq < max_dist_sq) {
+                max_dist_sq = dist_sq;
+                result = idx;
+            }
+        }
+    }
+    
+    return result;
+}
+
 // dx and dy represent any offset you want in the circle placement.
 static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int size) {
 #if USE_PRESSURE
@@ -293,6 +317,7 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
                 emit_dust(type, x, y, vx, vy);
             }
         }
+        gs->has_player_interacted_since_last_state = true;
         set(x, y, 0, -1);
     } else {
         // Destroy in a circle.
@@ -374,6 +399,7 @@ static bool chisel_chisel_circle(Chisel *chisel, int size) {
         {
             xx = round(xx);
             yy = round(yy);
+            gs->chisel->temp_idx = find_nearest_successful_hit(xx, yy, 3);
             chisel_destroy_circle(chisel, xx, yy, dir_x, dir_y, size);
             return true;
         }
@@ -430,7 +456,9 @@ static void chisel_calculate_highlights(Chisel *chisel) {
         }
     }
 
+    int idx = chisel->temp_idx;
     memcpy(chisel, &chisel_copy, sizeof(Chisel));
+    chisel->temp_idx = idx;
     memcpy(gs->grid, grid_copy, gs->gw*gs->gh*sizeof(Cell));
 
     memcpy(chisel->highlights, highlights, sizeof(int)*HIGHLIGHT_MAX);
@@ -477,15 +505,15 @@ static void chisel_draw_highlights(int target,
         RenderPointRelative(target, xoff+x, yoff+y);
     }
     
+    // Note: I was doing some testing with trying to make chiseling
+    //       auto-correct itself, through the function find_nearest_successful_hit,
+    //       and using this to output the cell position temp_idx.
 #if 0
-    for (int i = 0; i < gs->gw*gs->gh; i++) {
-        int x = i%gs->gw, y = i/gs->gw;
-        RenderColor(255, 255, 255, 255);
-        if (gs->chisel->mask[i])
-            RenderPointRelative(target, x, y);
-    }
+    int idx = gs->chisel->temp_idx;
+    
+    RenderColor(255, 255, 255, 255);
+    RenderPointRelative(target, idx % gs->gw, idx / gs->gw);
 #endif
-            
 }
 
 static void chisel_tick(Chisel *chisel) {

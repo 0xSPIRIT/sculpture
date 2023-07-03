@@ -106,7 +106,7 @@ static void click_gui_tool_button(void *type_ptr) {
         }
         case TOOL_DESTROY: {
             if (is_array_empty(gs->grid)) break;
-            
+
             save_state_to_next();
             for (int i = 0; i < gs->gw*gs->gh; i++) {
                 if (gs->grid[i].type) {

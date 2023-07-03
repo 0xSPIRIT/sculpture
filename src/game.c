@@ -366,7 +366,7 @@ export void game_run(Game_State *state) {
     LARGE_INTEGER frequency, time_start, time_end;
     QueryPerformanceFrequency(&frequency);
     QueryPerformanceCounter(&time_start);
-    
+
     gs = state;
 
     gs->gui.tooltip.set_this_frame = false;
@@ -447,7 +447,7 @@ export void game_run(Game_State *state) {
                    RenderTarget(RENDER_TARGET_MASTER)->texture.handle,
                    &src,
                    &dst);
-    
+
     QueryPerformanceCounter(&time_end);
     Uint64 delta = time_end.QuadPart - time_start.QuadPart;
     f64 d = (f64)delta / (f64)frequency.QuadPart;
@@ -456,6 +456,6 @@ export void game_run(Game_State *state) {
     SDL_RenderPresent(gs->renderer);
 
     gs->is_mouse_over_any_button = false;
-    
+
     RenderCleanupTextCache(&gs->render.temp_text_cache);
 }

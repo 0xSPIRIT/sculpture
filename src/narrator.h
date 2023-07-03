@@ -13,19 +13,19 @@
 "His gaze intensifies at the marble curiously, longing for\r"\
 "something hidden, locked away.\n"\
 "A glimmer previously dormant ignites in him.\n"\
-    
+
 #define NARRATION_LEVEL_3 \
 "Max's imagination fills with exotic new ideas\r"\
 "as he acquainted himself with the basics.\n"\
 "It scratched an itch previously unknown,\r"\
 "daydreaming even outside of the workshop.\n"\
 "His single flame glares in bliss.\n"\
-    
+
 #define NARRATION_LEVEL_4 \
 "Which shapes beg to be sculpted?\n"\
 "Wondrous minutes went by, with Max daydreaming\r"\
 "fantastical possibilities.\n"\
-"He could fully picture it: A symbolic piece with\r"\
+"He could fully picture it: a symbolic piece with\r"\
 "endless complex details.\n"\
 "... No.\n"\
 "Only when he'd sharpened his skills will he\r"\
@@ -33,14 +33,17 @@
 "For a moment, his flame flickers.\n"\
 
 // TODO: Do one for level 5.
-//       - Talk about taking in the processed remains
-//         of other works, and converting it into something
-//         new.
-    
+// - Talk about taking in the processed remains
+//   of other works, and converting it into something
+//   new.
+
+// This is in the wrong tense, but it sounds weird
+// if you correct it to present tense!!!
+// Should I change everything else to past tense?
 #define NARRATION_LEVEL_7 \
 "Surely by now he must be ready.\n"\
-"To do something real-- important.\n"\
-"Max recalled the sculptures he had once loved;\r"\
+"To do something real.\rSomething important.\n"\
+"Max recalled sculptures that he knew fondly.\r"\
 "They swirled around his head in a moment of inspiration.\n"\
 "Too, his mind spun with other hypnotic notions that\r"\
 "would surely never come to pass--\n"\
@@ -48,7 +51,7 @@
 "what he thought to be foolish fantasies.\n"\
 "In reverie, he returned to the here and now.\n"\
 "His expectations surely tempered, he picked up his chisel.\n"\
-    
+
 #define NARRATION_LEVEL_8 \
 "At the end he should be proud, but how could he?\n"\
 "Max turned away pointedly, his chisel clattering\r"\
@@ -66,7 +69,7 @@
 "and smashes it to the floor, chucking shards of marble\r"\
 "and quartz across his workshop.\n"\
 "\"I'll never make this mistake again,\" he declared.\n"\
-    
+
 #define NARRATION_LEVEL_10 \
 "A thought captures him once again,\r"\
 "crystallizing wildly into many ideas,\r"\
@@ -78,7 +81,7 @@
 "\"I can do this.\"\n"\
 "\"I know I can do this.\"\n"\
 "\"I have to.\"\n"\
-    
+
 #define NARRATION_LEVEL_11 \
 "Max collapses into his chair, debilitated,\r"\
 "the floorboards creaking in response.\n"\

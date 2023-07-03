@@ -1,33 +1,30 @@
 # TODO
 
-TODAY - {
-  - Redo levels 6-10's initial states, as well as the level itself where
-    necessary. Grind this down! See test_notes.txt.
-    x Level 6
-    x Level 7 - Make the initial like a completed painting.
-    x Level 8  }
-    x Level 9  } Make these interesting!
-    - Level 10 }
-
-  Chiseling being awkward:
-  x Medium chisel still seems weird!
-  x Re-implement holding click to repeatedly chisel.
+{
   - For chisels, when in the vicinity of multiple possible points, auto-adjust
     to the one that chisels correctly, rather than the multiple others which
     do not.
-}
 
-  - For level 7, change the confirmation popup when you finish to "no" and "no"
-    instead of confirm and cancel.
+  - Redo level 10. This is way too hard and not good with the way placers work
+    Keep the same general idea of layers of diamond and ice, but make it
+    not weird and clunky.
 
-  - Evaluate if the placer is good.
+  - Determine if the destroy level tool is even necessary?
+    Replace it with a restart level thing instead?
 
-  - For undoing, instead of undoing via checking if the current grid is the
-    same as the last saved state, check via keeping track of if the player 
+  x For undoing, instead of undoing via checking if the current grid is the
+    same as the last saved state, check via keeping track of if the player
     either placed anything, chiseled anything, or destroyed the level.
     Doing it this way eliminates the weirdness of trying to undo a placement
     of material in the air (which immediately falls, thereby changing the
     state)
+
+}
+  - For level 7, change the confirmation popup when you finish to "no" and "no"
+    instead of confirm and cancel.
+
+  - Evaluate if the placer is good.
+    - In level "Yearning" the placer is a bit odd? Maybe not though.
 
   - Improve conversions (design by subtraction) - see test_notes.txt.
 

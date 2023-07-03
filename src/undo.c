@@ -30,11 +30,11 @@ static Save_State *current_state(void) {
 }
 
 static void save_state_to_next(void) {
+    gs->has_player_interacted_since_last_state = false;
+    
     if (gs->save_state_count == MAX_UNDO) {
         // Move everything back by one, destroying the first
         // save state and leaving the last slot open.
-        
-        Log("Happened!\n");
 
         gs->save_state_count--;
 
@@ -136,6 +136,9 @@ static bool is_current_slots_same_as(Save_State *state) {
 }
 
 static void set_state(int num) {
+    Assert(num < 0);
+    if (num < 0) return;
+    
     Save_State *state = &gs->save_states[num];
 
     Assert(state->grid_layers[0]);
@@ -175,8 +178,8 @@ static void undo(void) {
     if (gs->tutorial.active && strcmp(gs->tutorial.str, TUTORIAL_UNDO_STRING) == 0) {
         tutorial_rect_close(NULL);
     }
-
-    if (!gs->gui.popup && is_current_grid_same_as(current_state())) {
+    
+    if (!gs->gui.popup && gs->has_player_interacted_since_last_state) {//is_current_grid_same_as(current_state())) {
         if (gs->save_state_count == 1) {
             return;
         }
@@ -192,11 +195,11 @@ static void undo(void) {
 
                 set_state(gs->save_state_count-2);
                 gs->save_state_count--;
-            } else {
+            } else if (gs->save_state_count != 0) {
                 set_state(gs->save_state_count-1);
             }
-        } else {
-            set_state(gs->save_state_count-1);
+        } else if (gs->save_state_count != 0) {
+            set_state(--gs->save_state_count);
         }
     }
 

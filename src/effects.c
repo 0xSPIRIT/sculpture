@@ -68,10 +68,10 @@ static void effect_set(int type, bool high_fidelity, int x, int y, int w, int h)
             for (int i = 0; i < effect->particle_count; i++) {
                 Effect_Particle *particle = &effect->particles[i];
                 SDL_Rect bounds = gs->current_effect.bounds;
-                
+
                 particle->x = (f32) (bounds.x+(rand()%(bounds.w-bounds.x)));
                 particle->y = (f32) (bounds.y+(rand()%(bounds.h-bounds.y)));
-                
+
                 particle->vx = 0.3f;
                 particle->vy = 1.f;
             }

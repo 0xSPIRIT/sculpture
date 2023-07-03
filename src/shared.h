@@ -52,7 +52,7 @@ typedef enum  {
 // in here and we don't want to mess that up.
 typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
-    
+
     f64 dt; // Time taken for previous frame.
 
     bool use_software_renderer;
@@ -142,6 +142,7 @@ typedef struct Game_State {
 
     Save_State save_states[MAX_UNDO];
     int save_state_count; // Number of states saved.
+    bool has_player_interacted_since_last_state;
 
     Text_Field text_field;
 

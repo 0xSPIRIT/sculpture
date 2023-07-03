@@ -424,13 +424,13 @@ static void overlay_draw_grid(int target, int *grid, f32 alpha_coeff) {
                 type_to_outline_color[t*4 + 3],
                 255
             };
-            
+
             if (!int_array_any_neighbours_not_same(grid, x, y)) {
                 f64 f = (sin(SDL_GetTicks()/750.0)+1)/2.0;
                 if (gs->level_current+1 == 7) f *= 0.5;
                 a = fmax(0, min(255, alpha - f*30));
             }
-            
+
             if (gs->level_current+1 != 7 && gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
                 a /= 4;
             }

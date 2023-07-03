@@ -88,16 +88,18 @@ static void preview_record(Preview *p) {
 }
 
 static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
-    Assert(gs->gw == 64);
-    Assert(gs->gh == 64);
+    const int preview_w = 64;
+    const int preview_h = 64;
+    
+    Assert(preview_w * preview_h == PREVIEW_GRID_SIZE);
 
     {
-        for (int y = 0; y < gs->gh; y++) {
-            for (int x = 0; x < gs->gw; x++) {
-                if (!p->states[p->index].grid[x+y*gs->gw]) {
+        for (int y = 0; y < preview_w; y++) {
+            for (int x = 0; x < preview_h; x++) {
+                if (!p->states[p->index].grid[x+y*preview_w]) {
                     RenderColor(0, 0, 0, 255);
                 } else {
-                    SDL_Color col = pixel_from_index(p->states[p->index].grid[x+y*gs->gw], x+y*gs->gw);
+                    SDL_Color col = pixel_from_index(p->states[p->index].grid[x+y*preview_w], x+y*preview_w);
                     RenderColor(col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
                 }
 
@@ -105,9 +107,9 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
             }
         }
 
-        for (int y = 0; y < gs->gh; y++) {
-            for (int x = 0; x < gs->gw; x++) {
-                int t = p->overlay[x+y*gs->gw];
+        for (int y = 0; y < preview_h; y++) {
+            for (int x = 0; x < preview_w; x++) {
+                int t = p->overlay[x+y*preview_w];
                 if (!t) continue;
 
                 RenderColor(255, 255, 255, 127);
@@ -127,8 +129,8 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
 
                 RenderColor(255, 255, 255, 64);
 
-                SDL_RenderDrawLine(gs->renderer, 0, y, gs->gw, y);
-                SDL_RenderDrawLine(gs->renderer, x, 0, x, gs->gh);
+                SDL_RenderDrawLine(gs->renderer, 0, y, preview_w, y);
+                SDL_RenderDrawLine(gs->renderer, x, 0, x, preview_h);
 
                 if (is_rect) {
                     if (p->placer_rect.x == -1) {
