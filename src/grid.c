@@ -91,6 +91,13 @@ static int number_neighbours_of_object(int x, int y, int r, int obj) {
     return c;
 }
 
+static bool is_array_empty(Cell *grid) {
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        if (grid[i].type != 0) return false;
+    }
+    return true;
+}
+
 static int get_neighbour_type_in_direction(int x, int y, f32 angle) {
     angle += 180;
 

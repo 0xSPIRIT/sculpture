@@ -23,6 +23,8 @@ typedef struct Chisel {
 
     int highlights[HIGHLIGHT_MAX]; // Stores indices of each highlight.
     int highlight_count;
+    
+    Uint8 *mask;
 
     f64 angle;
     Texture *texture;
@@ -33,3 +35,4 @@ typedef struct Chisel {
 
 // Called in grid_draw.
 static void chisel_draw_highlights(int target, int *highlights, int count, int xoff, int yoff);
+static void chisel_get_adjusted_positions(int angle, int size, int *x, int *y);

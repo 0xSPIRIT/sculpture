@@ -48,6 +48,12 @@ static void auto_set_inventory_slots(void) {
             gs->inventory.slots[1].item.type = CELL_SAND;
             gs->inventory.slots[1].item.amount = 1000;
         } break;
+        case 8: {
+            gs->inventory.slots[0].item.type = CELL_COBBLESTONE;
+            gs->inventory.slots[0].item.amount = 2000;
+            gs->inventory.slots[1].item.type = CELL_SAND;
+            gs->inventory.slots[1].item.amount = 2000;
+        } break;
     }
 }
 
@@ -67,8 +73,6 @@ static void inventory_setup_slots(void) {
         sprintf(name, "Slot %d", i+1);
         strcpy(gs->inventory.slots[i].name, name);
     }
-    
-    auto_set_inventory_slots();
 }
 
 static bool can_add_item_to_inventory(enum Cell_Type type) {
@@ -102,6 +106,7 @@ static bool add_item_to_inventory_slot(enum Cell_Type type, int amount) {
 static void inventory_init(void) {
     memset(&gs->inventory, 0, sizeof(Inventory));
     inventory_setup_slots();
+    auto_set_inventory_slots();
 }
 
 static void item_draw(int target, Item *item, int x, int y, int w, int h) {

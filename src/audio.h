@@ -3,4 +3,4 @@
 #define AUDIO_GUI_VOLUME      Volume(0.20)
 #define AUDIO_TITLESCREEN_VOLUME  Volume(0.75)
 
-#define AUDIO_PLAY_AMBIANCE true
+#define AUDIO_PLAY_AMBIANCE false

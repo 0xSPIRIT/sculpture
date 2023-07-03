@@ -15,7 +15,7 @@ Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_CONCRETE,      127,  57, 185,
     CELL_QUARTZ,         00, 120,   0,
     CELL_GLASS,         200, 137, 255,
-    CELL_GRANITE,        58,   0, 255,
+    CELL_GRANITE,       255,   0, 255,
     CELL_BASALT,        185, 185,  57,
     CELL_DIAMOND,        70, 230, 134,
     CELL_UNREFINED_COAL, 45,   9, 200,
@@ -424,20 +424,20 @@ static void overlay_draw_grid(int target, int *grid, f32 alpha_coeff) {
                 type_to_outline_color[t*4 + 3],
                 255
             };
-
-            if (gs->level_current+1 != 7 && !int_array_any_neighbours_not_same(grid, x, y)) {
+            
+            if (!int_array_any_neighbours_not_same(grid, x, y)) {
                 f64 f = (sin(SDL_GetTicks()/750.0)+1)/2.0;
+                if (gs->level_current+1 == 7) f *= 0.5;
                 a = fmax(0, min(255, alpha - f*30));
             }
-
+            
             if (gs->level_current+1 != 7 && gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
                 a /= 4;
-            } else if (gs->level_current+1 == 7) {
-#if 0
+            }
+            else if (gs->level_current+1 == 7) {
                 if (gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
                     a *= 0.67;
                 }
-#endif
 
                 int add = 100;
                 c.r = min(255, c.r+add);

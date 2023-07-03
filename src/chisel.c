@@ -4,6 +4,9 @@ static Chisel chisel_init(enum Chisel_Size size) {
     chisel.size = size;
     chisel.texture = &GetTexture(TEXTURE_CHISEL+size);
     chisel.lookahead = 5;
+    
+    chisel.mask = PushSize(gs->persistent_memory,
+                           gs->gw*gs->gh*1);
 
     return chisel;
 }
@@ -210,12 +213,46 @@ static bool should_display_pressure_tutorial() {
     return !gs->did_pressure_tutorial;
 }
 
+// Unused.
 static bool special_case_for_diamond(int x, int y) {
     if (gs->level_current+1 == 5 && gs->grid[x+y*gs->gw].type == CELL_DIAMOND)
     {
         return false;
     }
     return true;
+}
+
+// Sets a mask of the cells in the grid which are in front of the chisel.
+static void generate_chisel_mask(Uint8 *mask, f64 chisel_angle_deg, int chisel_x, int chisel_y) {
+    f64 chisel_angle = Radians(chisel_angle_deg);
+    // dx and dy represent the direction of the chisel
+    // as a unit vector.
+    f64 dx = round(cos(chisel_angle));
+    f64 dy = round(sin(chisel_angle));
+    
+    memset(mask, 0, gs->gw*gs->gh*sizeof(Uint8));
+    
+    for (int y = 0; y < gs->gh; y++) {
+        for (int x = 0; x < gs->gw; x++) {
+            f64 xx = x - chisel_x;
+            f64 yy = y - chisel_y;
+            f64 dot = dx*xx + dy*yy;
+            
+            // If the dot product between these two vectors
+            // is positive, that means the cosine of the
+            // angle between the vectors is positive,
+            // meaning the angle is < 90 degrees in this case.
+            if (dot > 0) mask[x+y*gs->gw] = 1;
+        }
+    }
+}
+
+// This returns if a given cell in the grid is in front of the chisel.
+static bool is_cell_in_front_of_chisel(Chisel *chisel,
+                                       int cell_x,
+                                       int cell_y)
+{
+    return chisel->mask[cell_x + cell_y * gs->gw];
 }
 
 // dx and dy represent any offset you want in the circle placement.
@@ -265,12 +302,15 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
         x -= dx;
         y -= dy;
 
+        generate_chisel_mask(chisel->mask, chisel->angle, x, y);
+        
         for (int yy = -size; yy <= size; yy++) {
             for (int xx = -size; xx <= size; xx++) {
                 if (xx*xx + yy*yy > size*size) continue;
                 if (!is_in_bounds(x+xx, y+yy)) continue;
                 if (grid[x+xx+(y+yy)*gs->gw] != 1) continue;
                 if (!is_cell_hard(gs->grid[x+xx+(y+yy)*gs->gw].type)) continue;
+                if (chisel->size == 1 && !is_cell_in_front_of_chisel(chisel, x+xx, y+yy)) continue;
                 if (!special_case_for_diamond(x+xx, y+yy)) continue;
 
                 if (gs->grid[x+xx+(y+yy)*gs->gw].type != 0)
@@ -437,6 +477,16 @@ static void chisel_draw_highlights(int target,
 
         RenderPointRelative(target, xoff+x, yoff+y);
     }
+    
+#if 0
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        int x = i%gs->gw, y = i/gs->gw;
+        RenderColor(255, 255, 255, 255);
+        if (gs->chisel->mask[i])
+            RenderPointRelative(target, x, y);
+    }
+#endif
+            
 }
 
 static void chisel_tick(Chisel *chisel) {

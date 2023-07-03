@@ -70,13 +70,11 @@ static void placer_suck_circle(Placer *placer) {
                     int type = arr[xx+yy*gs->gw].type;
                     if (type == 0) continue;
 
-                    if (is_cell_hard(type)) {
-                        continue;
-                    }
+                    if (is_cell_hard(type)) { continue; }
 
                     if (placer->contains->type == type || placer->contains->type == 0 || placer->contains->amount == 0) {
                         placer->contains->type = type;
-                        placer->contains->amount++;
+                        placer->contains->amount += 1;
                         set_array(arr, xx, yy, 0, -1);
                         placer->did_take_anything = true;
                     }

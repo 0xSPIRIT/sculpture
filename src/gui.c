@@ -105,7 +105,8 @@ static void click_gui_tool_button(void *type_ptr) {
             return;
         }
         case TOOL_DESTROY: {
-            // TODO: Only do this if the grid is not empty.
+            if (is_array_empty(gs->grid)) break;
+            
             save_state_to_next();
             for (int i = 0; i < gs->gw*gs->gh; i++) {
                 if (gs->grid[i].type) {

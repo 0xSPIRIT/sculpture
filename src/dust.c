@@ -30,6 +30,8 @@ static void dust_init(void) {
 }
 
 static void emit_dust(enum Cell_Type type, int x, int y, f64 vx, f64 vy) {
+    if (gs->dust_data.count == gs->gw*gs->gh) return; // At limit!
+    
     gs->dust_data.types[gs->dust_data.count] = type;
     gs->dust_data.xs[gs->dust_data.count] = x;
     gs->dust_data.ys[gs->dust_data.count] = y;

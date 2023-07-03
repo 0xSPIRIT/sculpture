@@ -82,7 +82,7 @@ static void levels_setup(void) {
               RES_DIR "lvl/desired/level 7.png",
               RES_DIR "lvl/initial/level 7.png",
               EFFECT_NONE);
-    level_add("Procedure Lullaby",
+    level_add("Metamorphosis",
               RES_DIR "lvl/desired/level 8.png",
               RES_DIR "lvl/initial/level 8.png",
               EFFECT_NONE);
@@ -131,7 +131,6 @@ static void goto_level(int lvl) {
 
     gs->item_holding = (Item){0};
     gs->current_placer = 0;
-    inventory_init();
 
     dust_init();
 
@@ -144,6 +143,8 @@ static void goto_level(int lvl) {
 
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_init(i);
+
+    inventory_init();
     grabber_init();
     gui_init();
     all_converters_init();
