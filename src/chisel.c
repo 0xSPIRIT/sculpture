@@ -204,8 +204,8 @@ static bool chisel_attempt_add_to_inventory(int x, int y) {
     int type = gs->grid[x+y*gs->gw].type;
     int amount = 1;
     if (gs->level_current+1 != 11 && gs->grid[x+y*gs->gw].is_initial)
-        amount = (rand()%2==0) ? 2 : 1;
-
+        amount = (my_rand(x+y*gs->gw)%2==0) ? 2 : 1;
+    
     return add_item_to_inventory_slot(type, amount);
 }
 
@@ -292,9 +292,8 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
                 f64 vy = randf(2.0)-1;
                 emit_dust(type, x, y, vx, vy);
             }
-
-            set(x, y, 0, -1);
         }
+        set(x, y, 0, -1);
     } else {
         // Destroy in a circle.
         int type = 0;
@@ -493,6 +492,9 @@ static void chisel_tick(Chisel *chisel) {
     if (gs->gui.restart_popup_confirm.active) return;
 
     chisel->did_chisel_this_frame = false;
+    if (chisel->click_delay > 0) chisel->click_delay--;
+    if (!(gs->input.mouse & SDL_BUTTON_LEFT))
+        chisel->click_delay = -1;
 
     if (gs->hammer.state == HAMMER_STATE_WINDUP ||
         gs->hammer.state == HAMMER_STATE_ATTACK) return;

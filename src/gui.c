@@ -110,7 +110,7 @@ static void click_gui_tool_button(void *type_ptr) {
             save_state_to_next();
             for (int i = 0; i < gs->gw*gs->gh; i++) {
                 if (gs->grid[i].type) {
-                    add_item_to_inventory_slot(gs->grid[i].type, (rand()%2==0) ? 2 : 1);
+                    add_item_to_inventory_slot(gs->grid[i].type, (my_rand(i)%2==0) ? 2 : 1);
                     emit_dust_explosion(gs->grid[i].type, i%gs->gw, i/gs->gw, 1);
                 }
                 gs->grid[i].type = gs->grid[i].object = 0;

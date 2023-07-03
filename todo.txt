@@ -5,13 +5,13 @@ TODAY - {
     necessary. Grind this down! See test_notes.txt.
     x Level 6
     x Level 7 - Make the initial like a completed painting.
-    - Level 8  }
-    - Level 9  } Make these interesting!
+    x Level 8  }
+    x Level 9  } Make these interesting!
     - Level 10 }
 
   Chiseling being awkward:
   x Medium chisel still seems weird!
-  - Re-implement holding click to repeatedly chisel.
+  x Re-implement holding click to repeatedly chisel.
   - For chisels, when in the vicinity of multiple possible points, auto-adjust
     to the one that chisels correctly, rather than the multiple others which
     do not.

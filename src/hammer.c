@@ -7,6 +7,19 @@ static Hammer hammer_init(void) {
     return hammer;
 }
 
+static bool chisel_click_repeatedly(Chisel *chisel) {
+    if (!(gs->input.mouse & SDL_BUTTON_LEFT))
+        chisel->click_delay = -1;
+    
+    if (gs->input.mouse_pressed[SDL_BUTTON_LEFT] ||
+        chisel->click_delay == 0) {
+        chisel->click_delay = 10;
+        return true;
+    }
+    
+    return false;
+}
+
 static void hammer_tick(Hammer *hammer) {
     if (gs->input.keys[SDL_SCANCODE_RSHIFT]) {
         f64 rmx = (f64)gs->input.real_mx / (f64)gs->S;
@@ -24,7 +37,7 @@ static void hammer_tick(Hammer *hammer) {
     if (gs->input.real_my > GUI_H &&
         !gs->tutorial.active &&
         !gs->gui.popup &&
-        gs->input.mouse_pressed[SDL_BUTTON_LEFT] &&
+        chisel_click_repeatedly(gs->chisel) &&
         gs->chisel->highlight_count > 0 &&
         (hammer->state == HAMMER_STATE_IDLE ||
          hammer->state == HAMMER_STATE_BLOWBACK))
@@ -41,6 +54,11 @@ static void hammer_tick(Hammer *hammer) {
     switch (hammer->state) {
         case HAMMER_STATE_WINDUP: {
             hammer->angle += speed * hammer->dir * 6;
+            
+            if (!(gs->input.mouse & SDL_BUTTON_LEFT)) {
+                hammer->state = HAMMER_STATE_IDLE;
+                hammer->angle = hammer->temp_angle;
+            }
 
             if (fabs(hammer->angle - hammer->temp_angle) >= 60) {
                 hammer->state = HAMMER_STATE_ATTACK;

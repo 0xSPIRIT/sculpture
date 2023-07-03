@@ -17,6 +17,8 @@ typedef struct Chisel {
     enum Chisel_State state;
     enum Chisel_Size size;
     int x, y;
+    
+    int click_delay;
 
     int lookahead;
     bool is_calculating_highlight;

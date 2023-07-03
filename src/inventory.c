@@ -41,18 +41,28 @@ static bool was_mouse_in_slot(Slot *slot) {
 static void auto_set_inventory_slots(void) {
     int level = gs->level_current+1;
     
+    Slot *slots = gs->inventory.slots;
+    
     switch (level) { 
         case 6: {
-            gs->inventory.slots[0].item.type = CELL_COBBLESTONE;
-            gs->inventory.slots[0].item.amount = 1000;
-            gs->inventory.slots[1].item.type = CELL_SAND;
-            gs->inventory.slots[1].item.amount = 1000;
+            slots[0].item.type = CELL_COBBLESTONE;
+            slots[0].item.amount = 1000;
+            slots[1].item.type = CELL_SAND;
+            slots[1].item.amount = 1000;
         } break;
         case 8: {
-            gs->inventory.slots[0].item.type = CELL_COBBLESTONE;
-            gs->inventory.slots[0].item.amount = 2000;
-            gs->inventory.slots[1].item.type = CELL_SAND;
-            gs->inventory.slots[1].item.amount = 2000;
+            slots[0].item.type = CELL_COBBLESTONE;
+            slots[0].item.amount = 1500;
+            slots[1].item.type = CELL_SAND;
+            slots[1].item.amount = 2000;
+        } break;
+        case 9: {
+            slots[0].item.type = CELL_MARBLE;
+            slots[0].item.amount = 1300;
+            slots[1].item.type = CELL_SAND;
+            slots[1].item.amount = 1300;
+            slots[2].item.type = CELL_DIRT;
+            slots[2].item.amount = 1300;
         } break;
     }
 }
