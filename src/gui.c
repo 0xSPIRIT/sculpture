@@ -19,19 +19,14 @@ static void tool_button_set_disabled(int level) {
 
     //tools[TOOL_BLOCKER]->disabled = true;
 
-    bool is_leeway_compared = compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY);
+    //bool is_leeway_compared = compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY);
     bool is_exactly = compare_cells_to_int(gs->grid, gs->overlay.grid, 0);
 
     if (is_exactly && !gs->levels[level].done) {
         Mix_HaltMusic();
         Mix_PlayChannel(AUDIO_CHANNEL_GUI, gs->audio.sprinkle, 0);
         gs->levels[level].done = true;
-    }
-
-    if (is_leeway_compared) {
         tools[TOOL_FINISH_LEVEL]->highlighted = true;
-    } else {
-        tools[TOOL_FINISH_LEVEL]->highlighted = false;
     }
 
     switch (level+1) {
@@ -113,7 +108,8 @@ static void click_gui_tool_button(void *type_ptr) {
                     add_item_to_inventory_slot(gs->grid[i].type, (my_rand(i)%2==0) ? 2 : 1);
                     emit_dust_explosion(gs->grid[i].type, i%gs->gw, i/gs->gw, 1);
                 }
-                gs->grid[i].type = gs->grid[i].object = 0;
+                gs->grid[i].type = 0;
+                gs->grid[i].object = -1;
             }
 
             gs->current_tool = p_tool;

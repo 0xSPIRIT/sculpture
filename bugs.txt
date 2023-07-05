@@ -1,5 +1,8 @@
 # Bugs
 
+- I think the undo goes one too far sometimes?
+  It does current-2 instead of current-1 is my guess.
+
 - The text for the confirmation goes up to the top left in the restart-level popup.
 
 - Pressing shift when there's nothing in the grid
@@ -21,7 +24,7 @@
 - An issue with the I-key menu. Sometimes it doesn't draw? When I was
   in fullscreen, it wasn't drawing until I came out of fullscreen.
 
-- If you place dirt, sometimes it doesn't fall?
+x If you place dirt, sometimes it doesn't fall?
 
 - The chisel follows you in the gui popup, if there is nothing in the
   grid.

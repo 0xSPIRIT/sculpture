@@ -80,16 +80,6 @@ static bool is_in_boundsf(f32 x, f32 y) {
     return is_in_bounds((int)x, (int)y);
 }
 
-static void start_timer(void) {
-    gs->global_start = clock();
-}
-
-static void _end_timer(const char *func) {
-    gs->global_end = clock();
-    f64 cpu_time_used = ((f64) (gs->global_end-gs->global_start))/CLOCKS_PER_SEC;
-    Log("(%s) Time: %f\n", func, cpu_time_used);
-}
-
 // Moves the mouse to the middle of the grid cell, not the top-left.
 static void move_mouse_to_grid_position(f32 x, f32 y) {
     SDL_WarpMouseInWindow(gs->window,

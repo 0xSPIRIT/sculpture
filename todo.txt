@@ -3,6 +3,13 @@
   x For placers, when you suck up something from the initial state,
     it should suck up 1.5x the amount! Make sure to use my_rand(i).
 
+  - Improve medium chisel: the straight horizontal/vertical chiseling
+    is bad when done repeatedly. It generates weird + shaped artifacts.
+    Diagonals seem fine.
+
+  - The cobblestone overlay color is too close to the grey cobblestone.
+    It should have a higher contrast. Keep the pink color, though.
+
   - Redo level 10. This is way too hard and not good with the way placers work
     Keep the same general idea of layers of diamond and ice, but make it
     not weird and clunky.

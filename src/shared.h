@@ -96,7 +96,6 @@ typedef struct Game_State {
     Audio audio;
 
     Fonts fonts;
-    char texts[TEXT_INDEX_COUNT][128];
 
     bool is_mouse_over_any_button;
 
@@ -135,8 +134,6 @@ typedef struct Game_State {
     Inventory inventory;
 
     Overlay overlay;
-
-    clock_t global_start, global_end;
 
     bool undo_initialized;
 
