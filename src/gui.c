@@ -251,6 +251,8 @@ static void gui_init(void) {
 
     gui->popup_y = (f32) (gs->gh*gs->S);
     gui->popup_y_vel = 0;
+    gui->popup_inventory_y_vel = 0;
+    gui->popup_inventory_y = 0;
     gui->popup = 0;
     gui->popup_texture = &GetTexture(TEXTURE_POPUP);
 
@@ -382,7 +384,7 @@ static void profile_array(Cell *desired,
 
         if (gs->level_current+1 == 7) {
             sprintf(out[(*count)++], "  %-15s???", name);
-        } else if (gs->level_current == 11-1) {
+        } else if (gs->level_current+1 == 11) {
             sprintf(out[(*count)++], "  %-15s???", name);
         } else if (gs->overlay.changes.index < gs->overlay.changes.count-1) {
             sprintf(out[(*count)++], "  %-15s%d??", name, counts[i]);
@@ -434,7 +436,7 @@ static void gui_draw_profile(int target) {
 
         sprintf(text_data.identifier, "Thing");
         text_data.font = gs->fonts.font;
-        strcpy(text_data.str, "Required Amounts:");
+        strcpy(text_data.str, "Minimum Amounts:");
         text_data.x = Scale(50);
         text_data.y = GUI_H+Scale(50);
         text_data.foreground = (SDL_Color){

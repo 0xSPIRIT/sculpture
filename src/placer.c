@@ -318,7 +318,6 @@ static void placer_place_rect(Placer *placer) {
                 object_index = -1;
             }
 
-            gs->has_player_interacted_since_last_state = true;
             set(x, y, placer->contains->type, object_index);
             placer->contains->amount--;
         }

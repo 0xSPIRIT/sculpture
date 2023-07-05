@@ -4,7 +4,7 @@ static Chisel chisel_init(enum Chisel_Size size) {
     chisel.size = size;
     chisel.texture = &GetTexture(TEXTURE_CHISEL+size);
     chisel.lookahead = 5;
-    
+
     chisel.mask = PushSize(gs->persistent_memory,
                            gs->gw*gs->gh*1);
 
@@ -205,7 +205,7 @@ static bool chisel_attempt_add_to_inventory(int x, int y) {
     int amount = 1;
     if (gs->level_current+1 != 11 && gs->grid[x+y*gs->gw].is_initial)
         amount = (my_rand(x+y*gs->gw)%2==0) ? 2 : 1;
-    
+
     return add_item_to_inventory_slot(type, amount);
 }
 
@@ -229,15 +229,15 @@ static void generate_chisel_mask(Uint8 *mask, f64 chisel_angle_deg, int chisel_x
     // as a unit vector.
     f64 dx = round(cos(chisel_angle));
     f64 dy = round(sin(chisel_angle));
-    
+
     memset(mask, 0, gs->gw*gs->gh*sizeof(Uint8));
-    
+
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             f64 xx = x - chisel_x;
             f64 yy = y - chisel_y;
             f64 dot = dx*xx + dy*yy;
-            
+
             // If the dot product between these two vectors
             // is positive, that means the cosine of the
             // angle between the vectors is positive,
@@ -259,15 +259,15 @@ static bool is_cell_in_front_of_chisel(Chisel *chisel,
 static int find_nearest_successful_hit(int x, int y, int radius) {
     int result = -1;
     int max_dist_sq = radius*radius+1;
-    
+
     for (int dy = -radius; dy < radius; dy++) {
         for (int dx = -radius; dx < radius; dx++) {
             int dist_sq = dx*dx+dy*dy;
             if (dist_sq > radius*radius) continue;
             if (!is_in_bounds(x+dx, y+dy)) continue;
-            
+
             int idx = x+dx + (y+dy)*gs->gw;
-            
+
             bool success = (gs->grid[idx].type != gs->overlay.grid[idx]);
             if (success && dist_sq < max_dist_sq) {
                 max_dist_sq = dist_sq;
@@ -275,7 +275,7 @@ static int find_nearest_successful_hit(int x, int y, int radius) {
             }
         }
     }
-    
+
     return result;
 }
 
@@ -317,7 +317,7 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
                 emit_dust(type, x, y, vx, vy);
             }
         }
-        gs->has_player_interacted_since_last_state = true;
+        //gs->has_player_interacted_since_last_state = true;
         set(x, y, 0, -1);
     } else {
         // Destroy in a circle.
@@ -327,7 +327,7 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
         y -= dy;
 
         generate_chisel_mask(chisel->mask, chisel->angle, x, y);
-        
+
         for (int yy = -size; yy <= size; yy++) {
             for (int xx = -size; xx <= size; xx++) {
                 if (xx*xx + yy*yy > size*size) continue;
@@ -504,13 +504,13 @@ static void chisel_draw_highlights(int target,
 
         RenderPointRelative(target, xoff+x, yoff+y);
     }
-    
+
     // Note: I was doing some testing with trying to make chiseling
     //       auto-correct itself, through the function find_nearest_successful_hit,
     //       and using this to output the cell position temp_idx.
 #if 0
     int idx = gs->chisel->temp_idx;
-    
+
     RenderColor(255, 255, 255, 255);
     RenderPointRelative(target, idx % gs->gw, idx / gs->gw);
 #endif

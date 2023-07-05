@@ -65,3 +65,15 @@ Level 10 - Same as level 9.
     - Solution: Add a "destroy" button at the start that can be used at
                 any time. It acts as though you chiseled everything, with
                 all the material being added to your inventory.
+
+######
+
+When the player gets to level 7, the hope is that they understand
+that Max had an initial plan that got manipulated due to his high
+ambition. However, I don't know if this doesn't set up the finale
+properly enough. Should I add another level where a similar thing
+occurs?
+
+Well firstly, the finale basically just says that Max got way too
+overconfident, and as a result couldn't even get the materials r-
+equired from the conversions. It was impossible.

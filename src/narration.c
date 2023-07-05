@@ -28,6 +28,7 @@ static char* get_narration(int level) {
         case 1:  return NARRATION_LEVEL_1;
         case 3:  return NARRATION_LEVEL_3;
         case 4:  return NARRATION_LEVEL_4;
+        case 5:  return NARRATION_LEVEL_5;
         case 7:  return NARRATION_LEVEL_7;
         case 8:  return NARRATION_LEVEL_8;
         case 10: return NARRATION_LEVEL_10;

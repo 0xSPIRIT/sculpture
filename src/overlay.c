@@ -133,11 +133,13 @@ static void overlay_init(void) {
                 overlay_load_changes(RES_DIR "lvl/changes/lvl7/%d.png", 5);
             break;
         }
+#if 0
         case 10: {
             overlay->changes =
                 overlay_load_changes(RES_DIR "lvl/changes/lvl10/%d.png", 2);
             break;
         }
+#endif
     }
 }
 

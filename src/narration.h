@@ -4,53 +4,62 @@
 #define NARRATOR_ALPHA 10
 #define NARRATOR_HANG_TIME 14 // Frames
 
-#define SHOW_NARRATION ALASKA_RELEASE_MODE
+#define SHOW_NARRATION 1//ALASKA_RELEASE_MODE
 
 ////////////////////////////////////////////////////////////////
 #define NARRATION_LEVEL_1 \
-"Max inches towards three blocks of stone,\r"\
+"Max inched towards three blocks of stone,\r"\
 "accompanied by an array of chisels.\n"\
-"His gaze intensifies at the marble curiously, longing for\r"\
-"something hidden, locked away.\n"\
-"A glimmer previously dormant ignites in him.\n"\
+"His gaze intensified at the marble curiously,\r"\
+"longing for something hidden, locked away.\n"\
+"A glimmer previously dormant ignited in him.\n"\
 
 #define NARRATION_LEVEL_3 \
-"Max's imagination fills with exotic new ideas\r"\
+"Max's imagination filled with exotic new ideas\r"\
 "as he acquainted himself with the basics.\n"\
 "It scratched an itch previously unknown,\r"\
 "daydreaming even outside of the workshop.\n"\
-"His single flame glares in bliss.\n"\
+"His single flame glared in bliss.\n"\
 
 #define NARRATION_LEVEL_4 \
-"Which shapes beg to be sculpted?\n"\
-"Wondrous minutes went by, with Max daydreaming\r"\
-"fantastical possibilities.\n"\
+"Wondrous minutes went by with Max daydreaming\r"\
+"fantastical possibilities, with one the most alluring.\n"\
 "He could fully picture it: a symbolic piece with\r"\
 "endless complex details.\n"\
 "... No.\n"\
-"Only when he'd sharpened his skills will he\r"\
+"Only once he'd sharpened his skills will he\r"\
 "dare create something real.\n"\
-"For a moment, his flame flickers.\n"\
+"For a moment, his flame flickered.\n"\
 
 // TODO: Do one for level 5.
 // - Talk about taking in the processed remains
 //   of other works, and converting it into something
 //   new.
 
-// This is in the wrong tense, but it sounds weird
-// if you correct it to present tense!!!
-// Should I change everything else to past tense?
+#define NARRATION_LEVEL_5 \
+"When he was younger, Max\r"\
+"frequently admired popular artwork.\n"\
+"Over the years, hundreds integrated into his head.\r"\
+"In an unpredictable manner, they combined and fused,\r"\
+"resulting in something new.\n"\
+"It was a gaseous, abstract substance, made of\r"\
+"the processed remains of others' creations.\n"\
+"It advised him what he could create,\r"\
+"and what he shouldn't-\n"\
+"What he liked, and what he didn't.\n"\
+"\"Inspiration\".\n"\
+
 #define NARRATION_LEVEL_7 \
-"Surely by now he must be ready.\n"\
+"Surely by then he must've been ready.\n"\
 "To do something real.\rSomething important.\n"\
 "Max recalled sculptures that he knew fondly.\r"\
 "They swirled around his head in a moment of inspiration.\n"\
-"Too, his mind spun with other hypnotic notions that\r"\
-"would surely never come to pass--\n"\
-"Though, he'd never tell anyone\r"\
-"what he thought to be foolish fantasies.\n"\
+"Too, his mind spun with other hypnotic ideas that\r"\
+"would surely never come to pass.\n"\
 "In reverie, he returned to the here and now.\n"\
-"His expectations surely tempered, he picked up his chisel.\n"\
+"He thought that this idea was realistic-\r"\
+"that his expectations were surely tempered...\n"\
+"With no hesitation, Max picked up his chisel.\n"\
 
 #define NARRATION_LEVEL_8 \
 "At the end he should be proud, but how could he?\n"\
@@ -71,25 +80,25 @@
 "\"I'll never make this mistake again,\" he declared.\n"\
 
 #define NARRATION_LEVEL_10 \
-"A thought captures him once again,\r"\
+"A thought captured him once again,\r"\
 "crystallizing wildly into many ideas,\r"\
-"but this time, he's ready.\n"\
-"A glittering white radiates from Max's imagination,\r"\
+"but this time, he was ready.\n"\
+"A glittering white radiated from Max's imagination,\r"\
 "outlining an object with layers of diamond and ice.\n"\
-"The prize taunts him, aching for him to reveal it.\n"\
-"Max says,\r"\
+"The prize taunted him, with Max aching to reveal it.\n"\
+"Max said,\r"\
 "\"I can do this.\"\n"\
 "\"I know I can do this.\"\n"\
 "\"I have to.\"\n"\
 
 #define NARRATION_LEVEL_11 \
-"Max collapses into his chair, debilitated,\r"\
+"Max collapsed into his chair, debilitated,\r"\
 "the floorboards creaking in response.\n"\
 "Little emotion seemed to shine through his demeanor,\r"\
-"as he carefully places his finished piece next the others.\n"\
+"as he carefully placed his finished piece next the others.\n"\
 "With his seemingly perfected craftsmanship,\r"\
 "without a moment's rest, nor hesitation,\r"\
-"he continues on.\n"\
+"he continued on.\n"\
 "He'd sculpt an intricate, sophisticated piece, yes.\r"\
 "In fact, very similar to some of his favorites.\n"\
 "His new expertise should clean this one nicely;\r"\

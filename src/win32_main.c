@@ -59,7 +59,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
     SDL_Init(SDL_INIT_VIDEO);
 
     Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
-
+    
     state->window = SDL_CreateWindow(window_title,
                                      SDL_WINDOWPOS_CENTERED,
                                      SDL_WINDOWPOS_CENTERED,

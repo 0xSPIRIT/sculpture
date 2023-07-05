@@ -2,8 +2,12 @@ static int sign(int a) {
     return (a > 0) ? 1 : ((a == 0) ? 0 : -1);
 }
 
+static int new_thing(void) {
+    return 0;
+}
+
 static f64 lerp64(f64 a, f64 b, f64 t) {
-    f64 result = a + t*(b-a); // or a(1-t) + tb -- same thing.
+    f64 result = a + t*(b-a); // or a(1-t) + tb
 
     const f64 epsilon = 0.1;
     if (fabs(result-a) < epsilon) return b;

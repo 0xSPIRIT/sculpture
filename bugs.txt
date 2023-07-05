@@ -24,7 +24,5 @@
 - An issue with the I-key menu. Sometimes it doesn't draw? When I was
   in fullscreen, it wasn't drawing until I came out of fullscreen.
 
-x If you place dirt, sometimes it doesn't fall?
-
 - The chisel follows you in the gui popup, if there is nothing in the
   grid.

@@ -304,7 +304,12 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             break;
         }
         case CELL_STEAM: {
-            color = (SDL_Color){50, 50, 50, 255};
+            color = (SDL_Color){
+                35+my_rand(i+0)%30,
+                35+my_rand(i+1)%30,
+                35+my_rand(i+2)%30,
+                255
+            };
             break;
         }
 
