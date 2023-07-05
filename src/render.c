@@ -11,6 +11,7 @@ RENDERAPI Render RenderInit(SDL_Renderer *sdl_renderer) {
     result.render_targets = PushArray(gs->persistent_memory,
                                       RENDER_TARGET_COUNT,
                                       sizeof(Render_Target));
+
     return result;
 }
 
@@ -450,7 +451,7 @@ RENDERAPI void RenderTextureEx(int target_enum,
                      flip);
 }
 
-RENDERAPI void RenderDrawTextQuick(int target_enum,
+RENDERAPI void RenderTextQuick(int target_enum,
                                    const char *identifier,
                                    Font *font,
                                    const char *str,
@@ -475,7 +476,7 @@ RENDERAPI void RenderDrawTextQuick(int target_enum,
     text_data.alpha = alpha;
     text_data.force_update = force_redraw;
 
-    RenderDrawText(target_enum, &text_data);
+    RenderText(target_enum, &text_data);
 
     if (w) *w = text_data.texture.width;
     if (h) *h = text_data.texture.height;
@@ -514,7 +515,7 @@ RENDERAPI void RenderApplyAlignmentToRect(SDL_Rect *dst, Alignment alignment)
     }
 }
 
-RENDERAPI void RenderDrawText(int target_enum, Render_Text_Data *text_data) {
+RENDERAPI void RenderText(int target_enum, Render_Text_Data *text_data) {
     Assert(text_data->font);
     if (!text_data->str[0]) return;
 

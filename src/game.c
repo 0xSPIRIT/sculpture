@@ -25,7 +25,7 @@
 #include "grabber.c"
 #include "popup.c"
 #include "timelapse.c"
-#include "narrator.c"
+#include "narration.c"
 #include "3d.c"
 #include "level.c"
 #include "titlescreen.c"

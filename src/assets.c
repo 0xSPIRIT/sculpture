@@ -131,6 +131,8 @@ static void surfaces_init(Surfaces *surfaces) {
 
     // TODO: Hack. 64,64 should be gs->gw, gs->gh, but they're not
     //       initialized as yet here.
+    //       This shouldn't belong here. It should be re-created
+    //       in goto_level
     surfaces->background = SDL_CreateRGBSurfaceWithFormat(0,
                                                           64*2,
                                                           64*2,

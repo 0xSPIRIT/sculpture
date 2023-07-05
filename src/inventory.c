@@ -50,6 +50,14 @@ static void auto_set_inventory_slots(void) {
             slots[1].item.type = CELL_SAND;
             slots[1].item.amount = 1000;
         } break;
+        case 7: {
+            slots[0].item.type = CELL_GLASS;
+            slots[0].item.amount = 350;
+            slots[1].item.type = CELL_SANDSTONE;
+            slots[1].item.amount = 350;
+            slots[2].item.type = CELL_UNREFINED_COAL;
+            slots[2].item.amount = 600;
+        } break;
         case 8: {
             slots[0].item.type = CELL_COBBLESTONE;
             slots[0].item.amount = 1500;
@@ -158,7 +166,7 @@ static void item_draw(int target, Item *item, int x, int y, int w, int h) {
     text_data.alpha = 255;
     text_data.render_type = TEXT_RENDER_LCD;
 
-    RenderDrawText(target, &text_data);
+    RenderText(target, &text_data);
 }
 
 // rx, ry are relative values.
@@ -219,7 +227,7 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
         text_data.render_type = TEXT_RENDER_BLENDED;
         text_data.alpha = 255;
 
-        RenderDrawText(target, &text_data);
+        RenderText(target, &text_data);
     }
 
     item_draw(target, &slot->item, bounds.x, bounds.y, bounds.w, bounds.h);

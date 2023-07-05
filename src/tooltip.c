@@ -144,7 +144,7 @@ static void tooltip_draw(int target, Tooltip *tooltip) {
             text_color = WHITE;
         }
 
-        RenderDrawTextQuick(target,
+        RenderTextQuick(target,
                             identifier,
                             gs->fonts.font,
                             tooltip->str[i],

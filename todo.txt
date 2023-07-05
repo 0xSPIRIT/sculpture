@@ -1,25 +1,12 @@
 # TODO
 
-{
-  - For chisels, when in the vicinity of multiple possible points, auto-adjust
-    to the one that chisels correctly, rather than the multiple others which
-    do not.
+  x For placers, when you suck up something from the initial state,
+    it should suck up 1.5x the amount! Make sure to use my_rand(i).
 
   - Redo level 10. This is way too hard and not good with the way placers work
     Keep the same general idea of layers of diamond and ice, but make it
     not weird and clunky.
 
-  - Determine if the destroy level tool is even necessary?
-    Replace it with a restart level thing instead?
-
-  x For undoing, instead of undoing via checking if the current grid is the
-    same as the last saved state, check via keeping track of if the player
-    either placed anything, chiseled anything, or destroyed the level.
-    Doing it this way eliminates the weirdness of trying to undo a placement
-    of material in the air (which immediately falls, thereby changing the
-    state)
-
-}
   - For level 7, change the confirmation popup when you finish to "no" and "no"
     instead of confirm and cancel.
 
@@ -30,10 +17,12 @@
 
   - Test the new implemented placer. // Must be done after levels are redone!
 
-  - Graphics :: make it have a rustic feel.
+  - For chisels, when in the vicinity of multiple possible points, auto-adjust
+    to the one that chisels correctly, rather than the multiple others which
+    do not.
 
-  - Music
-     - Ambient: piano, pads/synths, motifs?
+  - Determine if the destroy level tool is even necessary?
+    Replace it with a restart level thing instead?
 
   - Hand-make sprites for each rotation.
 
@@ -43,3 +32,13 @@
     of the mouse in the desktop version.
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
+
+# Long-Term
+
+  - Change all text in tutorials, or converting to images
+    or symbols.
+
+  - Graphics :: make it have a rustic feel.
+
+  - Music
+     - Ambient: piano, pads/synths, motifs?

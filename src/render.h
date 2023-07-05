@@ -47,7 +47,7 @@ typedef enum {
 // The structure used when drawing text to the screen.
 typedef struct {
     char identifier[64]; // An identifier to keep track of this draw.
-                         // Used so RenderDrawText will automatically
+                         // Used so RenderText will automatically
                          // not redraw if no changes are seen to the
                          // text in subsequent calls.
     Font *font;
@@ -122,8 +122,8 @@ RENDERAPI void RenderTextureEx(int target, Texture *texture, SDL_Rect *src, SDL_
 RENDERAPI void RenderTextureExRelative(int target_enum, Texture *texture, SDL_Rect *src, SDL_Rect *dst, f64 angle, SDL_Point *center, SDL_RendererFlip flip);
 RENDERAPI void RenderTextureRelative(int target, Texture *texture, SDL_Rect *src, SDL_Rect *dst);
 
-RENDERAPI void RenderDrawText(int target, Render_Text_Data *text_data);
-RENDERAPI void RenderDrawTextQuick(int target_enum, const char *identifier, Font *font, const char *str, SDL_Color color, Uint8 alpha, int x, int y, int *w, int *h, bool force_redraw);
+RENDERAPI void RenderText(int target, Render_Text_Data *text_data);
+RENDERAPI void RenderTextQuick(int target_enum, const char *identifier, Font *font, const char *str, SDL_Color color, Uint8 alpha, int x, int y, int *w, int *h, bool force_redraw);
 RENDERAPI void RenderCleanupTextCache(Render_Text_Data_Cache *cache);
 RENDERAPI void RenderSetFontSize(Font *font, int size);
 RENDERAPI void RenderReadPixels(int target, Uint8 *pixels, int pitch);

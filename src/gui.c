@@ -105,7 +105,7 @@ static void click_gui_tool_button(void *type_ptr) {
             return;
         }
         case TOOL_DESTROY: {
-            if (is_array_empty(gs->grid)) break;
+            if (gs->save_state_count > 1 || is_array_empty(gs->grid)) break;
 
             save_state_to_next();
             for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -450,7 +450,7 @@ static void gui_draw_profile(int target) {
         text_data.background = BLACK;
         text_data.render_type = TEXT_RENDER_LCD;
 
-        RenderDrawText(target, &text_data);
+        RenderText(target, &text_data);
 
         c = text_data.texture.height;
     }
@@ -467,7 +467,7 @@ static void gui_draw_profile(int target) {
         text_data.background = BLACK;
         text_data.alpha = 255;
 
-        RenderDrawText(target, &text_data);
+        RenderText(target, &text_data);
 
         c += text_data.texture.height;
     }

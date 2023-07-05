@@ -74,7 +74,16 @@ static void placer_suck_circle(Placer *placer) {
 
                     if (placer->contains->type == type || placer->contains->type == 0 || placer->contains->amount == 0) {
                         placer->contains->type = type;
-                        placer->contains->amount += 1;
+                        
+                        bool is_initial = gs->grid[xx+yy*gs->gw].is_initial;
+                        int amt = 1;
+                        
+                        if (is_initial) {
+                            amt = my_rand(xx+yy*gs->gw)%2 == 0 ? 1 : 2;
+                        }
+                        
+                        placer->contains->amount += amt;
+                        
                         set_array(arr, xx, yy, 0, -1);
                         placer->did_take_anything = true;
                         gs->has_player_interacted_since_last_state = true;

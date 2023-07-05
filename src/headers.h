@@ -28,7 +28,7 @@
 #include "grid.h"
 #include "chisel.h"
 #include "hammer.h"
-#include "narrator.h"
+#include "narration.h"
 #include "popup.h"
 #include "confirm_popup.h"
 #include "level.h"

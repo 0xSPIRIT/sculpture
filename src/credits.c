@@ -36,8 +36,8 @@ static void credits_run(int target) {
             text_data.render_type = TEXT_RENDER_BLENDED;
             text_data.alpha = co;
 
-            RenderDrawText(target,
-                           &text_data);
+            RenderText(target,
+                       &text_data);
 #if 0
             draw_text(gs->fonts.font_times->handle,
                       "Created by spiritwolf",

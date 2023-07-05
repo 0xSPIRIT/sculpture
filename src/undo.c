@@ -37,7 +37,7 @@ static void save_state_to_next(void) {
         // save state and leaving the last slot open.
 
         gs->save_state_count--;
-
+        
         for (int i = 0; i < gs->save_state_count; i++) {
             // gs->save_states[i] = gs->save_states[i+1];
             for (int j = 0; j < NUM_GRID_LAYERS; j++) {
@@ -136,7 +136,7 @@ static bool is_current_slots_same_as(Save_State *state) {
 }
 
 static void set_state(int num) {
-    Assert(num < 0);
+    Assert(num >= 0);
     if (num < 0) return;
     
     Save_State *state = &gs->save_states[num];

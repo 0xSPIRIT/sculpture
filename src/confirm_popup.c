@@ -41,7 +41,7 @@ static void end_of_level_popup_confirm_run(int target) {
         if (gs->level_current+1 > 7)
             color = (SDL_Color){180, 0, 0, 255};
 
-        RenderDrawTextQuick(target,
+        RenderTextQuick(target,
                             "Not good enough",
                             gs->fonts.font_times,
                             comment,
@@ -187,7 +187,7 @@ static void popup_confirm_base_tick_and_draw(Popup_Confirm_Run_Data *data, int t
 
     TTF_SizeText(gs->fonts.font_times->handle, popup->text, &data->text_width, &data->text_height);
 
-    RenderDrawTextQuick(target,
+    RenderTextQuick(target,
                         "confirm text",
                         gs->fonts.font_times,
                         "Confirmation",
@@ -200,7 +200,7 @@ static void popup_confirm_base_tick_and_draw(Popup_Confirm_Run_Data *data, int t
                         false);
 
     col = (SDL_Color){255, 255, 255, 255};
-    RenderDrawTextQuick(target,
+    RenderTextQuick(target,
                         "sdfsdf",
                         gs->fonts.font_times,
                         popup->text,

@@ -22,7 +22,7 @@ typedef struct Chisel {
 
     int click_delay;
     bool repeated;
-
+    
     int lookahead;
     bool is_calculating_highlight;
 

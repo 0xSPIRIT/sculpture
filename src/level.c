@@ -454,7 +454,7 @@ static void level_draw_name_intro(int target, Level *level, SDL_Rect rect) {
     char identifier[64] = {0};
     sprintf(identifier, "erhejrh %d",TEXT_OUTRO_LEVEL_NAME);
 
-    RenderDrawTextQuick(target,
+    RenderTextQuick(target,
                         identifier,
                         gs->fonts.font,
                         string,
@@ -516,7 +516,7 @@ static void level_draw_outro(int target, Level *level) {
     int dy = rect.y + Scale(100);
 
 
-    RenderDrawTextQuick(outro,
+    RenderTextQuick(outro,
                         "AAAAAj",
                         gs->fonts.font,
                         "What you intended",
@@ -527,7 +527,7 @@ static void level_draw_outro(int target, Level *level) {
                         NULL,
                         NULL,
                         false);
-    RenderDrawTextQuick(outro,
+    RenderTextQuick(outro,
                         "Result",
                         gs->fonts.font,
                         "The result",
@@ -564,7 +564,7 @@ static void level_draw_outro(int target, Level *level) {
 
     SDL_Color color_next_level = (SDL_Color){255,255,255,255};
 
-    RenderDrawTextQuick(outro,
+    RenderTextQuick(outro,
                         "next level",
                         gs->fonts.font,
                         "Next Level [n]",
@@ -575,7 +575,7 @@ static void level_draw_outro(int target, Level *level) {
                         NULL,
                         NULL,
                         false);
-    RenderDrawTextQuick(outro,
+    RenderTextQuick(outro,
                         "close",
                         gs->fonts.font,
                         "Close [f]",

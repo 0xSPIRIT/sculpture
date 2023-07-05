@@ -142,7 +142,7 @@ static void converter_draw(int target, Converter *converter) {
     char identifier[64] = {0};
     sprintf(identifier, "%p", converter);
     int margin = 8;
-    RenderDrawTextQuick(RENDER_TARGET_MASTER,
+    RenderTextQuick(RENDER_TARGET_MASTER,
                         identifier,
                         gs->fonts.font_courier,
                         converter->name,
@@ -272,7 +272,7 @@ static void converter_gui_draw(void) {
             text_data.y = c->r.y + Scale(16) + cum;
             text_data.alpha = 255;
 
-            RenderDrawText(target, &text_data);
+            RenderText(target, &text_data);
             cum += text_data.texture.height;
         }
 
