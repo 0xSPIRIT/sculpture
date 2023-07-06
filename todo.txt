@@ -1,6 +1,6 @@
 # TODO
 
-  - Improve medium chisel: the straight horizontal/vertical chiseling
+  x Improve medium chisel: the straight horizontal/vertical chiseling
     is bad when done repeatedly. It generates weird + shaped artifacts.
     Diagonals seem fine.
 

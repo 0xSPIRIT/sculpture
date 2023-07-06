@@ -160,6 +160,10 @@ static bool is_bad_corner(Chisel *chisel, int x, int y) {
     return false;
 }
 
+static bool is_bad_medium_chisel_position(Chisel *chisel) {
+    return ((int)chisel->angle % 90 == 0);
+}
+
 static void chisel_move_mouse_until_cell(Chisel *chisel, int x, int y, f64 angle, f64 max_length) {
     angle = M_PI * angle / 180.0;
     f64 dir_x = cos(angle);
@@ -376,7 +380,9 @@ static bool chisel_handle_bad_corner(Chisel *chisel, int ix, int iy,  int dir_x,
 }
 
 // Returns if the chisel was successful.
-static bool chisel_chisel_circle(Chisel *chisel, int size) {
+// Note that size != chisel->size. size just means the
+// size of the circle to destroy.
+static bool chisel_circle(Chisel *chisel, int size) {
     f64 angle = M_PI * chisel->angle / 180.0;
 
     f64 dir_x = round(cos(angle));
@@ -389,7 +395,7 @@ static bool chisel_chisel_circle(Chisel *chisel, int size) {
     if (is_bad_corner(chisel, chisel->x, chisel->y)) {
         return chisel_handle_bad_corner(chisel, chisel->x, chisel->y, dir_x, size);
     }
-
+    
     for (int lookahead = chisel->lookahead; lookahead > 0; lookahead--) {
         int ix = (int)round(xx);
         int iy = (int)round(yy);
@@ -399,8 +405,17 @@ static bool chisel_chisel_circle(Chisel *chisel, int size) {
         {
             xx = round(xx);
             yy = round(yy);
+            
+            int dx = dir_x;
+            int dy = dir_y;
+            
+            if (chisel->size == CHISEL_MEDIUM && is_bad_medium_chisel_position(chisel)) {
+                dx = 2*dir_x;
+                dy = 2*dir_y;
+            }
+            
             gs->chisel->temp_idx = find_nearest_successful_hit(xx, yy, 3);
-            chisel_destroy_circle(chisel, xx, yy, dir_x, dir_y, size);
+            chisel_destroy_circle(chisel, xx, yy, dx, dy, size);
             return true;
         }
 
@@ -414,23 +429,24 @@ static bool chisel_chisel_circle(Chisel *chisel, int size) {
     return false;
 }
 
-static bool chisel_chisel_small(Chisel *chisel) {
-    return chisel_chisel_circle(chisel, 0);
+static bool chisel_small(Chisel *chisel) {
+    return chisel_circle(chisel, 0);
 }
 
-static bool chisel_chisel_medium(Chisel *chisel) {
-    return chisel_chisel_circle(chisel, 2);
+static bool chisel_medium(Chisel *chisel) {
+    return chisel_circle(chisel, 2);
 }
 
-static bool chisel_chisel_large(Chisel *chisel) {
-    return chisel_chisel_circle(chisel, 4);
+static bool chisel_large(Chisel *chisel) {
+    return chisel_circle(chisel, 4);
 }
 
+// Performs a chisel on `chisel`.
 static bool chisel_chisel(Chisel *chisel) {
     switch (chisel->size) {
-        case CHISEL_SMALL:  return chisel_chisel_small(chisel);
-        case CHISEL_MEDIUM: return chisel_chisel_medium(chisel);
-        case CHISEL_LARGE:  return chisel_chisel_large(chisel);
+        case CHISEL_SMALL:  return chisel_small(chisel);
+        case CHISEL_MEDIUM: return chisel_medium(chisel);
+        case CHISEL_LARGE:  return chisel_large(chisel);
     }
     Assert(false);
     return false;
