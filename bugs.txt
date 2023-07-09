@@ -1,7 +1,6 @@
 # Bugs
 
-x -1 amount in the conversion! no!
-- Stop conversion if the output is stopped due to inefficient materials.
+x Stop conversion if the output is stopped due to inefficient materials.
 
 - The overlay gets too dark when not on the correct material type. See: level 8
   Improve overlay contrast in general. See: level 4 (heart of glass)

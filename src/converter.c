@@ -718,9 +718,17 @@ static bool converter_convert(Converter *converter) {
 
         if (input1->type) {
             input1->amount -= amount;
+            if (input1->amount <= 0) {
+                input1->type = 0;
+                converter->state = CONVERTER_OFF;
+            }
         }
         if (input2->type) {
             input2->amount -= amount;
+            if (input2->amount <= 0) {
+                input2->type = 0;
+                converter->state = CONVERTER_OFF;
+            }
         }
 
         if (fuel && fuel->type) {
