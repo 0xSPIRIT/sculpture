@@ -1,13 +1,9 @@
 # Bugs
 
-- I think the undo goes one too far sometimes?
-  It does current-2 instead of current-1 is my guess.
-
-- The text for the confirmation goes up to the top left in the restart-level popup.
-
 - Pressing shift when there's nothing in the grid
   and you're holding a chisel causes the mouse to to
-  the top left.
+  the top left. Basically don't allow the chisel to be used at all when
+  the grid is empty.
 
 - -1 amount in the conversion! no!
    Stop conversion if the output is stopped due to inefficient materials.

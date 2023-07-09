@@ -4,7 +4,7 @@
 #define NARRATOR_ALPHA 10
 #define NARRATOR_HANG_TIME 14 // Frames
 
-#define SHOW_NARRATION 1//ALASKA_RELEASE_MODE
+#define SHOW_NARRATION ALASKA_RELEASE_MODE
 
 ////////////////////////////////////////////////////////////////
 #define NARRATION_LEVEL_1 \
@@ -31,11 +31,6 @@
 "dare create something real.\n"\
 "For a moment, his flame flickered.\n"\
 
-// TODO: Do one for level 5.
-// - Talk about taking in the processed remains
-//   of other works, and converting it into something
-//   new.
-
 #define NARRATION_LEVEL_5 \
 "When he was younger, Max\r"\
 "frequently admired popular artwork.\n"\
@@ -46,8 +41,7 @@
 "the processed remains of others' creations.\n"\
 "It advised him what he could create,\r"\
 "and what he shouldn't-\n"\
-"What he liked, and what he didn't.\n"\
-"\"Inspiration\".\n"\
+"What he liked, and what he didn't.\n"
 
 #define NARRATION_LEVEL_7 \
 "Surely by then he must've been ready.\n"\

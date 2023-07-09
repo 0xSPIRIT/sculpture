@@ -1,12 +1,6 @@
 # TODO
 
-  x Improve medium chisel: the straight horizontal/vertical chiseling
-    is bad when done repeatedly. It generates weird + shaped artifacts.
-    Diagonals seem fine.
-
-  - Redo level 10. This is way too hard and not good with the way placers work
-    Keep the same general idea of layers of diamond and ice, but make it
-    not weird and clunky.
+  - Improve level 5's narration. Feels clunky and forced.
 
   - Evaluate if the placer is good.
     - In level "Yearning" the placer is a bit odd? Maybe not though.

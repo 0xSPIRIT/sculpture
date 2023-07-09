@@ -42,16 +42,16 @@ static void end_of_level_popup_confirm_run(int target) {
             color = (SDL_Color){180, 0, 0, 255};
 
         RenderTextQuick(target,
-                            "Not good enough",
-                            gs->fonts.font_times,
-                            comment,
-                            color,
-                            255,
-                            xoff + popup->r.x + popup->r.w/2 - w/2,
-                            popup->r.y + popup->r.h - 2.7*h,
-                            NULL,
-                            NULL,
-                            false);
+                        "Not good enough",
+                        gs->fonts.font_times,
+                        comment,
+                        color,
+                        255,
+                        xoff + popup->r.x + popup->r.w/2 - w/2,
+                        popup->r.y + popup->r.h - 2.7*h,
+                        NULL,
+                        NULL,
+                        false);
     }
 }
 
@@ -98,6 +98,8 @@ static void end_of_level_popup_confirm_cancel(void *unused) {
 
 void restart_popup_confirm_run(int target) {
     Popup_Confirm *popup = &gs->gui.restart_popup_confirm;
+    if (!popup->active) return;
+    
     Popup_Confirm_Run_Data run_data = {0};
     run_data.confirm_color = (SDL_Color){255,255,255,255};
     run_data.cancel_color = (SDL_Color){255,255,255,255};
@@ -173,6 +175,7 @@ static void popup_confirm_base_tick_and_draw(Popup_Confirm_Run_Data *data, int t
 
     button_tick(popup->a, NULL);
     button_tick(popup->b, NULL);
+    if (!popup->active) return;
 
     if (gs->input.keys_pressed[SDL_SCANCODE_RETURN]) {
         popup->a->on_pressed(NULL);

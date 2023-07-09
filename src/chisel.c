@@ -549,6 +549,12 @@ static void chisel_tick(Chisel *chisel) {
             if (idx == -1) {
                 chisel->x = -1;
                 chisel->y = -1;
+                gs->current_tool = TOOL_GRABBER;
+                for (int i = 0; i < TOOL_COUNT; i++) {
+                    gs->gui.tool_buttons[i]->active = false;
+                }
+                gs->gui.tool_buttons[TOOL_GRABBER]->active = true;
+                return;
             } else {
                 chisel->x = idx % gs->gw;
                 chisel->y = idx / gs->gw;
@@ -649,13 +655,7 @@ static void chisel_draw(int target, Chisel *chisel) {
     x = chisel->x;
     y = chisel->y;
 
-    if (chisel->x == -1 || chisel->y == -1) {
-        RenderTextureColorMod(chisel->texture, 127, 127, 127);
-        x = gs->input.mx;
-        y = gs->input.my;
-    } else {
-        RenderTextureColorMod(chisel->texture, 255, 255, 255);
-    }
+    RenderTextureColorMod(chisel->texture, 255, 255, 255);
 
     SDL_Rect dst = {
         x, y - chisel->texture->height/2,

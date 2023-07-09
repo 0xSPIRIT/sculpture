@@ -9,18 +9,18 @@ static void narrator_draw_text_blended(int i,
 {
     char identifier[64] = {0};
     sprintf(identifier, "narrator %d", i);
-
+    
     RenderTextQuick(RENDER_TARGET_MASTER,
-                        identifier,
-                        font,
-                        str,
-                        col,
-                        max(min(gs->narrator.alpha, 255), 0),
-                        x,
-                        y,
-                        out_w,
-                        out_h,
-                        false);
+                    identifier,
+                    font,
+                    str,
+                    col,
+                    max(min(gs->narrator.alpha, 255), 0),
+                    x,
+                    y,
+                    out_w,
+                    out_h,
+                    false);
 }
 
 static char* get_narration(int level) {

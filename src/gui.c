@@ -100,12 +100,17 @@ static void click_gui_tool_button(void *type_ptr) {
             return;
         }
         case TOOL_DESTROY: {
-            if (gs->save_state_count > 1 || is_array_empty(gs->grid)) break;
+            if (is_array_empty(gs->grid)) break;
 
             save_state_to_next();
             for (int i = 0; i < gs->gw*gs->gh; i++) {
+                int amt = 1;
+                
                 if (gs->grid[i].type) {
-                    add_item_to_inventory_slot(gs->grid[i].type, (my_rand(i)%2==0) ? 2 : 1);
+                    if (gs->grid[i].is_initial)
+                        amt = (my_rand(i)%2==0) ? 2 : 1;
+                    
+                    add_item_to_inventory_slot(gs->grid[i].type, amt);
                     emit_dust_explosion(gs->grid[i].type, i%gs->gw, i/gs->gw, 1);
                 }
                 gs->grid[i].type = 0;

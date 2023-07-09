@@ -8,6 +8,11 @@ if not exist src/win32_main.c goto INVALID_DIR
 if not exist bin_release\ mkdir bin_release
 if not exist bin_release\obj\ mkdir bin_release\obj\
 
+where /q cl.exe
+IF ERRORLEVEL 1 (
+    call clx64.bat
+)
+
 pushd bin_release\
 
 REM Delete all the sculpture_***.pdb's
