@@ -708,7 +708,7 @@ static bool converter_convert(Converter *converter) {
             amount = 999999999;
             for (int i = SLOT_INPUT1; i <= SLOT_FUEL; i++) {
                 if (i == SLOT_OUTPUT) continue;
-                if (fuel && i == SLOT_FUEL) continue;
+                if (i == SLOT_FUEL) continue;
 
                 if (converter->slots[i].item.type && converter->slots[i].item.amount < amount) {
                     amount = converter->slots[i].item.amount;

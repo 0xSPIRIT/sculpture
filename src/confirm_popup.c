@@ -153,14 +153,14 @@ static void popup_confirm_activate(Popup_Confirm *popup) {
 // You must call this in your own update callback.
 static void popup_confirm_base_tick_and_draw(Popup_Confirm_Run_Data *data, int target, Popup_Confirm *popup) {
     if (!popup->active) return;
-
+    
     popup->r = (SDL_Rect){
         gs->window_width/6,
         gs->window_height/3,
         2*gs->window_width/3,
         gs->window_height/4
     };
-
+    
     RenderColor(0, 0, 0, 255);
     RenderFillRect(target, popup->r);
 
