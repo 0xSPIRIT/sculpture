@@ -21,6 +21,8 @@ static bool chisel_click_repeatedly(Chisel *chisel) {
 }
 
 static void hammer_tick(Hammer *hammer) {
+    if (!is_tool_chisel()) return;
+        
     if (gs->input.keys[SDL_SCANCODE_RSHIFT]) {
         f64 rmx = (f64)gs->input.real_mx / (f64)gs->S;
         f64 rmy = (f64)(gs->input.real_my-GUI_H) / (f64)gs->S;

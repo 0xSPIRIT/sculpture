@@ -11,6 +11,10 @@ static Chisel chisel_init(enum Chisel_Size size) {
     return chisel;
 }
 
+static bool is_tool_chisel(void) {
+    return gs->current_tool >= TOOL_CHISEL_SMALL && gs->current_tool <= TOOL_CHISEL_LARGE;
+}
+
 static void chisel_play_sound(int size) {
     switch (size) {
         case CHISEL_SMALL: {

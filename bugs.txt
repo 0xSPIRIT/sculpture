@@ -9,7 +9,7 @@ x Stop conversion if the output is stopped due to inefficient materials.
   level. The buttons in the confirmations seem to be pointing to
   nowhere useful.
 
-- If you place something, then switch to a chisel, it chisels.
+x If you place something, then switch to a chisel, it chisels.
 
 - An issue with the I-key menu. Sometimes it doesn't draw? When I was
   in fullscreen, it wasn't drawing until I came out of fullscreen.

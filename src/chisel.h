@@ -41,3 +41,5 @@ typedef struct Chisel {
 // Called in grid_draw.
 static void chisel_draw_highlights(int target, int *highlights, int count, int xoff, int yoff);
 static void chisel_get_adjusted_positions(int angle, int size, int *x, int *y);
+
+static bool is_tool_chisel(void);

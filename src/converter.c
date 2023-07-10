@@ -317,7 +317,7 @@ static void auto_set_material_converter_slots(Converter *converter) {
             converter->slots[SLOT_FUEL].item = (Item)
             {
                 .type = CELL_UNREFINED_COAL,
-                .amount = 179
+                .amount = 268
             };
             break;
         }
