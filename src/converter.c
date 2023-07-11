@@ -73,7 +73,6 @@ static void all_converters_init(void) {
     bool allocated = gs->material_converter != NULL || gs->fuel_converter != NULL;
     gs->material_converter = converter_init(CONVERTER_MATERIAL, allocated);
     gs->fuel_converter = converter_init(CONVERTER_FUEL, allocated);
-
 }
 
 static void converter_set_state(Converter *converter, enum Converter_State state) {
@@ -218,7 +217,7 @@ static void converter_gui_init(void) {
         }
         strcpy(c->lines[c->line_count++], buf);
     }
-
+    
     fclose(f);
 
     converter_gui_setup_rectangle(true);

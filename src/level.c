@@ -66,7 +66,7 @@ static void levels_setup(void) {
               RES_DIR "lvl/desired/level 3.png",
               RES_DIR "lvl/initial/level 3.png",
               EFFECT_SNOW);
-    level_add("Glass Heart",
+    level_add("Transformation",
               RES_DIR "lvl/desired/level 4.png",
               RES_DIR "lvl/initial/level 4.png",
               EFFECT_NONE);

@@ -1,7 +1,7 @@
 #ifdef ALASKA_RELEASE_MODE
   #define SHOW_TUTORIAL 1
 #else
-  #define SHOW_TUTORIAL 0
+  #define SHOW_TUTORIAL 1
 #endif
 
 #define MAX_TUTORIAL_LINES 10
@@ -17,9 +17,9 @@
 #define TUTORIAL_OVERLAY_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Click the overlay button to show what you want to create.\n\n" \
-    "With the POINTER tool selected, show the material type of\n" \
-    "a cell by hovering over the overlay.\n"
+    "Click the overlay button to show what Max wants to create.\n\n" \
+    "With the POINTER tool selected, you can display the material\n" \
+    "of a cell by hovering over the overlay.\n"
 
 #define TUTORIAL_COMPLETE_LEVEL \
     "Tutorial\n" \

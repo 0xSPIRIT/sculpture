@@ -1,7 +1,5 @@
 # Bugs
 
-x Stop conversion if the output is stopped due to inefficient materials.
-
 - The overlay gets too dark when not on the correct material type. See: level 8
   Improve overlay contrast in general. See: level 4 (heart of glass)
 
@@ -9,10 +7,5 @@ x Stop conversion if the output is stopped due to inefficient materials.
   level. The buttons in the confirmations seem to be pointing to
   nowhere useful.
 
-x If you place something, then switch to a chisel, it chisels.
-
 - An issue with the I-key menu. Sometimes it doesn't draw? When I was
   in fullscreen, it wasn't drawing until I came out of fullscreen.
-
-- The chisel follows you in the gui popup, if there is nothing in the
-  grid.

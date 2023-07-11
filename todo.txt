@@ -1,19 +1,13 @@
 # TODO
 
-  - Improve level 5's narration. Feels clunky and forced.
-
   - Evaluate if the placer is good.
     - In level "Yearning" the placer is a bit odd? Maybe not though.
 
   - For level 7, change the confirmation popup when you finish to "no" and "no"
     instead of confirm and cancel.
+
   - The cobblestone overlay color is too close to the grey cobblestone.
-
     It should have a higher contrast. Keep the pink color, though.
-
-  - Improve conversions (design by subtraction) - see test_notes.txt.
-
-  - Test the new implemented placer. // Must be done after levels are redone!
 
   - For chisels, when in the vicinity of multiple possible points, auto-adjust
     to the one that chisels correctly, rather than the multiple others which

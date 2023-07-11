@@ -335,11 +335,6 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_6: {
-                gs->current_tool = TOOL_PLACER;
-                selected_tool = 1;
-                break;
-            }
-            case SDLK_7: {
                 gs->current_tool = TOOL_GRABBER;
                 selected_tool = 1;
                 break;
