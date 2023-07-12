@@ -36,7 +36,7 @@ static char* get_narration(int level) {
 
         case 12: return NARRATION_END;
     }
-    return NULL;
+    return null;
 }
 
 static void narrator_init(int level) {
@@ -44,7 +44,7 @@ static void narrator_init(int level) {
 
     memset(&gs->narrator, 0, sizeof(Narrator));
 
-    char *narration = NULL;
+    char *narration = null;
 
     narration = get_narration(level);
 
@@ -127,7 +127,7 @@ static void narrator_tick() {
         set_fade(FADE_NARRATOR, 0, 255);
     }
 
-    if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.keys_pressed[SDL_SCANCODE_SPACE])  {
+    if (gs->input.mouse_pressed[SDL_BUTTON_LEFT] || gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.keys_pressed[SDL_SCANCODE_SPACE])  {
         n->fadeout = true;
     }
 
@@ -173,7 +173,8 @@ static void narrator_run(int target, SDL_Color col) {
             gs->credits.state = CREDITS_DELAY;
         } else {
             level_set_state(gs->level_current, LEVEL_STATE_INTRO);
-            effect_set(gs->levels[gs->level_current].effect_type,
+            effect_set(&gs->current_effect,
+                       gs->levels[gs->level_current].effect_type,
                        false,
                        0,
                        0,
@@ -212,7 +213,7 @@ static void narrator_run(int target, SDL_Color col) {
                                    c,
                                    xoff + gs->window_width/2 - w/2,
                                    gs->window_height/2 + 16 + i*(h+pad) - (h+pad)*n->current_line_count/2,
-                                   NULL,
+                                   null,
                                    &surf_h);
     }
 

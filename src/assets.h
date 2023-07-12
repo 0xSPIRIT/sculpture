@@ -48,6 +48,7 @@ typedef enum {
     RENDER_TARGET_CHISEL, // Use the same render target for each chisel.
     RENDER_TARGET_HAMMER,
     RENDER_TARGET_HAMMER2,
+    RENDER_TARGET_TOOLTIP,
     RENDER_TARGET_GRID, // Temp render target used by 3d.c
     RENDER_TARGET_3D,
     RENDER_TARGET_CONVERSION_PANEL,
@@ -57,17 +58,16 @@ typedef enum {
 } RenderTargetType;
 
 typedef struct Audio {
+  // Music
     Mix_Music *music_titlescreen;
     Mix_Music *music_creation;
-
+    Mix_Music *music_rain;
     Mix_Music *ambience1;
-
-    Mix_Chunk *sprinkle;
-
+    
+  // Chunks 
+    Mix_Chunk *sprinkle, *macabre;
     Mix_Chunk *accept;
-
     Mix_Chunk *pip;
-
     Mix_Chunk *medium_chisel[6];
     Mix_Chunk *small_chisel, *large_chisel;
 } Audio;
@@ -177,7 +177,7 @@ int font_sizes[FONT_COUNT] = {
     16,
     100,
     80,
-    135,
+    175,
     24
 };
 

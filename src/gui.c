@@ -23,8 +23,7 @@ static void tool_button_set_disabled(int level) {
     bool is_exactly = compare_cells_to_int(gs->grid, gs->overlay.grid, 0);
 
     if (is_exactly && !gs->levels[level].done) {
-        Mix_HaltMusic();
-        Mix_PlayChannel(AUDIO_CHANNEL_GUI, gs->audio.sprinkle, 0);
+        play_level_end_sound(level);
         gs->levels[level].done = true;
         tools[TOOL_FINISH_LEVEL]->highlighted = true;
     }
@@ -32,12 +31,26 @@ static void tool_button_set_disabled(int level) {
     switch (level+1) {
         case 1: {
             if (!gs->gui.tool_buttons[TOOL_OVERLAY]->highlighted) {
-                if (gs->chisel_small.num_times_chiseled == 0)
-                    tools[TOOL_CHISEL_SMALL]->highlighted = true;
-                else
-                    tools[TOOL_CHISEL_SMALL]->highlighted = false;
+                // If any chisel has not been chiseled yet,
+                // set its button highlight to true!
+                
+                typedef struct { Chisel *chisel; Button *tool; }ChiselAndTool;
+                ChiselAndTool map[3] = {
+                    {&gs->chisel_small, tools[TOOL_CHISEL_SMALL]},
+                    {&gs->chisel_medium, tools[TOOL_CHISEL_MEDIUM]},
+                    {&gs->chisel_large, tools[TOOL_CHISEL_LARGE]}
+                };
+                
+                for (int i = 0; i < 3; i++) {
+                    if (map[i].chisel->num_times_chiseled == 0) {
+                        map[i].tool->highlighted = true;
+                    } else {
+                        map[i].tool->highlighted = false;
+                    }
+                }
             }
 
+#if 0
             if (gs->chisel_small.num_times_chiseled < 10) {
                 tools[TOOL_CHISEL_MEDIUM]->disabled = true;
                 tools[TOOL_CHISEL_LARGE]->disabled = true;
@@ -50,6 +63,7 @@ static void tool_button_set_disabled(int level) {
                     tools[TOOL_CHISEL_LARGE]->highlighted = true;
                 }
             }
+#endif
         }
         case 2: {
             //tools[TOOL_DELETER]->disabled = true;
@@ -225,7 +239,7 @@ static void button_draw_prefer_color(int target, Button *b, SDL_Color color) {
 
     RenderTexture(target,
                   b->texture,
-                  NULL,
+                  null,
                   &dst);
 }
 
@@ -280,7 +294,7 @@ static void gui_init(void) {
         char name[128] = {0};
         get_name_from_tool(i, name);
 
-        if (gui->tool_buttons[i] == NULL) {
+        if (gui->tool_buttons[i] == null) {
             gui->tool_buttons[i] = button_allocate(BUTTON_TOOL_BAR,
                                                    &GetTexture(TEXTURE_TOOL_BUTTONS + i),
                                                    name,
@@ -560,7 +574,7 @@ static void gui_popup_draw(int target) {
     RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 127);
 
     if (gs->level_current >= 4-1)
-        RenderTexture(target, &GetTexture(TEXTURE_TAB), NULL, &tab_icon);
+        RenderTexture(target, &GetTexture(TEXTURE_TAB), null, &tab_icon);
 
     all_converters_draw(target);
     inventory_draw(target);

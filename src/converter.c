@@ -1,5 +1,5 @@
 static Converter *converter_init(int type, bool allocated) {
-    Converter *converter = NULL;
+    Converter *converter = null;
 
     if (!allocated) {
         converter = PushSize(gs->persistent_memory, sizeof(Converter));
@@ -70,7 +70,7 @@ static Converter *converter_init(int type, bool allocated) {
 }
 
 static void all_converters_init(void) {
-    bool allocated = gs->material_converter != NULL || gs->fuel_converter != NULL;
+    bool allocated = gs->material_converter != null || gs->fuel_converter != null;
     gs->material_converter = converter_init(CONVERTER_MATERIAL, allocated);
     gs->fuel_converter = converter_init(CONVERTER_FUEL, allocated);
 }
@@ -129,7 +129,7 @@ static void converter_draw(int target, Converter *converter) {
 
     RenderTexture(target,
                   converter->arrow.texture,
-                  NULL,
+                  null,
                   &arrow_dst);
 
     // TODO:
@@ -142,17 +142,17 @@ static void converter_draw(int target, Converter *converter) {
     sprintf(identifier, "%p", converter);
     int margin = 8;
     RenderTextQuick(RENDER_TARGET_MASTER,
-                        identifier,
-                        gs->fonts.font_courier,
-                        converter->name,
-                        ColorFromInt(CONVERTER_NAME_COLOR),
-                        255,
-                        (int) (converter->x + margin),
-                        (int) (converter->y + margin + GUI_H),
-                        NULL,
-                        NULL,
-                        false);
-
+                    identifier,
+                    gs->fonts.font_courier,
+                    converter->name,
+                    ColorFromInt(CONVERTER_NAME_COLOR),
+                    255,
+                    (int) (converter->x + margin),
+                    (int) (converter->y + margin + GUI_H),
+                    null,
+                    null,
+                    false);
+    
     button_draw(target, converter->go_button);
 }
 
@@ -372,7 +372,7 @@ static void converter_setup_position(Converter *converter) {
     converter->speed = 8;
 
     // Both X and Y-coordinates are updated in converter_tick.
-    if (converter->go_button == NULL) {
+    if (converter->go_button == null) {
         converter->go_button = button_allocate(BUTTON_CONVERTER,
                                                &GetTexture(TEXTURE_CONVERT_BUTTON),
                                                "Convert",
@@ -490,7 +490,7 @@ static int fuel_converter_convert(Item *input1, Item *input2) {
     int number_inputs = (input1->type != 0) + (input2->type != 0);
     int number_unique_inputs = 0;
 
-    Item *input = NULL;
+    Item *input = null;
 
     // We simply don't allow this.
     if (input1->type == input2->type) {
@@ -550,7 +550,7 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
         return 0;
     }
 
-    Item *input = NULL;
+    Item *input = null;
 
     if (number_inputs == 1) {
         input = input1->type ? input1 : input2;
@@ -657,7 +657,7 @@ static bool converter_convert(Converter *converter) {
     Item *input1 = &converter->slots[SLOT_INPUT1].item;
     Item *input2 = &converter->slots[SLOT_INPUT2].item;
     Item *output = &converter->slots[SLOT_OUTPUT].item;
-    Item *fuel = NULL;
+    Item *fuel = null;
 
     if (converter->type == CONVERTER_MATERIAL) {
         fuel = &converter->slots[SLOT_FUEL].item;

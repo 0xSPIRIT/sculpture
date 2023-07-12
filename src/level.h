@@ -30,7 +30,7 @@ typedef struct Level {
 
     bool done;
 
-    int effect_type;
+    Effect_Type effect_type;
 
     Cell *desired_grid; // What the inspiration is
     Cell *initial_grid; // Starting state of grid
@@ -51,6 +51,7 @@ typedef struct Level {
 } Level;
 
 static void level_setup_initial_grid(void);
+static void play_level_end_sound(int level);
 static int  level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type);
 static void levels_setup(void);
 static void goto_level(int lvl);

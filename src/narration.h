@@ -45,7 +45,8 @@
 
 #define NARRATION_LEVEL_7 \
 "Surely by then he must've been ready.\n"\
-"To do something real.\rSomething important.\n"\
+"To do something real.\r"\
+"Something important.\n"\
 "Max recalled sculptures that he knew fondly.\r"\
 "They swirled around his head in a moment of inspiration.\n"\
 "Too, his mind spun with other hypnotic ideas that\r"\

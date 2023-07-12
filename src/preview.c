@@ -29,6 +29,7 @@ static void preview_finish_recording(Preview *p) {
 
 static void preview_load(Preview *p, const char *file) {
     FILE *fp = fopen(file, "rb");
+    Assert(fp);
 
     memset(p, 0, sizeof(Preview));
     p->recording = false;
@@ -62,24 +63,35 @@ static void preview_record(Preview *p) {
         preview_finish_recording(p);
         return;
     }
+    
+    Preview_State *state = &p->states[p->length];
 
-    p->states[p->length].tool = gs->current_tool;
+    state->tool = gs->current_tool;
 
     for (int i = 0; i < gs->gw*gs->gh; i++) {
-        p->states[p->length].grid[i] = (Uint8)gs->grid[i].type;
+        state->grid[i] = (Uint8)gs->grid[i].type;
     }
 
     switch (gs->current_tool) {
         case TOOL_PLACER: {
-            p->states[p->length].x = gs->placers[gs->current_placer].x;
-            p->states[p->length].y = gs->placers[gs->current_placer].y;
-            p->states[p->length].angle = gs->placers[gs->current_placer].rect.x != -1;
+            Placer *placer = &gs->placers[gs->current_placer];
+            state->x = placer->x;
+            state->y = placer->y;
+            if (placer->rect.x == -1) {
+                state->angle = 0xDEAD; // 0xDEAD represents an invalid rect.
+            } else {
+                // placer->rect.x == placer->place_width
+                
+                state->angle = placer->place_width; // Value represents the rect size.
+                // If you forgot, the placer's height can be calculated as:
+                //   height = width * placer->place_aspect;
+            }
             break;
         }
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-            p->states[p->length].x = gs->chisel->x;
-            p->states[p->length].y = gs->chisel->y;
-            p->states[p->length].angle = gs->chisel->angle;
+            state->x = gs->chisel->x;
+            state->y = gs->chisel->y;
+            state->angle = gs->chisel->angle;
             break;
         }
     }
@@ -110,6 +122,7 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
         for (int y = 0; y < preview_h; y++) {
             for (int x = 0; x < preview_w; x++) {
                 int t = p->overlay[x+y*preview_w];
+                
                 if (!t) continue;
 
                 RenderColor(255, 255, 255, 127);
@@ -125,12 +138,28 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
             case TOOL_PLACER: {
                 int x = p->states[p->index].x;
                 int y = p->states[p->index].y;
-                bool is_rect = p->states[p->index].angle == 1;
+                bool is_rect = (p->states[p->index].angle != 0xDEAD);
 
                 RenderColor(255, 255, 255, 64);
-
-                SDL_RenderDrawLine(gs->renderer, 0, y, preview_w, y);
-                SDL_RenderDrawLine(gs->renderer, x, 0, x, preview_h);
+                
+                if (is_rect) {
+                    int width = p->states[p->index].angle;
+                    int height = width * gs->placers[gs->current_placer].place_aspect;
+                    
+                    SDL_Rect rect = {
+                        x-width/2,
+                        y-height/2,
+                        width,
+                        height
+                    };
+                    RenderDrawRect(RENDER_TARGET_PREVIEW,
+                                   rect);
+                }
+                
+#if 0
+                // TODO!!!!
+                RenderLine(RENDER_TARGET_PREVIEW, 0, y, preview_w, y);
+                RenderLine(RENDER_TARGET_PREVIEW, x, 0, x, preview_h);
 
                 if (is_rect) {
                     if (p->placer_rect.x == -1) {
@@ -145,6 +174,7 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
                 } else {
                     p->placer_rect.x = p->placer_rect.y = -1;
                 }
+#endif
                 break;
             }
             case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
@@ -152,7 +182,7 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
                 int y = p->states[p->index].y;
                 int angle = p->states[p->index].angle;
 
-                Chisel *chisel = NULL;
+                Chisel *chisel = null;
                 if (tool == TOOL_CHISEL_SMALL)  chisel = &gs->chisel_small;
                 if (tool == TOOL_CHISEL_MEDIUM) chisel = &gs->chisel_medium;
                 if (tool == TOOL_CHISEL_LARGE)  chisel = &gs->chisel_large;
@@ -173,7 +203,7 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
 
                 RenderTextureEx(RENDER_TARGET_PREVIEW,
                                 chisel->texture,
-                                NULL,
+                                null,
                                 &dst,
                                 angle,
                                 &center,
@@ -190,7 +220,7 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
 
     RenderTargetToTarget(target,
                          RENDER_TARGET_PREVIEW,
-                         NULL,
+                         null,
                          &target_dst);
 
     p->index++;

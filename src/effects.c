@@ -1,8 +1,8 @@
-static void effect_reset_snow(bool high_fidelity) {
-    for (int i = 0; i < gs->current_effect.particle_count; i++) {
-        Effect_Particle *particle = &gs->current_effect.particles[i];
+static void effect_reset_snow(Effect *effect, bool high_fidelity) {
+    for (int i = 0; i < effect->particle_count; i++) {
+        Effect_Particle *particle = &effect->particles[i];
 
-        SDL_Rect bounds = gs->current_effect.bounds;
+        SDL_Rect bounds = effect->bounds;
 
         particle->x = (f32) (bounds.x+(rand()%(bounds.w-bounds.x)));
         particle->y = (f32) (bounds.y+(rand()%(bounds.h-bounds.y)));
@@ -29,9 +29,7 @@ static void effect_reset_snow(bool high_fidelity) {
     }
 }
 
-static void effect_set(int type, bool high_fidelity, int x, int y, int w, int h) {
-    Effect *effect = &gs->current_effect;
-
+static void effect_set(Effect *effect, Effect_Type type, bool high_fidelity, int x, int y, int w, int h) {
     effect->type = type;
     effect->high_fidelity = high_fidelity;
 
@@ -39,7 +37,7 @@ static void effect_set(int type, bool high_fidelity, int x, int y, int w, int h)
 
     switch (type) {
         case EFFECT_NONE: {
-            effect->particles = NULL;
+            effect->particles = null;
             return;
         }
         case EFFECT_SNOW: {
@@ -55,13 +53,13 @@ static void effect_set(int type, bool high_fidelity, int x, int y, int w, int h)
         }
     }
 
-    if (effect->particles == NULL) {
+    if (effect->particles == null) {
         effect->particles = PushArray(gs->persistent_memory, effect->particle_count, sizeof(Effect_Particle));
     }
 
     switch (type) {
         case EFFECT_SNOW: {
-            effect_reset_snow(high_fidelity);
+            effect_reset_snow(effect, high_fidelity);
             break;
         }
         case EFFECT_RAIN: {
@@ -90,7 +88,7 @@ static void particle_tick(Effect *effect, int i) {
 
     switch (effect->type) {
         case EFFECT_SNOW: case EFFECT_RAIN: {
-            Effect_Particle *particle = &gs->current_effect.particles[i];
+            Effect_Particle *particle = &effect->particles[i];
 
             int reverse = (gs->level_current+1 >= 8) ? -1 : 1;
 
@@ -119,14 +117,14 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
 
 #ifndef ALASKA_RELEASE_MODE
     if (gs->input.keys_pressed[SDL_SCANCODE_T]) {
-        effect_reset_snow(false);
+        effect_reset_snow(effect, false);
     }
 #endif
 
     switch (effect->type) {
         case EFFECT_SNOW: {
             for (int i = 0; i < effect->particle_count; i++) {
-                Effect_Particle *particle = &gs->current_effect.particles[i];
+                Effect_Particle *particle = &effect->particles[i];
                 f32 length = (f32) sqrt(particle->vx*particle->vx + particle->vy*particle->vy);
 
                 if (only_slow == ONLY_SLOW_SLOW && length > 3)  continue;
@@ -167,14 +165,13 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
                 if (draw_points) {
                     RenderPoint(target, px, py);
                 } else {
-
-                    if (gs->levels[gs->level_current].state == LEVEL_STATE_NARRATION) {
+                    //if (gs->levels[gs->level_current].state == LEVEL_STATE_NARRATION) {
                         int size = Scale(6*(length/max));
                         RenderFillCircle(target,
                                          gs->window_width * px/effect->bounds.w,
                                          gs->window_height * py/effect->bounds.h,
                                          size);
-                    }
+                    //}
                 }
             }
             break;
@@ -183,7 +180,7 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
             for (int i = 0; i < effect->particle_count; i++) {
                 particle_tick(effect, i);
 
-                Effect_Particle *particle = &gs->current_effect.particles[i];
+                Effect_Particle *particle = &effect->particles[i];
 
                 int px = (int)particle->x;
                 int py = (int)particle->y;

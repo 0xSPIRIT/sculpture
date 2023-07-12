@@ -13,6 +13,19 @@ static void level_setup_initial_grid(void) {
     objects_reevaluate();
 }
 
+static void play_level_end_sound(int level) {
+    Mix_Chunk *sound = null;
+    
+    if (level+1 != 7) {
+        sound = gs->audio.sprinkle;
+    } else {
+        sound = gs->audio.macabre;
+    }
+    
+    Assert(sound);
+    Mix_PlayChannel(AUDIO_CHANNEL_GUI, sound, 0);
+}
+
 static int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
     Level *level = &gs->levels[gs->level_count++];
 
@@ -26,8 +39,8 @@ static int level_add(const char *name, const char *desired_image, const char *in
     int w, h;
     level_get_cells_from_image(desired_image,
                                &level->desired_grid,
-                               NULL,
-                               NULL,
+                               null,
+                               null,
                                &level->w,
                                &level->h);
     level_get_cells_from_image(initial_image,
@@ -81,7 +94,7 @@ static void levels_setup(void) {
     level_add("Monster (II)",
               RES_DIR "lvl/desired/level 7.png",
               RES_DIR "lvl/initial/level 7.png",
-              EFFECT_NONE);
+              EFFECT_RAIN);
     level_add("Metamorphosis",
               RES_DIR "lvl/desired/level 8.png",
               RES_DIR "lvl/initial/level 8.png",
@@ -97,7 +110,7 @@ static void levels_setup(void) {
     level_add("Glass Body",
               RES_DIR "lvl/desired/level 11.png",
               RES_DIR "lvl/initial/level 11.png",
-              EFFECT_NONE);
+              EFFECT_RAIN);
 }
 
 static void goto_level(int lvl) {
@@ -137,6 +150,7 @@ static void goto_level(int lvl) {
     gs->chisel_small  = chisel_init(CHISEL_SMALL);
     gs->chisel_medium = chisel_init(CHISEL_MEDIUM);
     gs->chisel_large  = chisel_init(CHISEL_LARGE);
+    
     gs->chisel = &gs->chisel_small;
 
     gs->hammer = hammer_init();
@@ -155,7 +169,8 @@ static void goto_level(int lvl) {
 #if SHOW_NARRATION
     if (gs->narrator.line_count) {
         level_set_state(lvl, LEVEL_STATE_NARRATION);
-        effect_set(EFFECT_SNOW,
+        effect_set(&gs->current_effect,
+                   EFFECT_SNOW,
                    true,
                    0,
                    0,
@@ -163,7 +178,8 @@ static void goto_level(int lvl) {
                    gs->window_height);
     } else {
         level_set_state(lvl, LEVEL_STATE_INTRO);
-        effect_set(gs->levels[gs->level_current].effect_type,
+        effect_set(&gs->current_effect,
+                   gs->levels[gs->level_current].effect_type,
                    false,
                    0,
                    0,
@@ -196,23 +212,27 @@ static void goto_level(int lvl) {
 
 static void level_set_state(int level, enum Level_State state) {
     Level *l = &gs->levels[level];
-
+    
+#if AUDIO_PLAY_AMBIANCE
+    if (state == LEVEL_STATE_PLAY || state == LEVEL_STATE_NARRATION) {
+        if (gs->levels[level].effect_type == EFFECT_RAIN) {
+            //play_music(AMBIENCE_RAIN);
+        } else {
+            //play_music(AMBIENCE_NORMAL);
+        }
+    }
+#endif
+    
     if (state == LEVEL_STATE_PLAY) {
         if (gs->current_effect.type != l->effect_type) {
-            effect_set(l->effect_type,
+            effect_set(&gs->current_effect,
+                       l->effect_type,
                        false,
                        0,
                        0,
                        2*gs->gw,
                        2*gs->gh);
         }
-
-#if AUDIO_PLAY_AMBIANCE
-        if (!Mix_PlayingMusic()) {
-            Mix_PlayMusic(gs->audio.ambience1, -1);
-            Mix_VolumeMusic(AUDIO_AMBIANCE_VOLUME);
-        }
-#endif
     } else if (state == LEVEL_STATE_OUTRO) {
         l->outro_alpha = 0;
         l->desired_alpha = 255;
@@ -302,18 +322,24 @@ static void level_tick_outro(Level *level) {
                     gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL_2,
                                                   NormX(32),
                                                   NormY((768.8/8.0)+32),
-                                                  NULL);
+                                                  null);
                 else
                     gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
                                                   NormX(32),
                                                   NormY((768.8/8.0)+32),
-                                                  NULL);
+                                                  null);
             }
 #endif
         } else {
             level_set_state(gs->level_current, LEVEL_STATE_PLAY);
             object_activate(&gs->obj);
-            effect_set(EFFECT_SNOW, true, 0, 0, gs->window_width, gs->window_height);
+            effect_set(&gs->current_effect,
+                       EFFECT_SNOW,
+                       true,
+                       0,
+                       0,
+                       gs->window_width,
+                       gs->window_height);
         }
     }
 
@@ -336,7 +362,7 @@ static void level_tick_play(Level *level) {
         gs->input.keys[SDL_SCANCODE_F] = 0;
         return;
     }
-
+    
     simulation_tick();
 
     if (!gs->paused || gs->step_one) {
@@ -403,7 +429,7 @@ static void level_draw_intro(Level *level) {
             RenderPointRelative(RENDER_TARGET_PIXELGRID, x, y);
         }
     }
-
+    
     SDL_Rect src = {
         gs->gw/2, gs->gh/2,
         gs->gw, gs->gh
@@ -416,11 +442,40 @@ static void level_draw_intro(Level *level) {
                          RENDER_TARGET_PIXELGRID,
                          &src,
                          &global_dst);
-
+    
     char name[256] = {0};
     sprintf(name, "%d. %s", level->index+1, level->name);
-
-    // TODO: Replace this with the new font renderer.
+    
+    Font *font = gs->fonts.font_title;
+    
+    int width, height;
+    
+    TTF_SizeText(font->handle, name, &width, &height);
+    
+    RenderTextQuick(RENDER_TARGET_MASTER,
+                    "bg",
+                    font,
+                    name,
+                    BLACK,
+                    255,
+                    gs->window_width/2 - width/2+5,
+                    64+5,
+                    null,
+                    null,
+                    false);
+    RenderTextQuick(RENDER_TARGET_MASTER,
+                    "level",
+                    font,
+                    name,
+                    WHITE,
+                    255,
+                    gs->window_width/2 - width/2,
+                    64,
+                    null,
+                    null,
+                    false);
+    
+#if 0
     TTF_Font *font = gs->fonts.font_title->handle;
     if (gs->level_current+1 == 8)
         font = gs->fonts.font_title_2->handle;
@@ -435,10 +490,11 @@ static void level_draw_intro(Level *level) {
         surf->h * .5,
         surf->w, surf->h
     };
-    SDL_RenderCopy(gs->renderer, texture, NULL, &dst);
+    SDL_RenderCopy(gs->renderer, texture, null, &dst);
 
     SDL_FreeSurface(surf);
     SDL_DestroyTexture(texture);
+#endif
 }
 
 #define LEVEL_MARGIN Scale(36)
@@ -455,16 +511,16 @@ static void level_draw_name_intro(int target, Level *level, SDL_Rect rect) {
     sprintf(identifier, "erhejrh %d",TEXT_OUTRO_LEVEL_NAME);
 
     RenderTextQuick(target,
-                        identifier,
-                        gs->fonts.font,
-                        string,
-                        WHITE,
-                        255,
-                        x,
-                        y,
-                        NULL,
-                        NULL,
-                        false);
+                    identifier,
+                    gs->fonts.font,
+                    string,
+                    WHITE,
+                    255,
+                    x,
+                    y,
+                    null,
+                    null,
+                    false);
 }
 
 #define LEVEL_DESIRED_GRID_SCALE Scale(4) // This is dumb. Just draw it to a texture at 64x64 scale, then draw the texture at the appropriate scale for the screen size.
@@ -517,28 +573,28 @@ static void level_draw_outro(int target, Level *level) {
 
 
     RenderTextQuick(outro,
-                        "AAAAAj",
-                        gs->fonts.font,
-                        "What you intended",
-                        WHITE,
-                        alpha,
-                        dx,
-                        dy,
-                        NULL,
-                        NULL,
-                        false);
+                    "AAAAAj",
+                    gs->fonts.font,
+                    "What you intended",
+                    WHITE,
+                    alpha,
+                    dx,
+                    dy,
+                    null,
+                    null,
+                    false);
     RenderTextQuick(outro,
-                        "Result",
-                        gs->fonts.font,
-                        "The result",
-                        WHITE,
-                        alpha,
-                        dx+rect.w - LEVEL_MARGIN - scale*level->w - margin,
-                        dy,
-                        NULL,
-                        NULL,
-                        false);
-
+                    "Result",
+                    gs->fonts.font,
+                    "The result",
+                    WHITE,
+                    alpha,
+                    dx+rect.w - LEVEL_MARGIN - scale*level->w - margin,
+                    dy,
+                    null,
+                    null,
+                    false);
+    
     //~
     level_draw_desired_grid(level, dx, dy);
 
@@ -565,28 +621,28 @@ static void level_draw_outro(int target, Level *level) {
     SDL_Color color_next_level = (SDL_Color){255,255,255,255};
 
     RenderTextQuick(outro,
-                        "next level",
-                        gs->fonts.font,
-                        "Next Level [n]",
-                        color_next_level,
-                        255,
-                        rect.x + rect.w - Scale(200),
-                        rect.y + rect.h - margin - Scale(20),
-                        NULL,
-                        NULL,
-                        false);
+                    "next level",
+                    gs->fonts.font,
+                    "Next Level [n]",
+                    color_next_level,
+                    255,
+                    rect.x + rect.w - Scale(200),
+                    rect.y + rect.h - margin - Scale(20),
+                    null,
+                    null,
+                    false);
     RenderTextQuick(outro,
-                        "close",
-                        gs->fonts.font,
-                        "Close [f]",
-                        (SDL_Color){128, 128, 128, alpha},
-                        255,
-                        rect.x + margin,
-                        rect.y + rect.h - margin - Scale(20),
-                        NULL,
-                        NULL,
-                        false);
-
+                    "close",
+                    gs->fonts.font,
+                    "Close [f]",
+                    (SDL_Color){128, 128, 128, alpha},
+                    255,
+                    rect.x + margin,
+                    rect.y + rect.h - margin - Scale(20),
+                    null,
+                    null,
+                    false);
+    
     SDL_Rect src = {
         0, 0,
         gs->window_width,
@@ -674,7 +730,7 @@ static void level_get_cells_from_image(const char *path,
 static void level_draw_narration(int target) {
     RenderColor(20, 20, 20, 255);
     RenderClear(target);
-
+    
     effect_draw(target, &gs->current_effect, false, ONLY_SLOW_ALL);
     narrator_run(target, WHITE);
     //effect_draw(target, &gs->current_effect, false, ONLY_SLOW_FAST);

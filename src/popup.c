@@ -51,6 +51,7 @@ static void text_field_draw(int target) {
     if (!text_field->active) return;
 
     // TODO: Replace with our new font renderer.
+    //       Jesus H Christ this is bad lmao.
 
     SDL_Surface *description_surf = 0, *text_surf = 0;
     SDL_Texture *description_texture = 0, *text_texture = 0;
@@ -86,7 +87,7 @@ static void text_field_draw(int target) {
 
     if (text_surf) {
         RenderDrawRect(target, field_rect);
-        SDL_RenderCopy(gs->renderer, text_texture, NULL, &text_field_rect);
+        SDL_RenderCopy(gs->renderer, text_texture, null, &text_field_rect);
     }
 
     if (description_surf) {
@@ -110,7 +111,7 @@ static void text_field_draw(int target) {
         RenderColor(255, 255, 255, 255);
         SDL_RenderCopy(gs->render.sdl,
                        description_texture,
-                       NULL,
+                       null,
                        &description_rect);
 
         SDL_DestroyTexture(description_texture);

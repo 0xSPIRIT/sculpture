@@ -30,6 +30,7 @@
 #include "level.c"
 #include "titlescreen.c"
 #include "background.c"
+#include "audio.c"
 
 static void game_resize(int h) {
     gs->gui.popup_y /= gs->gh*gs->S;
@@ -108,17 +109,22 @@ export void game_init(Game_State *state, int level) {
     previews_load();
     goto_level(level);
     titlescreen_init();
-
-#ifndef ALASKA_RELEASE_MODE
-    gs->gamestate = GAME_STATE_PLAY;
+    
+#ifdef ALASKA_RELEASE_MODE
+    #define SHOW_TITLESCREEN 1
 #else
+    #define SHOW_TITLESCREEN 1
+#endif
+
+#if SHOW_TITLESCREEN
     gs->gamestate = GAME_STATE_TITLESCREEN;
 
     Mix_VolumeMusic(AUDIO_TITLESCREEN_VOLUME);
-    if (Mix_PlayMusic(gs->audio.music_titlescreen, -1) == -1) {
-        Log("%s\n", SDL_GetError());
-        exit(1);
-    }
+    #ifdef ALASKA_RELEASE_MODE
+    Assert(Mix_PlayMusic(gs->audio.music_titlescreen, -1) != -1);
+    #endif
+#else
+    gs->gamestate = GAME_STATE_PLAY;
 #endif
 }
 
@@ -172,7 +178,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 if (gs->credits.state == CREDITS_SHOW) {
                     is_running = false;
                 } else if (gs->tutorial.active) {
-                    tutorial_rect_close(NULL);
+                    tutorial_rect_close(null);
                 } else if (placer && placer->state == PLACER_PLACE_RECT_MODE && input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                     placer->escape_rect = true;
                     placer->rect.x = -1;
@@ -393,7 +399,7 @@ export void game_run(Game_State *state) {
                 RenderMaybeSwitchToTarget(RENDER_TARGET_MASTER);
                 SDL_RenderCopy(gs->render.sdl,
                                RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture.handle,
-                               NULL,
+                               null,
                                &dst);
             } else {
                 //view_tick(&gs->view, &gs->input);
@@ -402,7 +408,9 @@ export void game_run(Game_State *state) {
                 converter_gui_tick();
                 inventory_tick();
                 all_converters_tick();
-
+                
+                audio_set_ambience_accordingly();
+                
                 level_tick(&gs->levels[gs->level_current]);
                 level_draw(&gs->levels[gs->level_current]);
                 text_field_draw(RENDER_TARGET_MASTER);

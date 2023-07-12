@@ -1,4 +1,12 @@
 static void titlescreen_init(void) {
+    Titlescreen *t = &gs->titlescreen;
+    effect_set(&t->effect,
+               EFFECT_SNOW,
+               true,
+               0,
+               0,
+               gs->window_width,
+               gs->window_height);
 }
 
 static void titlescreen_goto_next(void) {
@@ -6,60 +14,70 @@ static void titlescreen_goto_next(void) {
 }
 
 static void titlescreen_tick(void) {
-    if (gs->input.keys[SDL_SCANCODE_RETURN]) {
+    Uint8 *keys = gs->input.keys;
+    if (keys[SDL_SCANCODE_RETURN] ||
+        keys[SDL_SCANCODE_SPACE]  ||
+        keys[SDL_SCANCODE_TAB])
+    {
         gs->titlescreen.stop = true;
-        Mix_FadeOutMusic(1000);
-        Mix_HookMusicFinished(titlescreen_goto_next);
+        if (Mix_PlayingMusic()) {
+            Mix_FadeOutMusic(1000);
+            Mix_HookMusicFinished(titlescreen_goto_next);
+        } else {
+            titlescreen_goto_next();
+        }
     }
 }
 
 static void titlescreen_draw(int target) {
-    RenderColor(255, 255, 255, 255);
+    RenderColor(0, 0, 0, 255);
     RenderClear(target);
 
     if (gs->titlescreen.stop) return;
-
-    TTF_SizeText(gs->fonts.font_titlescreen->handle, "Alaska", &gs->titlescreen.text_width, NULL);
-
+    
+    int text_width, text_height;
+    TTF_SizeText(gs->fonts.font_titlescreen->handle,
+                 "Alaska",
+                 &text_width,
+                 &text_height);
+    
+    effect_draw(RENDER_TARGET_MASTER,
+                &gs->titlescreen.effect,
+                false,
+                ONLY_SLOW_ALL);
+    
     RenderTextQuick(target,
-                        "titlescreen",
-                        gs->fonts.font_titlescreen,
-                        "Alaska",
-                        BLACK,
-                        255,
-                        gs->window_width/2 - gs->titlescreen.text_width/2,
-                        gs->window_height/7,
-                        NULL,
-                        NULL,
-                        false);
-
-    char *string = "Press RETURN";
-    int w;
-
+                    "titlescreen",
+                    gs->fonts.font_titlescreen,
+                    "Alaska",
+                    WHITE,
+                    255,
+                    gs->window_width/2 - text_width/2,
+                    gs->window_height/2 - text_height/2,
+                    null,
+                    null,
+                    false);
+    
     f64 a = (1+sin(3*SDL_GetTicks()/1000.0))/2;
     a *= 255;
-
-    TTF_SizeText(gs->fonts.font_times->handle, string, &w, NULL);
-    RenderTextQuick(target,
-                        "something else",
-                        gs->fonts.font_times,
-                        string,
-                        (SDL_Color){a, a, a, 255},
-                        255,
-                        gs->window_width/2 - w/2,
-                        2*gs->window_height/3,
-                        NULL,
-                        NULL,
-                        false);
-    RenderTextQuick(target,
+    
+    {
+        const char *text = "F11 - Fullscreen";
+        int w, h;
+        TTF_SizeText(gs->fonts.font_times->handle,
+                     text,
+                     &w,
+                     &h);
+        RenderTextQuick(target,
                         "another",
                         gs->fonts.font_times,
                         "F11 - Fullscreen",
-                        BLACK,
+                        WHITE,
                         255,
-                        gs->window_width-8,
-                        gs->window_height-8,
-                        NULL,
-                        NULL,
+                        gs->window_width-w-8,
+                        gs->window_height-h-8,
+                        null,
+                        null,
                         false);
+    }
 }

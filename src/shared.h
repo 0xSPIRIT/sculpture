@@ -54,6 +54,8 @@ typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
 
     f64 dt; // Time taken for previous frame.
+    
+    Audio_Handler audio_handler;
 
     bool use_software_renderer;
 
@@ -178,7 +180,7 @@ typedef struct Game_State {
     Chisel *chisel;
 } Game_State;
 
-static Game_State *gs = NULL;
+static Game_State *gs = null;
 
 static void _assert(const char *func, const char *file, const int line) {
     char message[64] = {0};
@@ -198,7 +200,7 @@ static void _assert(const char *func, const char *file, const int line) {
         sprintf(message, "%s :: at %s:%d", func, file, line);
     }
 
-    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, NULL);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Assertion Failed!", message, null);
 
     Error("\n:::: ASSERTION FAILED ::::\n%s", message);
 }
@@ -206,13 +208,13 @@ static void _assert(const char *func, const char *file, const int line) {
 // Gives pointer to zeroed memory.
 static void *_push_array(Memory_Arena *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
     Uint64 size;
-    void *output = NULL;
+    void *output = null;
 
     size = num * size_individual;
 
     const int debug_memory = false;
 
-    if (debug_memory && gs != NULL) {
+    if (debug_memory && gs != null) {
         char memory_name[64] = {0};
         if (memory == gs->persistent_memory) {
             strcpy(memory_name, "Persistent");

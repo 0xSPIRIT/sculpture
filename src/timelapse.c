@@ -37,8 +37,8 @@ static void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
     }
 
     for (int i = 0; i < gs->gw*gs->gh; i++) {
-        Save_State *state = NULL;
-        Cell *grid = NULL;
+        Save_State *state = null;
+        Cell *grid = null;
 
         if (tl->sticky) {
             grid = gs->grid;

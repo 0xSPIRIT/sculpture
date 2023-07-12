@@ -21,7 +21,8 @@ static void render_targets_init(void) {
                 continue;
             }
             case RENDER_TARGET_CONVERSION_PANEL: case RENDER_TARGET_OUTRO:
-            case RENDER_TARGET_GUI_TOOLBAR: case RENDER_TARGET_CHISEL: {
+            case RENDER_TARGET_GUI_TOOLBAR: case RENDER_TARGET_CHISEL: 
+            case RENDER_TARGET_TOOLTIP: {
                 gs->render.render_targets[i] = RenderMakeTarget(width, height, VIEW_STATE_UNDEFINED, false);
                 continue;
             }
@@ -47,7 +48,7 @@ static void render_targets_init(void) {
 }
 
 static void textures_init(Textures *textures) {
-    SDL_Surface *surf = NULL;
+    SDL_Surface *surf = null;
 
     memset(textures, 0, sizeof(Textures));
 
@@ -64,7 +65,7 @@ static void textures_init(Textures *textures) {
         GetTexture(TEXTURE_ITEMS+i) = RenderCreateTextureFromSurface(surf);
 
         SDL_FreeSurface(surf);
-        surf = NULL;
+        surf = null;
     }
 
     GetTexture(TEXTURE_CONFIRM_BUTTON) = RenderLoadTexture("buttons/confirm.png");
@@ -118,7 +119,7 @@ static void textures_init(Textures *textures) {
 }
 
 static void surfaces_init(Surfaces *surfaces) {
-    surfaces->a = NULL;
+    surfaces->a = null;
     surfaces->renderer_3d = SDL_CreateRGBSurfaceWithFormat(0, gs->desktop_w, gs->desktop_h, 32, ALASKA_PIXELFORMAT);
     surfaces->bark_surface = RenderLoadSurface("bark.png");
     surfaces->glass_surface = RenderLoadSurface("glass.png");
@@ -140,7 +141,7 @@ static void surfaces_init(Surfaces *surfaces) {
                                                           ALASKA_PIXELFORMAT);
 
     SDL_FreeSurface(gs->pixel_format_surf);
-    gs->pixel_format_surf = NULL;
+    gs->pixel_format_surf = null;
 }
 
 static void fonts_init(Fonts *fonts) {
@@ -169,7 +170,8 @@ static void fonts_deinit(Fonts *fonts) {
 static void audio_init(Audio *audio) {
     audio->music_titlescreen = Mix_LoadMUS(RES_DIR "audio/titlescreen.ogg");
     audio->music_creation = Mix_LoadMUS(RES_DIR "audio/music_creation.ogg");
-    audio->ambience1 = Mix_LoadMUS(RES_DIR "audio/ambience1.ogg");
+    audio->ambience1  = Mix_LoadMUS(RES_DIR "audio/ambience1.ogg");
+    audio->music_rain = Mix_LoadMUS(RES_DIR "audio/rain.ogg");
 
     audio->pip = Mix_LoadWAV(RES_DIR "audio/pip.ogg");
 
@@ -183,6 +185,7 @@ static void audio_init(Audio *audio) {
     audio->large_chisel = Mix_LoadWAV(RES_DIR "audio/large_chisel.wav");
 
     audio->sprinkle = Mix_LoadWAV(RES_DIR "audio/sprinkle.ogg");
+    audio->macabre = Mix_LoadWAV(RES_DIR "audio/macabre.ogg");
 
     audio->accept = Mix_LoadWAV(RES_DIR "audio/accept.ogg");
 
@@ -194,6 +197,7 @@ static void audio_deinit(Audio *audio) {
     Mix_FreeMusic(audio->music_titlescreen);
     Mix_FreeMusic(audio->music_creation);
     Mix_FreeMusic(audio->ambience1);
+    Mix_FreeMusic(audio->music_rain);
 
     for (int i = 0; i < 6; i++)
         Mix_FreeChunk(audio->medium_chisel[i]);
@@ -202,4 +206,5 @@ static void audio_deinit(Audio *audio) {
     Mix_FreeChunk(audio->large_chisel);
 
     Mix_FreeChunk(audio->sprinkle);
+    Mix_FreeChunk(audio->macabre);
 }

@@ -2,10 +2,6 @@ static int sign(int a) {
     return (a > 0) ? 1 : ((a == 0) ? 0 : -1);
 }
 
-static int new_thing(void) {
-    return 0;
-}
-
 static f64 lerp64(f64 a, f64 b, f64 t) {
     f64 result = a + t*(b-a); // or a(1-t) + tb
 
@@ -260,8 +256,31 @@ static int randB(int i) {
     return my_rand(my_rand(my_rand(num*num)));
 }
 
+static f32 interpolate(f32 a, f32 b, f32 step) {
+    if (a == b) return b;
+    
+    int sign = (b-a > 0) ? 1 : -1;
+    
+    if (sign > 0) {
+        f32 result = a+step;
+        if (result > b) return b;
+        return result;
+    } else {
+        f32 result = a-step;
+        if (result < b) return b;
+        return result;
+    }
+}
+
 static f32 lerp(f32 a, f32 b, f32 t) {
     return a + t*(b-a); // or a(1-t) + tb -- same thing.
+}
+
+static f32 lerp_no_error(f32 a, f32 b, f32 t, f32 error) {
+    f32 result = a + t*(b-a);
+    if (abs(result - b) <= error)
+        return b;
+    return result;
 }
 
 static int clamp(int a, int min, int max) {

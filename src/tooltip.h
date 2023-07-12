@@ -1,6 +1,6 @@
 #define MAX_TOOLTIP_LEN 128
 #define MAX_TOOLTIP_LINE_LEN 128
-#define CLAMP_TOOLTIP false
+#define CLAMP_TOOLTIP 1
 
 typedef struct Tooltip {
     enum Tooltip_Type type;
@@ -10,6 +10,9 @@ typedef struct Tooltip {
     f32 x, y;
     char str[MAX_TOOLTIP_LEN][MAX_TOOLTIP_LINE_LEN];
     int w, h;
+    
+    f32 alpha, to_alpha;
+    int alpha_hang_timer;
 
     Preview *preview;
 } Tooltip;

@@ -11,7 +11,7 @@
     "--------\n\n" \
     "Use the chisels to create your sculpture!\n"\
     "  Left Click - Chisel\n"\
-    "  Hold SHIFT & Move Mouse - Rotate\n\n"\
+    "  Hold SHIFT & Move Mouse - Rotate Chisel\n\n"\
     "Click the checkmark when you're satisfied with a level.\n"
 
 #define TUTORIAL_OVERLAY_STRING \
@@ -26,9 +26,8 @@
     "--------\n\n" \
     "For this first level, you must complete it\n"\
     "perfectly in order to continue.\n\n"\
-    "Subsequent levels can be completed\n"\
-    "at any point, with no restrictions\n"\
-    "except your own discretion.\n"\
+    "However, most subsequent levels can be completed\n"\
+    "without restrictions, except your own discretion.\n"\
 
 #define TUTORIAL_COMPLETE_LEVEL_2 \
     "Tutorial\n" \
@@ -79,19 +78,19 @@
     "Tutorial\n" \
     "--------\n\n" \
     "To get a full list of converter, press I to toggle the\n" \
-"conversion recipe book.\n"\
+    "conversion recipe book.\n"\
 
 #define TUTORIAL_CAREFUL_STRING \
     "Tutorial\n" \
     "--------\n\n" \
     "Ensure you be careful with the amount of material you're\n" \
-    "converting; You might end up with not enough of a certain\n" \
+    "converting; You might not end up with enough of a certain\n" \
     "type!\n"
 
 #define TUTORIAL_RECTANGLE_PLACE \
     "Tutorial\n" \
     "--------\n\n" \
-    "To place material down, click and drag a rectangle.\n"
+    "To place material down, scroll the mouse, then click.\n"
 
 #if 0
 #define TUTORIAL_CHISEL_INVENTORY_STRING \

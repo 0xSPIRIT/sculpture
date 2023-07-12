@@ -1,6 +1,6 @@
 static Placer *get_current_placer(void) {
     Placer *placers = gs->placers;
-    if (gs->current_tool != TOOL_PLACER) return NULL;
+    if (gs->current_tool != TOOL_PLACER) return null;
     return &placers[gs->current_placer];
 }
 
@@ -187,6 +187,12 @@ static void fix_rectangle(SDL_Rect *c) {
     }
     if (c->h < 0) {
         c->y += c->h;
+    }
+    if (c->x+c->w >= gs->gw) {
+        c->w = gs->gw - 1 - c->x;
+    }
+    if (c->y+c->h >= gs->gh) {
+        c->h = gs->gh - 1 - c->y;
     }
     c->w = abs(c->w);
     c->h = abs(c->h);
@@ -429,7 +435,7 @@ static void placer_tick(Placer *placer) {
                 Tutorial_Rect *t = tutorial_rect(TUTORIAL_RECTANGLE_PLACE,
                                                  NormX(32),
                                                  NormY((768.8/8.0)+32),
-                                                 NULL);
+                                                 null);
                 gs->tutorial = *t;
                 gs->did_placer_rectangle_tutorial = true;
             }
@@ -537,14 +543,14 @@ static void placer_draw(int target, Placer *placer, bool full_size) {
 
     RenderTexture(target,
                   placer->texture,
-                  NULL,
+                  null,
                   &dst);
 
     if (placer->rect.x != -1) {
         // Make sure the area is enough before you start drawing the rectangle.
         SDL_Rect c = placer->rect;
 
-        bool able_to_place = placer_is_able_to_place(placer, &c, NULL);
+        bool able_to_place = placer_is_able_to_place(placer, &c, null);
 
         if (able_to_place) {
             RenderColor(255, 255, 0, 255);

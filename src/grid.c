@@ -247,7 +247,7 @@ static void grid_init(int w, int h) {
     gs->gw = w;
     gs->gh = h;
 
-    if (gs->grid_layers[0] == NULL) {
+    if (gs->grid_layers[0] == null) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
             gs->grid_layers[i] = PushArray(gs->persistent_memory, w*h, sizeof(Cell));
         }

@@ -43,7 +43,7 @@ static Tutorial_Rect* tutorial_rect(const char *str,
     strcpy(tut->str, str);
     memset(tut->lines, 0, MAX_TUTORIAL_LINES*64);
 
-    tut->ok_button = button_allocate(BUTTON_TUTORIAL, &GetTexture(TEXTURE_OK_BUTTON), "", NULL);
+    tut->ok_button = button_allocate(BUTTON_TUTORIAL, &GetTexture(TEXTURE_OK_BUTTON), "", null);
     tut->ok_button->w = Scale(tut->ok_button->w);
     tut->ok_button->h = Scale(tut->ok_button->h);
 
@@ -94,14 +94,14 @@ static void tutorial_rect_run(int target) {
 
     if (!SHOW_TUTORIAL) {
         while (tut->active)
-            tutorial_rect_close(NULL);
+            tutorial_rect_close(null);
         return;
     }
 
     if (!tut->active) return;
 
     if (gs->input.keys_pressed[SDL_SCANCODE_RETURN]) {
-        tutorial_rect_close(NULL);
+        tutorial_rect_close(null);
     }
 
     calculate_tutorial_rect_size(tut);
@@ -122,7 +122,7 @@ static void tutorial_rect_run(int target) {
     for (int i = 0; i < tut->line_count; i++) {
         if (!*tut->lines[i]) {
             if (dst.h == -1)
-                TTF_SizeText(tut->font, "L", NULL, &dst.h);
+                TTF_SizeText(tut->font, "L", null, &dst.h);
             c += dst.h;
             continue;
         }
@@ -143,13 +143,13 @@ static void tutorial_rect_run(int target) {
         dst.y = tut->rect.y + c + tut->margin;
 
         RenderColor(255, 255, 255, 255);
-        SDL_RenderCopy(gs->renderer, tut->textures[i], NULL, &dst);
+        SDL_RenderCopy(gs->renderer, tut->textures[i], null, &dst);
 
         c += dst.h + 2;
     }
 
 
-    button_tick(tut->ok_button, NULL);
+    button_tick(tut->ok_button, null);
     button_draw(target, tut->ok_button);
 }
 
@@ -161,7 +161,7 @@ static void check_for_tutorial() {
             Tutorial_Rect *t3 = tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
                                               NormX(32),
                                               NormY((768.8/8.0)+32),
-                                              NULL);
+                                              null);
 
             Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_CHISEL_STRING,
                                               NormX(32),
@@ -181,7 +181,7 @@ static void check_for_tutorial() {
             gs->tutorial = *tutorial_rect(TUTORIAL_PLACER_STRING,
                                           NormX(32),
                                           NormY((768.8/8.0)+32),
-                                          NULL);
+                                          null);
             break;
         }
 #if 0
@@ -189,7 +189,7 @@ static void check_for_tutorial() {
             gs->tutorial = *tutorial_rect(TUTORIAL_CHISEL_INVENTORY_STRING,
                                           NormX(32),
                                           NormY((768.8/8.0)+32),
-                                          NULL);
+                                          null);
             break;
         }
 #endif
@@ -197,7 +197,7 @@ static void check_for_tutorial() {
             gs->tutorial = *tutorial_rect(TUTORIAL_CAREFUL_STRING,
                                           NormX(32),
                                           NormY((768.8/8.0)+32),
-                                          NULL);
+                                          null);
         }
     }
 }

@@ -70,7 +70,7 @@ static void hammer_tick(Hammer *hammer) {
         case HAMMER_STATE_ATTACK: {
             int p_sign = sign(hammer->angle - hammer->temp_angle);
             hammer->angle -= speed * hammer->dir * 16;
-
+            
             if (p_sign != sign(hammer->angle - hammer->temp_angle)) {
                 gs->chisel->state = CHISEL_STATE_CHISELING;
                 hammer->state = HAMMER_STATE_BLOWBACK;
@@ -129,7 +129,7 @@ static void hammer_draw(int final_target, Hammer *hammer) {
 
         RenderTextureExRelative(RENDER_TARGET_HAMMER,
                                 hammer->tex,
-                                NULL,
+                                null,
                                 &dst,
                                 angle,
                                 &center,
@@ -149,16 +149,16 @@ static void hammer_draw(int final_target, Hammer *hammer) {
 
         RenderTargetToTargetRelativeEx(RENDER_TARGET_HAMMER2,
                                RENDER_TARGET_HAMMER,
-                               NULL,
-                               NULL,
+                               null,
+                               null,
                                180+gs->chisel->angle,
                                &center,
                                SDL_FLIP_NONE);
 
         RenderTargetToTargetRelative(final_target,
                              RENDER_TARGET_HAMMER2,
-                             NULL,
-                             NULL);
+                             null,
+                             null);
     } else {
         RenderColor(0, 0, 0, 0);
         RenderClear(RENDER_TARGET_HAMMER2);
@@ -170,8 +170,8 @@ static void hammer_draw(int final_target, Hammer *hammer) {
 
         RenderTargetToTargetRelativeEx(RENDER_TARGET_HAMMER2,
                                RENDER_TARGET_HAMMER,
-                               NULL,
-                               NULL,
+                               null,
+                               null,
                                180+gs->chisel->angle,
                                &center,
                                SDL_FLIP_NONE);
@@ -179,7 +179,7 @@ static void hammer_draw(int final_target, Hammer *hammer) {
         RenderMaybeSwitchToTarget(final_target);
         SDL_RenderCopy(gs->render.sdl,
                        RenderTarget(RENDER_TARGET_HAMMER2)->texture.handle,
-                       NULL,
-                       NULL);
+                       null,
+                       null);
     }
 }

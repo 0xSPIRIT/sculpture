@@ -1,21 +1,21 @@
 #define USE_PRESSURE false
 #define HIGHLIGHT_MAX 64
 
-enum Chisel_Size {
+typedef enum Chisel_Size {
     CHISEL_SMALL = 0,
     CHISEL_MEDIUM,
     CHISEL_LARGE,
-};
+} Chisel_Size;
 
-enum Chisel_State {
+typedef enum Chisel_State {
     CHISEL_STATE_IDLE = 0,
     CHISEL_STATE_ROTATING,
     CHISEL_STATE_CHISELING
-};
+} Chisel_State;
 
 typedef struct Chisel {
-    enum Chisel_State state;
-    enum Chisel_Size size;
+    Chisel_State state;
+    Chisel_Size size;
     int x, y;
     
     int temp_idx;

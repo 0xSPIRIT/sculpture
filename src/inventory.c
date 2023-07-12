@@ -147,7 +147,7 @@ static void item_draw(int target, Item *item, int x, int y, int w, int h) {
 
     RenderTexture(target,
                   &GetTexture(TEXTURE_ITEMS+item->type),
-                  NULL,
+                  null,
                   &r);
 
     Render_Text_Data text_data = {0};
@@ -257,7 +257,7 @@ static bool can_place_item_in_slot(int type, enum Slot_Type slot) {
         can_put_fuel;
 }
 
-// Slot may be NULL if the item doesn't belong to any slot.
+// Slot may be null if the item doesn't belong to any slot.
 // This function mostly just handles interactions with items and the mouse.
 static void item_tick(Item *item, Slot *slot, int x, int y, int w, int h) {
     Input *input = &gs->input;
@@ -395,7 +395,7 @@ static void inventory_tick() {
         Tutorial_Rect *next = tutorial_rect(TUTORIAL_TEXT_FILE_STRING,
                                             NormX(32),
                                             NormY((768.8/8.0)+128),
-                                            NULL);
+                                            null);
         gs->tutorial = *tutorial_rect(TUTORIAL_FUEL_CONVERTER_STRING,
                                       NormX(32),
                                       NormY((768.8/8.0)+128),
@@ -406,7 +406,7 @@ static void inventory_tick() {
         gs->tutorial = *tutorial_rect(TUTORIAL_INVENTORY_STRING,
                                       NormX(32),
                                       NormY((768.8/8.0)+128),
-                                      NULL);
+                                      null);
         gs->did_inventory_tutorial = true;
     }
 
@@ -440,7 +440,7 @@ static void inventory_tick() {
 
 
     Input *input = &gs->input;
-    item_tick(&gs->item_holding, NULL, input->real_mx, input->real_my, ITEM_SIZE, ITEM_SIZE);
+    item_tick(&gs->item_holding, null, input->real_mx, input->real_my, ITEM_SIZE, ITEM_SIZE);
 }
 
 // calls from gui_draw()

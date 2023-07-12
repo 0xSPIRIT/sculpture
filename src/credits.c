@@ -47,8 +47,8 @@ static void credits_run(int target) {
                       false,
                       Scale(128),
                       Scale(128),
-                      NULL,
-                      NULL);
+                      null,
+                      null);
 #endif
             break;
         }

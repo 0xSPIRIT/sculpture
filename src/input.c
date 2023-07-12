@@ -12,7 +12,7 @@ static void input_tick(Game_State *state) {
     in->real_mx -= gs->real_width/2 - gs->window_width/2;
     in->real_my -= gs->real_height/2 - gs->window_height/2;
 
-    in->keys = (Uint8*) SDL_GetKeyboardState(NULL);
+    in->keys = (Uint8*) SDL_GetKeyboardState(null);
 
     for (int i = 0; i < SDL_NUM_SCANCODES; i++) {
         in->keys_pressed[i] = in->keys[i] && !in->keys_previous[i];

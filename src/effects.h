@@ -1,10 +1,10 @@
 #define EFFECT_SCALE 3
 
-enum Effect_Type {
+typedef enum Effect_Type {
     EFFECT_NONE,
     EFFECT_SNOW,
     EFFECT_RAIN
-};
+} Effect_Type;
 
 enum Only_Slow {
     ONLY_SLOW_ALL,
@@ -18,7 +18,7 @@ typedef struct Effect_Particle {
 } Effect_Particle;
 
 typedef struct Effect {
-    enum Effect_Type type;
+    Effect_Type type;
     Effect_Particle *particles;
     int particle_count;
 

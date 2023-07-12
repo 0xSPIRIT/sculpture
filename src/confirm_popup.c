@@ -49,8 +49,8 @@ static void end_of_level_popup_confirm_run(int target) {
                         255,
                         xoff + popup->r.x + popup->r.w/2 - w/2,
                         popup->r.y + popup->r.h - 2.7*h,
-                        NULL,
-                        NULL,
+                        null,
+                        null,
                         false);
     }
 }
@@ -73,7 +73,7 @@ static void end_of_level_popup_confirm_confirm(void *unused) {
         gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
                                       NormX(32),
                                       NormY((768.8/8.0)+32),
-                                      NULL);
+                                      null);
     };
 
     level->off = false;
@@ -173,14 +173,14 @@ static void popup_confirm_base_tick_and_draw(Popup_Confirm_Run_Data *data, int t
     popup->b->x = 4*gs->window_width/5 - popup->a->w*2;
     popup->b->y = popup->r.y + popup->r.h - Scale(50);
 
-    button_tick(popup->a, NULL);
-    button_tick(popup->b, NULL);
+    button_tick(popup->a, null);
+    button_tick(popup->b, null);
     if (!popup->active) return;
 
     if (gs->input.keys_pressed[SDL_SCANCODE_RETURN]) {
-        popup->a->on_pressed(NULL);
+        popup->a->on_pressed(null);
     } else if (gs->input.keys_pressed[SDL_SCANCODE_ESCAPE]) {
-        popup->b->on_pressed(NULL);
+        popup->b->on_pressed(null);
     }
 
     button_draw_prefer_color(target, popup->a, data->confirm_color);
@@ -191,27 +191,27 @@ static void popup_confirm_base_tick_and_draw(Popup_Confirm_Run_Data *data, int t
     TTF_SizeText(gs->fonts.font_times->handle, popup->text, &data->text_width, &data->text_height);
 
     RenderTextQuick(target,
-                        "confirm text",
-                        gs->fonts.font_times,
-                        "Confirmation",
-                        col,
-                        255,
-                        popup->r.x + Scale(16),
-                        popup->r.y + Scale(10),
-                        NULL,
-                        NULL,
-                        false);
-
+                    "confirm text",
+                    gs->fonts.font_times,
+                    "Confirmation",
+                    col,
+                    255,
+                    popup->r.x + Scale(16),
+                    popup->r.y + Scale(10),
+                    null,
+                    null,
+                    false);
+    
     col = (SDL_Color){255, 255, 255, 255};
     RenderTextQuick(target,
-                        "sdfsdf",
-                        gs->fonts.font_times,
-                        popup->text,
-                        col,
-                        255,
-                        popup->r.x + popup->r.w/2 - data->text_width/2,
-                        popup->r.y + Scale(70),
-                        NULL,
-                        NULL,
-                        false);
+                    "sdfsdf",
+                    gs->fonts.font_times,
+                    popup->text,
+                    col,
+                    255,
+                    popup->r.x + popup->r.w/2 - data->text_width/2,
+                    popup->r.y + Scale(70),
+                    null,
+                    null,
+                    false);
 }

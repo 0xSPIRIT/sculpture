@@ -258,12 +258,12 @@ RENDERAPI void RenderColorStruct(SDL_Color rgba) {
     SDL_SetRenderDrawColor(gs->render.sdl, rgba.r, rgba.g, rgba.b, rgba.a);
 }
 
-// When target is NULL, the render target is inferred to be the screen.
-static Render_Target *RenderMaybeSwitchToTarget(int target_enum) {
+// When target is null, the render target is inferred to be the screen.
+RENDERAPI Render_Target *RenderMaybeSwitchToTarget(int target_enum) {
     if (target_enum < 0) {
-        SDL_SetRenderTarget(gs->render.sdl, NULL);
-        gs->render.current_target = NULL;
-        return NULL;
+        SDL_SetRenderTarget(gs->render.sdl, null);
+        gs->render.current_target = null;
+        return null;
     }
 
     Render_Target *target = RenderTarget(target_enum);
@@ -523,7 +523,7 @@ RENDERAPI void RenderText(int target_enum, Render_Text_Data *text_data) {
 
     text_data->game_scale = gs->S;
 
-    Render_Text_Data *cache_object = NULL;
+    Render_Text_Data *cache_object = null;
 
     // Caching stuff, but only if we care. If they don't set any identifier,
     // then just draw it always.
@@ -572,7 +572,7 @@ RENDERAPI void RenderText(int target_enum, Render_Text_Data *text_data) {
         //       Same concept behind using text_data's x and y for the
         //       dst rect.
         RenderTextureAlphaMod(&cache_object->texture, text_data->alpha);
-        RenderTexture(target_enum, &cache_object->texture, NULL, &dst);
+        RenderTexture(target_enum, &cache_object->texture, null, &dst);
 
         // Retain the text_data's alpha.
         Uint8 text_data_alpha = text_data->alpha;
@@ -586,7 +586,7 @@ RENDERAPI void RenderText(int target_enum, Render_Text_Data *text_data) {
 
     if (cache_object && cache_object->surface) {
         SDL_FreeSurface(cache_object->surface);
-        cache_object->surface = NULL;
+        cache_object->surface = null;
     }
     if (cache_object && cache_object->texture.handle) {
         RenderDestroyTexture(&cache_object->texture);
@@ -630,12 +630,12 @@ RENDERAPI void RenderText(int target_enum, Render_Text_Data *text_data) {
     RenderApplyAlignmentToRect(&dst, text_data->alignment);
 
     RenderTextureAlphaMod(&text_data->texture, text_data->alpha);
-    RenderTexture(target_enum, &text_data->texture, NULL, &dst);
+    RenderTexture(target_enum, &text_data->texture, null, &dst);
 }
 
 RENDERAPI void RenderReadPixels(int target, Uint8 *pixels, int pitch) {
     RenderMaybeSwitchToTarget(target);
-    SDL_RenderReadPixels(gs->render.sdl, NULL, ALASKA_PIXELFORMAT, pixels, pitch);
+    SDL_RenderReadPixels(gs->render.sdl, null, ALASKA_PIXELFORMAT, pixels, pitch);
 }
 
 RENDERAPI void RenderTextureColorMod(Texture *texture,
@@ -662,6 +662,7 @@ RENDERAPI void RenderUnlockTexture(Texture *texture) {
     SDL_UnlockTexture(texture->handle);
 }
 
+// Isn't this slow?
 RENDERAPI void RenderFillCircle(int target, int x, int y, int size) {
     RenderMaybeSwitchToTarget(target);
 

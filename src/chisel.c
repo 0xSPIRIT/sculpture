@@ -1,6 +1,6 @@
-static Chisel chisel_init(enum Chisel_Size size) {
+static Chisel chisel_init(Chisel_Size size) {
     Chisel chisel = {0};
-
+    
     chisel.size = size;
     chisel.texture = &GetTexture(TEXTURE_CHISEL+size);
     chisel.lookahead = 5;
@@ -295,7 +295,7 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
             gs->tutorial = *tutorial_rect(TUTORIAL_PRESSURE_STRING,
                                           NormX(32),
                                           NormY(768.0/8.0 + 32),
-                                          NULL);
+                                          null);
             gs->did_pressure_tutorial = true;
         }
         return;
@@ -671,7 +671,7 @@ static void chisel_draw(int target, Chisel *chisel) {
 
     RenderTextureExRelative(target,
                             chisel->texture,
-                            NULL,
+                            null,
                             &dst,
                             180+chisel->angle,
                             &center,

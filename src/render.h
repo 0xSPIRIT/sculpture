@@ -12,12 +12,12 @@ typedef enum {
     VIEW_STATE_PIXELS,      // Size: gs->gw, gs->gh
 } View_State;
 
-typedef struct {
+typedef struct Texture {
     SDL_Texture *handle;
     int width, height;
 } Texture;
 
-typedef struct {
+typedef struct Render_Target {
     Texture texture;        // Contains the full size of the texture = full_width, full_height
     int working_width;      // Whereas the working size parameters are less,
     int working_height;     // enabling the use of negative texture positions.
@@ -25,12 +25,12 @@ typedef struct {
     View_State view; // Is this in screenspace or pixel art?
 } Render_Target;
 
-typedef struct {
+typedef struct Font {
     TTF_Font *handle;
     int char_width, char_height;
 } Font;
 
-typedef enum {
+typedef enum Alignment {
     ALIGNMENT_TOP_LEFT,
     ALIGNMENT_TOP_RIGHT,
     ALIGNMENT_BOTTOM_LEFT,
@@ -88,7 +88,7 @@ typedef struct {
 RENDERAPI Render RenderInit(SDL_Renderer *sdl_renderer);
 RENDERAPI void RenderCleanup(Render *render);
 
-static Render_Target *RenderMaybeSwitchToTarget(int target_enum);
+RENDERAPI Render_Target *RenderMaybeSwitchToTarget(int target_enum);
 
 RENDERAPI SDL_Surface *RenderLoadSurface(const char *fp);
 RENDERAPI Texture RenderLoadTexture(const char *fp);

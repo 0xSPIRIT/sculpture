@@ -144,7 +144,7 @@ static int main(int argc, char **argv)
     dirent *dir;
     d = opendir(".");
     if (d) {
-        while ((dir = readdir(d)) != NULL) {
+        while ((dir = readdir(d)) != null) {
             printf("%s\n", dir->d_name);
         }
         closedir(d);

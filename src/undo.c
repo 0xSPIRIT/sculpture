@@ -25,7 +25,7 @@ static void undo_system_reset(void) {
 }
 
 static Save_State *current_state(void) {
-    if (gs->save_state_count == 0) return NULL;
+    if (gs->save_state_count == 0) return null;
     return &gs->save_states[gs->save_state_count-1];
 }
 
@@ -176,7 +176,7 @@ static void set_state_to_string_hook(const char *string) {
 
 static void undo(void) {
     if (gs->tutorial.active && strcmp(gs->tutorial.str, TUTORIAL_UNDO_STRING) == 0) {
-        tutorial_rect_close(NULL);
+        tutorial_rect_close(null);
     }
     
     if (!gs->gui.popup && gs->has_player_interacted_since_last_state) {//is_current_grid_same_as(current_state())) {

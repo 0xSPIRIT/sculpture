@@ -94,6 +94,8 @@ static void object_activate(Object3D *obj) {
     gs->obj.z = 1;
     gs->obj.yrot = 0;
     gs->obj.active = true;
+    
+    Mix_HaltMusic();
 
     SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
 
@@ -329,7 +331,7 @@ static void object_draw(Object3D *obj) {
     Uint32 *pixels;
     int pitch;
     if (RenderLockTexture(&RenderTarget(RENDER_TARGET_3D)->texture,
-                          NULL,
+                          null,
                           &pixels,
                           &pitch) != 0) {
         Log("%s\n", SDL_GetError());
@@ -359,6 +361,6 @@ static void object_draw(Object3D *obj) {
     RenderMaybeSwitchToTarget(RENDER_TARGET_MASTER);
     SDL_RenderCopy(gs->render.sdl,
                    RenderTarget(RENDER_TARGET_3D)->texture.handle,
-                   NULL,
+                   null,
                    &dst);
 }

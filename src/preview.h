@@ -1,7 +1,12 @@
+// Perhaps you should store a list of differences in the
+// grid between frames instead of the entire grid...
+//
+// Only change this if it actually becomes a problem, though.
+
 #define MAX_PREVIEW_STATES 30*60 // 30 seconds
 #define PREVIEW_GRID_SIZE 4096 // all previews are hardcoded 64*64
 
-typedef struct Preview_State {
+typedef struct {
     Uint8 grid[PREVIEW_GRID_SIZE];
     Uint8 tool; // Tool using
     Uint8 x, y; // Position of tool

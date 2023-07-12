@@ -100,7 +100,7 @@ static void overlay_init(void) {
 
     overlay->tool = OVERLAY_TOOL_BRUSH;
 
-    if (overlay->grid == NULL) {
+    if (overlay->grid == null) {
         overlay->grid = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
         overlay->temp_grid = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
     }
@@ -252,6 +252,13 @@ static void overlay_swap_to_next(void) {
     }
 }
 
+static bool has_any_chisel_chiseled(void) {
+    if (gs->chisel_small.num_times_chiseled  > 0) return true;
+    if (gs->chisel_medium.num_times_chiseled > 0) return true;
+    if (gs->chisel_large.num_times_chiseled  > 0) return true;
+    return false;
+}
+
 static void overlay_swap_tick(void) {
     Overlay *overlay = &gs->overlay;
 
@@ -269,7 +276,7 @@ static void overlay_swap_tick(void) {
         }
     }
 
-    if (overlay->changes.was_grid_none) {
+    if (overlay->changes.was_grid_none && has_any_chisel_chiseled()) {
         if (gs->overlay.show && !gs->gui.popup && !gs->converter.active) {
             overlay->changes.temp += 0.02f;
         }

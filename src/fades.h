@@ -2,7 +2,7 @@
 #define FADE_EPSILON 5
 
 enum {
-    FADE_NULL,
+    FADE_null,
     FADE_NARRATOR,
     FADE_LEVEL_INTRO,
     FADE_LEVEL_PLAY_IN,
