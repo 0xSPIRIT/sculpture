@@ -375,7 +375,7 @@ static void converter_setup_position(Converter *converter) {
     if (converter->go_button == null) {
         converter->go_button = button_allocate(BUTTON_CONVERTER,
                                                &GetTexture(TEXTURE_CONVERT_BUTTON),
-                                               "Convert",
+                                               "Convert On/Off",
                                                converter_begin_converting);
     }
     converter->go_button->w = Scale(48);

@@ -30,9 +30,9 @@ static void calculate_tutorial_rect_size(Tutorial_Rect *tut) {
 }
 
 static Tutorial_Rect* tutorial_rect(const char *str,
-                             f64 x,
-                             f64 y,
-                             Tutorial_Rect *next)
+                                    f64 x,
+                                    f64 y,
+                                    Tutorial_Rect *next)
 {
     Tutorial_Rect *tut = PushSize(gs->persistent_memory, sizeof(Tutorial_Rect));
 
@@ -148,7 +148,6 @@ static void tutorial_rect_run(int target) {
         c += dst.h + 2;
     }
 
-
     button_tick(tut->ok_button, null);
     button_draw(target, tut->ok_button);
 }
@@ -178,13 +177,17 @@ static void check_for_tutorial() {
             break;
         }
         case 4: {
-            gs->tutorial = *tutorial_rect(TUTORIAL_PLACER_STRING,
-                                          NormX(32),
-                                          NormY((768.8/8.0)+32),
-                                          null);
+            Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_PLACER_F_KEYS,
+                                              NormX(32),
+                                              NormY((768.8/8.0)+32),
+                                              null);
+            Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_PLACER_STRING,
+                                              NormX(32),
+                                              NormY((768.8/8.0)+32),
+                                              t2);
+            gs->tutorial = *t1;
             break;
         }
-#if 0
         case 6: {
             gs->tutorial = *tutorial_rect(TUTORIAL_CHISEL_INVENTORY_STRING,
                                           NormX(32),
@@ -192,7 +195,6 @@ static void check_for_tutorial() {
                                           null);
             break;
         }
-#endif
         case 8: {
             gs->tutorial = *tutorial_rect(TUTORIAL_CAREFUL_STRING,
                                           NormX(32),

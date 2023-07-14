@@ -32,6 +32,10 @@
 #include "background.c"
 #include "audio.c"
 
+
+
+
+
 static void game_resize(int h) {
     gs->gui.popup_y /= gs->gh*gs->S;
 
@@ -113,7 +117,7 @@ export void game_init(Game_State *state, int level) {
 #ifdef ALASKA_RELEASE_MODE
     #define SHOW_TITLESCREEN 1
 #else
-    #define SHOW_TITLESCREEN 1
+    #define SHOW_TITLESCREEN 0
 #endif
 
 #if SHOW_TITLESCREEN
@@ -336,12 +340,12 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
             }
 #endif
             case SDLK_5: {
-                gs->current_tool = TOOL_DESTROY;
+                gs->current_tool = TOOL_GRABBER;
                 selected_tool = 1;
                 break;
             }
             case SDLK_6: {
-                gs->current_tool = TOOL_GRABBER;
+                gs->current_tool = TOOL_PLACER;
                 selected_tool = 1;
                 break;
             }

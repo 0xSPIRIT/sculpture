@@ -289,6 +289,42 @@ RENDERAPI void RenderLine(int target_enum, int x1, int y1, int x2, int y2) {
     SDL_RenderDrawLine(gs->render.sdl, x1, y1, x2, y2);
 }
 
+RENDERAPI void RenderArrowRelative(int target_enum, SDL_Point from, SDL_Point to, int head_size) {
+    Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
+    from.x += target->top_left.x;
+    to.x += target->top_left.x;
+    from.y += target->top_left.y;
+    to.y += target->top_left.y;
+    RenderArrow(target_enum, from, to, head_size);
+}
+
+RENDERAPI void RenderArrow(int target_enum, SDL_Point from, SDL_Point to, int head_size) {
+    RenderLine(target_enum, from.x, from.y, to.x, to.y);
+    
+    f64 ux = to.x - from.x;
+    f64 uy = to.y - from.y;
+    f64 length = sqrt(ux*ux + uy*uy);
+    if (length == 0) return;
+    
+    ux /= length;
+    uy /= length;
+    
+    // Rotate by 135 degrees.
+    const f64 angle = Radians(135);
+    
+    f64 arrow_x = ux * cos(angle) - uy * sin(angle);
+    f64 arrow_y = ux * sin(angle) + uy * cos(angle);
+    
+    arrow_x *= head_size;
+    arrow_y *= head_size;
+    
+    arrow_x = round(arrow_x);
+    arrow_y = round(arrow_y);
+    
+    RenderLine(target_enum, to.x, to.y, to.x + arrow_x, to.y + arrow_y);
+    RenderLine(target_enum, to.x, to.y, to.x - arrow_y, to.y + arrow_x); // Rotate by 90 degrees
+}
+
 RENDERAPI void RenderPointRelative(int target_enum, int x, int y) {
     Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
     x += target->top_left.x;

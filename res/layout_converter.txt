@@ -29,7 +29,6 @@
      Sandstone + Marble -> Quartz
      Dirt               -> Stone
      Ice                -> Steam
-     Water + Cobble     -> Cement
 
    With Fuel: Lava
      Stone            -> Marble

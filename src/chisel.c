@@ -4,11 +4,21 @@ static Chisel chisel_init(Chisel_Size size) {
     chisel.size = size;
     chisel.texture = &GetTexture(TEXTURE_CHISEL+size);
     chisel.lookahead = 5;
-
+    
     chisel.mask = PushSize(gs->persistent_memory,
                            gs->gw*gs->gh*1);
-
+    
     return chisel;
+}
+
+void chisel_undo_check(int x, int y) {
+    if (gs->overlay.grid[x+y*gs->gw] && !gs->did_undo_tutorial) {
+        gs->tutorial = *tutorial_rect(TUTORIAL_UNDO_STRING,
+                                      NormX(32),
+                                      NormY(768.0/8.0 + 32),
+                                      NULL);
+        gs->did_undo_tutorial = true;
+    }
 }
 
 static bool is_tool_chisel(void) {
@@ -326,6 +336,7 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
             }
         }
         //gs->has_player_interacted_since_last_state = true;
+        if (!chisel->is_calculating_highlight) chisel_undo_check(x, y);
         set(x, y, 0, -1);
     } else {
         // Destroy in a circle.
@@ -347,6 +358,8 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
 
                 if (gs->grid[x+xx+(y+yy)*gs->gw].type != 0)
                     type = gs->grid[x+xx+(y+yy)*gs->gw].type;
+
+                if (!chisel->is_calculating_highlight) chisel_undo_check(x+xx, y+yy);
 
                 if (can_add_item_to_inventory(gs->grid[x+xx + (y+yy)*gs->gw].type)) {
                     if (!chisel->is_calculating_highlight) {
@@ -516,10 +529,10 @@ static void chisel_draw_highlights(int target,
                     RenderColor(255, 0, 0, 60);
                 }
             } else {
-                RenderColor(0, 0, 0, 35);
+                RenderColor(0, 0, 0, 60);
             }
         } else {
-            RenderColor(0, 0, 0, 35);
+            RenderColor(0, 0, 0, 60);
         }
 
         RenderPointRelative(target, xoff+x, yoff+y);
@@ -538,6 +551,7 @@ static void chisel_draw_highlights(int target,
 
 static void chisel_tick(Chisel *chisel) {
     if (gs->gui.restart_popup_confirm.active) return;
+    if (gs->is_mouse_on_tab_icon) return; // Hacky!!!!! ew
 
     chisel->did_chisel_this_frame = false;
     if (chisel->click_delay > 0) chisel->click_delay--;
@@ -668,6 +682,19 @@ static void chisel_draw(int target, Chisel *chisel) {
     chisel_get_adjusted_positions(chisel->angle, chisel->size, &dst.x, &dst.y);
 
     SDL_Point center = { 0, chisel->texture->height/2 };
+    
+#if CHISEL_FLASHING
+    if (chisel->state == CHISEL_STATE_ROTATING) {
+        const f64 speed = 0.01;
+        chisel->rotating_flash = 0.5*(1+sin(speed * SDL_GetTicks()));
+        
+        Uint8 a = (Uint8) (255 * chisel->rotating_flash);
+        
+        a = 127+a/2;
+        
+        RenderTextureColorMod(chisel->texture, a, a, 0);
+    }
+#endif
 
     RenderTextureExRelative(target,
                             chisel->texture,

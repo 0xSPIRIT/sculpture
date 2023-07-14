@@ -162,15 +162,13 @@ static void get_name_from_type(int type, char *out) {
 
 static void get_name_from_tool(int type, char *out) {
     switch (type) {
-        case TOOL_CHISEL_SMALL:  strcpy(out, "Small Chisel"); break;
-        case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel"); break;
-        case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel"); break;
-        case TOOL_OVERLAY:       strcpy(out, "Overlay [O]"); break;
-        //case TOOL_BLOCKER:       strcpy(out, "Blocker"); break;
-        //case TOOL_DELETER:       strcpy(out, "Deleter"); break;
+        case TOOL_CHISEL_SMALL:  strcpy(out, "Small Chisel (1)"); break;
+        case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel (2)"); break;
+        case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel (3)"); break;
+        case TOOL_OVERLAY:       strcpy(out, "Overlay (4)"); break;
+        case TOOL_PLACER:        strcpy(out, "Placer (5)"); break;
+        case TOOL_GRABBER:       strcpy(out, "Pointer (6)"); break;
         case TOOL_DESTROY:       strcpy(out, "Destroy Level"); break;
-        case TOOL_PLACER:        strcpy(out, "Placer"); break;
-        case TOOL_GRABBER:       strcpy(out, "Pointer"); break;
         case TOOL_FINISH_LEVEL:  strcpy(out, "Finish Level"); break;
     }
 }

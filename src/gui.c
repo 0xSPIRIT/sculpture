@@ -316,6 +316,14 @@ static void gui_init(void) {
     //overlay_interface_init();
 }
 
+static void gui_popup_toggle(void) {
+    GUI *gui = &gs->gui;
+    gui->popup = !gui->popup;
+    gui->popup_y_vel = 0;
+    gui->popup_inventory_y_vel = 0;
+    tooltip_reset(&gui->tooltip);
+}
+
 static void gui_tick(void) {
     if (gs->levels[gs->level_current].state != LEVEL_STATE_PLAY)
         return;
@@ -329,10 +337,7 @@ static void gui_tick(void) {
         gs->levels[gs->level_current].state == LEVEL_STATE_PLAY &&
         gs->level_current >= 4-1)
     {
-        gui->popup = !gui->popup;
-        gui->popup_y_vel = 0;
-        gui->popup_inventory_y_vel = 0;
-        tooltip_reset(&gui->tooltip);
+        gui_popup_toggle();
     }
 
     const f32 speed = 3.0f;
@@ -573,6 +578,19 @@ static void gui_popup_draw(int target) {
 
     RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 127);
 
+    int mx = gs->input.real_mx;
+    int my = gs->input.real_my;
+    gs->is_mouse_on_tab_icon = is_point_in_rect((SDL_Point){mx, my}, tab_icon);
+    
+    if (gs->is_mouse_on_tab_icon) {
+        if (gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
+            gui_popup_toggle();
+        }
+        RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 200);
+    } else {
+        RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 100);
+    }
+    
     if (gs->level_current >= 4-1)
         RenderTexture(target, &GetTexture(TEXTURE_TAB), null, &tab_icon);
 

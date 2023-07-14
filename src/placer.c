@@ -33,6 +33,13 @@ static void placer_init(int num) {
     placer->place_height = placer->place_width * placer->place_aspect;
 }
 
+static void placer_try_hard_tutorial() {
+    gs->tutorial = *tutorial_rect(TUTORIAL_PLACER_HARD,
+                                  NormX(32),
+                                  0.25,
+                                  null);
+}
+
 static void placer_suck_circle(Placer *placer) {
     Input *input = &gs->input;
 
@@ -70,7 +77,7 @@ static void placer_suck_circle(Placer *placer) {
                     int type = arr[xx+yy*gs->gw].type;
                     if (type == 0) continue;
 
-                    if (is_cell_hard(type)) { continue; }
+                    if (is_cell_hard(type)) { placer_try_hard_tutorial(); continue; }
 
                     if (placer->contains->type == type || placer->contains->type == 0 || placer->contains->amount == 0) {
                         placer->contains->type = type;
@@ -324,6 +331,7 @@ static void placer_place_rect(Placer *placer) {
                 object_index = -1;
             }
 
+            gs->has_any_placed = true;
             set(x, y, placer->contains->type, object_index);
             placer->contains->amount--;
         }
@@ -346,6 +354,8 @@ static void placer_tick(Placer *placer) {
 
     placer->x = gs->input.mx;
     placer->y = gs->input.my;
+    
+    if (gs->is_mouse_on_tab_icon) return; // Hacky!!!!! ew
 
     if (gs->creative_mode) {
         placer->contains->amount = gs->gw*gs->gh;

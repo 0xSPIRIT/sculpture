@@ -1,7 +1,11 @@
 # TODO
 
-  - Evaluate if the placer is good.
-    - In level "Yearning" the placer is a bit odd? Maybe not though.
+  - Finish the rest in the playtest_notes.txt file.
+
+  - Idea: Replace some of the tutorial boxes with grid previews and key
+    previews on how to do things?
+
+  - Make the dust be sucked up to the inventory?
 
   - For level 7, change the confirmation popup when you finish to "no" and "no"
     instead of confirm and cancel.
@@ -24,6 +28,9 @@
     of the mouse in the desktop version.
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
+
+  - For release builds, remove all the code hotloading DLL stuff... Just load
+    it initially.
 
 # Long-Term
 

@@ -38,7 +38,8 @@
 #define TUTORIAL_UNDO_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Use Z to undo if you make a mistake!\n"
+    "Use Z to undo if you make a mistake!\n" \
+    "Use R to restart a level, losing all progress.\n"
 
 #define TUTORIAL_CHISEL_ROTATE_STRING \
     "Tutorial\n" \
@@ -58,8 +59,18 @@
     "--------\n\n" \
     "- Use the PLACER to take up the sand and place it into\n" \
     "your INVENTORY [TAB].\n\n" \
-    "- To place material, scroll the mouse, then click.\n\n"\
-    "- You may use F1-F5 to switch to a different Placer slot.\n"
+    "- To place material, scroll the mouse for resizing,\n" \
+    "  then click.\n\n"\
+
+#define TUTORIAL_PLACER_HARD \
+    "Tutorial\n" \
+    "--------\n\n" \
+    "A placer can't take up solid material.\n"
+
+#define TUTORIAL_PLACER_F_KEYS \
+    "Tutorial\n" \
+    "--------\n\n" \
+    "- Use F1-F5 to switch to a different Placer slot.\n"
 
 #define TUTORIAL_INVENTORY_STRING \
     "Tutorial\n" \
@@ -92,13 +103,11 @@
     "--------\n\n" \
     "To place material down, scroll the mouse, then click.\n"
 
-#if 0
 #define TUTORIAL_CHISEL_INVENTORY_STRING \
     "Tutorial\n" \
     "--------\n\n" \
     "Upon chiseling, the broken material gets placed into\n" \
     "your inventory.\n"
-#endif
 
 // A rectangle containing text, and an "Okay" button.
 typedef struct Tutorial_Rect {

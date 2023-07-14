@@ -276,7 +276,7 @@ static void overlay_swap_tick(void) {
         }
     }
 
-    if (overlay->changes.was_grid_none && has_any_chisel_chiseled()) {
+    if (overlay->changes.was_grid_none && (has_any_chisel_chiseled() || gs->has_any_placed)) {
         if (gs->overlay.show && !gs->gui.popup && !gs->converter.active) {
             overlay->changes.temp += 0.02f;
         }
@@ -401,8 +401,9 @@ static bool int_array_any_neighbours_not_same(int *array, int x, int y) {
     return false;
 }
 
+// @Yellow
 static void overlay_draw_missed_pixels(int target, int *grid) {
-    RenderColor(255, 128, 0, 255 * 0.5*(sin(SDL_GetTicks()/500.0)+1));
+    RenderColor(0, 200, 0, 255 * 0.5*(sin(SDL_GetTicks()/500.0)+1));
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             int i = x+y*gs->gw;
@@ -440,6 +441,7 @@ static void overlay_draw_grid(int target, int *grid, f32 alpha_coeff) {
                 a = fmax(0, min(255, alpha - f*30));
             }
 
+#if 0
             if (gs->level_current+1 != 7 && gs->overlay.current_material != -1 && t != gs->overlay.current_material) {
                 a /= 4;
             }
@@ -453,6 +455,7 @@ static void overlay_draw_grid(int target, int *grid, f32 alpha_coeff) {
                 c.g = min(255, c.g+add);
                 c.b = min(255, c.b+add);
             }
+#endif
 
             RenderColor(c.r, c.g, c.b, a);
 

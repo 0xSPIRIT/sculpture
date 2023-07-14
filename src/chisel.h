@@ -1,5 +1,6 @@
 #define USE_PRESSURE false
 #define HIGHLIGHT_MAX 64
+#define CHISEL_FLASHING false
 
 typedef enum Chisel_Size {
     CHISEL_SMALL = 0,
@@ -33,6 +34,8 @@ typedef struct Chisel {
 
     f64 angle;
     Texture *texture;
+    
+    f64 rotating_flash;
 
     int did_chisel_this_frame;
     int num_times_chiseled;

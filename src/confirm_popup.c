@@ -68,14 +68,6 @@ static void end_of_level_popup_confirm_confirm(void *unused) {
         set_fade(FADE_LEVEL_FINISH, 0, 255);
     }
 
-    // Special thing for level 1.
-    if (gs->level_current+1 == 1) {
-        gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
-                                      NormX(32),
-                                      NormY((768.8/8.0)+32),
-                                      null);
-    };
-
     level->off = false;
     level->desired_alpha = 0;
     level_set_state(gs->level_current, LEVEL_STATE_PLAY);

@@ -103,7 +103,10 @@ static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *tra
 
     Assert(persistent_memory->size >= sizeof(Game_State));
 
-    LPVOID base_address = (LPVOID) Terabytes(2);
+    void *base_address = 0;
+#ifndef ALASKA_RELEASE_MODE
+    base_address = (void*)Terabytes(2); 
+#endif
 
     persistent_memory->data = VirtualAlloc(base_address,
                                            persistent_memory->size + transient_memory->size,

@@ -108,6 +108,8 @@ RENDERAPI void RenderColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 RENDERAPI void RenderColorStruct(SDL_Color rgba);
 RENDERAPI void RenderLine(int target, int x1, int y1, int x2, int y2);
 RENDERAPI void RenderLineRelative(int target, int x1, int y1, int x2, int y2);
+RENDERAPI void RenderArrow(int target_enum, SDL_Point from, SDL_Point to, int head_size);
+RENDERAPI void RenderArrowRelative(int target_enum, SDL_Point from, SDL_Point to, int head_size);
 RENDERAPI void RenderPoint(int target_enum, int x, int y);
 RENDERAPI void RenderPointRelative(int target, int x1, int y1);
 RENDERAPI void RenderDrawRect(int target, SDL_Rect rect);

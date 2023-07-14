@@ -62,6 +62,8 @@ typedef struct Game_State {
     SDL_Window *window;
     SDL_Renderer *renderer;
     Render render;
+    
+    bool is_mouse_on_tab_icon; // Hacky...
 
     SDL_Point real_top_left; // Probably should be in Render.
 
@@ -142,6 +144,7 @@ typedef struct Game_State {
     Save_State save_states[MAX_UNDO];
     int save_state_count; // Number of states saved.
     bool has_player_interacted_since_last_state;
+    bool has_any_placed;
 
     Text_Field text_field;
 
@@ -165,6 +168,7 @@ typedef struct Game_State {
 
     Item item_holding;
 
+    bool did_placer_hard_tutorial;
     bool did_chisel_tutorial;
     bool did_undo_tutorial;
     bool did_pressure_tutorial;

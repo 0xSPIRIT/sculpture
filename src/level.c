@@ -152,11 +152,12 @@ static void goto_level(int lvl) {
     gs->chisel_large  = chisel_init(CHISEL_LARGE);
     
     gs->chisel = &gs->chisel_small;
-
+    
     gs->hammer = hammer_init();
 
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_init(i);
+    gs->has_any_placed = false;
 
     inventory_init();
     grabber_init();
@@ -575,7 +576,7 @@ static void level_draw_outro(int target, Level *level) {
     RenderTextQuick(outro,
                     "AAAAAj",
                     gs->fonts.font,
-                    "What you intended",
+                    "What Max intended",
                     WHITE,
                     alpha,
                     dx,
