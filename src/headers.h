@@ -25,6 +25,7 @@
 #include "preview.h"
 #include "credits.h"
 #include "overlay.h"
+#include "dust.h"
 #include "grid.h"
 #include "chisel.h"
 #include "hammer.h"

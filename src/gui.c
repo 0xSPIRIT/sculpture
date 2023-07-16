@@ -578,21 +578,22 @@ static void gui_popup_draw(int target) {
 
     RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 127);
 
-    int mx = gs->input.real_mx;
-    int my = gs->input.real_my;
-    gs->is_mouse_on_tab_icon = is_point_in_rect((SDL_Point){mx, my}, tab_icon);
-    
-    if (gs->is_mouse_on_tab_icon) {
-        if (gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
-            gui_popup_toggle();
+    if (gs->level_current >= 4-1) {
+        int mx = gs->input.real_mx;
+        int my = gs->input.real_my;
+        gs->is_mouse_on_tab_icon = is_point_in_rect((SDL_Point){mx, my}, tab_icon);
+        
+        if (gs->is_mouse_on_tab_icon) {
+            if (gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
+                gui_popup_toggle();
+            }
+            RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 200);
+        } else {
+            RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 100);
         }
-        RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 200);
-    } else {
-        RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 100);
-    }
-    
-    if (gs->level_current >= 4-1)
+        
         RenderTexture(target, &GetTexture(TEXTURE_TAB), null, &tab_icon);
+    }
 
     all_converters_draw(target);
     inventory_draw(target);

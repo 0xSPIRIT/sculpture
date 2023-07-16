@@ -724,7 +724,6 @@ static void simulation_tick(void) {
     }
 
     grid_array_tick(gs->grid, 1, -1);
-    dust_grid_tick();
     grid_array_tick(gs->gas_grid, 1, 1);
 }
 
@@ -765,7 +764,6 @@ static void grid_draw(int target) {
     // Draw all the grids in a layered order.
     grid_array_draw(target, gs->gas_grid, 255);
     grid_array_draw(target, gs->grid, 255);
-    dust_grid_draw(target);
 
     overlay_draw(target);
 

@@ -388,10 +388,6 @@ int win32_main(int argc, char **argv) {
         LARGE_INTEGER time_elapsed_for_frame;
         QueryPerformanceCounter(&time_elapsed_for_frame);
 
-        // We push the DLL reload to a delay because if we lock the file too fast
-        // the compiler doesn't have enough time to write to it... or something.
-        // It's only a 5-frame delay so it doesn't matter compared to compilation
-        // times anyways.
         FILETIME new_dll_write_time = get_last_write_time(GAME_DLL_NAME);
 
         if (CompareFileTime(&new_dll_write_time, &game_code.last_write_time) != 0) {

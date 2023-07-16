@@ -15,7 +15,10 @@ static void titlescreen_goto_next(void) {
 
 static void titlescreen_tick(void) {
     Uint8 *keys = gs->input.keys;
-    if (keys[SDL_SCANCODE_RETURN] ||
+    bool mouse_pressed = gs->input.mouse_pressed[SDL_BUTTON_LEFT];
+    
+    if (mouse_pressed ||
+        keys[SDL_SCANCODE_RETURN] ||
         keys[SDL_SCANCODE_SPACE]  ||
         keys[SDL_SCANCODE_TAB])
     {

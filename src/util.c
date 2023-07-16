@@ -233,8 +233,8 @@ static f32 my_rand_f32(int seed) {
     return (f32)my_rand(seed)/(f32)_m;
 }
 
-static f32 randf(f32 size) {
-    return size * ((f32)(rand()%RAND_MAX))/(f32)RAND_MAX;
+static f64 randf(f64 size) {
+    return size * ((f64)(rand()%RAND_MAX))/(f64)RAND_MAX;
 }
 
 static int randR(int i) {
@@ -254,17 +254,17 @@ static int randB(int i) {
     return my_rand(my_rand(my_rand(num*num)));
 }
 
-static f32 interpolate(f32 a, f32 b, f32 step) {
+static f64 interpolate(f64 a, f64 b, f64 step) {
     if (a == b) return b;
     
     int sign = (b-a > 0) ? 1 : -1;
     
     if (sign > 0) {
-        f32 result = a+step;
+        f64 result = a+step;
         if (result > b) return b;
         return result;
     } else {
-        f32 result = a-step;
+        f64 result = a-step;
         if (result < b) return b;
         return result;
     }

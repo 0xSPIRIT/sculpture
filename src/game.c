@@ -32,10 +32,6 @@
 #include "background.c"
 #include "audio.c"
 
-
-
-
-
 static void game_resize(int h) {
     gs->gui.popup_y /= gs->gh*gs->S;
 

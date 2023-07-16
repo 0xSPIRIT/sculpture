@@ -116,7 +116,9 @@ typedef struct Game_State {
 
     enum Blob_Type blob_type;
 
-    Dust_Data dust_data;
+    Dust dust[MAX_DUST_COUNT];
+    int dust_count;
+    
     Cell *grid_layers[NUM_GRID_LAYERS];
     Cell *grid, *gas_grid; // Pointers into grid_layers
 

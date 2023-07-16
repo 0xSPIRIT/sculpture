@@ -81,20 +81,9 @@ typedef struct Cell {
     int rand;             // Random value per cell
 } Cell;
 
-// Provides higher fidelity X and Y values
-// SOA not AOS for simplicity.
-typedef struct Dust_Data {
-    enum Cell_Type *types;
-    f64 *xs;
-    f64 *ys;
-    f64 *vxs;
-    f64 *vys;
-    int *timers;
-    int count;
-} Dust_Data;
-
 typedef struct Line {
     int x1, y1, x2, y2;
 } Line;
 
 static int compare_cells_to_int_count(Cell *a, int *b);
+static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i);

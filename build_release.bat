@@ -19,7 +19,7 @@ REM Delete all the sculpture_***.pdb's
 del sculpture_*.pdb >nul 2>nul
 
 REM Build the game layer (.dll that links into SDL layer)
-cl.exe %Common_Compiler_Flags% ..\src\game.c %Linker_Flags% /link /incremental:no /DLL /out:sculpture.dll /SUBSYSTEM:WINDOWS
+cl.exe %Common_Compiler_Flags% ..\src\game.c %Linker_Flags% /link /incremental:no /DLL /NOIMPLIB /NOEXP /out:sculpture.dll /SUBSYSTEM:WINDOWS
 
 set err=%errorlevel%
 

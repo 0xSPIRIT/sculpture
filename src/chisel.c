@@ -330,8 +330,11 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
             if (!chisel->is_calculating_highlight) {
                 chisel_attempt_add_to_inventory(x, y);
                 move_mouse_to_grid_position(x, y);
-                f64 vx = randf(2.0)-1;
-                f64 vy = randf(2.0)-1;
+                
+                f64 angle = randf(2*M_PI);
+                f64 magnitude = 0.5;
+                f64 vx = magnitude * cos(angle);
+                f64 vy = magnitude * sin(angle);
                 emit_dust(type, x, y, vx, vy);
             }
         }
@@ -364,8 +367,10 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
                 if (can_add_item_to_inventory(gs->grid[x+xx + (y+yy)*gs->gw].type)) {
                     if (!chisel->is_calculating_highlight) {
                         chisel_attempt_add_to_inventory(x+xx, y+yy);
-                        f64 vx = randf(2.0)-1;
-                        f64 vy = randf(2.0)-1;
+                        f64 angle = randf(2*M_PI);
+                        f64 magnitude = 0.5;
+                        f64 vx = magnitude * cos(angle);
+                        f64 vy = magnitude * sin(angle);
                         emit_dust(type, x+xx, y+yy, vx, vy);
                     }
                     set(x+xx, y+yy, 0, -1);

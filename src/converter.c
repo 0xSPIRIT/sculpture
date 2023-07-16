@@ -83,6 +83,12 @@ static void converter_set_state(Converter *converter, enum Converter_State state
     }
 }
 
+// Checks the inventory, does all possible conversions, and returns if
+// the level is still actually doable based on the minimum material amounts.
+static bool is_level_possible(void) {
+    return true;
+}
+
 static void converter_draw(int target, Converter *converter) {
     if (converter->state == CONVERTER_INACTIVE)
         return;

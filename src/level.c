@@ -762,6 +762,7 @@ static void level_draw_outro_or_play(Level *level) {
             break;
         }
     }
+    dust_grid_run(RENDER_TARGET_PIXELGRID);
 
     draw_objects(RENDER_TARGET_PIXELGRID);
 

@@ -109,8 +109,8 @@
 "Maybe that's not such a bad thing.\n"\
 "...\n"\
 "Let's move to Alaska.\n"\
-"We'd sculpt the little birds and trees.\n"\
-"And it'd feel good.\n"\
+"We'll sculpt the little birds and trees.\n"\
+"And it'll feel good.\n"\
 
 typedef struct Narrator {
     char current_lines[10][256];

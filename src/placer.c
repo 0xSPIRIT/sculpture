@@ -34,10 +34,13 @@ static void placer_init(int num) {
 }
 
 static void placer_try_hard_tutorial() {
-    gs->tutorial = *tutorial_rect(TUTORIAL_PLACER_HARD,
-                                  NormX(32),
-                                  0.25,
-                                  null);
+    if (!gs->did_placer_hard_tutorial) {
+        gs->tutorial = *tutorial_rect(TUTORIAL_PLACER_HARD,
+                                      NormX(32),
+                                      0.25,
+                                      null);
+        gs->did_placer_hard_tutorial = true;
+    }
 }
 
 static void placer_suck_circle(Placer *placer) {
