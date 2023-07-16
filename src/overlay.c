@@ -8,7 +8,7 @@ Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_STEAM,          94,  86, 142,
     CELL_WOOD_LOG,       13,   9, 249,
     CELL_WOOD_PLANK,    150,   6, 118,
-    CELL_COBBLESTONE,   255, 255, 255,
+    CELL_STONE,   255, 255, 255,
     CELL_MARBLE,          0,   0, 255,
     CELL_SANDSTONE,       0, 255, 255,
     CELL_CEMENT,        190,  22,  46,
@@ -277,7 +277,7 @@ static void overlay_swap_tick(void) {
     }
 
     if (overlay->changes.was_grid_none && (has_any_chisel_chiseled() || gs->has_any_placed)) {
-        if (gs->overlay.show && !gs->gui.popup && !gs->converter.active) {
+        if (gs->overlay.show && !gs->gui.popup && !gs->conversions.active) {
             overlay->changes.temp += 0.02f;
         }
     }

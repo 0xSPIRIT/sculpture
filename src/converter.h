@@ -37,18 +37,6 @@ typedef struct Converter_Checker {
     int current; // 1 or 2 [0 when first initialized]
 } Converter_Checker;
 
-typedef struct Conversions {
-    bool active; // Is the panel active?
-
-    char *string;
-    char lines[MAX_CONVERSION_LINES][100];
-    int line_count;
-
-    bool calculated_render_target;
-
-    SDL_Rect r; // The panel position and size.
-} Conversions;
-
 static Converter *converter_init(int type, bool allocated);
 static void all_converters_init(void);
 

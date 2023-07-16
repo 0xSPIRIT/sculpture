@@ -45,7 +45,7 @@ static void auto_set_inventory_slots(void) {
 
     switch (level) {
         case 6: {
-            slots[0].item.type = CELL_COBBLESTONE;
+            slots[0].item.type = CELL_STONE;
             slots[0].item.amount = 1000;
             slots[1].item.type = CELL_SAND;
             slots[1].item.amount = 1000;
@@ -59,7 +59,7 @@ static void auto_set_inventory_slots(void) {
             slots[2].item.amount = 600;
         } break;
         case 8: {
-            slots[0].item.type = CELL_COBBLESTONE;
+            slots[0].item.type = CELL_STONE;
             slots[0].item.amount = 1500;
             slots[1].item.type = CELL_SAND;
             slots[1].item.amount = 2000;
@@ -127,10 +127,10 @@ static void inventory_init(void) {
     auto_set_inventory_slots();
 }
 
-static void item_draw(int target, Item *item, int x, int y, int w, int h) {
-    if (!item->type) return;
-    if (!item->amount) {
-        item->type = 0;
+static void item_draw(int target, Item item, int x, int y, int w, int h) {
+    if (!item.type) return;
+    if (!item.amount) {
+        item.type = 0;
         return;
     }
 
@@ -140,20 +140,20 @@ static void item_draw(int target, Item *item, int x, int y, int w, int h) {
     };
 
     if (y >= GUI_H && y <= gs->gui.popup_y) {
-        RenderTextureColorMod(&GetTexture(TEXTURE_ITEMS+item->type), 255, 0, 0);
+        RenderTextureColorMod(&GetTexture(TEXTURE_ITEMS+item.type), 255, 0, 0);
     } else {
-        RenderTextureColorMod(&GetTexture(TEXTURE_ITEMS+item->type), 255, 255, 255);
+        RenderTextureColorMod(&GetTexture(TEXTURE_ITEMS+item.type), 255, 255, 255);
     }
 
     RenderTexture(target,
-                  &GetTexture(TEXTURE_ITEMS+item->type),
+                  &GetTexture(TEXTURE_ITEMS+item.type),
                   null,
                   &r);
 
     Render_Text_Data text_data = {0};
-    sprintf(text_data.identifier, "item %d", item->index);
+    sprintf(text_data.identifier, "item %d", item.index);
     text_data.font = gs->fonts.font_bold_small;
-    sprintf(text_data.str, "%d", item->amount);
+    sprintf(text_data.str, "%d", item.amount);
     if (y >= GUI_H && y <= gs->gui.popup_y) {
         text_data.foreground = (SDL_Color){255, 0, 0, 255};
     } else {
@@ -230,7 +230,7 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
         RenderText(target, &text_data);
     }
 
-    item_draw(target, &slot->item, bounds.x, bounds.y, bounds.w, bounds.h);
+    item_draw(target, slot->item, bounds.x, bounds.y, bounds.w, bounds.h);
 }
 
 //////////////////////////////// Inventory Ticking
@@ -473,7 +473,7 @@ static void inventory_draw(int target) {
 
     Input *input = &gs->input;
     item_draw(target,
-              &gs->item_holding,
+              gs->item_holding,
               input->real_mx - ITEM_SIZE/2,
               y + input->real_my - ITEM_SIZE/2,
               ITEM_SIZE,

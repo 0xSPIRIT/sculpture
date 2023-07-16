@@ -92,7 +92,7 @@ Uint8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
     CELL_WOOD_LOG,      128,  80,   0,
     CELL_WOOD_PLANK,    200,  80,   0,
 
-    CELL_COBBLESTONE,   128, 128, 128,
+    CELL_STONE,   128, 128, 128,
     CELL_MARBLE,        255, 255, 255,
     CELL_SANDSTONE,     255, 128,   0,
 

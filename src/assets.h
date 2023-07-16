@@ -41,7 +41,7 @@ enum {
 };
 
 typedef enum {
-    RENDER_TARGET_MASTER, // The final full-screen resolution target. Bounds: { 0, 0, gs->window_width, gs->window_height}
+    RENDER_TARGET_MASTER, // The final full-screen resolution target. Bounds: { 0, 0, gs->window_width, gs->window_height }
     RENDER_TARGET_PIXELGRID, // The main pixel art render target Bounds: {0, 0, gs->gw*2, gs->gh*2} where the default bounds is {gs->gw/2, gs->gh/2, gs->gw*2, gs->gh*2}
     RENDER_TARGET_GUI_TOOLBAR, // The render target showing the tool buttons
     RENDER_TARGET_CHISEL_BLOCKER,
@@ -52,6 +52,7 @@ typedef enum {
     RENDER_TARGET_GRID, // Temp render target used by 3d.c
     RENDER_TARGET_3D,
     RENDER_TARGET_CONVERSION_PANEL,
+    RENDER_TARGET_GUI_CONVERSIONS,
     RENDER_TARGET_PREVIEW,
     RENDER_TARGET_OUTRO,
     RENDER_TARGET_COUNT

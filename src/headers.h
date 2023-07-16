@@ -40,6 +40,7 @@
 #include "tooltip.h"
 #include "gui.h"
 #include "converter.h"
+#include "converter_gui.h"
 #include "input.h"
 #include "grabber.h"
 #include "tutorial.h"

@@ -3,7 +3,7 @@ static int is_cell_hard(int type) {
         type == CELL_ICE         ||
         type == CELL_WOOD_LOG    ||
         type == CELL_WOOD_PLANK  ||
-        type == CELL_COBBLESTONE ||
+        type == CELL_STONE ||
         type == CELL_MARBLE      ||
         type == CELL_SANDSTONE   ||
 
@@ -332,7 +332,7 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             break;
         }
 
-        case CELL_COBBLESTONE: {
+        case CELL_STONE: {
             r = randR(i) % 100 < 10;
             amt = 25;
             color = (SDL_Color){140 + r*amt + (randR(i)%20 - 10), 140 + r*amt + (randR(i)%20 - 10), 135 + r*amt + (randR(i)%20 - 10), 255};

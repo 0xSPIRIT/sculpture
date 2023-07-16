@@ -1,5 +1,7 @@
 # TODO
 
+  - Converter GUI thing.
+
   - Add a Ctrl+R or Z popup if the level becomes impossible to continue from
     current state. converter.c:88
 

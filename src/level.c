@@ -115,6 +115,8 @@ static void levels_setup(void) {
 
 static void goto_level(int lvl) {
     gs->level_current = lvl;
+    
+    gs->conversions.y = gs->conversions.y_to = 0;
 
     gs->render.view.x = gs->render.to.x = 0;
     gs->render.view.y = gs->render.to.y = 0;
@@ -134,8 +136,6 @@ static void goto_level(int lvl) {
            &gs->levels[lvl].default_source_cell,
            sizeof(Source_Cell)*SOURCE_CELL_MAX);
     gs->levels[lvl].source_cell_count = gs->levels[lvl].default_source_cell_count;
-
-    gs->converter.calculated_render_target = false;
 
     gs->current_tool = TOOL_GRABBER;
 

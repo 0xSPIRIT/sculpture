@@ -100,7 +100,7 @@ static void get_filename_from_type(int type, char *out) {
         case CELL_WOOD_LOG:    strcpy(out, RES_DIR "items/wood_log.png"); break;
         case CELL_WOOD_PLANK:  strcpy(out, RES_DIR "items/wood_plank.png"); break;
 
-        case CELL_COBBLESTONE: strcpy(out, RES_DIR "items/cobblestone.png"); break;
+        case CELL_STONE: strcpy(out, RES_DIR "items/cobblestone.png"); break;
         case CELL_MARBLE:      strcpy(out, RES_DIR "items/marble.png"); break;
         case CELL_SANDSTONE:   strcpy(out, RES_DIR "items/sandstone.png"); break;
 
@@ -137,7 +137,7 @@ static void get_name_from_type(int type, char *out) {
         case CELL_WOOD_LOG:    strcpy(out, "Wood Log"); break;
         case CELL_WOOD_PLANK:  strcpy(out, "Wood Plank"); break;
 
-        case CELL_COBBLESTONE: strcpy(out, "Stone"); break;
+        case CELL_STONE: strcpy(out, "Stone"); break;
         case CELL_MARBLE:      strcpy(out, "Marble"); break;
         case CELL_SANDSTONE:   strcpy(out, "Sandstone"); break;
 

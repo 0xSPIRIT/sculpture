@@ -438,7 +438,7 @@ static bool can_goto_next_level(void) {
 static void gui_draw_profile(int target) {
     Assert(target == RENDER_TARGET_MASTER);
 
-    if (gs->converter.active) return;
+    if (gs->conversions.active) return;
 
     Level *level = &gs->levels[gs->level_current];
     int count = 0;
@@ -597,12 +597,12 @@ static void gui_popup_draw(int target) {
 
     all_converters_draw(target);
     inventory_draw(target);
-    converter_gui_draw();
+    converter_gui_draw(target);
 }
 
 static bool is_cell_stone(int type) {
     switch (type) {
-        case CELL_COBBLESTONE: case CELL_MARBLE: case CELL_SANDSTONE:
+        case CELL_STONE: case CELL_MARBLE: case CELL_SANDSTONE:
         case CELL_CONCRETE: case CELL_QUARTZ: case CELL_GRANITE:
         case CELL_BASALT: case CELL_DIAMOND: {
             return true;
@@ -616,7 +616,7 @@ static bool is_cell_stone(int type) {
 //   Returns 0 if no tier is specified.
 static int get_cell_tier(int type) {
     switch (type) {
-        case CELL_MARBLE: case CELL_COBBLESTONE: case CELL_SANDSTONE: {
+        case CELL_MARBLE: case CELL_STONE: case CELL_SANDSTONE: {
             return 1;
         }
 

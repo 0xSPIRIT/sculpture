@@ -557,6 +557,7 @@ static void chisel_draw_highlights(int target,
 static void chisel_tick(Chisel *chisel) {
     if (gs->gui.restart_popup_confirm.active) return;
     if (gs->is_mouse_on_tab_icon) return; // Hacky!!!!! ew
+    if (gs->conversions.active) return; // There should really be a focus variable
 
     chisel->did_chisel_this_frame = false;
     if (chisel->click_delay > 0) chisel->click_delay--;

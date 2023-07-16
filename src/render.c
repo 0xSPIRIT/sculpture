@@ -488,19 +488,19 @@ RENDERAPI void RenderTextureEx(int target_enum,
 }
 
 RENDERAPI void RenderTextQuick(int target_enum,
-                                   const char *identifier,
-                                   Font *font,
-                                   const char *str,
-                                   SDL_Color color,
-                                   Uint8 alpha,
-                                   int x,
-                                   int y,
-                                   int *w,
-                                   int *h,
-                                   bool force_redraw)
+                               const char *identifier,
+                               Font *font,
+                               const char *str,
+                               SDL_Color color,
+                               Uint8 alpha,
+                               int x,
+                               int y,
+                               int *w,
+                               int *h,
+                               bool force_redraw)
 {
     Render_Text_Data text_data = {0};
-
+    
     strcpy(text_data.identifier, identifier);
     text_data.font = font;
     strcpy(text_data.str, str);

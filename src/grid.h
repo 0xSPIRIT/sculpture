@@ -29,7 +29,7 @@ enum Tool_Type {
 
 // Don't mess with the arrangement,
 // It'll fuck up the table in level.c!
-enum Cell_Type {
+typedef enum Cell_Type {
     CELL_NONE,
 
     CELL_DIRT,
@@ -42,7 +42,7 @@ enum Cell_Type {
     CELL_WOOD_LOG,
     CELL_WOOD_PLANK,
 
-    CELL_COBBLESTONE,
+    CELL_STONE,
     CELL_MARBLE,
     CELL_SANDSTONE,
 
@@ -64,7 +64,7 @@ enum Cell_Type {
     CELL_DUST,
 
     CELL_TYPE_COUNT
-};
+} Cell_Type;
 
 typedef struct Cell {
     enum Cell_Type type;  // The type of this cell.

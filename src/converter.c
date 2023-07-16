@@ -138,12 +138,6 @@ static void converter_draw(int target, Converter *converter) {
                   null,
                   &arrow_dst);
 
-    // TODO:
-    // Draw converter->name using gs->fonts.font_courier,
-    // with CONVERTER_NAME_COLOR,  at
-    //  (int) (converter->x + margin),
-    //  (int) (converter->y + margin + GUI_H),
-
     char identifier[64] = {0};
     sprintf(identifier, "%p", converter);
     int margin = 8;
@@ -192,126 +186,6 @@ static void converter_begin_converting(void *converter_ptr) {
     }
 
     converter_set_state(converter, converter->state == CONVERTER_ON ? CONVERTER_OFF : CONVERTER_ON);
-}
-
-static void converter_gui_setup_rectangle(bool really_update) {
-    if (really_update) {
-    } else if (!gs->resized) return;
-
-    Conversions *c = &gs->converter;
-
-    c->r = (SDL_Rect){
-        gs->window_width - Scale(64+400),
-        Scale(64),
-        Scale(360), 0
-    };
-
-    c->r.h = gs->fonts.font_small->char_height*c->line_count - Scale(90);
-}
-
-static void converter_gui_init(void) {
-    Conversions *c = &gs->converter;
-
-    FILE *f = fopen(RES_DIR "layout_converter.txt", "r");
-
-    char buf[128] = {0};
-
-    while (fgets(buf, 128, f)) {
-        const size_t len = strlen(buf);
-        for (size_t i = 0; i < len; i++) {
-            if (buf[i] == '\n' || buf[i] == '\r') buf[i] = 0;
-        }
-        strcpy(c->lines[c->line_count++], buf);
-    }
-    
-    fclose(f);
-
-    converter_gui_setup_rectangle(true);
-}
-
-static void converter_gui_tick(void) {
-    Conversions *c = &gs->converter;
-
-    if (!gs->text_field.active && gs->input.keys_pressed[SDL_SCANCODE_I]) {
-        c->active = !c->active;
-    }
-}
-
-static void converter_gui_draw(void) {
-    Conversions *c = &gs->converter;
-
-    const SDL_Color bg = ColorFromIntRGBA(CONVERSION_PANEL_COLOR);
-    const int target = RENDER_TARGET_CONVERSION_PANEL;
-
-    c->r.x = 0;
-    c->r.y = 0;
-    c->r.w = gs->window_width;
-    c->r.h = gs->window_height-GUI_H;
-
-    const bool update = false;
-
-    if (!c->calculated_render_target || update || gs->resized) {
-        c->calculated_render_target = true;
-        int cum = 0;
-
-        RenderColor(0, 0, 0, 0);
-        RenderClear(target);
-
-        RenderColor(bg.r, bg.g, bg.b, bg.a);
-        RenderFillRect(target, c->r);
-
-        RenderColor(128, 128, 128, 255);
-        RenderDrawRect(target, c->r);
-
-        int count = 0;
-
-        for (int i = 0; i < c->line_count; i++) {
-            count++;
-
-            Render_Text_Data text_data = {0};
-            text_data.font = gs->fonts.font_converter_gui;
-            strcpy(text_data.str, c->lines[i]);
-            text_data.foreground = (SDL_Color){255, 255, 255, 255};
-            text_data.alignment = ALIGNMENT_TOP_LEFT;
-            text_data.x = c->r.x + Scale(140);
-            text_data.y = c->r.y + Scale(16) + cum;
-            text_data.alpha = 255;
-
-            RenderText(target, &text_data);
-            cum += text_data.texture.height;
-        }
-
-        {
-            RenderColor(0, 0, 0, 0);
-            SDL_Rect a = {
-                0, c->r.y + c->r.h,
-                gs->window_width, gs->window_height - (c->r.y + c->r.h+GUI_H)
-            };
-            RenderFillRect(target, a);
-
-            SDL_Rect b = {
-                c->r.x+c->r.w, 0,
-                gs->window_width - (c->r.x + c->r.w), gs->window_height-GUI_H
-            };
-            RenderFillRect(target, b);
-        }
-    }
-
-    if (!c->active) return;
-
-    SDL_Rect src = {
-        0, 0,
-        gs->window_width, gs->window_height-GUI_H
-    };
-    SDL_Rect dst = {
-        0, GUI_H,
-        gs->window_width, gs->window_height-GUI_H
-    };
-
-    RenderTexture(RENDER_TARGET_MASTER,
-                  &RenderTarget(target)->texture,
-                  &src,
-                  &dst);
 }
 
 static void auto_set_material_converter_slots(Converter *converter) {
@@ -581,7 +455,7 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
             if (number_inputs == 2) {
                 Converter_Checker checker = converter_checker(input1, input2);
 
-                if (is_either_input_type(&checker, CELL_COBBLESTONE, true) &&
+                if (is_either_input_type(&checker, CELL_STONE, true) &&
                     is_either_input_type(&checker, CELL_SAND, false))
                 {
                     result = CELL_SANDSTONE;
@@ -589,8 +463,8 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
             } else if (number_inputs == 1) {
                 switch (input->type) {
                     case CELL_SAND:        result = CELL_GLASS;       break;
-                    case CELL_DIRT:        result = CELL_COBBLESTONE; break;
-                    case CELL_COBBLESTONE: result = CELL_MARBLE;      break;
+                    case CELL_DIRT:        result = CELL_STONE; break;
+                    case CELL_STONE: result = CELL_MARBLE;      break;
                     case CELL_ICE:         result = CELL_WATER;       break;
                     case CELL_WATER:       result = CELL_STEAM;       break;
                 }
@@ -600,9 +474,9 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
         case CELL_REFINED_COAL: {
             if (number_inputs == 1) {
                 switch (input->type) {
-                    case CELL_DIRT:        result = CELL_COBBLESTONE; break;
+                    case CELL_DIRT:        result = CELL_STONE; break;
                     case CELL_ICE:         result = CELL_STEAM;       break;
-                    case CELL_COBBLESTONE: result = CELL_MARBLE;      break;
+                    case CELL_STONE: result = CELL_MARBLE;      break;
                 }
             } else if (number_inputs == 2) {
                 Converter_Checker checker = converter_checker(input1, input2);
@@ -613,7 +487,7 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
                     result = CELL_QUARTZ;
                 }
                 else if (is_either_input_type(&checker, CELL_WATER, true) &&
-                         is_either_input_type(&checker, CELL_COBBLESTONE, false))
+                         is_either_input_type(&checker, CELL_STONE, false))
                 {
                     result = CELL_CEMENT;
                 }
@@ -628,7 +502,7 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
                         result = CELL_BASALT;
                         break;
                     }
-                    case CELL_COBBLESTONE: {
+                    case CELL_STONE: {
                         result = CELL_MARBLE;
                         break;
                     }

@@ -12,6 +12,7 @@
 #include "credits.c"
 #include "undo.c"
 #include "hammer.c"
+#include "converter_gui.c"
 #include "chisel.c"
 #include "preview.c"
 #include "tooltip.c"
@@ -104,7 +105,6 @@ export void game_init(Game_State *state, int level) {
 
     gs->show_tutorials = true;
 
-    converter_gui_init();
     levels_setup();
     previews_load();
     goto_level(level);
@@ -146,7 +146,12 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
     }
 
     if (event->type == SDL_MOUSEWHEEL) {
-        if (gs->current_tool == TOOL_PLACER) {
+        if (gs->conversions.active) {
+            gs->conversions.y_to += Scale(50) * event->wheel.y;
+            gs->conversions.y_to = clamp(gs->conversions.y_to,
+                                         -gs->conversions.max_height,
+                                         0);
+        } else if (gs->current_tool == TOOL_PLACER) {
             Placer *placer = &gs->placers[gs->current_placer];
             if (input->keys[SDL_SCANCODE_LCTRL] && gs->creative_mode) {
                 placer->contains->type += event->wheel.y;
@@ -405,7 +410,6 @@ export void game_run(Game_State *state) {
                 //view_tick(&gs->view, &gs->input);
 
                 gui_tick();
-                converter_gui_tick();
                 inventory_tick();
                 all_converters_tick();
                 

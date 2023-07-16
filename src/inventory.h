@@ -27,7 +27,7 @@ enum Slot_Type {
 typedef struct Converter Converter;
 
 // A generic slot.
-typedef struct {
+typedef struct Slot {
     Converter *converter; // Pointer to a converter if needed.
     int inventory_index; // 0 to INVENTORY_SLOT_COUNT
     Item item;
@@ -61,7 +61,7 @@ static void inventory_draw(int target);
 static bool can_add_item_to_inventory(enum Cell_Type type);
 static bool add_item_to_inventory_slot(enum Cell_Type type, int amount);
 
-static void item_draw(int target, Item *item, int x, int y, int w, int h);
+static void item_draw(int target, Item item, int x, int y, int w, int h);
 static void slot_draw(int target, Slot *slot, f32 rx, f32 ry);
 
 static bool is_cell_fuel(int type);

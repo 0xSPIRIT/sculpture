@@ -18,7 +18,11 @@
 #endif
 
 // Assert using an SDL MessageBox popup. Prints to the console too.
-#define Assert(cond) if(!(cond)) { _assert(__func__, __FILE__, __LINE__), __debugbreak(); }
+#ifdef ALASKA_RELEASE_MODE
+  #define Assert(cond)
+#else
+  #define Assert(cond) if(!(cond)) { _assert(__func__, __FILE__, __LINE__), __debugbreak(); }
+#endif
 
 #define PushSize(arena, size) (_push_array(arena, 1, size, __FILE__, __LINE__))
 #define PushArray(arena, count, size) (_push_array(arena, count, size, __FILE__, __LINE__))
@@ -66,110 +70,110 @@ typedef struct Game_State {
     bool is_mouse_on_tab_icon; // Hacky...
 
     SDL_Point real_top_left; // Probably should be in Render.
-
+    
+    Conversions conversions;
+    
     // All stored surfaces and textures.
     Textures textures;
     Surfaces surfaces;
-
+    
     Preview current_preview;
     Preview tool_previews[TOOL_COUNT];
-
+    
     Background background;
-
+    
     GameStateEnum gamestate;
-
+    
     Titlescreen titlescreen;
-
+    
     SDL_Event *event;
-
+    
     Fade fade;
-
-    Conversions converter;
-
+    
     Tutorial_Rect tutorial;
     bool show_tutorials;
-
+    
     bool level1_set_highlighted;
-
+    
     Credits credits;
     Narrator narrator;
     Object3D obj;
-
+    
     Timelapse timelapse;
-
+    
     Audio audio;
-
+    
     Fonts fonts;
-
+    
     bool is_mouse_over_any_button;
-
+    
     f64 S;
     bool fullscreen;
     int window_width, window_height;
     int desktop_w, desktop_h;
     int real_width, real_height;
     f32 delta_time;
-
+    
     int current_tool, previous_tool;
-
+    
     SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
-
+    
     enum Blob_Type blob_type;
-
+    
     Dust dust[MAX_DUST_COUNT];
     int dust_count;
     
     Cell *grid_layers[NUM_GRID_LAYERS];
     Cell *grid, *gas_grid; // Pointers into grid_layers
-
+    
     // grid = regular everyday grid
     // gas_grid = only used for gases
-
+    
     bool resized;
-
+    
     int gw, gh; // Grid width, grid height
     int grid_show_ghost;
-
+    
     int object_count, object_current;
     int do_draw_blobs, do_draw_objects;
-
+    
     bool paused;
     int frames;
     bool step_one;
-
+    
     Inventory inventory;
-
+    
     Overlay overlay;
-
+    
     bool undo_initialized;
-
+    
     Save_State save_states[MAX_UNDO];
     int save_state_count; // Number of states saved.
     bool has_player_interacted_since_last_state;
     bool has_any_placed;
-
+    
     Text_Field text_field;
-
+    
     bool creative_mode;
-
+    
     Placer placers[PLACER_COUNT];
     int current_placer;
-
+    
     Level levels[LEVEL_COUNT];
     int level_current, level_count, new_level;
-
+    
     GUI gui;
     SDL_Texture *gui_texture;
-
+    
     Input input;
-
+    
     Grabber grabber;
     Effect current_effect;
-
+    
     Converter *material_converter, *fuel_converter;
-
+    
     Item item_holding;
-
+    
     bool did_placer_hard_tutorial;
     bool did_chisel_tutorial;
     bool did_undo_tutorial;
@@ -177,11 +181,11 @@ typedef struct Game_State {
     bool did_inventory_tutorial;
     bool did_fuel_converter_tutorial;
     bool did_placer_rectangle_tutorial;
-
+    
     Hammer hammer;
-
+    
     SDL_Surface *pixel_format_surf;
-
+    
     Chisel chisel_small, chisel_medium, chisel_large;
     Chisel *chisel;
 } Game_State;
