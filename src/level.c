@@ -116,7 +116,7 @@ static void levels_setup(void) {
 static void goto_level(int lvl) {
     gs->level_current = lvl;
     
-    gs->conversions.y = gs->conversions.y_to = 0;
+    converter_gui_init();
 
     gs->render.view.x = gs->render.to.x = 0;
     gs->render.view.y = gs->render.to.y = 0;

@@ -390,6 +390,7 @@ static void slot_tick(Slot *slot) {
 // Look in gui.c for the ticking of converter slots.
 static void inventory_tick() {
     if (!gs->gui.popup) return;
+    if (gs->conversions.active) return;
 
     if (gs->level_current == 6-1 && !gs->did_fuel_converter_tutorial) {
         Tutorial_Rect *next = tutorial_rect(TUTORIAL_TEXT_FILE_STRING,
@@ -416,6 +417,7 @@ static void inventory_tick() {
 
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
         Slot *slot = &gs->inventory.slots[i];
+        
         if (slot->item.type && is_mouse_in_slot(slot)) {
             tooltip_set_position_to_cursor(&gs->gui.tooltip, TOOLTIP_TYPE_ITEM);
 

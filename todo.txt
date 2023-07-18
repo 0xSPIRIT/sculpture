@@ -1,11 +1,15 @@
 # TODO
 
-  - Converter GUI thing.
-
   - Add a Ctrl+R or Z popup if the level becomes impossible to continue from
     current state. converter.c:88
 
-  - Finish the rest in the playtest_notes.txt file.
+  - Include inventory information while you're chiseling? Somehow?
+
+  - Add WASD / Arrow keys tutorial.
+
+  - Titlescreen: add previews.
+
+  - Hand-make sprites for each rotation.
 
   - Idea: Replace some of the tutorial boxes with grid previews and key
     previews on how to do things?
@@ -15,13 +19,6 @@
 
   - The cobblestone overlay color is too close to the grey cobblestone.
     It should have a higher contrast. Keep the pink color, though.
-
-  - Determine if the destroy level tool is even necessary?
-    Replace it with a restart level thing instead?
-
-  - Hand-make sprites for each rotation.
-
-  - Level 7's narration feels weird!
 
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.

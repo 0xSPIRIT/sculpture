@@ -4,7 +4,7 @@ typedef struct Conversions {
     
     int timer;
     
-    int override_indices[999];
+    int override_indices[32];
     
     int definition;
     Uint8 definition_alpha;

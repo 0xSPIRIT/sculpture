@@ -71,6 +71,17 @@ int get_item_from_any(int type, int timer, int override_index) {
     return 0;
 }
 
+void converter_gui_init(void) {
+    Conversions *c = &gs->conversions;
+    memset(c, 0, sizeof(Conversions));
+    
+    for (int i = 0; i < 15; i++) {
+        int button_index = i*6+5;
+        if (conversions[button_index])
+            c->override_indices[i] = 1;
+    }
+}
+
 bool converter_gui_item_draw(int target, Cell_Type item, int override_index, int x, int y, int w, int h) {
     bool mouse_in_rect = false;
     
@@ -123,13 +134,7 @@ void converter_draw_arrow(int target, int xx, int yy) {
     RenderArrow(target, (SDL_Point){xx, yy}, (SDL_Point){xx, yy+length}, head_size);
 }
 
-void converter_gui_draw_text(int target,
-                             const char *str,
-                             int item_x,
-                             int item_y,
-                             int item_w,
-                             int idx)
-{
+void converter_gui_draw_text(int target, const char *str, int item_x, int item_y, int item_w, int idx) {
     char ident[32] = {0};
     sprintf(ident, "%d", idx);
     
@@ -233,17 +238,15 @@ void gui_conversions_draw_scroll_bar(int target) {
     };
     
     SDL_Rect scroll_bar = {
-        gs->window_width-w,
-        GUI_H + logical_height * (-c->y)/c->max_height,
+        gs->window_width - w,
+        GUI_H + logical_height * -c->y/c->max_height,
         w,
         bar_height
     };
     
     SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
     
-    if (is_point_in_rect(mouse, scroll_bar) &&
-        gs->input.mouse_pressed[SDL_BUTTON_LEFT])
-    {
+    if (is_point_in_rect(mouse, scroll_bar) && gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
         c->holding_scroll_bar = true;
     }
     
@@ -536,9 +539,7 @@ void converter_gui_draw(int final_target) {
     if (c->definition_alpha) {
         int type = c->definition;
         
-        GuiConversionRects r = gui_conversions_get_rect(pairs,
-                                                        pair_count,
-                                                        type);
+        GuiConversionRects r = gui_conversions_get_rect(pairs, pair_count, type);
         
         if (!r.rect_count && c->definition_alpha) c->definition_alpha = 0;
         
