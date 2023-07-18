@@ -151,8 +151,8 @@ static void get_name_from_type(int type, char *out) {
         case CELL_BASALT:      strcpy(out, "Basalt"); break;
         case CELL_DIAMOND:     strcpy(out, "Diamond"); break;
 
-        case CELL_UNREFINED_COAL: strcpy(out, "Unref. Coal"); break;
-        case CELL_REFINED_COAL: strcpy(out, "Ref. Coal"); break;
+        case CELL_UNREFINED_COAL: strcpy(out, "Unrefined Coal"); break;
+        case CELL_REFINED_COAL: strcpy(out, "Refined Coal"); break;
         case CELL_LAVA:        strcpy(out, "Lava"); break;
 
         case CELL_SMOKE:       strcpy(out, "Smoke"); break;
@@ -166,8 +166,8 @@ static void get_name_from_tool(int type, char *out) {
         case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel (2)"); break;
         case TOOL_CHISEL_LARGE:  strcpy(out, "Large Chisel (3)"); break;
         case TOOL_OVERLAY:       strcpy(out, "Overlay (4)"); break;
-        case TOOL_PLACER:        strcpy(out, "Placer (5)"); break;
-        case TOOL_GRABBER:       strcpy(out, "Pointer (6)"); break;
+        case TOOL_PLACER:        strcpy(out, "Placer (6)"); break;
+        case TOOL_GRABBER:       strcpy(out, "Pointer (5)"); break;
         case TOOL_DESTROY:       strcpy(out, "Destroy Level"); break;
         case TOOL_FINISH_LEVEL:  strcpy(out, "Finish Level"); break;
     }

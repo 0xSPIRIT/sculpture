@@ -155,16 +155,15 @@ static void click_gui_tool_button(void *type_ptr) {
     tooltip_reset(&gui->tooltip);
 }
 
-static void button_tick(Button *b, void *data) {
+static bool button_tick(Button *b, void *data) {
+    bool result = false;
+    
     Input *input = &gs->input;
     GUI *gui = &gs->gui;
 
     int gui_input_mx = input->real_mx;
     int gui_input_my = input->real_my;
 
-    // This is a hack so that function pointers won't stop working
-    // upon reloading the DLL... Honestly why don't we just do it
-    // this way normally? Seems to work great.
     switch (b->type) {
         case BUTTON_CONVERTER:     b->on_pressed = converter_begin_converting; break;
         case BUTTON_TOOL_BAR:      b->on_pressed = click_gui_tool_button;      break;
@@ -173,9 +172,10 @@ static void button_tick(Button *b, void *data) {
         case BUTTON_EOL_POPUP_CANCEL:      b->on_pressed = end_of_level_popup_confirm_cancel;   break;
         case BUTTON_RESTART_POPUP_CONFIRM: b->on_pressed = restart_popup_confirm_confirm;  break;
         case BUTTON_RESTART_POPUP_CANCEL:  b->on_pressed = restart_popup_confirm_cancel;   break;
+        default: b->on_pressed = null; break;
     }
 
-    if (b->disabled) return;
+    if (b->disabled) return result;
 
     if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
         gui_input_my >= b->y && gui_input_my < b->y+b->h) {
@@ -195,7 +195,10 @@ static void button_tick(Button *b, void *data) {
         if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
             Mix_HaltChannel(AUDIO_CHANNEL_GUI);
             Mix_PlayChannel(AUDIO_CHANNEL_GUI, gs->audio.accept, 0);
-            b->on_pressed(data);
+            
+            if (b->on_pressed) b->on_pressed(data);
+            
+            result = true;
 
             // Eat the input
             input->mouse = input->mouse & !(input->mouse & SDL_BUTTON_LEFT);
@@ -205,6 +208,8 @@ static void button_tick(Button *b, void *data) {
         b->just_had_tooltip = false;
         tooltip_reset(&gui->tooltip);
     }
+    
+    return result;
 }
 
 static void button_draw_prefer_color(int target, Button *b, SDL_Color color) {

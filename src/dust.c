@@ -57,8 +57,8 @@ static void dust_grid_run(int target) {
         
         if (dust->y >= gs->gh) {
             dust->y = gs->gh-1;
-            dust->vy *= -0.5;
-            dust->vx *= 0.75;
+            dust->vy *= -(randf(0.5)+0.25);
+            dust->vx *= 0.75 + randf(0.25)-0.125;
         }
         
         if (dust->timer == dust->timer_max) {

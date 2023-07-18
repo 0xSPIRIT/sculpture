@@ -13,7 +13,7 @@ typedef enum {
 } Tooltip_Type;
 
 typedef enum {
-    BUTTON_TOOL_BAR,
+    BUTTON_TOOL_BAR = 1,
     BUTTON_CONVERTER,
     BUTTON_OVERLAY_INTERFACE,
     BUTTON_TUTORIAL,
@@ -70,7 +70,7 @@ typedef struct Arrow {
 static Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*));
 static void tool_button_set_disabled(int level);
 static void click_gui_tool_button(void *type_ptr);
-static void button_tick(Button *b, void *data);
+static bool button_tick(Button *b, void *data);
 static void button_draw_prefer_color(int target, Button *b, SDL_Color color);
 static void button_draw(int target, Button *b);
 static void gui_message_stack_push(const char *str);

@@ -1,60 +1,90 @@
-// TODO:
-//  - the get_rects function doesn't work when you click on something
-//  - redo all scroll bar code. It misses the diamond at the bottom, and is generally not very nice!
-//  - It's slow! Maybe cache the entire render target? You should profile it first.
-//    frame time is 10-15ms, which is not ideal, since we're usually looking at
-//    1-6ms.
-//  - Seperate the two sides by a line.
-
-int get_item_from_any(int type, int timer) {
+int get_item_from_any(int type, int timer, int override_index) {
     Assert(type < 0);
     timer /= 2;
     
-    if (type == CELL_ANY_STONE) {
-        int t = timer % 140;
-        if (t < 20) {
-            return CELL_STONE;
-        } else if (t < 40) {
-            return CELL_MARBLE;
-        } else if (t < 60) {
-            return CELL_SANDSTONE;
-        } else if (t < 80) {
-            return CELL_QUARTZ;
-        } else if (t < 100) {
-            return CELL_GRANITE;
-        } else if (t < 120) {
-            return CELL_BASALT;
-        } else if (t < 140) {
-            return CELL_DIAMOND;
-        }
-    } else if (type == CELL_ANY_COAL) {
-        int t = timer % 40;
-        if (t < 20) {
-            return CELL_UNREFINED_COAL;
-        } else if (t < 40) {
-            return CELL_REFINED_COAL;
-        }
-    } else {
-        Assert(0);
+    const int step = 20; // The interval between switches.
+    
+    if (override_index != -1) {
+        timer = override_index * step;
+    }
+    
+    switch(type) {
+        case CELL_ANY_STONE: {
+            int t = timer % (step*7);
+            
+            if (t < step)    return CELL_STONE;
+            if (t < step*2)  return CELL_MARBLE;
+            if (t < step*3)  return CELL_SANDSTONE;
+            if (t < step*4)  return CELL_QUARTZ;
+            if (t < step*5)  return CELL_GRANITE;
+            if (t < step*6)  return CELL_BASALT;
+            if (t < step*7)  return CELL_DIAMOND;
+            
+        } break; 
+        case CELL_ANY_COAL: {
+            int t = timer % (step*2);
+            
+            if (t < step)    return CELL_UNREFINED_COAL;
+            if (t < step*2)  return CELL_REFINED_COAL;
+            
+        } break;
+        case CELL_ANY_CONVERT_TO_COAL: {
+            int t = timer % (step*5);
+            
+            if (t < step)    return CELL_MARBLE;
+            if (t < step*2)  return CELL_STONE;
+            if (t < step*3)  return CELL_SANDSTONE;
+            if (t < step*4)  return CELL_DIRT;
+            if (t < step*5)  return CELL_SAND;
+            
+        } break;
+        case CELL_ANY_FUEL: {
+            int t = timer % (step*3);
+            
+            if (t < step)    return CELL_UNREFINED_COAL;
+            if (t < step*2)  return CELL_REFINED_COAL;
+            if (t < step*3)  return CELL_LAVA;
+        } break;
+        case CELL_ANY_STEAM_OR_ICE: {
+            int t = timer % (step*2);
+            
+            if (t < step)    return CELL_STEAM;
+            if (t < step*2)  return CELL_ICE;
+        } break;
+        case CELL_ANY_NONE_OR_UNREFINED_COAL: {
+            int t = timer % (step*2);
+            
+            if (t < step)    return CELL_NONE;
+            if (t < step*2)  return CELL_UNREFINED_COAL;
+        } break;
+        case CELL_ANY_WATER_OR_ICE: {
+            int t = timer % (step*2);
+            
+            if (t < step)    return CELL_WATER;
+            if (t < step*2)  return CELL_ICE;
+        } break;
+        default: {
+            Assert(0); // Unknown any type.
+        } break;
     }
     
     return 0;
 }
 
-bool converter_gui_item_draw(int target, Cell_Type item, int x, int y, int w, int h) {
+bool converter_gui_item_draw(int target, Cell_Type item, int override_index, int x, int y, int w, int h) {
     bool mouse_in_rect = false;
     
     SDL_Rect r = {
-        Scale(x),
-        Scale(y),
-        Scale(w),
-        Scale(h)
+        x,
+        y,
+        w,
+        h
     };
     
     if (r.x+r.w < 0 || r.y+r.h < 0 || r.x >= gs->window_width || r.y >= gs->window_height) return false;
     
     if (item < 0) {
-        item = get_item_from_any(item, gs->conversions.timer);
+        item = get_item_from_any(item, gs->conversions.timer, override_index-1);
     }
     
     SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
@@ -88,9 +118,9 @@ bool converter_gui_item_draw(int target, Cell_Type item, int x, int y, int w, in
 }
 
 void converter_draw_arrow(int target, int xx, int yy) {
-    int head_size = 15;
-    int length = 40;
-    RenderArrow(target, (SDL_Point){xx, yy}, (SDL_Point){xx, yy+Scale(length)}, Scale(head_size));
+    int head_size = Scale(15);
+    int length = Scale(40);
+    RenderArrow(target, (SDL_Point){xx, yy}, (SDL_Point){xx, yy+length}, head_size);
 }
 
 void converter_gui_draw_text(int target,
@@ -106,8 +136,8 @@ void converter_gui_draw_text(int target,
     int w, h;
     TTF_SizeText(gs->fonts.font->handle, str, &w, &h);
     
-    int new_x = Scale(item_x) + item_w/2 - w/2;
-    int new_y = Scale(item_y)-h;
+    int new_x = item_x + item_w/2 - w/2;
+    int new_y = item_y-h;
     if (new_x+w < 0 || new_y+h < 0 || new_x >= gs->window_width || new_y >= gs->window_height) return;
     
     RenderTextQuick(target,
@@ -126,69 +156,63 @@ void converter_gui_draw_text(int target,
 // All of these values must be scaled upon use.
 
 static inline int _gui_conversions_get_jump_dy(void) {
-    return 250;
+    return Scale(250);
 }
 
 static inline int _gui_conversions_get_fuel_dx(void) {
-    return 16+768-300;
+    return Scale(16+768-305);
 }
 
 static inline int _gui_conversions_get_material_dx(void) {
-    return 66;
+    return Scale(66);
 }
 
 static inline int _gui_conversions_get_dy(void) {
-    return gs->conversions.y + GUI_H*2;
+    return gs->conversions.y + GUI_H*3; // These values are already scaled
 }
 
 static inline int _gui_conversions_get_input_dx(void) {
-    return 128;
+    return Scale(128);
 }
 
 static inline int _gui_conversions_get_fuel_dx_material(void) {
-    return 216;
+    return Scale(216);
 }
 
 static inline int _gui_conversions_get_fuel_dy(void) {
-    return 56;
+    return Scale(56);
 }
 
 static inline int _gui_conversions_get_output_offset(void) {
-    return 96;
+    return Scale(96);
 }
 
-typedef struct GUIConversionsRects {
+
+typedef struct GuiConversionPair {
+    Cell_Type output;
+    SDL_Rect rectangle;
+} GuiConversionPair;
+
+// Add the rectangle to the array.
+void gui_conversion_pair_add(GuiConversionPair *pairs, int *pair_count, Cell_Type output, int x, int y) {
+    Assert(pairs);
+    Assert(pair_count);
+    pairs[(*pair_count)++] = (GuiConversionPair){ output, (SDL_Rect){x, y, Scale(200), Scale(200)} };
+}
+
+typedef struct GuiConversionRects {
     SDL_Rect rects[99];
     int rect_count;
-}GUIConversionsRects;
-GUIConversionsRects gui_conversions_get_rect(Cell_Type type) {
-    GUIConversionsRects result = {0};
+} GuiConversionRects;
+
+GuiConversionRects gui_conversions_get_rect(GuiConversionPair *pairs, int pair_count, Cell_Type output) {
+    GuiConversionRects result = {0};
     
-    for (int i = 0; i < sizeof(conversions)/5; i++) {
-        int converter = conversions[i*5];
-        Cell_Type output = conversions[i*5+4];
-        if (output != type) continue;
-            
-        int dy = 0;
-        int dx;
-        
-        if (converter == CONVERTER_FUEL) {
-            dx = _gui_conversions_get_fuel_dx();
-            dy += i * _gui_conversions_get_jump_dy();
-        } else {
-            dx = _gui_conversions_get_material_dx();
-            dy += (i-7) * _gui_conversions_get_jump_dy();
-        }
-        
-        int pad = 64;
-        
-        result.rects[result.rect_count++] = (SDL_Rect){
-            Scale(dx - pad),
-            Scale(dy - pad),
-            Scale(300),
-            Scale(_gui_conversions_get_jump_dy()),
-        };
+    for (int i = 0; i < pair_count; i++) {
+        if (pairs[i].output != output) continue;
+        result.rects[result.rect_count++] = pairs[i].rectangle;
     }
+    
     return result;
 }
 
@@ -197,26 +221,29 @@ void gui_conversions_draw_scroll_bar(int target) {
     
     int w = Scale(16);
     int h = gs->window_height-GUI_H;
-    
-    c->scroll_bar_full = (SDL_Rect){
-        gs->window_width-w,
-        GUI_H,
-        w,
-        h,
-    };
-    
     int bar_height = Scale(64);
     
-    c->scroll_bar = (SDL_Rect){
+    int logical_height = gs->window_height-GUI_H-bar_height;
+    
+    SDL_Rect scroll_bar_full = {
+        gs->window_width - w,
+        GUI_H,
+        w,
+        h
+    };
+    
+    SDL_Rect scroll_bar = {
         gs->window_width-w,
-        GUI_H - h*(c->y)/(c->max_height),
+        GUI_H + logical_height * (-c->y)/c->max_height,
         w,
         bar_height
     };
     
     SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
     
-    if (is_point_in_rect(mouse, c->scroll_bar) && gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
+    if (is_point_in_rect(mouse, scroll_bar) &&
+        gs->input.mouse_pressed[SDL_BUTTON_LEFT])
+    {
         c->holding_scroll_bar = true;
     }
     
@@ -225,27 +252,31 @@ void gui_conversions_draw_scroll_bar(int target) {
     }
     
     if (c->holding_scroll_bar) {
-        f64 dy = gs->input.real_my - gs->input.real_pmy;
-        c->y += -(dy/(gs->window_height-GUI_H)) * c->max_height;
-        f64 off = (f64)bar_height/(gs->window_height) * c->max_height;
-        c->y = clamp(c->y, -c->max_height + off, 0);
+        f64 mouse_dy = gs->input.real_my - gs->input.real_pmy;
+        
+        // Set the view y position based on the scroll bar.
+        c->y -= mouse_dy/logical_height * c->max_height;
+        
+        c->y = clamp(c->y, -c->max_height, 0);
         c->y_to = c->y;
     }
     
     RenderColor(32, 32, 32, 255);
-    RenderFillRect(target, c->scroll_bar_full);
+    RenderFillRect(target, scroll_bar_full);
     RenderColor(255, 255, 255, 255);
-    RenderFillRect(target, c->scroll_bar);
+    RenderFillRect(target, scroll_bar);
 }
 
 void converter_gui_draw(int final_target) {
     int target = RENDER_TARGET_CONVERSION_PANEL;
     
+    Conversions *c = &gs->conversions;
+    
     gs->conversions.timer++;
     
     RenderMaybeSwitchToTarget(target);
     
-    RenderColor(0,0,0,0);
+    RenderColor(0,0,0,175);
     RenderClear(target);
     
     if (gs->input.keys_pressed[SDL_SCANCODE_I]) {
@@ -254,21 +285,24 @@ void converter_gui_draw(int final_target) {
     
     if (!gs->conversions.active) return;
     
-    gs->conversions.max_height = 3300;
+    gs->conversions.max_height = Scale(2600);
     
     int dx = _gui_conversions_get_fuel_dx();
     int dy = _gui_conversions_get_dy();
     
     int cum = 0;
     
-    int size = 48;
+    int size = Scale(48);
     
     gs->conversions.y = lerp64(gs->conversions.y, gs->conversions.y_to, 0.5);
     
     bool mouse_in_none = true;
     
     Font *title_font = gs->fonts.font_times;
-    int a = 100;
+    int yoff = Scale(45)+c->y;
+    
+    GuiConversionPair pairs[9999] = {0};
+    int pair_count = 0;
     
     // Fuel conversions
     RenderTextQuick(target,
@@ -277,27 +311,34 @@ void converter_gui_draw(int final_target) {
                     "Fuel Conversions",
                     WHITE,
                     255,
-                    Scale(dx),
-                    Scale(dy-a),
+                    dx,
+                    GUI_H+yoff,
                     null,
                     null,
                     false);
     
-    for (int i = 0; i < 7; i++) {
-        int converter = conversions[i*5];
+    for (int i = 0; i < 3; i++) {
+        int converter = conversions[i*6];
         Assert(converter == CONVERTER_FUEL);
         
-        Cell_Type input1 = conversions[i*5+2];
-        Cell_Type input2 = conversions[i*5+3];
-        Cell_Type output = conversions[i*5+4];
+        int input1_index = i*6+2;
+        int input2_index = i*6+3;
+        int output_index = i*6+4;
+        
+        Cell_Type input1 = conversions[input1_index];
+        Cell_Type input2 = conversions[input2_index];
+        Cell_Type output = conversions[output_index];
         
         {
             int x = dx;
             int y = dy + cum;
             
-            converter_gui_draw_text(target, "Input 1", x, y, size, i*4+2);
+            gui_conversion_pair_add(pairs, &pair_count, output, x, y-gs->conversions.y);
+            
+            converter_gui_draw_text(target, "Input 1", x, y, size, input1_index);
             bool mouse_in = converter_gui_item_draw(target,
                                                     input1,
+                                                    c->override_indices[i],
                                                     x,
                                                     y,
                                                     size,
@@ -309,9 +350,10 @@ void converter_gui_draw(int final_target) {
             int x = dx + _gui_conversions_get_input_dx();
             int y = dy + cum;
             
-            converter_gui_draw_text(target, "Input 2", x, y, size, i*4+3);
+            converter_gui_draw_text(target, "Input 2", x, y, size, input2_index);
             bool mouse_in = converter_gui_item_draw(target,
                                                     input2,
+                                                    c->override_indices[i],
                                                     x,
                                                     y,
                                                     size,
@@ -325,17 +367,18 @@ void converter_gui_draw(int final_target) {
             
             { // Arrow
                 RenderColor(255,255,255,255);
-                int xx = Scale(dx + size/2) + Scale(dx + _gui_conversions_get_input_dx() + size/2);
+                int xx = dx + size/2 + dx + _gui_conversions_get_input_dx() + size/2;
                 xx /= 2;
                 
-                int yy = Scale(dy+cum+20);
+                int yy = dy+cum+20;
                 
                 converter_draw_arrow(target, xx, yy);
             }
             
-            converter_gui_draw_text(target, "Output", x, y, size, i*4+4);
+            converter_gui_draw_text(target, "Output", x, y, size, output_index);
             bool mouse_in = converter_gui_item_draw(target,
                                                     output,
+                                                    c->override_indices[i],
                                                     x,
                                                     y,
                                                     size,
@@ -356,30 +399,38 @@ void converter_gui_draw(int final_target) {
                     "Material Conversions",
                     WHITE,
                     255,
-                    Scale(dx),
-                    Scale(dy-a),
+                    dx,
+                    GUI_H+yoff,
                     null,
                     null,
                     false);
     
-    for (int i = 7; i <= 22; i++) {
-        int idx = i*5;
-        int converter = conversions[i*5];
+    for (int i = 3; i <= 14; i++) {
+        int idx = i*6;
+        int converter = conversions[idx];
         Assert(converter == CONVERTER_MATERIAL);
         
-        Cell_Type fuel = conversions[idx+1];
-        Cell_Type input1 = conversions[idx+2];
-        Cell_Type input2 = conversions[idx+3];
-        Cell_Type output = conversions[idx+4];
+        int fuel_index = idx+1;
+        int input1_index = idx+2;
+        int input2_index = idx+3;
+        int output_index = idx+4;
+        int button_index = idx+5;
         
+        Cell_Type fuel = conversions[fuel_index];
+        Cell_Type input1 = conversions[input1_index];
+        Cell_Type input2 = conversions[input2_index];
+        Cell_Type output = conversions[output_index];
+        
+        bool has_button = conversions[button_index];
         
         {
             int x = dx + _gui_conversions_get_fuel_dx_material();
             int y = dy + cum + _gui_conversions_get_fuel_dy();
             
-            converter_gui_draw_text(target, "Fuel", x, y, size, idx+1);
+            converter_gui_draw_text(target, "Fuel", x, y, size, fuel_index);
             bool mouse_in = converter_gui_item_draw(target,
                                                     fuel,
+                                                    c->override_indices[i],
                                                     x,
                                                     y,
                                                     size,
@@ -391,9 +442,12 @@ void converter_gui_draw(int final_target) {
             int x = dx;
             int y = dy + cum;
             
-            converter_gui_draw_text(target, "Input 1", x, y, size, idx+2);
+            gui_conversion_pair_add(pairs, &pair_count, output, x, y-gs->conversions.y);
+            
+            converter_gui_draw_text(target, "Input 1", x, y, size, input1_index);
             bool mouse_in = converter_gui_item_draw(target,
                                                     input1,
+                                                    c->override_indices[i],
                                                     x,
                                                     y,
                                                     size,
@@ -405,9 +459,10 @@ void converter_gui_draw(int final_target) {
             int x = dx + _gui_conversions_get_input_dx();
             int y = dy + cum;
             
-            converter_gui_draw_text(target, "Input 2", x, y, size, idx+3);
+            converter_gui_draw_text(target, "Input 2", x, y, size, input2_index);
             bool mouse_in = converter_gui_item_draw(target,
                                                     input2,
+                                                    c->override_indices[i],
                                                     x,
                                                     y,
                                                     size,
@@ -421,17 +476,18 @@ void converter_gui_draw(int final_target) {
             
             { // Arrow
                 RenderColor(255,255,255,255);
-                int xx = Scale(dx + size/2) + Scale(dx + _gui_conversions_get_input_dx() + size/2);
+                int xx = dx + size/2 + dx + _gui_conversions_get_input_dx() + size/2;
                 xx /= 2;
                 
-                int yy = Scale(dy+cum+20);
+                int yy = dy+cum+20;
                 
                 converter_draw_arrow(target, xx, yy);
             }
             
-            converter_gui_draw_text(target, "Output", x, y, size, idx+4);
+            converter_gui_draw_text(target, "Output", x, y, size, output_index);
             bool mouse_in = converter_gui_item_draw(target,
                                                     output,
+                                                    c->override_indices[i],
                                                     x,
                                                     y,
                                                     size,
@@ -439,31 +495,59 @@ void converter_gui_draw(int final_target) {
             if (mouse_in) mouse_in_none = false;
         }
         
+        if (has_button) {
+            Button b = {0};
+            b.texture = &GetTexture(TEXTURE_ALTERNATE_BUTTON);
+            b.x = dx + _gui_conversions_get_fuel_dx_material();
+            b.y = dy + cum + _gui_conversions_get_fuel_dy() - Scale(80);
+            b.w = Scale(48);
+            b.h = b.w;
+            b.on_pressed = null;
+            b.index = -1;
+            strcpy(b.tooltip_text, "Alternate conversion");
+            
+            SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
+            if (is_point_in_rect(mouse, (SDL_Rect){b.x,b.y,b.w,b.h})) {
+                mouse_in_none = false;
+            }
+            
+            bool clicked = button_tick(&b, null);
+            button_draw(target, &b);
+            
+            if (clicked) {
+                if (c->override_indices[i] != 2) {
+                    c->override_indices[i] = 2;
+                } else {
+                    c->override_indices[i] = 1;
+                }
+            }
+        }
+        
         cum += _gui_conversions_get_jump_dy();
     }
+    
+    RenderColor(255, 255, 255, 255);
+    RenderLine(target, gs->window_width/2, GUI_H, gs->window_width/2, gs->window_height);
     
     if (mouse_in_none) {
         tooltip_reset(&gs->gui.tooltip);
     }
     
-    
-    Conversions *c = &gs->conversions;
     if (c->definition_alpha) {
         int type = c->definition;
         
-        GUIConversionsRects r = gui_conversions_get_rect(type);
+        GuiConversionRects r = gui_conversions_get_rect(pairs,
+                                                        pair_count,
+                                                        type);
         
-        if (c->definition_alpha == 255) { // First frame clicked?
+        if (!r.rect_count && c->definition_alpha) c->definition_alpha = 0;
+        
+        if (r.rect_count && c->definition_alpha == 255) { // First frame clicked?
             // Set up the scroll position
             // Find the average of all the rects' y positions.
             
-            f64 avg = 0;
-            for (int i = 0; i < r.rect_count; i++) {
-                avg += r.rects[i].y + r.rects[i].h/2;
-            }
-            avg /= r.rect_count;
-            
-            c->y_to = -avg + (gs->window_height-GUI_H)/2;
+            c->y_to = -r.rects[0].y + (gs->window_height-GUI_H)/2;
+            c->y_to = clamp(c->y_to, -c->max_height, 0);
         }
         
         RenderColor(255, 0, 0, c->definition_alpha);

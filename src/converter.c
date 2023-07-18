@@ -476,7 +476,7 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
                 switch (input->type) {
                     case CELL_DIRT:        result = CELL_STONE; break;
                     case CELL_ICE:         result = CELL_STEAM;       break;
-                    case CELL_STONE: result = CELL_MARBLE;      break;
+                    case CELL_STONE:       result = CELL_MARBLE;      break;
                 }
             } else if (number_inputs == 2) {
                 Converter_Checker checker = converter_checker(input1, input2);

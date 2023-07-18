@@ -182,7 +182,8 @@ static void tooltip_draw(int output_target, Tooltip *tooltip) {
                         false);
     }
     
-    tooltip_set_alpha(tooltip);
+    if (gs->current_tool == TOOL_PLACER && !gs->gui.popup && !gs->conversions.active)
+        tooltip_set_alpha(tooltip);
     
     SDL_Rect src = {
         0,
