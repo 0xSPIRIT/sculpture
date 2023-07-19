@@ -7,6 +7,8 @@
 // information, assert macros etc. are all here.
 //
 
+#include "headers.h" // Used to get type size information.
+
 #define Kilobytes(x) ((Uint64)x*1024)
 #define Megabytes(x) ((Uint64)x*1024*1024)
 #define Gigabytes(x) ((Uint64)x*1024*1024*1024)
@@ -26,8 +28,6 @@
 
 #define PushSize(arena, size) (_push_array(arena, 1, size, __FILE__, __LINE__))
 #define PushArray(arena, count, size) (_push_array(arena, count, size, __FILE__, __LINE__))
-
-#include "headers.h" // Used to get type size information.
 
 //
 // To allocate permanent memory that will persist until
@@ -70,6 +70,9 @@ typedef struct Game_State {
     bool is_mouse_on_tab_icon; // Hacky...
 
     SDL_Point real_top_left; // Probably should be in Render.
+    
+    Uint8 wasd_popup_alpha;
+    bool wasd_popup_active;
     
     Conversions conversions;
     

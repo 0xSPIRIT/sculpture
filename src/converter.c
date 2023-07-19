@@ -83,12 +83,6 @@ static void converter_set_state(Converter *converter, enum Converter_State state
     }
 }
 
-// Checks the inventory, does all possible conversions, and returns if
-// the level is still actually doable based on the minimum material amounts.
-static bool is_level_possible(void) {
-    return true;
-}
-
 static void converter_draw(int target, Converter *converter) {
     if (converter->state == CONVERTER_INACTIVE)
         return;
@@ -157,8 +151,10 @@ static void converter_draw(int target, Converter *converter) {
 }
 
 static void all_converters_draw(int target) {
-    converter_draw(target, gs->material_converter);
-    converter_draw(target, gs->fuel_converter);
+    if (gs->gui.popup_y < gs->window_height-GUI_H) {
+        converter_draw(target, gs->material_converter);
+        converter_draw(target, gs->fuel_converter);
+    }
 }
 
 static bool converter_is_layout_valid(Converter *converter) {
@@ -681,7 +677,7 @@ static void converter_tick(Converter *converter) {
 static void all_converters_tick(void) {
     // Grey out the buttons for each converter
     // if no converter are possible right now.
-
+    
     if (0 == material_converter_convert(&gs->material_converter->slots[SLOT_INPUT1].item,
                                         &gs->material_converter->slots[SLOT_INPUT2].item,
                                         &gs->material_converter->slots[SLOT_FUEL].item)) {

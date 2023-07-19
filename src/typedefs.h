@@ -9,8 +9,8 @@
 
 #define null 0
 
-#define export    __declspec(dllexport)
-#define allocator __declspec(allocator)
-
 typedef float  f32;
 typedef double f64;
+
+#define export    __declspec(dllexport)
+#define allocator __declspec(allocator)

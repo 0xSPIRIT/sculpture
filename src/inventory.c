@@ -261,7 +261,9 @@ static bool can_place_item_in_slot(int type, enum Slot_Type slot) {
 // This function mostly just handles interactions with items and the mouse.
 static void item_tick(Item *item, Slot *slot, int x, int y, int w, int h) {
     Input *input = &gs->input;
-
+    
+    if (gs->conversions.active) return;
+    
     if (item == &gs->item_holding) {
         if (input->real_my < gs->gui.popup_y &&
             input->real_my > GUI_H &&
@@ -276,7 +278,7 @@ static void item_tick(Item *item, Slot *slot, int x, int y, int w, int h) {
     }
 
     if (!is_point_in_rect((SDL_Point){input->real_mx, input->real_my}, (SDL_Rect){x, y, w, h})) return;
-
+    
     // From this point onwards, we know the mouse is in this item,
     // and this item is not currently being held.
 

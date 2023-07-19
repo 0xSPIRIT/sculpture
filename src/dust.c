@@ -19,8 +19,9 @@ static void emit_dust(enum Cell_Type type,
         .vy = vy,
         .timer = 0,
         .timer2 = 0,
-        .timer_max = rand()%35+40,
-        .going_into_inventory = false
+        .timer_max = rand()%35+60,
+        .going_into_inventory = false,
+        .rand = my_rand((int)(x+y+vx+vy))
     };
 }
 
@@ -49,70 +50,71 @@ static void dust_grid_run(int target) {
     for (int i = 0; i < gs->dust_count; i++) {
         Dust *dust = &gs->dust[i];
         
-        if (distance(dust->x, dust->y, gs->gw/2, 0) < 3) {
-            dust_remove(i);
-            i--;
-            continue;
-        }
-        
-        if (dust->y >= gs->gh) {
-            dust->y = gs->gh-1;
-            dust->vy *= -(randf(0.5)+0.25);
-            dust->vx *= 0.75 + randf(0.25)-0.125;
-        }
-        
-        if (dust->timer == dust->timer_max) {
-            if (gs->level_current+1 >= 4) {
-                dust->going_into_inventory = true;
-                dust->timer2 = 0;
-            } else {
+        if (!gs->paused) {
+            if (distance(dust->x, dust->y, gs->gw/2, 0) < 3) {
                 dust_remove(i);
                 i--;
                 continue;
             }
+            
+            if (dust->timer == dust->timer_max) {
+                if (can_conversions_gui_be_active()) {
+                    dust->going_into_inventory = true;
+                    dust->timer2 = 0;
+                } else {
+                    dust_remove(i);
+                    i--;
+                    continue;
+                }
+            }
+            
+            dust->timer++;
+            
+            if (dust->going_into_inventory) {
+                f64 dx = gs->gw / 2 - dust->x;
+                f64 dy = -dust->y;
+                f64 length = sqrt(dx*dx + dy*dy);
+                dx /= length;
+                dy /= length;
+                
+                f64 max = 30;
+                dust->timer2 = min(dust->timer2, max);
+                f64 coeff = dust->timer2 / max;
+                
+                dust->timer2++;
+                
+                dust->vx = coeff * 2 * dx;
+                dust->vy = coeff * 2 * dy;
+            } else if (dust->y < gs->gw-1) {
+                dust->vy += 0.2;
+            }
+            
+            dust->x += dust->vx;
+            dust->y += dust->vy;
+            
+            if (dust->y >= gs->gh) {
+                dust->y = gs->gh-1;
+                dust->vy *= -(randf(0.5)+0.25);
+                dust->vx *= 0.75 + randf(0.25)-0.125;
+            }
+            
+            if (abs(dust->y-gs->gh-1) < 2 && abs(dust->vy) < 1) {
+                dust->y = gs->gh-1;
+                dust->vy = 0;
+                dust->vx *= 0.25;
+            }
         }
         
-        dust->timer++;
-        
-        if (dust->going_into_inventory) {
-            f64 dx = gs->gw / 2 - dust->x;
-            f64 dy = -dust->y;
-            f64 length = sqrt(dx*dx + dy*dy);
-            dx /= length;
-            dy /= length;
-            
-            // TODO: Make this go slower at the start,
-            //       then increase the speed. Maybe use
-            //       interpolate()
-            
-            f64 max = 30;
-            dust->timer2 = min(dust->timer2, max);
-            f64 coeff = dust->timer2 / max;
-            
-            dust->timer2++;
-            
-            dust->vx = coeff * 2 * dx;
-            dust->vy = coeff * 2 * dy;
-        } else {
-            dust->vy += 0.2;
-        }
-        
-        dust->x += dust->vx;
-        dust->y += dust->vy;
-        
-        if (abs(dust->y-gs->gh-1) < 1 && abs(dust->vy) < 1) {
-            dust->y = gs->gh-1;
-            dust->vy = 0;
-            dust->vx *= 0.25;
-        }
+        // Draw:
+        Uint8 alpha = 200;
         
         SDL_Color c = pixel_from_index_grid(gs->grid,
                                             dust->type,
                                             0);
-        c.r *= 0.5;
-        c.g *= 0.5;
-        c.b *= 0.5;
-        RenderColor(c.r, c.g, c.b, 200);
+        c.r *= 0.75;
+        c.g *= 0.75;
+        c.b *= 0.75;
+        RenderColor(c.r, c.g, c.b, alpha);
         RenderPointRelative(target, dust->x, dust->y);
     }
 }

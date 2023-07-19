@@ -77,6 +77,13 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_KNIFE)      = RenderLoadTexture("knife.png");
     GetTexture(TEXTURE_POPUP)      = RenderLoadTexture("popup.png");
     GetTexture(TEXTURE_TEXT_ARROW) = RenderLoadTexture("text_arrow.png");
+    
+    GetTexture(TEXTURE_PLANK) = RenderLoadTexture("plank.png");
+    
+    GetTexture(TEXTURE_W_KEY) = RenderLoadTexture("buttons/W.png");
+    GetTexture(TEXTURE_A_KEY) = RenderLoadTexture("buttons/A.png");
+    GetTexture(TEXTURE_S_KEY) = RenderLoadTexture("buttons/S.png");
+    GetTexture(TEXTURE_D_KEY) = RenderLoadTexture("buttons/D.png");
 
     for (enum Tool_Type i = 0; i < TOOL_COUNT; i++) {
         char filename[128] = {0};

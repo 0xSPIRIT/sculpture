@@ -2,7 +2,7 @@ int get_item_from_any(int type, int timer, int override_index) {
     Assert(type < 0);
     timer /= 2;
     
-    const int step = 20; // The interval between switches.
+    const int step = 30; // The interval between switches.
     
     if (override_index != -1) {
         timer = override_index * step;
@@ -106,7 +106,10 @@ bool converter_gui_item_draw(int target, Cell_Type item, int override_index, int
         
         get_name_from_type(item, gs->gui.tooltip.str[0]);
         
-        strcpy(gs->gui.tooltip.str[1], "Click to go to definition");
+        if (item != CELL_DIRT && item != CELL_SAND) {
+            strcpy(gs->gui.tooltip.str[1], "Click to go to definition");
+        }
+        
         mouse_in_rect = true;
         
         if (gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
@@ -115,7 +118,7 @@ bool converter_gui_item_draw(int target, Cell_Type item, int override_index, int
         }
     }
     
-    RenderColor(32, 32, 32, 255);
+    RenderColor(0, 0, 0, 255);
     RenderFillRect(target, r);
     RenderColor(128, 128, 128, 255);
     RenderDrawRect(target, r);
@@ -202,23 +205,17 @@ typedef struct GuiConversionPair {
 void gui_conversion_pair_add(GuiConversionPair *pairs, int *pair_count, Cell_Type output, int x, int y) {
     Assert(pairs);
     Assert(pair_count);
-    pairs[(*pair_count)++] = (GuiConversionPair){ output, (SDL_Rect){x, y, Scale(200), Scale(200)} };
+    pairs[(*pair_count)++] = (GuiConversionPair){ output, (SDL_Rect){x, y, Scale(238), Scale(200)} };
 }
 
-typedef struct GuiConversionRects {
-    SDL_Rect rects[99];
-    int rect_count;
-} GuiConversionRects;
-
-GuiConversionRects gui_conversions_get_rect(GuiConversionPair *pairs, int pair_count, Cell_Type output) {
-    GuiConversionRects result = {0};
-    
+SDL_Rect gui_conversions_get_rect(GuiConversionPair *pairs, int pair_count, Cell_Type output) {
     for (int i = 0; i < pair_count; i++) {
-        if (pairs[i].output != output) continue;
-        result.rects[result.rect_count++] = pairs[i].rectangle;
+        if (pairs[i].output == output) {
+            return pairs[i].rectangle;
+        }
     }
     
-    return result;
+    return (SDL_Rect){-1, -1, -1, -1};
 }
 
 void gui_conversions_draw_scroll_bar(int target) {
@@ -229,6 +226,10 @@ void gui_conversions_draw_scroll_bar(int target) {
     int bar_height = Scale(64);
     
     int logical_height = gs->window_height-GUI_H-bar_height;
+    
+    
+    SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
+    
     
     SDL_Rect scroll_bar_full = {
         gs->window_width - w,
@@ -243,9 +244,6 @@ void gui_conversions_draw_scroll_bar(int target) {
         w,
         bar_height
     };
-    
-    SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
-    
     if (is_point_in_rect(mouse, scroll_bar) && gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
         c->holding_scroll_bar = true;
     }
@@ -270,6 +268,10 @@ void gui_conversions_draw_scroll_bar(int target) {
     RenderFillRect(target, scroll_bar);
 }
 
+bool can_conversions_gui_be_active(void) {
+    return gs->level_current+1 >= 4;
+}
+
 void converter_gui_draw(int final_target) {
     int target = RENDER_TARGET_CONVERSION_PANEL;
     
@@ -282,13 +284,13 @@ void converter_gui_draw(int final_target) {
     RenderColor(0,0,0,175);
     RenderClear(target);
     
-    if (gs->input.keys_pressed[SDL_SCANCODE_I]) {
+    if (gs->input.keys_pressed[SDL_SCANCODE_I] && can_conversions_gui_be_active()) {
         gs->conversions.active = !gs->conversions.active;
     }
     
     if (!gs->conversions.active) return;
     
-    gs->conversions.max_height = Scale(2600);
+    gs->conversions.max_height = Scale(2400);
     
     int dx = _gui_conversions_get_fuel_dx();
     int dy = _gui_conversions_get_dy();
@@ -303,6 +305,8 @@ void converter_gui_draw(int final_target) {
     
     Font *title_font = gs->fonts.font_times;
     int yoff = Scale(45)+c->y;
+    
+    int pad = Scale(30);
     
     GuiConversionPair pairs[9999] = {0};
     int pair_count = 0;
@@ -336,7 +340,7 @@ void converter_gui_draw(int final_target) {
             int x = dx;
             int y = dy + cum;
             
-            gui_conversion_pair_add(pairs, &pair_count, output, x, y-gs->conversions.y);
+            gui_conversion_pair_add(pairs, &pair_count, output, x - pad, y-gs->conversions.y - pad);
             
             converter_gui_draw_text(target, "Input 1", x, y, size, input1_index);
             bool mouse_in = converter_gui_item_draw(target,
@@ -445,7 +449,7 @@ void converter_gui_draw(int final_target) {
             int x = dx;
             int y = dy + cum;
             
-            gui_conversion_pair_add(pairs, &pair_count, output, x, y-gs->conversions.y);
+            gui_conversion_pair_add(pairs, &pair_count, output, x - pad, y - gs->conversions.y - pad);
             
             converter_gui_draw_text(target, "Input 1", x, y, size, input1_index);
             bool mouse_in = converter_gui_item_draw(target,
@@ -539,23 +543,21 @@ void converter_gui_draw(int final_target) {
     if (c->definition_alpha) {
         int type = c->definition;
         
-        GuiConversionRects r = gui_conversions_get_rect(pairs, pair_count, type);
+        SDL_Rect r = gui_conversions_get_rect(pairs, pair_count, type);
         
-        if (!r.rect_count && c->definition_alpha) c->definition_alpha = 0;
+        if (r.x == -1 && c->definition_alpha) c->definition_alpha = 0;
         
-        if (r.rect_count && c->definition_alpha == 255) { // First frame clicked?
+        if (r.x != -1 && c->definition_alpha == 255) { // First frame clicked?
             // Set up the scroll position
             // Find the average of all the rects' y positions.
             
-            c->y_to = -r.rects[0].y + (gs->window_height-GUI_H)/2;
+            c->y_to = -r.y + (gs->window_height-GUI_H)/2;
             c->y_to = clamp(c->y_to, -c->max_height, 0);
         }
         
         RenderColor(255, 0, 0, c->definition_alpha);
-        for (int i = 0; i < r.rect_count; i++) {
-            r.rects[i].y += c->y;
-            RenderDrawRect(target, r.rects[i]);
-        }
+        r.y += c->y;
+        RenderDrawRect(target, r);
         c->definition_alpha--;
         
         if (c->definition_alpha <= 0) {

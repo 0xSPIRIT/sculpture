@@ -46,4 +46,5 @@ const int conversions[] = {
     CONVERTER_MATERIAL, CELL_LAVA, CELL_BASALT, CELL_GRANITE, CELL_DIAMOND, false,
 };
 
+bool can_conversions_gui_be_active(void);
 void converter_gui_draw(int target);

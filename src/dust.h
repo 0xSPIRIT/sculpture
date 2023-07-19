@@ -7,4 +7,5 @@ typedef struct Dust {
     int timer, timer2;
     int timer_max;
     bool going_into_inventory;
+    int rand;
 } Dust;

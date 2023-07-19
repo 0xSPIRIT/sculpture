@@ -72,18 +72,36 @@ static void game_resize(int h) {
 static void game_update_view(void) {
     Input *input = &gs->input;
     SDL_FPoint *to = &gs->render.to;
+    
+    f64 amount = gs->window_width*0.25;
+    
+    bool changed = false;
 
-    if (input->keys_pressed[SDL_SCANCODE_D] || input->keys_pressed[SDL_SCANCODE_RIGHT])
-        to->x += gs->window_width*0.25;
-    if (input->keys_pressed[SDL_SCANCODE_A] || input->keys_pressed[SDL_SCANCODE_LEFT])
-        to->x -= gs->window_width*0.25;
+    if (input->keys_pressed[SDL_SCANCODE_D] || input->keys_pressed[SDL_SCANCODE_RIGHT]) {
+        to->x += amount;
+        changed = true;
+    }
+    if (input->keys_pressed[SDL_SCANCODE_A] || input->keys_pressed[SDL_SCANCODE_LEFT]) {
+        to->x -= amount;
+        changed = true;
+    }
+    
     to->x = clampf(to->x, -gs->window_width*0.5, gs->window_width*0.5);
 
     // NOTE: This is not a typo, they are supposed to be width, not height.
-    if (input->keys_pressed[SDL_SCANCODE_S] || input->keys_pressed[SDL_SCANCODE_DOWN])
-        to->y += gs->window_width*0.25;
-    if (input->keys_pressed[SDL_SCANCODE_W] || input->keys_pressed[SDL_SCANCODE_UP])
-        to->y -= gs->window_width*0.25;
+    if (input->keys_pressed[SDL_SCANCODE_S] || input->keys_pressed[SDL_SCANCODE_DOWN]) {
+        to->y += amount;
+        changed = true;
+    }
+    if (input->keys_pressed[SDL_SCANCODE_W] || input->keys_pressed[SDL_SCANCODE_UP]) {
+        to->y -= amount;
+        changed = true;
+    }
+    
+    if (changed) {
+        gs->wasd_popup_alpha--;
+    }
+    
     to->y = clampf(to->y, -gs->window_width*0.5, gs->window_width*0.5);
 
     gs->render.view.x = lerp64(gs->render.view.x, gs->render.to.x, 0.2);
@@ -194,15 +212,6 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
 #ifndef ALASKA_RELEASE_MODE
                     is_running = false;
 #endif
-                }
-                break;
-            }
-            case SDLK_F12: {
-                int is_on = SDL_ShowCursor(SDL_QUERY);
-                if (is_on == SDL_ENABLE) {
-                    SDL_ShowCursor(SDL_DISABLE);
-                } else {
-                    SDL_ShowCursor(SDL_ENABLE);
                 }
                 break;
             }
