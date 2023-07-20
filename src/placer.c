@@ -11,23 +11,23 @@ static void placer_init(int num) {
     placer->index = num;
     placer->x = gs->gw/2;
     placer->y = gs->gh/2;
-
+    
     placer->texture = &GetTexture(TEXTURE_PLACER);
     placer->w = placer->texture->width;
     placer->h = placer->texture->height;
-
+    
     placer->object_index = -1;
     placer->did_click = 0;
     placer->radius = 4;
-
+    
     placer->placing_solid_time = 0;
-
+    
     placer->rect.x = placer->rect.y = -1;
-
+    
     placer->contains = &gs->inventory.slots[num].item;
     placer->contains->type = 0;
     placer->contains->amount = 0;
-
+    
     placer->place_aspect = 24.0/16.0;
     placer->place_width = 16;
     placer->place_height = placer->place_width * placer->place_aspect;
@@ -36,7 +36,7 @@ static void placer_init(int num) {
 static void placer_try_hard_tutorial() {
     if (!gs->did_placer_hard_tutorial) {
         gs->tutorial = *tutorial_rect(TUTORIAL_PLACER_HARD,
-                                      NormX(32),
+                                      -1,
                                       0.25,
                                       null);
         gs->did_placer_hard_tutorial = true;
@@ -45,10 +45,10 @@ static void placer_try_hard_tutorial() {
 
 static void placer_suck_circle(Placer *placer) {
     Input *input = &gs->input;
-
+    
     f32 x = (f32) placer->px;
     f32 y = (f32) placer->py;
-
+    
     f32 dx = (f32) (input->mx - x);
     f32 dy = (f32) (input->my - y);
     f32 len = sqrtf(dx*dx + dy*dy);
@@ -61,27 +61,27 @@ static void placer_suck_circle(Placer *placer) {
         ux = dx/len;
         uy = dy/len;
     }
-
+    
     Cell *arr = gs->grid;
-
+    
     while (arr == gs->grid || arr == gs->gas_grid) {
         while (distance(x, y, (f32)placer->px, (f32)placer->py) < len) {
             // Remove cells in a circle
             const int r = placer->radius;
-
+            
             for (int ky = -r; ky <= r; ky++) {
                 for (int kx = -r; kx <= r; kx++) {
                     if (kx*kx + ky*ky > r*r)  continue;
-
+                    
                     int xx = (int) (x+kx);
                     int yy = (int) (y+ky);
                     if (!is_in_bounds(xx, yy)) continue;
-
+                    
                     int type = arr[xx+yy*gs->gw].type;
                     if (type == 0) continue;
-
+                    
                     if (is_cell_hard(type)) { placer_try_hard_tutorial(); continue; }
-
+                    
                     if (placer->contains->type == type || placer->contains->type == 0 || placer->contains->amount == 0) {
                         placer->contains->type = type;
                         
@@ -100,17 +100,17 @@ static void placer_suck_circle(Placer *placer) {
                     }
                 }
             }
-
+            
             x += ux;
             y += uy;
             if (ux == 0 && uy == 0) break;
-
+            
         }
-
+        
         if (arr == gs->gas_grid) break;
         arr = gs->gas_grid;
     }
-
+    
     objects_reevaluate();
 }
 
@@ -121,77 +121,77 @@ static void placer_place_circle(Placer *placer) {
     f32 len = sqrtf(dx*dx + dy*dy);
     f32 ux = dx/len;
     f32 uy = dy/len;
-
+    
     f32 fx = (f32) placer->px;
     f32 fy = (f32) placer->py;
-
+    
     int did_set_object = 1;
-
+    
     placer->did_set_new = 0;
-
+    
     if (is_cell_hard(placer->contains->type)) {
         placer->placing_solid_time++;
         if (placer->placing_solid_time >= MAX_PLACE_SOLID_TIME) {
             return;
         }
     }
-
+    
     while ((len == 0 || sqrt((fx-placer->px)*(fx-placer->px) + (fy-placer->py)*(fy-placer->py)) < len) && placer->contains->amount > 0) {
         int radius = placer->radius;
-
+        
         for (int y = -radius; y <= radius; y++) {
             for (int x = -radius; x <= radius; x++) {
                 if (x*x + y*y > radius*radius)  continue;
                 if (!is_in_boundsf(x+fx, y+fy)) continue;
-
+                
                 if (placer->contains->amount <= 0) {
                     placer->contains->amount = 0;
                     goto end1;
                 }
-
+                
                 if (is_cell_hard(placer->contains->type) &&
                     (gs->grid[(int)(x+fx)+(int)(fy+y)*gs->gw].type == 0 ||
                      gs->grid[(int)(x+fx)+(int)(fy+y)*gs->gw].object == placer->object_index))
                 {
                     placer->did_set_new = 1;
                 }
-
+                
                 if (gs->grid[(int)(x+fx)+(int)(fy+y)*gs->gw].type) continue;
                 int object_index = placer->object_index;
-
+                
                 if (!is_cell_hard(placer->contains->type)) {
                     object_index = -1;
                     did_set_object = 0;
                 }
-
+                
                 gs->has_player_interacted_since_last_state = true;
                 set((int)(x+fx), (int)(y+fy), placer->contains->type, object_index);
                 placer->contains->amount--;
             }
         }
-
+        
         end1:
         if (len == 0) break;
         fx += ux;
         fy += uy;
     }
-
+    
     placer->x = (int)fx;
     placer->y = (int)fy;
-
+    
     // Stop drawing / reset everything if we stopped.
     if (!placer->did_set_new) {
         placer->did_click = 0;
         return;
     }
-
+    
     placer->did_click = did_set_object;
 }
 
 static void fix_rectangle(SDL_Rect *c) {
     c->w--;
     c->h--;
-
+    
     if (c->w < 0) {
         c->x += c->w;
     }
@@ -210,17 +210,17 @@ static void fix_rectangle(SDL_Rect *c) {
 
 static bool placer_is_able_to_place(Placer *placer, SDL_Rect *c, int *area_out) {
     Assert(c);
-
+    
     if (placer->contains->amount == 0)
         return false;
-
+    
     fix_rectangle(c);
-
+    
     int area = abs((c->w+1) * (c->h+1));
-
+    
     if (area_out)
         *area_out = area;
-
+    
     // Test if we have enough by placing test cells into position
     int free_cells = 0;
     for (int y = c->y; y <= c->y+c->h; y++) {
@@ -230,13 +230,13 @@ static bool placer_is_able_to_place(Placer *placer, SDL_Rect *c, int *area_out) 
             }
         }
     }
-
+    
     if (placer->contains->amount < free_cells)
         return false;
-
+    
     else if (placer->contains->amount <= PLACER_MINIMUM_AREA)
         return true;
-
+    
     return area >= PLACER_MINIMUM_AREA;
 }
 
@@ -245,31 +245,31 @@ static void placer_set_and_resize_rect(Placer *placer, int mx, int my) {
         placer->rect.x = mx;
         placer->rect.y = my;
     }
-
+    
     mx++;
     my++;
-
+    
     placer->rect.w = mx - placer->rect.x;
     placer->rect.h = my - placer->rect.y;
-
+    
     SDL_Rect copy = placer->rect; // We don't want to actually change the rectangle now.
-
+    
     int area = -1;
     if (!placer_is_able_to_place(placer, &copy, &area))
         return;
-
+    
     Assert(area != -1);
-
+    
     if (area > placer->contains->amount) {
         placer->rect.h = clamp(placer->rect.h,
                                -placer->contains->amount,
                                placer->contains->amount);
-
+        
         int placer_rect_h = placer->rect.h;
         if (placer_rect_h == 0) placer_rect_h = 1;
         int w = abs(placer->contains->amount / placer_rect_h);
         placer->rect.w = clamp(placer->rect.w, -w, w);
-
+        
         int placer_rect_w = placer->rect.w;
         if (placer_rect_w == 0) placer_rect_w = 1;
         int h = abs(placer->contains->amount / placer_rect_w);
@@ -279,10 +279,10 @@ static void placer_set_and_resize_rect(Placer *placer, int mx, int my) {
 
 static void placer_place_rect(Placer *placer) {
     if (placer->rect.x == -1) return;
-
+    
     int area;
     bool able_to_place = placer_is_able_to_place(placer, &placer->rect, &area);
-
+    
     if (!able_to_place) {
         placer->rect.x = -1;
         placer->rect.y = -1;
@@ -290,11 +290,11 @@ static void placer_place_rect(Placer *placer) {
         placer->rect.h = 0;
         return;
     }
-
+    
     save_state_to_next();
-
+    
     int object_index = -1;
-
+    
     // Check if we're intersecting with any other object and
     // if so, then we just join that object with this by
     // using its object index, not a new one.
@@ -309,17 +309,17 @@ static void placer_place_rect(Placer *placer) {
                 break;
             }
         }
-
+        
         if (object_index != -1)
             break;
     }
-
+    
     if (object_index != -1) {
         placer->object_index = object_index;
     } else {
         placer->object_index = gs->object_count++;
     }
-
+    
     for (int y = placer->rect.y; y <= placer->rect.y+placer->rect.h; y++) {
         for (int x = placer->rect.x; x <= placer->rect.x+placer->rect.w; x++) {
             if (!is_in_bounds(x, y)) continue;
@@ -328,33 +328,33 @@ static void placer_place_rect(Placer *placer) {
                 goto end2;
             }
             if (gs->grid[x+y*gs->gw].type) continue; // Don't overwrite anything.
-
+            
             object_index = placer->object_index;
             if (!is_cell_hard(placer->contains->type)) {
                 object_index = -1;
             }
-
+            
             gs->has_any_placed = true;
             set(x, y, placer->contains->type, object_index);
             placer->contains->amount--;
         }
     }
-
+    
     end2:
     placer->rect.x = -1;
     placer->rect.y = -1;
     placer->rect.w = 0;
     placer->rect.h = 0;
-
+    
     objects_reevaluate();
 }
 
 static void placer_tick(Placer *placer) {
     Input *input = &gs->input;
-
+    
     placer->px = placer->x;
     placer->py = placer->y;
-
+    
     placer->x = gs->input.mx;
     placer->y = gs->input.my;
     
@@ -364,7 +364,7 @@ static void placer_tick(Placer *placer) {
     if (gs->creative_mode) {
         placer->contains->amount = gs->gw*gs->gh;
     }
-
+    
     // If the cell type is hard, use rectangle placing, otherwise use brush/circle placing.
     if (placer->contains->type == 0) {
         placer->state = PLACER_SUCK_MODE;
@@ -377,12 +377,12 @@ static void placer_tick(Placer *placer) {
         } else {
             placer->state = PLACER_PLACE_CIRCLE_MODE;
         }
-
+        
         if (placer->contains->type) { // If statement is redundant?
             gs->overlay.current_material = placer->contains->type;
         }
     }
-
+    
     if (placer->contains->type && gs->input.keys_pressed[SDL_SCANCODE_P]) {
         if (placer->state == PLACER_SUCK_MODE) {
             placer->state = PLACER_PLACE_CIRCLE_MODE;
@@ -390,21 +390,21 @@ static void placer_tick(Placer *placer) {
             placer->state = PLACER_SUCK_MODE;
         }
     }
-
+    
     if (is_cell_hard(placer->contains->type) && placer->state == PLACER_SUCK_MODE) {
         placer->state = PLACER_PLACE_RECT_MODE;
     }
-
+    
     if (gs->is_mouse_over_any_button) return;
-
+    
     bool skip=false;
     if (placer->escape_rect && input->mouse_released[SDL_BUTTON_LEFT]) {
         placer->escape_rect = false;
         skip=true;
     }
-
+    
     bool can_click = !gs->tutorial.active && !gs->gui.eol_popup_confirm.active && !gs->gui.restart_popup_confirm.active;
-
+    
     switch (placer->state) {
         case PLACER_SUCK_MODE: {
             if (!can_click) break;
@@ -421,7 +421,7 @@ static void placer_tick(Placer *placer) {
         }
         case PLACER_PLACE_CIRCLE_MODE: {
             if (!can_click) break;
-
+            
             if (input->mouse_pressed[SDL_BUTTON_LEFT] &&
                 is_cell_hard(placer->contains->type) &&
                 placer->contains->amount > 0 &&
@@ -430,7 +430,7 @@ static void placer_tick(Placer *placer) {
                 save_state_to_next();
                 placer->object_index = gs->object_count++;
             }
-
+            
             if (placer->contains->amount > 0 && !gs->gui.popup && (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
                 placer_place_circle(placer);
             } else if (placer->did_click) {
@@ -444,11 +444,11 @@ static void placer_tick(Placer *placer) {
             if (gs->input.real_my < GUI_H) break;
             if (placer->escape_rect) break;
             if (skip) break;
-
+            
             if (!gs->did_placer_rectangle_tutorial) {
                 Tutorial_Rect *t = tutorial_rect(TUTORIAL_RECTANGLE_PLACE,
-                                                 NormX(32),
-                                                 NormY((768.8/8.0)+32),
+                                                 -1,
+                                                 -1,
                                                  null);
                 gs->tutorial = *t;
                 gs->did_placer_rectangle_tutorial = true;

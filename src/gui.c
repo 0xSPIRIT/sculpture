@@ -99,8 +99,9 @@ static void gui_draw_wasd_popup(int target) {
     int pad = (int) Scale(12);
     
     if (gs->wasd_popup_alpha < 255) {
-        gs->wasd_popup_alpha--;
-        if (gs->wasd_popup_alpha == 0) {
+        gs->wasd_popup_alpha -= 4;
+        if (gs->wasd_popup_alpha <= 0) {
+            gs->wasd_popup_alpha = 0;
             gs->wasd_popup_active = false;
             return;
         }
@@ -110,25 +111,25 @@ static void gui_draw_wasd_popup(int target) {
     { // W
         t = &GetTexture(TEXTURE_W_KEY);
         RenderTextureAlphaMod(t, gs->wasd_popup_alpha);
-        SDL_Rect dst = { gs->window_width/2 - t->width/2, GUI_H + pad, t->width, t->height };
+        SDL_Rect dst = { gs->game_width/2 - t->width/2, GUI_H + pad, t->width, t->height };
         RenderTexture(target, t, null, &dst);
     }
     { // A
         t = &GetTexture(TEXTURE_A_KEY);
         RenderTextureAlphaMod(t, gs->wasd_popup_alpha);
-        SDL_Rect dst = { pad, gs->window_height/2 - t->height/2, t->width, t->height };
+        SDL_Rect dst = { pad, gs->game_height/2 - t->height/2, t->width, t->height };
         RenderTexture(target, t, null, &dst);
     }
     { // S
         t = &GetTexture(TEXTURE_S_KEY);
         RenderTextureAlphaMod(t, gs->wasd_popup_alpha);
-        SDL_Rect dst = { gs->window_width/2 - t->width/2, gs->window_height - t->height - pad, t->width, t->height };
+        SDL_Rect dst = { gs->game_width/2 - t->width/2, gs->game_height - t->height - pad, t->width, t->height };
         RenderTexture(target, t, null, &dst);
     }
     { // D
         t = &GetTexture(TEXTURE_D_KEY);
         RenderTextureAlphaMod(t, gs->wasd_popup_alpha);
-        SDL_Rect dst = { gs->window_width - t->width - pad, gs->window_height/2 - t->height/2, t->width, t->height };
+        SDL_Rect dst = { gs->game_width - t->width - pad, gs->game_height/2 - t->height/2, t->width, t->height };
         RenderTexture(target, t, null, &dst);
     }
 }
@@ -438,7 +439,7 @@ static void gui_tick(void) {
     }
     
     gui->popup_y += gui->popup_y_vel;
-    gui->popup_y = (f32) clamp((int) gui->popup_y, (int) (1 + round(gs->S*gs->gh) - GUI_POPUP_H), gs->window_height);
+    gui->popup_y = (f32) clamp((int) gui->popup_y, (int) (1 + round(gs->S*gs->gh) - GUI_POPUP_H), gs->game_height);
     
     gui->popup_inventory_y += gui->popup_inventory_y_vel;
     gui->popup_inventory_y = (f32) clamp((int) gui->popup_inventory_y, 0, GUI_H);
@@ -572,14 +573,14 @@ static void gui_draw(int target) {
         SDL_Rect src = {
             0,
             0,
-            gs->window_width,
+            gs->game_width,
             GUI_H
         };
         
         SDL_Rect dst = {
             0,
             0,
-            gs->window_width,
+            gs->game_width,
             GUI_H
         };
         
@@ -613,10 +614,10 @@ static void gui_popup_draw(int target) {
                 Blue(CONVERTER_LINE_COLOR),
                 255);
 
-    if (gs->gui.popup_y+GUI_H < gs->window_height) {
+    if (gs->gui.popup_y+GUI_H < gs->game_height) {
         RenderLine(target,
                    0, GUI_H+gui->popup_y-1,
-                   gs->window_width,
+                   gs->game_width,
                    GUI_H+gui->popup_y-1);
     }
 

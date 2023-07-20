@@ -60,9 +60,17 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
     
     Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
     
+    int x = 200;
+    int y = 125;
+    
+#ifdef ALASKA_RELEASE_MODE
+    x = SDL_WINDOWPOS_CENTERED;
+    y = SDL_WINDOWPOS_CENTERED;
+#endif
+    
     state->window = SDL_CreateWindow(window_title,
-                                     SDL_WINDOWPOS_CENTERED,
-                                     SDL_WINDOWPOS_CENTERED,
+                                     x,
+                                     y,
                                      w,
                                      h,
                                      SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
@@ -148,16 +156,16 @@ static void game_init(Game_State *state) {
     if (state->S == 0)
         state->S = calculate_scale(false, &state->desktop_w, &state->desktop_h);
     
-    state->window_width = (int)(64*state->S);
-    state->window_height = (int)(64*state->S + GUI_H);
+    state->game_width = (int)(64*state->S);
+    state->game_height = (int)(64*state->S + GUI_H);
     
-    state->real_width = state->window_width;
-    state->real_height = state->window_height;
+    state->real_width = state->game_width;
+    state->real_height = state->game_height;
     
     game_init_sdl(state,
                   "Alaska",
-                  state->window_width,
-                  state->window_height,
+                  state->game_width,
+                  state->game_height,
                   state->use_software_renderer);
     
     // Load all assets... except for render targets.
@@ -456,11 +464,6 @@ int win32_main(int argc, char **argv) {
     return 0;
 }
 
-#ifndef ALASKA_RELEASE_MODE
-int main(int argc, char **argv) {
-    win32_main(argc, argv);
-}
-#else
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPSTR     lpCmdLine,
@@ -469,4 +472,3 @@ int WINAPI WinMain(HINSTANCE hInstance,
     (void)hInstance, hPrevInstance, lpCmdLine, nShowCmd;
     win32_main(0, null);
 }
-#endif

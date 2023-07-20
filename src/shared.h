@@ -71,7 +71,7 @@ typedef struct Game_State {
 
     SDL_Point real_top_left; // Probably should be in Render.
     
-    Uint8 wasd_popup_alpha;
+    int wasd_popup_alpha; // 0 - 255
     bool wasd_popup_active;
     
     Conversions conversions;
@@ -112,7 +112,7 @@ typedef struct Game_State {
     
     f64 S;
     bool fullscreen;
-    int window_width, window_height;
+    int game_width, game_height;
     int desktop_w, desktop_h;
     int real_width, real_height;
     f32 delta_time;

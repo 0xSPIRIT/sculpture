@@ -80,16 +80,16 @@ static void game_init_a(Game_State *state) {
     if (state->S == 0)
         state->S = calculate_scale(false);
 
-    state->window_width = 128*state->S;
-    state->window_height = 128*state->S + GUI_H;
+    state->game_width = 128*state->S;
+    state->game_height = 128*state->S + GUI_H;
 
-    state->real_width = state->window_width;
-    state->real_height = state->window_height;
+    state->real_width = state->game_width;
+    state->real_height = state->game_height;
 
     game_init_sdl(state,
                   "Alaska",
-                  state->window_width,
-                  state->window_height,
+                  state->game_width,
+                  state->game_height,
                   state->use_software_renderer);
 
     // Load all assets... except for render targets.
@@ -165,7 +165,7 @@ static int main(int argc, char **argv)
     game_init(gs, 0);
 
     render_targets_init(gs->renderer,
-                        gs->window_width,
+                        gs->game_width,
                         gs->levels,
                         &gs->textures);
 

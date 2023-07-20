@@ -30,7 +30,7 @@ set err=%errorlevel%
 (>>win32_sculpture.exe call;) 2>nul || goto end
 
   REM Build the SDL layer (.exe)
-cl.exe %Compiler_Flags% ..\src\win32_main.c %Lib_Files% SDL2main.lib /link /NOIMPLIB /NOEXP /incremental:no /out:win32_sculpture.exe
+cl.exe %Compiler_Flags% ..\src\win32_main.c %Lib_Files% SDL2main.lib /link /SUBSYSTEM:windows /NOIMPLIB /NOEXP /incremental:no /out:win32_sculpture.exe
 
 if NOT %errorlevel%==0 (set err=%errorlevel%)
 

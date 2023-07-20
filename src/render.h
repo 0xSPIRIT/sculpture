@@ -8,7 +8,7 @@
 
 typedef enum {
     VIEW_STATE_UNDEFINED,   // Invalid
-    VIEW_STATE_SCREENSPACE, // Size: gs->window_width, gs->window_height
+    VIEW_STATE_SCREENSPACE, // Size: gs->game_width, gs->game_height
     VIEW_STATE_PIXELS,      // Size: gs->gw, gs->gh
 } View_State;
 

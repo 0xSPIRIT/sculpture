@@ -1,9 +1,9 @@
-#define GUI_POPUP_H (0.4375*gs->window_height) // window_height/2
-#define GUI_H (gs->window_width/8)
+#define GUI_POPUP_H (0.4375*gs->game_height) // game_height/2
+#define GUI_H (gs->game_width/8)
 
 #define MAX_MESSAGE_STACK 256
 
-#define ITEM_SIZE (0.0625*gs->window_width)
+#define ITEM_SIZE (0.0625*gs->game_width)
 
 typedef enum {
     TOOLTIP_TYPE_OFF,    // Off state

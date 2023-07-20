@@ -31,8 +31,8 @@ static void render_targets_init(void) {
 				continue;
             }
             case RENDER_TARGET_3D: {
-                gs->render.render_targets[i] = RenderMakeTargetEx(SCALE_3D*gs->window_width,
-                                                                  SCALE_3D*gs->window_width,
+                gs->render.render_targets[i] = RenderMakeTargetEx(SCALE_3D*gs->game_width,
+                                                                  SCALE_3D*gs->game_width,
                                                                   VIEW_STATE_SCREENSPACE,
                                                                   false,
                                                                   true);

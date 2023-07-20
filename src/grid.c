@@ -810,7 +810,7 @@ void draw_grid_outline(int target) {
     Assert(target == RENDER_TARGET_MASTER);
 
     RenderColor(127, 127, 127, 127);
-    RenderDrawRect(target, (SDL_Rect){ -gs->render.view.x-1, -gs->render.view.y + GUI_H - 1, gs->window_width+2, gs->window_height-GUI_H+2 });
+    //RenderDrawRect(target, (SDL_Rect){ -gs->render.view.x-1, -gs->render.view.y + GUI_H - 1, gs->game_width+2, gs->game_height-GUI_H+2 });
 }
 
 static bool is_pressure_low_enough(Cell cell) {

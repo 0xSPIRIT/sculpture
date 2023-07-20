@@ -188,8 +188,8 @@ static void tooltip_draw(int output_target, Tooltip *tooltip) {
     SDL_Rect src = {
         0,
         0,
-        gs->window_width,
-        gs->window_height
+        gs->game_width,
+        gs->game_height
     };
     RenderTextureAlphaMod(&RenderTarget(target)->texture, (Uint8)tooltip->alpha);
     RenderTargetToTarget(output_target,

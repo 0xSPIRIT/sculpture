@@ -144,10 +144,10 @@ static vec2* project(vec3 *input, int count) {
 
         points[i].x = input[i].x / input[i].z;
         points[i].x++; // Make it from 0 to 2
-        points[i].x *= SCALE_3D * (gs->window_width)/2.0;  // Make it from 0 to W
+        points[i].x *= SCALE_3D * (gs->game_width)/2.0;  // Make it from 0 to W
         points[i].y = input[i].y / input[i].z;
         points[i].y++; // Make it from 0 to 2
-        points[i].y *= SCALE_3D * (gs->window_height-GUI_H)/2.0; // Make it from 0 to H
+        points[i].y *= SCALE_3D * (gs->game_height-GUI_H)/2.0; // Make it from 0 to H
     }
 
     return points;
@@ -338,8 +338,8 @@ static void object_draw(Object3D *obj) {
         Assert(0);
     }
 
-    int w = SCALE_3D * gs->window_width;
-    int h = SCALE_3D * (gs->window_height-GUI_H);
+    int w = SCALE_3D * gs->game_width;
+    int h = SCALE_3D * (gs->game_height-GUI_H);
 
 #ifdef __EMSCRIPTEN__
     memset(pixels, 0, pitch*h);
@@ -354,8 +354,8 @@ static void object_draw(Object3D *obj) {
 
     SDL_Rect dst = {
         0, GUI_H,
-        gs->window_width,
-        gs->window_width
+        gs->game_width,
+        gs->game_width
     };
 
     RenderMaybeSwitchToTarget(RENDER_TARGET_MASTER);

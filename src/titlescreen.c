@@ -5,8 +5,8 @@ static void titlescreen_init(void) {
                true,
                0,
                0,
-               gs->window_width,
-               gs->window_height);
+               gs->game_width,
+               gs->game_height);
 }
 
 static void titlescreen_goto_next(void) {
@@ -55,8 +55,8 @@ static void titlescreen_draw(int target) {
                     "Alaska",
                     WHITE,
                     255,
-                    gs->window_width/2 - text_width/2,
-                    gs->window_height/2 - text_height/2,
+                    gs->game_width/2 - text_width/2,
+                    gs->game_height/2 - text_height/2,
                     null,
                     null,
                     false);
@@ -77,8 +77,8 @@ static void titlescreen_draw(int target) {
                         "F11 - Fullscreen",
                         WHITE,
                         255,
-                        gs->window_width-w-8,
-                        gs->window_height-h-8,
+                        gs->game_width-w-8,
+                        gs->game_height-h-8,
                         null,
                         null,
                         false);

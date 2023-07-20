@@ -168,8 +168,8 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
                     //if (gs->levels[gs->level_current].state == LEVEL_STATE_NARRATION) {
                         int size = Scale(6*(length/max));
                         RenderFillCircle(target,
-                                         gs->window_width * px/effect->bounds.w,
-                                         gs->window_height * py/effect->bounds.h,
+                                         gs->game_width * px/effect->bounds.w,
+                                         gs->game_height * py/effect->bounds.h,
                                          size);
                     //}
                 }

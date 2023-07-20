@@ -38,18 +38,18 @@ static void game_resize(int h) {
 
     gs->S = h / 72.0;
 
-    gs->window_width = gs->S*64.0;
-    gs->window_height = gs->S*64.0 + GUI_H;
+    gs->game_width = gs->S*64.0;
+    gs->game_height = gs->S*64.0 + GUI_H;
 
     gs->gui.popup_y *= gs->gh*gs->S;
 
     gs->render.view.x = gs->render.to.x = 0;
     gs->render.view.y = gs->render.to.y = 0;
-    gs->render.view.w = gs->window_width;
-    gs->render.view.h = gs->window_height-GUI_H;
+    gs->render.view.w = gs->game_width;
+    gs->render.view.h = gs->game_height-GUI_H;
 
-    gs->real_top_left.x = gs->window_width/4;
-    gs->real_top_left.y = gs->window_height/4;
+    gs->real_top_left.x = gs->game_width/4;
+    gs->real_top_left.y = gs->game_height/4;
 
     for (int i = 0; i < FONT_COUNT; i++) {
         RenderSetFontSize(gs->fonts.fonts[i], Scale(font_sizes[i]));
@@ -61,10 +61,10 @@ static void game_resize(int h) {
     RenderTarget(RENDER_TARGET_3D)->texture.handle = SDL_CreateTexture(gs->renderer,
                                                                        ALASKA_PIXELFORMAT,
                                                                        SDL_TEXTUREACCESS_STREAMING,
-                                                                       SCALE_3D*gs->window_width,
-                                                                       SCALE_3D*gs->window_width);
-    RenderTarget(RENDER_TARGET_3D)->texture.width = SCALE_3D * gs->window_width;
-    RenderTarget(RENDER_TARGET_3D)->texture.height = SCALE_3D * gs->window_width;
+                                                                       SCALE_3D*gs->game_width,
+                                                                       SCALE_3D*gs->game_width);
+    RenderTarget(RENDER_TARGET_3D)->texture.width = SCALE_3D * gs->game_width;
+    RenderTarget(RENDER_TARGET_3D)->texture.height = SCALE_3D * gs->game_width;
 
     SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_3D)->texture.handle, SDL_BLENDMODE_BLEND);
 }
@@ -73,7 +73,7 @@ static void game_update_view(void) {
     Input *input = &gs->input;
     SDL_FPoint *to = &gs->render.to;
     
-    f64 amount = gs->window_width*0.25;
+    f64 amount = gs->game_width*0.25;
     
     bool changed = false;
 
@@ -86,7 +86,7 @@ static void game_update_view(void) {
         changed = true;
     }
     
-    to->x = clampf(to->x, -gs->window_width*0.5, gs->window_width*0.5);
+    to->x = clampf(to->x, -gs->game_width*0.5, gs->game_width*0.5);
 
     // NOTE: This is not a typo, they are supposed to be width, not height.
     if (input->keys_pressed[SDL_SCANCODE_S] || input->keys_pressed[SDL_SCANCODE_DOWN]) {
@@ -102,7 +102,7 @@ static void game_update_view(void) {
         gs->wasd_popup_alpha--;
     }
     
-    to->y = clampf(to->y, -gs->window_width*0.5, gs->window_width*0.5);
+    to->y = clampf(to->y, -gs->game_width*0.5, gs->game_width*0.5);
 
     gs->render.view.x = lerp64(gs->render.view.x, gs->render.to.x, 0.2);
     gs->render.view.y = lerp64(gs->render.view.y, gs->render.to.y, 0.2);
@@ -115,11 +115,11 @@ export void game_init(Game_State *state, int level) {
 
     gs->render.view.x = 0;
     gs->render.view.y = 0;
-    gs->render.view.w = gs->window_width;
-    gs->render.view.h = gs->window_height-GUI_H;
+    gs->render.view.w = gs->game_width;
+    gs->render.view.h = gs->game_height-GUI_H;
 
-    gs->real_top_left.x = gs->window_width/4;
-    gs->real_top_left.y = gs->window_height/4;
+    gs->real_top_left.x = gs->game_width/4;
+    gs->real_top_left.y = gs->game_height/4;
 
     gs->show_tutorials = true;
 
@@ -283,10 +283,12 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     if (input->keys[SDL_SCANCODE_LSHIFT]) {
                         set_text_field("Go to State", "", set_state_to_string_hook);
-                    } else
+                    } else {
                         undo();
-                } else
+                    }
+                } else {
                     undo();
+                }
                 break;
             }
             case SDLK_q: {
@@ -449,14 +451,14 @@ export void game_run(Game_State *state) {
 
     SDL_Rect src = {
         0, 0,
-        gs->window_width, gs->window_height
+        gs->game_width, gs->game_height
     };
 
     SDL_Rect dst = {
-        gs->real_width/2 - gs->window_width/2,
-        gs->real_height/2 - gs->window_height/2,
-        gs->window_width,
-        gs->window_height
+        gs->real_width/2 - gs->game_width/2,
+        gs->real_height/2 - gs->game_height/2,
+        gs->game_width,
+        gs->game_height
     };
 
     SDL_RenderCopy(gs->render.sdl,
@@ -468,7 +470,7 @@ export void game_run(Game_State *state) {
     Uint64 delta = time_end.QuadPart - time_start.QuadPart;
     f64 d = (f64)delta / (f64)frequency.QuadPart;
     gs->dt = d;
-
+    
     SDL_RenderPresent(gs->renderer);
 
     gs->is_mouse_over_any_button = false;

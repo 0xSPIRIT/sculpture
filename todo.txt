@@ -1,5 +1,8 @@
 # TODO
 
+  - Replace our circle rendering with proper SDL_gfx circle
+    rendering.
+
   - Titlescreen: add previews.
 
   - Hand-make sprites for each rotation.

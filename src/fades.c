@@ -33,7 +33,7 @@ static void fade_draw(int target) {
 
     SDL_Rect rect = {
         0, 0,
-        gs->window_width, gs->window_height
+        gs->game_width, gs->game_height
     };
 
     RenderFillRect(target, rect);

@@ -6,11 +6,14 @@ static void input_tick(Game_State *state) {
 
     in->real_pmx = in->real_mx;
     in->real_pmy = in->real_my;
-
+    
+//#if MOUSE_SIMULATED
+//#else
     in->mouse = (Uint32) SDL_GetMouseState(&in->real_mx, &in->real_my);
+//#endif
 
-    in->real_mx -= gs->real_width/2 - gs->window_width/2;
-    in->real_my -= gs->real_height/2 - gs->window_height/2;
+    in->real_mx -= gs->real_width/2 - gs->game_width/2;
+    in->real_my -= gs->real_height/2 - gs->game_height/2;
 
     in->keys = (Uint8*) SDL_GetKeyboardState(null);
 

@@ -11,14 +11,17 @@ static Chisel chisel_init(Chisel_Size size) {
     return chisel;
 }
 
-void chisel_undo_check(int x, int y) {
+static void chisel_undo_check(int x, int y) {
+    (void)x,y;
+#if 0
     if (gs->overlay.grid[x+y*gs->gw] && !gs->did_undo_tutorial) {
         gs->tutorial = *tutorial_rect(TUTORIAL_UNDO_STRING,
-                                      NormX(32),
-                                      NormY(768.0/8.0 + 32),
+                                      -1,
+                                      -1,
                                       NULL);
         gs->did_undo_tutorial = true;
     }
+#endif
 }
 
 static bool is_tool_chisel(void) {
@@ -44,28 +47,28 @@ static void chisel_play_sound(int size) {
 
 static int chisel_get_distance_from_facing_cell(int i, f64 angle) {
     angle = M_PI * angle / 180.0;
-
+    
     f64 real_dir_x = cos(angle);
     f64 real_dir_y = sin(angle);
-
+    
     int dir_x = round(real_dir_x);
     int dir_y = round(real_dir_y);
-
+    
     f64 x = (int)i % gs->gw;
     f64 y = (int)i / gs->gw; // Integer division
-
+    
     int distance = 0;
-
+    
     while (true) {
         x += dir_x;
         y += dir_y;
-
+        
         if (!is_in_bounds(x, y) ||
             gs->grid[(int)round(x)+(int)round(y)*gs->gw].type != CELL_NONE)
         {
             return distance;
         }
-
+        
         distance++;
     }
 }
@@ -79,61 +82,61 @@ static bool chisel_is_facing_cell(int i, f64 angle, int lookahead) {
 // Returns: The index of the position
 static int chisel_clamp_to_grid(f64 angle, int xx, int yy) {
     f64 closest_distance = gs->gw*gs->gh;
-
+    
     bool is_mouse_on_cell = (gs->grid[xx+yy*gs->gw].type != CELL_NONE);
-
+    
     // Special case for when mouse is on a cell
-
+    
     if (is_mouse_on_cell) {
         f64 rad_angle = M_PI * angle / 180.0;
         int dir_x = round(cos(rad_angle));
         int dir_y = round(sin(rad_angle));
-
+        
         int nx = xx - dir_x;
         int ny = yy - dir_y;
-
+        
         if (gs->grid[nx+ny*gs->gw].type == CELL_NONE)
             return nx+ny*gs->gw;
     }
-
+    
     int closest_idx = -1;
-
+    
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         int x = i%gs->gw;
         int y = i/gs->gh;
         int neighbours = number_neighbours(gs->grid, x, y, 1);
-
+        
         if (neighbours == 0) continue;
         if (gs->grid[i].type != CELL_NONE) continue;
-
+        
         f64 dx = x - xx;
         f64 dy = y - yy;
         f64 distance = sqrt(dx*dx + dy*dy);
-
+        
         if (distance < closest_distance) {
             closest_distance = distance;
             closest_idx = i;
         }
     }
-
+    
     return closest_idx;
 }
 
 static bool is_bad_corner(Chisel *chisel, int x, int y) {
     if (chisel->size != CHISEL_SMALL) return false;
-
+    
     int nx, ny;
-
+    
     f64 angle = M_PI * chisel->angle / 180.0;
-
+    
     f64 dir_x = cos(angle);
     f64 dir_y = sin(angle);
-
+    
     nx = round(x + dir_x);
     ny = round(y + dir_y);
-
+    
     if (gs->grid[nx+ny*gs->gw].type == CELL_NONE) return false;
-
+    
     if (chisel->angle == 135) {
         // x
         // x x
@@ -170,7 +173,7 @@ static bool is_bad_corner(Chisel *chisel, int x, int y) {
             return true;
         }
     }
-
+    
     return false;
 }
 
@@ -184,9 +187,9 @@ static void chisel_move_mouse_until_cell(Chisel *chisel, int x, int y, f64 angle
     f64 dir_y = sin(angle);
     f64 xx = x;
     f64 yy = y;
-
+    
     f64 length = sqrt((x-xx)*(x-xx) + (y-yy)*(y-yy));
-
+    
     while (length < max_length &&
            is_in_bounds(xx,yy) &&
            gs->grid[(int)round(xx)+((int)round(yy))*gs->gw].type == CELL_NONE)
@@ -197,10 +200,10 @@ static void chisel_move_mouse_until_cell(Chisel *chisel, int x, int y, f64 angle
     }
     xx -= dir_x;
     yy -= dir_y;
-
+    
     chisel->x = round(xx);
     chisel->y = round(yy);
-
+    
     move_mouse_to_grid_position((int)round(xx), (int)round(yy));
 }
 
@@ -208,9 +211,9 @@ static void flood_fill(Uint8 *grid, int x, int y, Uint8 value) {
     if (!is_in_bounds(x, y)) return;
     if (gs->grid[x+y*gs->gw].type == CELL_NONE) return;
     if (grid[x+y*gs->gw] == value) return;
-
+    
     grid[x+y*gs->gw] = value;
-
+    
     flood_fill(grid, x+1, y, value);
     flood_fill(grid, x-1, y, value);
     flood_fill(grid, x, y-1, value);
@@ -223,7 +226,7 @@ static bool chisel_attempt_add_to_inventory(int x, int y) {
     int amount = 1;
     if (gs->level_current+1 != 11 && gs->grid[x+y*gs->gw].is_initial)
         amount = (my_rand(x+y*gs->gw)%2==0) ? 2 : 1;
-
+    
     return add_item_to_inventory_slot(type, amount);
 }
 
@@ -247,15 +250,15 @@ static void generate_chisel_mask(Uint8 *mask, f64 chisel_angle_deg, int chisel_x
     // as a unit vector.
     f64 dx = round(cos(chisel_angle));
     f64 dy = round(sin(chisel_angle));
-
+    
     memset(mask, 0, gs->gw*gs->gh*sizeof(Uint8));
-
+    
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             f64 xx = x - chisel_x;
             f64 yy = y - chisel_y;
             f64 dot = dx*xx + dy*yy;
-
+            
             // If the dot product between these two vectors
             // is positive, that means the cosine of the
             // angle between the vectors is positive,
@@ -277,15 +280,15 @@ static bool is_cell_in_front_of_chisel(Chisel *chisel,
 static int find_nearest_successful_hit(int x, int y, int radius) {
     int result = -1;
     int max_dist_sq = radius*radius+1;
-
+    
     for (int dy = -radius; dy < radius; dy++) {
         for (int dx = -radius; dx < radius; dx++) {
             int dist_sq = dx*dx+dy*dy;
             if (dist_sq > radius*radius) continue;
             if (!is_in_bounds(x+dx, y+dy)) continue;
-
+            
             int idx = x+dx + (y+dy)*gs->gw;
-
+            
             bool success = (gs->grid[idx].type != gs->overlay.grid[idx]);
             if (success && dist_sq < max_dist_sq) {
                 max_dist_sq = dist_sq;
@@ -293,7 +296,7 @@ static int find_nearest_successful_hit(int x, int y, int radius) {
             }
         }
     }
-
+    
     return result;
 }
 
@@ -303,7 +306,7 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
     if (!is_pressure_low_enough(gs->grid[x+y*gs->gw])) {
         if (should_display_pressure_tutorial()) {
             gs->tutorial = *tutorial_rect(TUTORIAL_PRESSURE_STRING,
-                                          NormX(32),
+                                          -1,
                                           NormY(768.0/8.0 + 32),
                                           null);
             gs->did_pressure_tutorial = true;
@@ -356,7 +359,7 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
                 if (!is_in_bounds(x+xx, y+yy)) continue;
                 if (grid[x+xx+(y+yy)*gs->gw] != 1) continue;
                 if (!is_cell_hard(gs->grid[x+xx+(y+yy)*gs->gw].type)) continue;
-                if (chisel->size == 1 && !is_cell_in_front_of_chisel(chisel, x+xx, y+yy)) continue;
+                if (chisel->size == CHISEL_MEDIUM && !is_cell_in_front_of_chisel(chisel, x+xx, y+yy)) continue;
                 if (!special_case_for_diamond(x+xx, y+yy)) continue;
 
                 if (gs->grid[x+xx+(y+yy)*gs->gw].type != 0)

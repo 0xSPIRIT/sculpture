@@ -1,4 +1,5 @@
 #define MOUSE_BUTTONS 16
+#define MOUSE_SIMULATED true // Use simulated mouse for web?
 
 typedef struct Input {
     int mx, my; // Fake in game coordinates (pixel art scaled)

@@ -1,7 +1,7 @@
 #ifdef ALASKA_RELEASE_MODE
   #define SHOW_TUTORIAL 1
 #else
-  #define SHOW_TUTORIAL 0
+  #define SHOW_TUTORIAL 1
 #endif
 
 #define MAX_TUTORIAL_LINES 10
@@ -12,14 +12,17 @@
     "Use the chisels to create your sculpture!\n"\
     "  Left Click - Chisel\n"\
     "  Hold SHIFT & Move Mouse - Rotate Chisel\n\n"\
-    "Click the checkmark when you're satisfied with a level.\n"
+    "Click the checkmark when you're satisfied\n"\
+    "with a level.\n"
 
 #define TUTORIAL_OVERLAY_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Click the overlay button to show what Max wants to create.\n\n" \
-    "With the POINTER tool selected, you can display the material\n" \
-    "of a cell by hovering over the overlay.\n"
+    "Click the overlay button to show what Max\n"\
+    "wants to create.\n\n" \
+    "With the POINTER tool selected, you can\n"\
+    "display the material of the cell by\n" \
+    "hovering over the overlay.\n"
 
 #define TUTORIAL_COMPLETE_LEVEL \
     "Tutorial\n" \
@@ -38,8 +41,8 @@
 #define TUTORIAL_UNDO_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Use Z to undo if you make a mistake!\n" \
-    "Use R to restart a level, losing all progress.\n"
+    "Press Z to undo if you make a mistake!\n" \
+    "Press R to restart a level, losing all progress.\n"
 
 #define TUTORIAL_CHISEL_ROTATE_STRING \
     "Tutorial\n" \
@@ -57,10 +60,10 @@
 #define TUTORIAL_PLACER_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "- Use the PLACER to take up the sand and place it into\n" \
+    "Use the PLACER to take up the sand and place it into\n" \
     "your INVENTORY [TAB].\n\n" \
-    "- To place material, scroll the mouse for resizing,\n" \
-    "  then click.\n\n"\
+    "To place material, scroll the mouse for resizing,\n" \
+    "then click.\n\n"\
 
 #define TUTORIAL_PLACER_HARD \
     "Tutorial\n" \

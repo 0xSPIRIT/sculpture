@@ -211,8 +211,8 @@ static void narrator_run(int target, SDL_Color col) {
                                    font,
                                    s,
                                    c,
-                                   xoff + gs->window_width/2 - w/2,
-                                   gs->window_height/2 + 16 + i*(h+pad) - (h+pad)*n->current_line_count/2,
+                                   xoff + gs->game_width/2 - w/2,
+                                   gs->game_height/2 + 16 + i*(h+pad) - (h+pad)*n->current_line_count/2,
                                    null,
                                    &surf_h);
     }

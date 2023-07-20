@@ -19,7 +19,7 @@ enum {
 // 768x768 is the benchmark resolution I used so when
 // converting to new resolutions, I just put Scale(...)
 // around all the values working with the old 768x768 res.
-#define Scale(x) ((f64)gs->window_width * (f64)(x)/768.0)
+#define Scale(x) ((f64)gs->game_width * (f64)(x)/768.0)
 #define NormX(x) ((f64)(x)/768.0)
 #define NormY(x) (NormX(x))
 
@@ -41,7 +41,7 @@ enum {
 };
 
 typedef enum {
-    RENDER_TARGET_MASTER, // The final full-screen resolution target. Bounds: { 0, 0, gs->window_width, gs->window_height }
+    RENDER_TARGET_MASTER, // The final full-screen resolution target. Bounds: { 0, 0, gs->game_width, gs->game_height }
     RENDER_TARGET_PIXELGRID, // The main pixel art render target Bounds: {0, 0, gs->gw*2, gs->gh*2} where the default bounds is {gs->gw/2, gs->gh/2, gs->gw*2, gs->gh*2}
     RENDER_TARGET_GUI_TOOLBAR, // The render target showing the tool buttons
     RENDER_TARGET_CHISEL_BLOCKER,

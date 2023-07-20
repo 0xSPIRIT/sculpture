@@ -28,8 +28,8 @@ static void credits_run(int target) {
             strcpy(text_data.identifier, "Ending text");
             text_data.font = gs->fonts.font_times;
             strcpy(text_data.str, "Created by spiritwolf");
-            text_data.x = gs->window_width/2;
-            text_data.y = gs->window_height/2 - 100;
+            text_data.x = gs->game_width/2;
+            text_data.y = gs->game_height/2 - 100;
             text_data.foreground = col;
             text_data.background = WHITE;
             text_data.alignment = ALIGNMENT_CENTER;

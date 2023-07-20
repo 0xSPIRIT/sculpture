@@ -92,7 +92,7 @@ bool converter_gui_item_draw(int target, Cell_Type item, int override_index, int
         h
     };
     
-    if (r.x+r.w < 0 || r.y+r.h < 0 || r.x >= gs->window_width || r.y >= gs->window_height) return false;
+    if (r.x+r.w < 0 || r.y+r.h < 0 || r.x >= gs->game_width || r.y >= gs->game_height) return false;
     
     if (item < 0) {
         item = get_item_from_any(item, gs->conversions.timer, override_index-1);
@@ -146,7 +146,7 @@ void converter_gui_draw_text(int target, const char *str, int item_x, int item_y
     
     int new_x = item_x + item_w/2 - w/2;
     int new_y = item_y-h;
-    if (new_x+w < 0 || new_y+h < 0 || new_x >= gs->window_width || new_y >= gs->window_height) return;
+    if (new_x+w < 0 || new_y+h < 0 || new_x >= gs->game_width || new_y >= gs->game_height) return;
     
     RenderTextQuick(target,
                     ident,
@@ -222,24 +222,24 @@ void gui_conversions_draw_scroll_bar(int target) {
     Conversions *c = &gs->conversions;
     
     int w = Scale(16);
-    int h = gs->window_height-GUI_H;
+    int h = gs->game_height-GUI_H;
     int bar_height = Scale(64);
     
-    int logical_height = gs->window_height-GUI_H-bar_height;
+    int logical_height = gs->game_height-GUI_H-bar_height;
     
     
     SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
     
     
     SDL_Rect scroll_bar_full = {
-        gs->window_width - w,
+        gs->game_width - w,
         GUI_H,
         w,
         h
     };
     
     SDL_Rect scroll_bar = {
-        gs->window_width - w,
+        gs->game_width - w,
         GUI_H + logical_height * -c->y/c->max_height,
         w,
         bar_height
@@ -534,7 +534,7 @@ void converter_gui_draw(int final_target) {
     }
     
     RenderColor(255, 255, 255, 255);
-    RenderLine(target, gs->window_width/2, GUI_H, gs->window_width/2, gs->window_height);
+    RenderLine(target, gs->game_width/2, GUI_H, gs->game_width/2, gs->game_height);
     
     if (mouse_in_none) {
         tooltip_reset(&gs->gui.tooltip);
@@ -551,7 +551,7 @@ void converter_gui_draw(int final_target) {
             // Set up the scroll position
             // Find the average of all the rects' y positions.
             
-            c->y_to = -r.y + (gs->window_height-GUI_H)/2;
+            c->y_to = -r.y + (gs->game_height-GUI_H)/2;
             c->y_to = clamp(c->y_to, -c->max_height, 0);
         }
         
@@ -571,15 +571,15 @@ void converter_gui_draw(int final_target) {
     
     SDL_Rect src = {
         0, GUI_H,
-        gs->window_width,
-        gs->window_height-GUI_H
+        gs->game_width,
+        gs->game_height-GUI_H
     };
     
     SDL_Rect dst = {
         0,
         GUI_H,
-        gs->window_width,
-        gs->window_height-GUI_H
+        gs->game_width,
+        gs->game_height-GUI_H
     };
     
     RenderTargetToTarget(final_target,

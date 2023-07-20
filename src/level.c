@@ -139,7 +139,7 @@ static void goto_level(int lvl) {
     
     gs->current_tool = TOOL_GRABBER;
     
-    //gs->S = (f64)gs->window_width/(f64)gs->gw;
+    //gs->S = (f64)gs->game_width/(f64)gs->gw;
     Assert(gs->gw==gs->gh);
     
     gs->item_holding = (Item){0};
@@ -175,8 +175,8 @@ static void goto_level(int lvl) {
                    true,
                    0,
                    0,
-                   gs->window_width,
-                   gs->window_height);
+                   gs->game_width,
+                   gs->game_height);
     } else {
         level_set_state(lvl, LEVEL_STATE_INTRO);
         effect_set(&gs->current_effect,
@@ -339,8 +339,8 @@ static void level_tick_outro(Level *level) {
                        true,
                        0,
                        0,
-                       gs->window_width,
-                       gs->window_height);
+                       gs->game_width,
+                       gs->game_height);
         }
     }
     
@@ -437,7 +437,7 @@ static void level_draw_intro(Level *level) {
     };
     SDL_Rect global_dst = {
         0, GUI_H,
-        gs->window_width, gs->window_height-GUI_H
+        gs->game_width, gs->game_height-GUI_H
     };
     RenderTargetToTarget(RENDER_TARGET_MASTER,
                          RENDER_TARGET_PIXELGRID,
@@ -459,7 +459,7 @@ static void level_draw_intro(Level *level) {
                     name,
                     BLACK,
                     255,
-                    gs->window_width/2 - width/2+5,
+                    gs->game_width/2 - width/2+5,
                     64+5,
                     null,
                     null,
@@ -470,7 +470,7 @@ static void level_draw_intro(Level *level) {
                     name,
                     WHITE,
                     255,
-                    gs->window_width/2 - width/2,
+                    gs->game_width/2 - width/2,
                     64,
                     null,
                     null,
@@ -487,7 +487,7 @@ static void level_draw_intro(Level *level) {
     SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
     
     SDL_Rect dst = {
-        gs->window_width/2 - surf->w/2,
+        gs->game_width/2 - surf->w/2,
         surf->h * .5,
         surf->w, surf->h
     };
@@ -646,14 +646,14 @@ static void level_draw_outro(int target, Level *level) {
     
     SDL_Rect src = {
         0, 0,
-        gs->window_width,
-        gs->window_height
+        gs->game_width,
+        gs->game_height
     };
     
     SDL_Rect dst = {
         0, 0,
-        gs->window_width,
-        gs->window_height
+        gs->game_width,
+        gs->game_height
     };
     
     RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_OUTRO)->texture, level->outro_alpha);
@@ -795,10 +795,10 @@ static void level_draw_outro_or_play(Level *level) {
     };
 
     SDL_Rect dst = {
-        -gs->window_width/2-gs->render.view.x,
-        -gs->window_height/2-gs->render.view.y + GUI_H*1.5,
-        gs->window_width*2,
-        2*(gs->window_height-GUI_H),
+        -gs->game_width/2-gs->render.view.x,
+        -gs->game_height/2-gs->render.view.y + GUI_H*1.5,
+        gs->game_width*2,
+        2*(gs->game_height-GUI_H),
     };
 
     RenderTargetToTarget(RENDER_TARGET_MASTER,

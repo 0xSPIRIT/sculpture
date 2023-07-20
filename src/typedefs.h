@@ -1,5 +1,5 @@
 #define Error(...) do{fprintf(stderr, __VA_ARGS__), fflush(stderr);}while(0);
-#define Log(...) do{printf(__VA_ARGS__), fflush(stdout);}while(0);
+#define Log(...) do{char msg[8192]; sprintf(msg, __VA_ARGS__), OutputDebugString(msg); }while(0);
 
 #define BLACK ((SDL_Color){0,0,0,255})
 #define WHITE ((SDL_Color){255,255,255,255})

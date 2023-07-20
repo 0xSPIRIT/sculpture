@@ -11,7 +11,7 @@ static Converter *converter_init(int type, bool allocated) {
     }
 
     converter->type = type;
-    converter->w = (f32) (gs->window_width/2);
+    converter->w = (f32) (gs->game_width/2);
     converter->h = GUI_POPUP_H;
 
     converter->timer_max = 1;
@@ -87,10 +87,10 @@ static void converter_draw(int target, Converter *converter) {
     if (converter->state == CONVERTER_INACTIVE)
         return;
 
-    if (converter->y >= gs->window_height-GUI_H)
+    if (converter->y >= gs->game_height-GUI_H)
         return;
 
-    converter->w = (f32) (gs->window_width/2);
+    converter->w = (f32) (gs->game_width/2);
     converter->h = GUI_POPUP_H;
 
     RenderColor(Red(CONVERTER_LINE_COLOR),
@@ -151,7 +151,7 @@ static void converter_draw(int target, Converter *converter) {
 }
 
 static void all_converters_draw(int target) {
-    if (gs->gui.popup_y < gs->window_height-GUI_H) {
+    if (gs->gui.popup_y < gs->game_height-GUI_H) {
         converter_draw(target, gs->material_converter);
         converter_draw(target, gs->fuel_converter);
     }
