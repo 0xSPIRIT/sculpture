@@ -337,6 +337,7 @@ static void placer_place_rect(Placer *placer) {
             gs->has_any_placed = true;
             set(x, y, placer->contains->type, object_index);
             placer->contains->amount--;
+            placer->did_place_this_frame = true;
         }
     }
     
@@ -351,6 +352,8 @@ static void placer_place_rect(Placer *placer) {
 
 static void placer_tick(Placer *placer) {
     Input *input = &gs->input;
+    
+    placer->did_place_this_frame = false;
     
     placer->px = placer->x;
     placer->py = placer->y;
@@ -468,8 +471,11 @@ static void placer_tick(Placer *placer) {
     }
 
     // Set up the tooltip.
+    int x = placer->x + 3 - (gs->render.view.x / gs->S);
+    // Hardcode
+    if (gs->gw == 128) x -= 32;
     tooltip_set_position(&gs->gui.tooltip,
-                         placer->x + 3 - (gs->render.view.x / gs->S),
+                         x,
                          placer->y + 3 - (gs->render.view.y / gs->S),
                          TOOLTIP_TYPE_PLACER);
 

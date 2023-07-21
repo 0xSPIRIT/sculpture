@@ -4,7 +4,7 @@
 #define NARRATOR_ALPHA 10
 #define NARRATOR_HANG_TIME 14 // Frames
 
-#define SHOW_NARRATION ALASKA_RELEASE_MODE
+#define SHOW_NARRATION 1//ALASKA_RELEASE_MODE
 
 ////////////////////////////////////////////////////////////////
 #define NARRATION_LEVEL_1 \
@@ -53,7 +53,7 @@
 "would surely never come to pass.\n"\
 "In reverie, he returned to the here and now.\n"\
 "He thought that this idea was realistic-\r"\
-"that his expectations were surely tempered...\n"\
+"that his expectations were surely tempered.\n"\
 "With no hesitation, Max picked up his chisel.\n"\
 
 #define NARRATION_LEVEL_8 \

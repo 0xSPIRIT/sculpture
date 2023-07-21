@@ -112,7 +112,7 @@ static void particle_tick(Effect *effect, int i) {
 }
 
 static void effect_draw(int target, Effect *effect, bool draw_points, int only_slow) {
-        if (effect->type == EFFECT_NONE)
+    if (effect->type == EFFECT_NONE)
         return;
 
 #ifndef ALASKA_RELEASE_MODE
@@ -120,58 +120,53 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
         effect_reset_snow(effect, false);
     }
 #endif
-
+    
     switch (effect->type) {
         case EFFECT_SNOW: {
             for (int i = 0; i < effect->particle_count; i++) {
                 Effect_Particle *particle = &effect->particles[i];
                 f32 length = (f32) sqrt(particle->vx*particle->vx + particle->vy*particle->vy);
-
+                
                 if (only_slow == ONLY_SLOW_SLOW && length > 3)  continue;
                 if (only_slow == ONLY_SLOW_FAST && length <= 3) continue;
-
+                
                 particle_tick(effect, i);
-
+                
                 if (!effect->high_fidelity) {
                     if (particle->x < gs->gw/2 + gs->render.view.x/gs->S) continue;
-                    if (particle->y < gs->gw/2 + gs->render.view.y/gs->S) continue;
-                    if (particle->x > gs->gw/2 + gs->render.view.x/gs->S+64) continue;
-                    if (particle->y > gs->gw/2 + gs->render.view.y/gs->S+64) continue;
+                    if (particle->y < gs->gh/2 + gs->render.view.y/gs->S) continue;
+                    if (particle->x > gs->gw/2 + gs->render.view.x/gs->S+gs->gw) continue;
+                    if (particle->y > gs->gh/2 + gs->render.view.y/gs->S+gs->gh) continue;
                 } else {
                 }
-
+                
                 f32 max;
-
+                
                 f32 spd = 0.3f;
                 if (effect->high_fidelity) {
                     spd = EFFECT_SCALE;
                 }
                 max = sqrt((spd*spd*0.8*0.8) + (spd*spd*1.3*1.3));
-
+                
                 int px = (int)particle->x;
                 int py = (int)particle->y;
-
+                
                 //RenderColor(my_rand(px), my_rand(py), my_rand(px*py), (Uint8) (255 * (length/max)));
                 float coeff = 0.4f;
                 if (effect->bounds.w > gs->gw) coeff = 0.6f;
-
+                
                 Uint8 col = (Uint8) (255 * coeff*length/max);
-                if (effect->high_fidelity) {
-                    RenderColor(col, col, col, 255);
-                } else {
-                    RenderColor(255, 255, 255, col);
-                }
-
+                
                 if (draw_points) {
+                    RenderColor(255, 255, 255, col);
                     RenderPoint(target, px, py);
                 } else {
-                    //if (gs->levels[gs->level_current].state == LEVEL_STATE_NARRATION) {
-                        int size = Scale(6*(length/max));
-                        RenderFillCircle(target,
-                                         gs->game_width * px/effect->bounds.w,
-                                         gs->game_height * py/effect->bounds.h,
-                                         size);
-                    //}
+                    RenderColor(col, col, col, 255);
+                    int size = Scale(6*(length/max));
+                    RenderFillCircle(target,
+                                     gs->game_width * px/effect->bounds.w,
+                                     gs->game_height * py/effect->bounds.h,
+                                     size);
                 }
             }
             break;
@@ -179,15 +174,15 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
         case EFFECT_RAIN: {
             for (int i = 0; i < effect->particle_count; i++) {
                 particle_tick(effect, i);
-
+                
                 Effect_Particle *particle = &effect->particles[i];
-
+                
                 int px = (int)particle->x;
                 int py = (int)particle->y;
-
+                
                 int p2x = (int) (px - particle->vx*3);
                 int p2y = (int) (py - particle->vy*3);
-
+                
                 RenderColor(255, 255, 255, 32);
                 SDL_RenderDrawLine(gs->renderer, px, py, p2x, p2y);
             }

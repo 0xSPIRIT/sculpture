@@ -24,6 +24,8 @@ typedef struct Overlay {
     int *grid;
     int *temp_grid;
     enum Overlay_Tool tool;
+    
+    bool temp;
 
     int current_material;
 

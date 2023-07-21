@@ -76,7 +76,7 @@ static void auto_set_inventory_slots(void) {
 }
 
 static void inventory_setup_slots(void) {
-    const int startx = (gs->gw*gs->S)/2 - 0.5*INVENTORY_SLOT_COUNT*Scale(100);
+    const int startx = (gs->gh*gs->S)/2 - 0.5*INVENTORY_SLOT_COUNT*Scale(100);
     const int starty = GUI_H/2;
     
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
@@ -462,7 +462,7 @@ static void inventory_draw(int target) {
 
     const SDL_Rect rect = {
         0, y,
-        gs->S*gs->gw, GUI_H
+        gs->S*gs->gh, GUI_H
     };
 
     RenderColor(Red(INVENTORY_COLOR),

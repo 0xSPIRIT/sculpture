@@ -41,7 +41,7 @@
 #define TUTORIAL_UNDO_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Press Z to undo if you make a mistake!\n" \
+    "Press Z to undo if you make a mistake.\n" \
     "Press R to restart a level, losing all progress.\n"
 
 #define TUTORIAL_CHISEL_ROTATE_STRING \
@@ -94,23 +94,10 @@
     "To get a full list of converter, press I to toggle the\n" \
     "conversion recipe book.\n"\
 
-#define TUTORIAL_CAREFUL_STRING \
-    "Tutorial\n" \
-    "--------\n\n" \
-    "Ensure you be careful with the amount of material you're\n" \
-    "converting; You might not end up with enough of a certain\n" \
-    "type!\n"
-
 #define TUTORIAL_RECTANGLE_PLACE \
     "Tutorial\n" \
     "--------\n\n" \
     "To place material down, scroll the mouse, then click.\n"
-
-#define TUTORIAL_CHISEL_INVENTORY_STRING \
-    "Tutorial\n" \
-    "--------\n\n" \
-    "Upon chiseling, the broken material gets placed into\n" \
-    "your inventory.\n"
 
 // A rectangle containing text, and an "Okay" button.
 typedef struct Tutorial_Rect {

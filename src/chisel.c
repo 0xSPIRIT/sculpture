@@ -103,7 +103,7 @@ static int chisel_clamp_to_grid(f64 angle, int xx, int yy) {
     
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         int x = i%gs->gw;
-        int y = i/gs->gh;
+        int y = i/gs->gw;
         int neighbours = number_neighbours(gs->grid, x, y, 1);
         
         if (neighbours == 0) continue;
@@ -334,10 +334,10 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
                 chisel_attempt_add_to_inventory(x, y);
                 move_mouse_to_grid_position(x, y);
                 
-                f64 angle = randf(2*M_PI);
-                f64 magnitude = 0.5;
-                f64 vx = magnitude * cos(angle);
-                f64 vy = magnitude * sin(angle);
+                f64 magnitude = 1;
+                f64 vx, vy;
+                vx = magnitude * (randf(2)-1);
+                vy = -magnitude;
                 emit_dust(type, x, y, vx, vy);
             }
         }
@@ -597,10 +597,18 @@ static void chisel_tick(Chisel *chisel) {
             break;
         }
         case CHISEL_STATE_ROTATING: {
+            int x = chisel->x;
+            int y = chisel->y;
+            
+            // Hardcode
+            if (gs->gw == 128) {
+                x -= 32;
+            }
+            
             f64 rmx = (f64)(gs->input.real_mx + gs->render.view.x) / (f64)gs->S;
             f64 rmy = (f64)(gs->input.real_my-GUI_H + gs->render.view.y) / (f64)gs->S;
 
-            chisel->angle = 180 + 360 * atan2f(rmy - chisel->y, rmx - chisel->x) / (f32)(2*M_PI);
+            chisel->angle = 180 + 360 * atan2f(rmy - y, rmx - x) / (f32)(2*M_PI);
 
             f32 step = 45.0;
             chisel->angle /= step;

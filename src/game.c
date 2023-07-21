@@ -138,9 +138,8 @@ export void game_init(Game_State *state, int level) {
     gs->gamestate = GAME_STATE_TITLESCREEN;
 
     Mix_VolumeMusic(AUDIO_TITLESCREEN_VOLUME);
-    #ifdef ALASKA_RELEASE_MODE
-    Assert(Mix_PlayMusic(gs->audio.music_titlescreen, -1) != -1);
-    #endif
+    if (Mix_PlayMusic(gs->audio.music_titlescreen, -1))
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Failure!", "Failed to play music!", null);
 #else
     gs->gamestate = GAME_STATE_PLAY;
 #endif
@@ -180,6 +179,24 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 placer->place_width = clamp(placer->place_width, 8, 20);
                 placer->place_height = placer->place_width * placer->place_aspect;
             }
+        } else if (is_tool_chisel()) {
+            gs->current_tool += event->wheel.y;
+            gs->current_tool = clamp(gs->current_tool, TOOL_CHISEL_SMALL, TOOL_CHISEL_LARGE);
+            
+            switch (gs->current_tool) {
+                case TOOL_CHISEL_SMALL: {
+                    gs->chisel = &gs->chisel_small;
+                } break;
+                case TOOL_CHISEL_MEDIUM: {
+                    gs->chisel = &gs->chisel_medium;
+                } break;
+                case TOOL_CHISEL_LARGE: {
+                    gs->chisel = &gs->chisel_large;
+                } break;
+            }
+            gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
+            gs->gui.tool_buttons[gs->current_tool]->active = true;
+            
         }
     }
 

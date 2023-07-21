@@ -21,7 +21,7 @@ typedef struct GameLoopData {
 
 static void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
     SDL_Init(SDL_INIT_VIDEO);
-    Assert(Mix_Init(MIX_INIT_OGG) != 0);
+    Mix_Init(MIX_INIT_OGG);
 
     state->window = SDL_CreateWindow(window_title,
                                      SDL_WINDOWPOS_CENTERED,
@@ -34,7 +34,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
 
-    Assert(Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0);
+    Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0;
 
     int flags = 0;
     if (use_software_renderer) {

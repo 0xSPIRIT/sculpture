@@ -23,7 +23,7 @@ enum {
     CELL_ANY_WATER_OR_ICE = -7,
 };
 
-const int conversions[] = {
+static const int conversions[] = {
     // Converter,  Fuel, Input 1, Input 2, Output, Alternate button
     CONVERTER_FUEL, 0,   CELL_ANY_CONVERT_TO_COAL, 0, CELL_UNREFINED_COAL, false,
     CONVERTER_FUEL, 0,   CELL_UNREFINED_COAL, CELL_GLASS,  CELL_REFINED_COAL, false,

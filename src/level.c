@@ -139,9 +139,6 @@ static void goto_level(int lvl) {
     
     gs->current_tool = TOOL_GRABBER;
     
-    //gs->S = (f64)gs->game_width/(f64)gs->gw;
-    Assert(gs->gw==gs->gh);
-    
     gs->item_holding = (Item){0};
     gs->current_placer = 0;
     
@@ -298,55 +295,38 @@ static void level_tick_intro(Level *level) {
     }
 }
 
+static void level_click_next_level(void) {
+    if (gs->level_current+1 < 11) {
+        popup_confirm_activate(&gs->gui.eol_popup_confirm);
+    } else {
+        level_set_state(gs->level_current, LEVEL_STATE_PLAY);
+        object_activate(&gs->obj);
+        effect_set(&gs->current_effect,
+                   EFFECT_SNOW,
+                   true,
+                   0,
+                   0,
+                   gs->game_width,
+                   gs->game_height);
+    }
+}
+
+static void level_click_close_outro(Level *level) {
+    level->off = true;
+    level->desired_alpha = 0;
+}
+
 static void level_tick_outro(Level *level) {
     level->outro_alpha = goto64(level->outro_alpha, level->desired_alpha, 25);
     if (fabs(level->outro_alpha - level->desired_alpha) < 15)
         level->outro_alpha = level->desired_alpha;
     
     if (!gs->gui.eol_popup_confirm.active && gs->input.keys[SDL_SCANCODE_N]) {
-        if (gs->level_current+1 < 11) {
-#if 0
-            int lvl = gs->level_current+1;
-            bool same = compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY);
-#endif
-            
-#if 0
-            if ((lvl == 1 || lvl >= 8) && same) {
-#endif
-                popup_confirm_activate(&gs->gui.eol_popup_confirm);
-#if 0
-            } else if (lvl > 1 && lvl < 8) {
-                popup_confirm_activate(&gs->gui.eol_popup_confirm);
-            } else {
-                level_set_state(gs->level_current, LEVEL_STATE_PLAY);
-                if (lvl != 1)
-                    gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL_2,
-                                                  NormX(32),
-                                                  NormY((768.8/8.0)+32),
-                                                  null);
-                else
-                    gs->tutorial = *tutorial_rect(TUTORIAL_COMPLETE_LEVEL,
-                                                  NormX(32),
-                                                  NormY((768.8/8.0)+32),
-                                                  null);
-            }
-#endif
-        } else {
-            level_set_state(gs->level_current, LEVEL_STATE_PLAY);
-            object_activate(&gs->obj);
-            effect_set(&gs->current_effect,
-                       EFFECT_SNOW,
-                       true,
-                       0,
-                       0,
-                       gs->game_width,
-                       gs->game_height);
-        }
+        level_click_next_level();
     }
     
     if (!gs->gui.eol_popup_confirm.active && gs->input.keys_pressed[SDL_SCANCODE_F]) {
-        level->off = true;
-        level->desired_alpha = 0;
+        level_click_close_outro(level);
     }
     
     if (level->off && level->outro_alpha == 0) {
@@ -435,6 +415,11 @@ static void level_draw_intro(Level *level) {
         gs->gw/2, gs->gh/2,
         gs->gw, gs->gh
     };
+    // Hardcode
+    if (gs->gw == 128) {
+        src.x += 32;
+        src.w = 64;
+    }
     SDL_Rect global_dst = {
         0, GUI_H,
         gs->game_width, gs->game_height-GUI_H
@@ -524,13 +509,22 @@ static void level_draw_name_intro(int target, Level *level, SDL_Rect rect) {
                     false);
 }
 
-#define LEVEL_DESIRED_GRID_SCALE Scale(4) // This is dumb. Just draw it to a texture at 64x64 scale, then draw the texture at the appropriate scale for the screen size.
+#define LEVEL_DESIRED_GRID_SCALE Scale(3) // This is dumb. Just draw it to a texture at 64x64 scale, then draw the texture at the appropriate scale for the screen size.
 
 static void level_draw_desired_grid(Level *level, int dx, int dy) {
     const int scale = round(LEVEL_DESIRED_GRID_SCALE);
     
+    int start_x = 0;
+    int width = gs->gw;
+    
+    // Hardcode
+    if (gs->gw == 128) {
+        start_x += 32;
+        width = 32+64;
+    }
+    
     for (int y = 0; y < gs->gh; y++) {
-        for (int x = 0; x < gs->gw; x++) {
+        for (int x = start_x; x < width; x++) {
             SDL_Rect r;
             
             if (!level->desired_grid[x+y*gs->gw].type) {
@@ -540,7 +534,7 @@ static void level_draw_desired_grid(Level *level, int dx, int dy) {
                 RenderColor(col.r, col.g, col.b, 255);
             }
             
-            r = (SDL_Rect){ scale*x + dx, scale*y + dy + 32, scale, scale };
+            r = (SDL_Rect){ scale*(x-start_x) + dx, scale*y + dy + 32, scale, scale };
             SDL_RenderFillRect(gs->renderer, &r);
         }
     }
@@ -551,12 +545,14 @@ static void level_draw_outro(int target, Level *level) {
     
     int outro = RENDER_TARGET_OUTRO;
     
+    int size = gs->gh;
+    
     RenderColor(0, 0, 0, 0);
     RenderClear(outro);
     
     Uint8 alpha = 255;
     
-    SDL_Rect rect = {gs->S*gs->gw/8, GUI_H + gs->S*gs->gh/2 - (gs->S*3*gs->gh/4)/2, gs->S*3*gs->gw/4, gs->S*3*gs->gh/4};
+    SDL_Rect rect = {gs->S*size/8, GUI_H + gs->S*size/2 - (gs->S*3*size/4)/2, gs->S*3*size/4, gs->S*3*size/4};
     RenderColor(0, 0, 0, alpha);
     RenderFillRect(outro, rect);
     RenderColor(91, 91, 91, alpha);
@@ -590,7 +586,7 @@ static void level_draw_outro(int target, Level *level) {
                     "The result",
                     WHITE,
                     alpha,
-                    dx+rect.w - LEVEL_MARGIN - scale*level->w - margin,
+                    dx+rect.w - LEVEL_MARGIN - scale*size - margin,
                     dy,
                     null,
                     null,
@@ -602,11 +598,11 @@ static void level_draw_outro(int target, Level *level) {
     RenderColor(91, 91, 91, alpha);
     SDL_Rect desired_rect = (SDL_Rect){
         dx, dy+32,
-        scale*gs->gw, scale*gs->gh
+        scale*size, scale*size
     };
     RenderDrawRect(outro, desired_rect);
     
-    dx += rect.w - margin - scale*level->w - margin;
+    dx += rect.w - margin - scale*size - margin;
     
     //~ Your grid
     
@@ -615,34 +611,92 @@ static void level_draw_outro(int target, Level *level) {
     RenderColor(91, 91, 91, alpha);
     desired_rect = (SDL_Rect){
         dx, dy+32,
-        scale*gs->gw, scale*gs->gh
+        scale*size, scale*size
     };
     RenderDrawRect(outro, desired_rect);
     
+    //~ Buttons
+    
     SDL_Color color_next_level = (SDL_Color){255,255,255,255};
     
-    RenderTextQuick(outro,
-                    "next level",
-                    gs->fonts.font,
-                    "Next Level [n]",
-                    color_next_level,
-                    255,
-                    rect.x + rect.w - Scale(200),
-                    rect.y + rect.h - margin - Scale(20),
-                    null,
-                    null,
-                    false);
-    RenderTextQuick(outro,
-                    "close",
-                    gs->fonts.font,
-                    "Close [f]",
-                    (SDL_Color){128, 128, 128, alpha},
-                    255,
-                    rect.x + margin,
-                    rect.y + rect.h - margin - Scale(20),
-                    null,
-                    null,
-                    false);
+    { // Next level button
+        int x, y;
+        int w, h;
+        
+        x = rect.x + rect.w - Scale(200);
+        y = rect.y + rect.h - margin - Scale(20);
+        
+        RenderTextQuick(outro,
+                        "next level",
+                        gs->fonts.font,
+                        "Next Level [n]",
+                        color_next_level,
+                        255,
+                        x,
+                        y,
+                        &w,
+                        &h,
+                        false);
+        
+        SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
+        if (is_point_in_rect(mouse, (SDL_Rect){x,y,w,h})) {
+            RenderColor(0,0,0,64);
+            RenderFillRect(outro, (SDL_Rect){x,y,w,h});
+        }
+        
+        Button b = {0};
+        b.texture = null;
+        b.on_pressed = null;
+        b.x = x;
+        b.y = y;
+        b.w = w;
+        b.h = h;
+        b.index = -1;
+        
+        bool clicked = button_tick(&b, null);
+        if (clicked) {
+            level_click_next_level();
+        }
+    }
+    
+    { // Close button
+        int x, y, w, h;
+        
+        x = rect.x + margin;
+        y = rect.y + rect.h - margin - Scale(20);
+        
+        RenderTextQuick(outro,
+                        "close",
+                        gs->fonts.font,
+                        "Close [f]",
+                        (SDL_Color){128, 128, 128, alpha},
+                        255,
+                        x,
+                        y,
+                        &w,
+                        &h,
+                        false);
+        
+        SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
+        if (is_point_in_rect(mouse, (SDL_Rect){x,y,w,h})) {
+            RenderColor(0,0,0,64);
+            RenderFillRect(outro, (SDL_Rect){x,y,w,h});
+        }
+        
+        Button b = {0};
+        b.texture = null;
+        b.on_pressed = null;
+        b.x = x;
+        b.y = y;
+        b.w = w;
+        b.h = h;
+        b.index = -1;
+        
+        bool clicked = button_tick(&b, null);
+        if (clicked) {
+            level_click_close_outro(level);
+        }
+    }
     
     SDL_Rect src = {
         0, 0,
@@ -737,15 +791,20 @@ static void level_draw_narration(int target) {
     //effect_draw(target, &gs->current_effect, false, ONLY_SLOW_FAST);
 }
 
-static void game_draw_floor(int target) {
+static void game_draw_table(int target) {
     if (gs->render.view.y >= 0) {
         Texture *t = &GetTexture(TEXTURE_PLANK);
+        
         SDL_Rect dst = {
             0,
             1.5*gs->gh,
             t->width,
             t->height
         };
+        
+        // Hardcode
+        if (gs->gw == 128) dst.x = gs->gw/2;
+        
         RenderTexture(target,
                       &GetTexture(TEXTURE_PLANK),
                       null,
@@ -766,7 +825,7 @@ static void level_draw_outro_or_play(Level *level) {
 
     grid_draw(RENDER_TARGET_PIXELGRID);
 
-    game_draw_floor(RENDER_TARGET_PIXELGRID);
+    game_draw_table(RENDER_TARGET_PIXELGRID);
 
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
@@ -786,21 +845,26 @@ static void level_draw_outro_or_play(Level *level) {
     
     RenderColor(0,0,0,255);
     RenderClear(RENDER_TARGET_MASTER);
-
+    
     SDL_Rect src = {
         0,
         0,
         2*gs->gw,
         2*gs->gh
     };
-
+    
     SDL_Rect dst = {
         -gs->game_width/2-gs->render.view.x,
         -gs->game_height/2-gs->render.view.y + GUI_H*1.5,
-        gs->game_width*2,
+        gs->game_width*2*2,
         2*(gs->game_height-GUI_H),
     };
-
+    
+    // Hardcode
+    if (gs->gw == 128) {
+        dst.x -= gs->game_width;
+    }
+    
     RenderTargetToTarget(RENDER_TARGET_MASTER,
                          RENDER_TARGET_PIXELGRID,
                          &src,

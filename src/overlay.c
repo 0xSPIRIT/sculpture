@@ -99,6 +99,7 @@ static void overlay_init(void) {
     Overlay *overlay = &gs->overlay;
 
     overlay->tool = OVERLAY_TOOL_BRUSH;
+    overlay->temp = false;
 
     if (overlay->grid == null) {
         overlay->grid = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
@@ -133,13 +134,6 @@ static void overlay_init(void) {
                 overlay_load_changes(RES_DIR "lvl/changes/lvl7/%d.png", 5);
             break;
         }
-#if 0
-        case 10: {
-            overlay->changes =
-                overlay_load_changes(RES_DIR "lvl/changes/lvl10/%d.png", 2);
-            break;
-        }
-#endif
     }
 }
 
@@ -276,10 +270,14 @@ static void overlay_swap_tick(void) {
         }
     }
 
-    if (overlay->changes.was_grid_none && (has_any_chisel_chiseled() || gs->has_any_placed)) {
-        if (gs->overlay.show && !gs->gui.popup && !gs->conversions.active) {
-            overlay->changes.temp += 0.02f;
-        }
+    if (overlay->changes.was_grid_none) {
+        if (gs->chisel->did_chisel_this_frame)
+            overlay->temp = true;
+        if (gs->placers[gs->current_placer].did_place_this_frame)
+            overlay->temp = true;
+    }
+    if (overlay->changes.was_grid_none && overlay->temp) {
+        if (gs->overlay.show && !gs->gui.popup && !gs->conversions.active) { overlay->changes.temp += 0.02f; }
     }
 
     const int c = 15;

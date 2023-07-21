@@ -198,18 +198,5 @@ static void check_for_tutorial() {
             gs->tutorial = *t1;
             break;
         }
-        case 6: {
-            gs->tutorial = *tutorial_rect(TUTORIAL_CHISEL_INVENTORY_STRING,
-                                          -1,
-                                          -1,
-                                          null);
-            break;
-        }
-        case 8: {
-            gs->tutorial = *tutorial_rect(TUTORIAL_CAREFUL_STRING,
-                                          -1,
-                                          -1,
-                                          null);
-        }
     }
 }

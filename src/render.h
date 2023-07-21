@@ -134,4 +134,4 @@ RENDERAPI void RenderTextureAlphaMod(Texture *texture, Uint8 a);
 RENDERAPI int  RenderLockTexture(Texture *texture, SDL_Rect *rect, void **pixels, int *pitch);
 RENDERAPI void RenderUnlockTexture(Texture *texture);
 
-RENDERAPI void RenderFillCircle(int target, int x, int y, int size);
+RENDERAPI void RenderFillCircle(int target, int x, int y, int radius);

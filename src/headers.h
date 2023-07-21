@@ -20,7 +20,6 @@
 #include "audio.h"
 #include "render.h"
 #include "colors.h"
-#include "cursor.h"
 #include "fades.h"
 #include "preview.h"
 #include "credits.h"

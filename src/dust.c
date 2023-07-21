@@ -32,8 +32,14 @@ static void emit_dust_explosion(enum Cell_Type type,
 {
     for (int i = 0; i < count; i++) {
         f64 angle = randf(2*M_PI);
-        f64 vx = cos(angle);
-        f64 vy = sin(angle);
+        f64 vx, vy;
+        if (y == gs->gh-1) {
+            vx = (rand()%2 == 0) ? 1 : -1;
+            vy = -1;
+        } else {
+            vx = cos(angle);
+            vy = sin(angle);
+        }
         emit_dust(type, x, y, vx, vy);
     }
 }

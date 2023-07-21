@@ -175,7 +175,7 @@ typedef union Fonts {
     };
 } Fonts;
 
-int font_sizes[FONT_COUNT] = {
+static int font_sizes[FONT_COUNT] = {
     20,
     30,
     24,

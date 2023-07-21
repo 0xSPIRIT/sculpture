@@ -30,15 +30,21 @@
 #include <windows.h>
 
 #include "shared.h"
-#include "util.c"
 
 #include "render.c"
 #include "assets.c"
+#ifndef ALASKA_RELEASE_MODE
+  #include "util.c"
+#endif
 #include "input.c"
 
 #define GAME_DLL_NAME "sculpture.dll"
 #define TEMP_DLL_NAME "sculpture_temp.dll"
 #define LOCK_NAME     "lock.tmp"
+
+#ifdef ALASKA_RELEASE_MODE
+#include "game.h"
+#endif
 
 #define ALASKA_START_FULLSCREEN 0
 
@@ -57,8 +63,7 @@ typedef struct Game_Code {
 
 static void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
     SDL_Init(SDL_INIT_VIDEO);
-    
-    Mix_Init(MIX_INIT_OGG | MIX_INIT_MP3);
+    Mix_Init(MIX_INIT_OGG);
     
     int x = 200;
     int y = 125;
@@ -84,7 +89,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
     IMG_Init(IMG_INIT_PNG);
     TTF_Init();
     
-    Assert(Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0);
+    Mix_OpenAudio(44100, AUDIO_S16, 2, 4096);
     
     int flags = 0;
     if (use_software_renderer) {
@@ -150,7 +155,7 @@ static bool prefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
 }
 
-static void game_init(Game_State *state) {
+static void win32_game_init(Game_State *state) {
     srand((unsigned int) time(0));
     
     if (state->S == 0)
@@ -173,13 +178,9 @@ static void game_init(Game_State *state) {
     // are initialized.
     audio_init(&state->audio);
     textures_init(&state->textures);
-    surfaces_init(&state->surfaces);
+    surfaces_init(&state->surfaces); 
     
     SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
-    
-    state->normal_cursor = SDL_GetCursor();
-    state->grabber_cursor = init_system_cursor(arrow_cursor_data);
-    state->placer_cursor = init_system_cursor(placer_cursor_data);
     
     fonts_init(&state->fonts);
 }
@@ -353,8 +354,10 @@ int win32_main(int argc, char **argv) {
         }
     }
     
+#ifndef ALASKA_RELEASE_MODE
     Game_Code game_code = {0};
     load_game_code(&game_code);
+#endif
     
     Memory_Arena persistent_memory, transient_memory;
     make_memory_arena(&persistent_memory, &transient_memory);
@@ -372,8 +375,13 @@ int win32_main(int argc, char **argv) {
     gs->persistent_memory = &persistent_memory;
     gs->transient_memory = &transient_memory;
     
-    game_init(gs);
+    win32_game_init(gs);
+    
+#ifdef ALASKA_RELEASE_MODE
+    game_init(gs, start_level);
+#else
     game_code.game_init(gs, start_level);
+#endif
     
     // Only now, since the levels have been instantiated,
     // can we initialize render targets (since they depend
@@ -398,25 +406,33 @@ int win32_main(int argc, char **argv) {
         
 #ifndef ALASKA_RELEASE_MODE
         FILETIME new_dll_write_time = get_last_write_time(GAME_DLL_NAME);
-
+        
         if (CompareFileTime(&new_dll_write_time, &game_code.last_write_time) != 0) {
             reload_game_code(&game_code);
         }
 #endif
-
+        
         input_tick(gs);
-
+        
         SDL_Event event;
-
+        
         gs->resized = false;
         while (SDL_PollEvent(&event)) {
+#ifndef ALASKA_RELEASE_MODE
             bool should_continue = game_code.game_tick_event(gs, &event);
+#else
+            bool should_continue = game_tick_event(gs, &event);
+#endif
             if (!should_continue) {
                 running = false;
             }
         }
 
+#ifndef ALASKA_RELEASE_MODE
         game_code.game_run(gs);
+#else
+        game_run(gs);
+#endif
 
         // Zero out the transient memory for next frame!
         memset(transient_memory.data, 0, transient_memory.size);

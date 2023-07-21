@@ -82,12 +82,16 @@ static bool is_in_boundsf(f32 x, f32 y) {
 
 // Moves the mouse to the middle of the grid cell, not the top-left.
 static void move_mouse_to_grid_position(f32 x, f32 y) {
-    SDL_WarpMouseInWindow(gs->window,
-                          (int)(x*gs->S + gs->S/2 - gs->render.view.x + (gs->real_width/2 - gs->game_width/2)),
-                          GUI_H + (int)(y*gs->S + gs->S/2 - gs->render.view.y + (gs->real_height/2 - gs->game_height/2)));
+    int new_x = (int)(x*gs->S + gs->S/2 - gs->render.view.x + (gs->real_width/2 - gs->game_width/2));
+    int new_y = GUI_H + (int)(y*gs->S + gs->S/2 - gs->render.view.y + (gs->real_height/2 - gs->game_height/2));
+    
+    // Hardcode
+    if (gs->gw == 128) new_x -= gs->game_width/2;
+    
+    SDL_WarpMouseInWindow(gs->window, new_x, new_y);
 }
 
-static void get_filename_from_type(int type, char *out) {
+void get_filename_from_type(int type, char *out) {
     switch (type) {
         case CELL_NONE:        strcpy(out, "nothing"); break;
         case CELL_DIRT:        strcpy(out, RES_DIR "items/dirt.png"); break;
@@ -173,7 +177,7 @@ static void get_name_from_tool(int type, char *out) {
     }
 }
 
-static void get_file_from_tool(int type, char *out) {
+void get_file_from_tool(int type, char *out) {
     switch (type) {
         case TOOL_CHISEL_SMALL:  strcpy(out, "chisel_small.png"); break;
         case TOOL_CHISEL_MEDIUM: strcpy(out, "chisel_medium.png"); break;
@@ -221,16 +225,17 @@ static Uint32 get_pixel_int(SDL_Surface *surf, int x, int y) {
     return pixels[x+y*surf->w];
 }
 
-const int _a = 1103515245;
-const int _c = 12345;
-const int _m = 2000000;
 
 static int my_rand(int seed) {
-    return (_a * (seed * seed) + _c) % _m;
+    const int a = 1103515245;
+    const int c = 12345;
+    const int m = 2000000;
+    return (a * (seed * seed) + c) % m;
 }
 
 static f32 my_rand_f32(int seed) {
-    return (f32)my_rand(seed)/(f32)_m;
+    const int m = 2000000;
+    return (f32)my_rand(seed)/(f32)m;
 }
 
 static f64 randf(f64 size) {

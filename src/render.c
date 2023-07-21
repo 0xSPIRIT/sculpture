@@ -698,15 +698,54 @@ RENDERAPI void RenderUnlockTexture(Texture *texture) {
     SDL_UnlockTexture(texture->handle);
 }
 
-// Isn't this slow?
-RENDERAPI void RenderFillCircle(int target, int x, int y, int size) {
+// Method 1 --> ~2.648ms
+// Method 2 --> ~3.119ms
+// Method 3 --> ~2.057ms
+
+// Method 3
+RENDERAPI void RenderFillCircle(int target, int x, int y, int r) {
     RenderMaybeSwitchToTarget(target);
-
-    for (int yy = -size; yy <= size; yy++) {
-        for (int xx = -size; xx <= size; xx++) {
-            if (xx*xx + yy*yy > size*size) continue;
-
-            SDL_RenderDrawPoint(gs->render.sdl, x+xx, y+yy);
-        }
+    
+    int r2 = r * r;
+    for (int cy = -r; cy <= r; cy++) {
+        int cx = (int)(sqrt(r2 - cy * cy) + 0.5);
+        int cyy = cy + y;
+        
+        SDL_RenderDrawLine(gs->render.sdl, x - cx, cyy, x + cx, cyy);
     }
 }
+
+#if 0
+// Method 1
+RENDERAPI void RenderFillCircle(int target, int center_x, int center_y, int radius) {
+    RenderMaybeSwitchToTarget(target);
+    
+    int radius_sqr = radius*radius;
+    
+    for (int x = -radius; x < radius ; x++) {
+        int hh = (int)sqrt(radius_sqr - x * x);
+        int rx = center_x + x;
+        int ph = center_y + hh;
+        
+        for (int y = center_y-hh; y < ph; y++)
+            SDL_RenderDrawPoint(gs->render.sdl, rx, y);
+    }
+}
+
+// Method 2
+RENDERAPI void RenderFillCircle(int target, int center_x, int center_y, int radius) {
+    RenderMaybeSwitchToTarget(target);
+    
+    int r2 = radius * radius;
+    int area = r2 << 2;
+    int rr = radius << 1;
+    
+    for (int i = 0; i < area; i++) {
+        int tx = (i % rr) - radius;
+        int ty = (i / rr) - radius;
+        
+        if (tx * tx + ty * ty <= r2)
+            SDL_RenderDrawPoint(gs->render.sdl, center_x + tx, center_y + ty);
+    }
+}
+#endif

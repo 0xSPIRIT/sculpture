@@ -47,6 +47,9 @@ static void render_targets_init(void) {
     }
 }
 
+void get_file_from_tool(int type, char *out);
+void get_filename_from_type(int type, char *out);
+
 static void textures_init(Textures *textures) {
     SDL_Surface *surf = null;
 

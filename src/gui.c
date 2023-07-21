@@ -266,6 +266,8 @@ static bool button_tick(Button *b, void *data) {
 }
 
 static void button_draw_prefer_color(int target, Button *b, SDL_Color color) {
+    if (!b->texture) return;
+    
     Input *input = &gs->input;
     
     int gui_input_mx = input->real_mx;// / gs->S;
@@ -627,14 +629,14 @@ static void gui_popup_draw(int target) {
 
     SDL_Rect bar = {
         0, popup.y,
-        gs->gw*gs->S, Scale(36)
+        gs->gh*gs->S, Scale(36)
     };
 
     RenderColorStruct(ColorFromInt(INVENTORY_COLOR2));
     RenderFillRect(target, bar);
 
     SDL_Rect tab_icon = {
-        gs->gw*gs->S - 128, (int)(GUI_H + gui->popup_y) - h,
+        gs->gh*gs->S - 128, (int)(GUI_H + gui->popup_y) - h,
         w, h
     };
 

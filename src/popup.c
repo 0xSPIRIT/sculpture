@@ -65,12 +65,16 @@ static void text_field_draw(int target) {
 
     if (text_surf) {
         field_rect = (SDL_Rect){
-            (gs->gw*gs->S)/2 - text_surf->w/2 - 16, GUI_H + (gs->gh*gs->S)/2 - text_surf->h/2 - 16,
-            text_surf->w + 32, text_surf->h + 32
+            (gs->gh*gs->S)/2 - text_surf->w/2 - 16,
+            GUI_H + (gs->gh*gs->S)/2 - text_surf->h/2 - 16,
+            text_surf->w + 32,
+            text_surf->h + 32
         };
         text_field_rect = (SDL_Rect){
-            (gs->gw*gs->S)/2 - text_surf->w/2, GUI_H + (gs->gh*gs->S)/2 - text_surf->h/2,
-            text_surf->w, text_surf->h
+            (gs->gh*gs->S)/2 - text_surf->w/2,
+            GUI_H + (gs->gh*gs->S)/2 - text_surf->h/2,
+            text_surf->w,
+            text_surf->h
         };
     }
     RenderColor(0, 0, 0, 255);
@@ -91,7 +95,7 @@ static void text_field_draw(int target) {
     }
 
     if (description_surf) {
-        int x = gs->gw*gs->S/2;
+        int x = gs->gh*gs->S/2;
         int y = gs->gh*gs->S/2;
         int hh = 0;
 

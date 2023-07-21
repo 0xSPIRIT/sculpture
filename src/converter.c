@@ -629,7 +629,7 @@ static void converter_tick(Converter *converter) {
             break;
         }
         case CONVERTER_FUEL: {
-            converter->x = (f32) (gs->S*gs->gw/2);
+            converter->x = (f32) (gs->S*gs->gh/2);
             converter->y = (f32) (gs->gui.popup_y);
             break;
         }
