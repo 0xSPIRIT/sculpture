@@ -1,3 +1,4 @@
+#define COLOR_MAX_DIALOGUE (SDL_Color){200, 0, 0, 255}
 #define INVENTORY_COLOR  0x1b1b1b
 #define INVENTORY_COLOR2 0x000000
 

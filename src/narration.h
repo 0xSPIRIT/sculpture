@@ -72,7 +72,8 @@
 "Max, in a fit of rage, clenches the single flower in hands\r"\
 "and smashes it to the floor, chucking shards of marble\r"\
 "and quartz across his workshop.\n"\
-"\"I'll never make this mistake again,\" he declared.\n"\
+"\"I'll never make this mistake again,\"\r"\
+"he declared.\n"\
 
 #define NARRATION_LEVEL_10 \
 "A thought captured him once again,\r"\

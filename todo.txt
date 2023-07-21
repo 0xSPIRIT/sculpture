@@ -2,10 +2,13 @@
 
   - The dust is the same color as the chisel highlights!
 
+  - Make the overlay colors way better!
+
+  - Remove possible large chisels where the selected range to destroy has
+    gaps in it... Do some sort of check.
+
   - With the small chisel, slightly favor cells that are safe to
     chisel to make it feel better.
-
-  x Replace our circle rendering with proper fast rendering.
 
   - Titlescreen: add previews.
 
@@ -24,9 +27,6 @@
     of the mouse in the desktop version.
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
-
-  - For release builds, remove all the code hotloading DLL stuff... Just load
-    it initially.
 
 # Long-Term
 

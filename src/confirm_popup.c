@@ -1,3 +1,7 @@
+static bool confirm_popup_show_red_text(int level_index_plus_one) {
+    return level_index_plus_one >= 8 && !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY);
+}
+
 //~ End of level comfirmation popup callbacks
 
 static void end_of_level_popup_confirm_run(int target) {
@@ -11,24 +15,31 @@ static void end_of_level_popup_confirm_run(int target) {
 
 
     if (!popup->active) return;
+    
+    bool next_level = can_goto_next_level();
 
     Popup_Confirm_Run_Data run_data = {0};
-    run_data.confirm_color = can_goto_next_level() ? WHITE : (SDL_Color){127,127,127,255};
-    run_data.cancel_color = WHITE;
+    if (!next_level) {
+        popup->a->disabled = true;
+    } else {
+        popup->a->disabled = false;
+    }
+    
+    popup->b->disabled = false;
 
     popup_confirm_base_tick_and_draw(&run_data, target, popup);
 
-    if (!can_goto_next_level()) {
+    if (!can_goto_next_level() || confirm_popup_show_red_text(gs->level_current+1)) {
         char comment[128]={0};
 
         if (gs->level_current+1 > 7)
-            strcpy(comment, "I cannot settle for this.");
+            strcpy(comment, "But this isn't how I wanted it.");
 
         int w, h;
 
         TTF_SizeText(gs->fonts.font_times->handle, comment, &w, &h);
 
-        int xoff = get_glitched_offset();
+        int xoff = 0;//get_glitched_offset();
 
         f64 button_x = popup->a->x + popup->a->w/2;
         f64 button_y = popup->a->y + popup->a->h/2;
@@ -39,7 +50,7 @@ static void end_of_level_popup_confirm_run(int target) {
 
         SDL_Color color = (SDL_Color){180, 180, 180, 180};
         if (gs->level_current+1 > 7)
-            color = (SDL_Color){180, 0, 0, 255};
+            color = COLOR_MAX_DIALOGUE;
 
         RenderTextQuick(target,
                         "Not good enough",
@@ -48,7 +59,7 @@ static void end_of_level_popup_confirm_run(int target) {
                         color,
                         255,
                         xoff + popup->r.x + popup->r.w/2 - w/2,
-                        popup->r.y + popup->r.h - 2.7*h,
+                        popup->r.y + popup->r.h - 2.75*h,
                         null,
                         null,
                         false);
@@ -93,8 +104,6 @@ void restart_popup_confirm_run(int target) {
     if (!popup->active) return;
     
     Popup_Confirm_Run_Data run_data = {0};
-    run_data.confirm_color = (SDL_Color){255,255,255,255};
-    run_data.cancel_color = (SDL_Color){255,255,255,255};
     popup_confirm_base_tick_and_draw(&run_data, target, popup);
 }
 
@@ -175,8 +184,8 @@ static void popup_confirm_base_tick_and_draw(Popup_Confirm_Run_Data *data, int t
         popup->b->on_pressed(null);
     }
 
-    button_draw_prefer_color(target, popup->a, data->confirm_color);
-    button_draw_prefer_color(target, popup->b, data->cancel_color);
+    button_draw(target, popup->a);
+    button_draw(target, popup->b);
 
     SDL_Color col = (SDL_Color){175, 175, 175, 255};
 
@@ -202,7 +211,7 @@ static void popup_confirm_base_tick_and_draw(Popup_Confirm_Run_Data *data, int t
                     col,
                     255,
                     popup->r.x + popup->r.w/2 - data->text_width/2,
-                    popup->r.y + Scale(70),
+                    popup->r.y + Scale(55),
                     null,
                     null,
                     false);

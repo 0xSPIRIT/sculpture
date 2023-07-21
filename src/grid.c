@@ -150,6 +150,17 @@ static bool compare_cells_to_int(Cell *a, int *b, int leeway) {
     return true;
 }
 
+static bool compare_cells_to_int_weak(Cell *a, int *b, int leeway) {
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        if ((a[i].type && !b[i]) || (!a[i].type && b[i])) {
+            leeway--;
+            if (leeway < 0)
+                return false;
+        }
+    }
+    return true;
+}
+
 static int compare_cells_to_int_count(Cell *a, int *b) {
     int hits = 0;
     for (int i = 0; i < gs->gw*gs->gh; i++) {

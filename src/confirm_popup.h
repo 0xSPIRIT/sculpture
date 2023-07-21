@@ -8,7 +8,6 @@ typedef struct {
 
 // Used as the parameter to the popup's run callback.
 typedef struct {
-    SDL_Color confirm_color, cancel_color;
     int text_width, text_height; // OUT
 } Popup_Confirm_Run_Data;
 

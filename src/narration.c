@@ -199,12 +199,8 @@ static void narrator_run(int target, SDL_Color col) {
         SDL_Color c = col;
 
         int xoff = 0;
-#if 0
-        if (gs->level_current+1 == 8 || gs->level_current+1 == 10) {
-            xoff = get_glitched_offset();
-            if (rand() < RAND_MAX/100) {xoff *= 25;}
-        }
-#endif
+        
+        if (*s == '"') c = COLOR_MAX_DIALOGUE;
 
         int surf_h;
         narrator_draw_text_blended(i,

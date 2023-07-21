@@ -105,7 +105,7 @@ static void tutorial_rect_run(int target) {
     
     if (!tut->active) return;
     
-    if (gs->input.keys_pressed[SDL_SCANCODE_RETURN]) {
+    if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.keys_pressed[SDL_SCANCODE_SPACE]) {
         tutorial_rect_close(null);
     }
     
