@@ -21,19 +21,26 @@ static void end_of_level_popup_confirm_run(int target) {
     Popup_Confirm_Run_Data run_data = {0};
     if (!next_level) {
         popup->a->disabled = true;
+        popup->a->texture = &GetTexture(TEXTURE_CONFIRM_X_BUTTON);
     } else {
         popup->a->disabled = false;
+        popup->a->texture = &GetTexture(TEXTURE_CONFIRM_BUTTON);
     }
     
     popup->b->disabled = false;
 
     popup_confirm_base_tick_and_draw(&run_data, target, popup);
 
-    if (!can_goto_next_level() || confirm_popup_show_red_text(gs->level_current+1)) {
+    if (!next_level || confirm_popup_show_red_text(gs->level_current+1)) {
         char comment[128]={0};
 
-        if (gs->level_current+1 > 7)
-            strcpy(comment, "But this isn't how I wanted it.");
+        if (gs->level_current+1 > 7) {
+            if (next_level) {
+                strcpy(comment, "This is sort of how I wanted it, I guess.");
+            } else {
+                strcpy(comment, "But this isn't how I wanted it.");
+            }
+        }
 
         int w, h;
 

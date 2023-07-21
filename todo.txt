@@ -2,10 +2,9 @@
 
   - The dust is the same color as the chisel highlights!
 
-  - Make the overlay colors way better!
+  - Different materials - different sounds
 
-  - Remove possible large chisels where the selected range to destroy has
-    gaps in it... Do some sort of check.
+  - Make the overlay colors way better!
 
   - With the small chisel, slightly favor cells that are safe to
     chisel to make it feel better.

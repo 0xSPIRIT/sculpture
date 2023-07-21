@@ -11,19 +11,6 @@ static Chisel chisel_init(Chisel_Size size) {
     return chisel;
 }
 
-static void chisel_undo_check(int x, int y) {
-    (void)x,y;
-#if 0
-    if (gs->overlay.grid[x+y*gs->gw] && !gs->did_undo_tutorial) {
-        gs->tutorial = *tutorial_rect(TUTORIAL_UNDO_STRING,
-                                      -1,
-                                      -1,
-                                      NULL);
-        gs->did_undo_tutorial = true;
-    }
-#endif
-}
-
 static bool is_tool_chisel(void) {
     return gs->current_tool >= TOOL_CHISEL_SMALL && gs->current_tool <= TOOL_CHISEL_LARGE;
 }
@@ -32,16 +19,13 @@ static void chisel_play_sound(int size) {
     switch (size) {
         case CHISEL_SMALL: {
             Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.small_chisel, 0);
-            break;
-        }
+        } break;
         case CHISEL_MEDIUM: {
             Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.medium_chisel[rand()%3], 0);
-            break;
-        }
+        } break;
         case CHISEL_LARGE: {
             Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.medium_chisel[rand()%6], 0);
-            break;
-        }
+        } break;
     }
 }
 
@@ -207,17 +191,18 @@ static void chisel_move_mouse_until_cell(Chisel *chisel, int x, int y, f64 angle
     move_mouse_to_grid_position((int)round(xx), (int)round(yy));
 }
 
-static void flood_fill(Uint8 *grid, int x, int y, Uint8 value) {
+static void flood_fill(Uint8 *grid, int x, int y, Uint8 value, int count) {
+    if (count == 0) return;
     if (!is_in_bounds(x, y)) return;
     if (gs->grid[x+y*gs->gw].type == CELL_NONE) return;
     if (grid[x+y*gs->gw] == value) return;
     
     grid[x+y*gs->gw] = value;
     
-    flood_fill(grid, x+1, y, value);
-    flood_fill(grid, x-1, y, value);
-    flood_fill(grid, x, y-1, value);
-    flood_fill(grid, x, y+1, value);
+    flood_fill(grid, x+1, y, value, count-1);
+    flood_fill(grid, x-1, y, value, count-1);
+    flood_fill(grid, x, y-1, value, count-1);
+    flood_fill(grid, x, y+1, value, count-1);
 }
 
 // Returns false if there is no space in the inventory.
@@ -323,7 +308,7 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
                             gs->gw * gs->gh,
                             sizeof(Uint8));
 
-    flood_fill(grid, x, y, 1);
+    flood_fill(grid, x, y, 1, (int)(M_PI*size*size*2));
 
     if (!chisel->is_calculating_highlight) chisel_play_sound(chisel->size);
 
@@ -341,8 +326,6 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
                 emit_dust(type, x, y, vx, vy);
             }
         }
-        //gs->has_player_interacted_since_last_state = true;
-        if (!chisel->is_calculating_highlight) chisel_undo_check(x, y);
         set(x, y, 0, -1);
     } else {
         // Destroy in a circle.
@@ -364,8 +347,6 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
 
                 if (gs->grid[x+xx+(y+yy)*gs->gw].type != 0)
                     type = gs->grid[x+xx+(y+yy)*gs->gw].type;
-
-                if (!chisel->is_calculating_highlight) chisel_undo_check(x+xx, y+yy);
 
                 if (can_add_item_to_inventory(gs->grid[x+xx + (y+yy)*gs->gw].type)) {
                     if (!chisel->is_calculating_highlight) {

@@ -59,13 +59,13 @@ typedef enum {
 } RenderTargetType;
 
 typedef struct Audio {
-  // Music
+    // Music
     Mix_Music *music_titlescreen;
     Mix_Music *music_creation;
     Mix_Music *music_rain;
     Mix_Music *ambience1;
     
-  // Chunks 
+    // Chunks 
     Mix_Chunk *sprinkle, *macabre;
     Mix_Chunk *accept;
     Mix_Chunk *pip;
@@ -111,6 +111,7 @@ enum {
     TEXTURE_NARRATOR_LINE_END=TEXTURE_NARRATOR_LINE + 10,
     TEXTURE_TEXT_ARROW,
     TEXTURE_CONFIRM_BUTTON,
+    TEXTURE_CONFIRM_X_BUTTON,
     TEXTURE_CANCEL_BUTTON,
     TEXTURE_BACKGROUND,
     TEXTURE_COUNT

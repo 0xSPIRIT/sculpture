@@ -72,6 +72,7 @@ static void textures_init(Textures *textures) {
     }
 
     GetTexture(TEXTURE_CONFIRM_BUTTON) = RenderLoadTexture("buttons/confirm.png");
+    GetTexture(TEXTURE_CONFIRM_X_BUTTON) = RenderLoadTexture("buttons/confirm_x.png");
     GetTexture(TEXTURE_CANCEL_BUTTON)  = RenderLoadTexture("buttons/cancel.png");
 
     GetTexture(TEXTURE_TAB)        = RenderLoadTexture("tab.png");
@@ -141,10 +142,7 @@ static void surfaces_init(Surfaces *surfaces) {
     surfaces->ice_surface = RenderLoadSurface("ice.png");
     surfaces->grass_surface = RenderLoadSurface("grass.png");
 
-    // TODO: Hack. 64,64 should be gs->gw, gs->gh, but they're not
-    //       initialized as yet here.
-    //       This shouldn't belong here. It should be re-created
-    //       in goto_level
+    // Hack
     surfaces->background = SDL_CreateRGBSurfaceWithFormat(0,
                                                           64*2,
                                                           64*2,

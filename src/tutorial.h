@@ -68,7 +68,7 @@
 #define TUTORIAL_PLACER_HARD \
     "Tutorial\n" \
     "--------\n\n" \
-    "A placer can't take up solid material.\n"
+    "A placer can't take up stone material.\n"
 
 #define TUTORIAL_PLACER_F_KEYS \
     "Tutorial\n" \

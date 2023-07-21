@@ -489,7 +489,7 @@ static bool can_goto_next_level(void) {
     }
     
     if (level >= 8 &&
-        !compare_cells_to_int_weak(gs->grid, gs->overlay.grid, 20))
+        !compare_cells_to_int_weak(gs->grid, gs->overlay.grid, 64))
     {
         return false;
     }
