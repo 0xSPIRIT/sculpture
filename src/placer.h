@@ -17,6 +17,7 @@ typedef struct Placer {
     bool did_take_anything; // When taking up material, did we actually take any?
     
     bool did_place_this_frame;
+    bool was_placing;
 
     SDL_Rect rect;
 

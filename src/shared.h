@@ -242,7 +242,7 @@ static void *_push_array(Memory_Arena *memory, Uint64 num, Uint64 size_individua
 
     if (memory->cursor+size > memory->data+memory->size) {
         char message[256] = {0};
-        sprintf(message, "Out of Memory_Arena!\nAllowed memory: %zd bytes, Attempted allocation to %zd bytes.\n%s:%d",
+        sprintf(message, "Out of Memory!\nAllowed memory: %zd bytes, Attempted allocation to %zd bytes.\n%s:%d",
                 memory->size,
                 size+(memory->cursor-memory->data),
                 file, line);

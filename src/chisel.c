@@ -532,7 +532,7 @@ static void chisel_draw_highlights(int target,
                     RenderColor(255, 0, 0, 60);
                 }
             } else {
-                RenderColor(0, 255, 0, 128);
+                RenderColor(0, 0, 0, 80);
             }
         } else {
             RenderColor(0, 0, 0, 60);

@@ -423,7 +423,7 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
         }
 
         case CELL_LAVA: {
-            color = (SDL_Color){255, 255, 255, 255};
+            color = (SDL_Color){255, 255, 0, 255};
             break;
         }
 

@@ -1,7 +1,5 @@
 # TODO
 
-  - Make the overlay colors way better!
-
   - With the small chisel, slightly favor cells that are safe to
     chisel to make it feel better.
 

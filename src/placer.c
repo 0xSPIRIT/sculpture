@@ -96,7 +96,6 @@ static void placer_suck_circle(Placer *placer) {
                         
                         set_array(arr, xx, yy, 0, -1);
                         placer->did_take_anything = true;
-                        gs->has_player_interacted_since_last_state = true;
                     }
                 }
             }
@@ -128,6 +127,11 @@ static void placer_place_circle(Placer *placer) {
     int did_set_object = 1;
     
     placer->did_set_new = 0;
+    
+    if (!placer->was_placing) {
+        save_state_to_next();
+    }
+    placer->was_placing = true;
     
     if (is_cell_hard(placer->contains->type)) {
         placer->placing_solid_time++;
@@ -164,7 +168,6 @@ static void placer_place_circle(Placer *placer) {
                     did_set_object = 0;
                 }
                 
-                gs->has_player_interacted_since_last_state = true;
                 set((int)(x+fx), (int)(y+fy), placer->contains->type, object_index);
                 placer->contains->amount--;
             }
@@ -442,6 +445,10 @@ static void placer_tick(Placer *placer) {
                 placer->placing_solid_time = 0;
                 placer->did_click = 0;
             }
+            
+            if (placer->was_placing && !(input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
+                placer->was_placing = false;
+            }
             break;
         }
         case PLACER_PLACE_RECT_MODE: {
@@ -568,7 +575,7 @@ static void placer_draw(int target, Placer *placer, bool full_size) {
                   null,
                   &dst);
 
-    if (placer->rect.x != -1) {
+    if (placer->state == PLACER_PLACE_RECT_MODE && placer->rect.x != -1) {
         // Make sure the area is enough before you start drawing the rectangle.
         SDL_Rect c = placer->rect;
 
