@@ -102,6 +102,23 @@ static bool is_in_boundsf(f32 x, f32 y) {
     return is_in_bounds((int)x, (int)y);
 }
 
+bool is_in_view(int x, int y) {
+    SDL_Rect view = {
+        (int)(gs->render.view.x / gs->S),
+        (int)(gs->render.view.y / gs->S),
+        (int)(gs->render.view.w / gs->S),
+        (int)(gs->render.view.h / gs->S),
+    };
+    
+    // Hardcode
+    if (gs->gw == 128) {
+        view.x += 32;
+    }
+    
+    bool result = (x >= view.x && y >= view.y && x <= view.x+view.w && y <= view.y+view.h);
+    return result;
+}
+
 // Moves the mouse to the middle of the grid cell, not the top-left.
 static void move_mouse_to_grid_position(f32 x, f32 y) {
     int new_x = (int)(x*gs->S + gs->S/2 - gs->render.view.x + (gs->real_width/2 - gs->game_width/2));

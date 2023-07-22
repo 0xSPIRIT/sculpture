@@ -28,7 +28,6 @@ static void chisel_play_sound(Cell_Type material, int size) {
                 case CHISEL_MEDIUM: {
                     int indices[] = {1, 2, 3};
                     int idx = indices[rand()%3];
-                    Log("%d\n", idx);
                     Mix_PlayChannel(channel, gs->audio.ice_chisel[idx], 0); 
                 } break;
                 case CHISEL_LARGE:  { Mix_PlayChannel(channel, gs->audio.ice_chisel[0], 0); } break;

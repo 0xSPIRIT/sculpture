@@ -304,6 +304,7 @@ static void placer_place_rect(Placer *placer) {
     for (int y = placer->rect.y-1; y <= placer->rect.y+placer->rect.h+1; y++) {
         for (int x = placer->rect.x-1; x <= placer->rect.x+placer->rect.w+1; x++) {
             if (!is_in_bounds(x, y)) continue;
+            if (!is_in_view(x, y)) continue;
             if (gs->grid[x+y*gs->gw].object != -1) {
                 object_index = gs->grid[x+y*gs->gw].object;
                 break;
@@ -323,6 +324,7 @@ static void placer_place_rect(Placer *placer) {
     for (int y = placer->rect.y; y <= placer->rect.y+placer->rect.h; y++) {
         for (int x = placer->rect.x; x <= placer->rect.x+placer->rect.w; x++) {
             if (!is_in_bounds(x, y)) continue;
+            if (!is_in_view(x, y)) continue;
             if (placer->contains->amount <= 0) {
                 placer->contains->amount = 0;
                 goto end2;
