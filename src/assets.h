@@ -70,6 +70,8 @@ typedef struct Audio {
     Mix_Chunk *accept;
     Mix_Chunk *pip;
     Mix_Chunk *medium_chisel[6];
+    Mix_Chunk *ice_chisel[7];
+    Mix_Chunk *glass_chisel[3];
     Mix_Chunk *small_chisel, *large_chisel;
 } Audio;
 

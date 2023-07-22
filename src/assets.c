@@ -192,6 +192,20 @@ static void audio_init(Audio *audio) {
     }
     audio->small_chisel = Mix_LoadWAV(RES_DIR "audio/small_chisel.wav");
     audio->large_chisel = Mix_LoadWAV(RES_DIR "audio/large_chisel.wav");
+    
+    for (int i = 0; i < sizeof(audio->ice_chisel)/sizeof(Mix_Chunk*); i++) {
+        char name[64];
+        sprintf(name, RES_DIR "audio/ice_chisel_%d.wav", i+1);
+        audio->ice_chisel[i] = Mix_LoadWAV(name);
+        Assert(audio->ice_chisel[i]);
+    }
+    
+    for (int i = 0; i < sizeof(audio->glass_chisel)/sizeof(Mix_Chunk*); i++) {
+        char name[64];
+        sprintf(name, RES_DIR "audio/glass_%d.wav", i+1);
+        audio->glass_chisel[i] = Mix_LoadWAV(name);
+        Assert(audio->glass_chisel[i]);
+    }
 
     audio->sprinkle = Mix_LoadWAV(RES_DIR "audio/sprinkle.ogg");
     audio->macabre = Mix_LoadWAV(RES_DIR "audio/macabre.ogg");
@@ -210,6 +224,10 @@ static void audio_deinit(Audio *audio) {
 
     for (int i = 0; i < 6; i++)
         Mix_FreeChunk(audio->medium_chisel[i]);
+    for (int i = 0; i < sizeof(audio->ice_chisel)/sizeof(Mix_Chunk*); i++)
+        Mix_FreeChunk(audio->ice_chisel[i]);
+    for (int i = 0; i < sizeof(audio->glass_chisel)/sizeof(Mix_Chunk*); i++)
+        Mix_FreeChunk(audio->glass_chisel[i]);
     Mix_FreeChunk(audio->small_chisel);
     Mix_FreeChunk(audio->pip);
     Mix_FreeChunk(audio->large_chisel);

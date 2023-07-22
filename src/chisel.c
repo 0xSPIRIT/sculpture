@@ -15,16 +15,31 @@ static bool is_tool_chisel(void) {
     return gs->current_tool >= TOOL_CHISEL_SMALL && gs->current_tool <= TOOL_CHISEL_LARGE;
 }
 
-static void chisel_play_sound(int size) {
-    switch (size) {
-        case CHISEL_SMALL: {
-            Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.small_chisel, 0);
+static void chisel_play_sound(Cell_Type material, int size) {
+    int channel = AUDIO_CHANNEL_CHISEL;
+    
+    switch (material) {
+        case CELL_ICE: {
+            switch (size) {
+                case CHISEL_SMALL:  {
+                    int indices[] = {5, 6};
+                    Mix_PlayChannel(channel, gs->audio.ice_chisel[indices[rand()%2]], 0); 
+                } break;
+                case CHISEL_MEDIUM: {
+                    int indices[] = {1, 2, 3};
+                    int idx = indices[rand()%3];
+                    Log("%d\n", idx);
+                    Mix_PlayChannel(channel, gs->audio.ice_chisel[idx], 0); 
+                } break;
+                case CHISEL_LARGE:  { Mix_PlayChannel(channel, gs->audio.ice_chisel[0], 0); } break;
+            }
         } break;
-        case CHISEL_MEDIUM: {
-            Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.medium_chisel[rand()%3], 0);
-        } break;
-        case CHISEL_LARGE: {
-            Mix_PlayChannel(AUDIO_CHANNEL_CHISEL, gs->audio.medium_chisel[rand()%6], 0);
+        default: {
+            switch (size) {
+                case CHISEL_SMALL: { Mix_PlayChannel(channel, gs->audio.small_chisel, 0); } break;
+                case CHISEL_MEDIUM: { Mix_PlayChannel(channel, gs->audio.medium_chisel[rand()%3], 0); } break;
+                case CHISEL_LARGE: { Mix_PlayChannel(channel, gs->audio.medium_chisel[rand()%6], 0); } break;
+            }
         } break;
     }
 }
@@ -310,7 +325,7 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
 
     flood_fill(grid, x, y, 1, (int)(M_PI*size*size*2));
 
-    if (!chisel->is_calculating_highlight) chisel_play_sound(chisel->size);
+    if (!chisel->is_calculating_highlight) chisel_play_sound(gs->grid[x+y*gs->gw].type, chisel->size);
 
     if (size == 0) {
         if (special_case_for_diamond(x, y) && can_add_item_to_inventory(gs->grid[x+y*gs->gw].type)) {

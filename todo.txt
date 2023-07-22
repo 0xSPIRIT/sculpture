@@ -2,8 +2,6 @@
 
   - The dust is the same color as the chisel highlights!
 
-  - Different materials - different sounds
-
   - Make the overlay colors way better!
 
   - With the small chisel, slightly favor cells that are safe to
