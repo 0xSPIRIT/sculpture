@@ -49,17 +49,28 @@ static void dust_remove(int i) {
     for (int j = i; j < gs->dust_count; j++) {
         gs->dust[j] = gs->dust[j+1];
     }
-    i--;
+}
+
+static SDL_Color dust_strobe_color(SDL_Color input) {
+    SDL_Color result;
+    
+    int v = 40*sin(input.r + SDL_GetTicks()/50.0);
+    
+    result.r = 0.5 * clamp(input.r + v, 0, 255);
+    result.g = 0.5 * clamp(input.g + v, 0, 255);
+    result.b = 0.5 * clamp(input.b + v, 0, 255);
+    result.a = 255;
+    
+    return result;
 }
 
 static void dust_grid_run(int target) {
-    for (int i = 0; i < gs->dust_count; i++) {
+    for (int i = gs->dust_count-1; i >= 0; i--) {
         Dust *dust = &gs->dust[i];
         
         if (!gs->paused) {
             if (distance(dust->x, dust->y, gs->gw/2, 0) < 3) {
                 dust_remove(i);
-                i--;
                 continue;
             }
             
@@ -69,7 +80,6 @@ static void dust_grid_run(int target) {
                     dust->timer2 = 0;
                 } else {
                     dust_remove(i);
-                    i--;
                     continue;
                 }
             }
@@ -117,9 +127,8 @@ static void dust_grid_run(int target) {
         SDL_Color c = pixel_from_index_grid(gs->grid,
                                             dust->type,
                                             0);
-        c.r *= 0.75;
-        c.g *= 0.75;
-        c.b *= 0.75;
+        c = dust_strobe_color(c);
+        
         RenderColor(c.r, c.g, c.b, alpha);
         RenderPointRelative(target, dust->x, dust->y);
     }

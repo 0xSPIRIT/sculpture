@@ -1,7 +1,5 @@
 # TODO
 
-  - The dust is the same color as the chisel highlights!
-
   - Make the overlay colors way better!
 
   - With the small chisel, slightly favor cells that are safe to

@@ -1,12 +1,11 @@
 @echo off
 
-set Common_Compiler_Flags=/nologo /Z7 /O2 /GR- /GS- /EHa- /MT /FC /Fo:"obj\\" /DALASKA_RELEASE_MODE /D_CRT_SECURE_NO_WARNINGS
+set Common_Compiler_Flags=/nologo /Z7 /O2 /GR- /GS- /EHa- /MT /FC /DALASKA_RELEASE_MODE /D_CRT_SECURE_NO_WARNINGS
 set Linker_Flags=user32.lib shell32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib SDL2_mixer.lib
 
 if not exist src/win32_main.c goto INVALID_DIR
 
 if not exist bin_release\ mkdir bin_release
-if not exist bin_release\obj\ mkdir bin_release\obj\
 
 where /q cl.exe
 IF ERRORLEVEL 1 (
@@ -22,6 +21,8 @@ if NOT %errorlevel%==0 (set err=%errorlevel%)
 if not exist res\ mkdir res
 rem Copy the resources and its subdirectories
 xcopy /q /y /e /k /h /i ..\res\ res\
+
+del /q win32_main.obj game.obj
 
 popd
 goto end

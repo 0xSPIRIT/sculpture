@@ -827,6 +827,8 @@ static void level_draw_outro_or_play(Level *level) {
 
     game_draw_table(RENDER_TARGET_PIXELGRID);
 
+    dust_grid_run(RENDER_TARGET_PIXELGRID);
+    
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
             chisel_draw(RENDER_TARGET_PIXELGRID, gs->chisel);
@@ -839,7 +841,6 @@ static void level_draw_outro_or_play(Level *level) {
             break;
         }
     }
-    dust_grid_run(RENDER_TARGET_PIXELGRID);
 
     draw_objects(RENDER_TARGET_PIXELGRID);
     

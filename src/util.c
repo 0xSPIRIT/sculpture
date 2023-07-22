@@ -102,7 +102,7 @@ static bool is_in_boundsf(f32 x, f32 y) {
     return is_in_bounds((int)x, (int)y);
 }
 
-bool is_in_view(int x, int y) {
+static bool is_in_view(int x, int y) {
     SDL_Rect view = {
         (int)(gs->render.view.x / gs->S),
         (int)(gs->render.view.y / gs->S),
