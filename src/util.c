@@ -11,6 +11,28 @@ static f64 lerp64(f64 a, f64 b, f64 t) {
     return result;
 }
 
+static SDL_Color invert_color(SDL_Color c) {
+    SDL_Color result;
+    
+    result.r = 255 - c.r;
+    result.g = 255 - c.g;
+    result.b = 255 - c.b;
+    result.a = 255;
+    
+    return result;
+}
+
+static SDL_Color contrasting_color(SDL_Color c) {
+    SDL_Color result;
+    
+    result.r = c.r > 127 ? 0 : 255;
+    result.g = c.g > 127 ? 0 : 255;
+    result.b = c.b > 127 ? 0 : 255;
+    result.a = 255;
+    
+    return result;
+}
+
 // a = start, b = end, t = x-value (0 to 1)
 static f64 interpolate64(f64 a, f64 b, f64 t) {
     if (fabs(b-a) < 50) {

@@ -111,25 +111,25 @@ static void gui_draw_wasd_popup(int target) {
     { // W
         t = &GetTexture(TEXTURE_W_KEY);
         RenderTextureAlphaMod(t, gs->wasd_popup_alpha);
-        SDL_Rect dst = { gs->game_width/2 - t->width/2, GUI_H + pad, t->width, t->height };
+        SDL_Rect dst = { gs->game_width/2 - Scale(t->width)/2, GUI_H + pad, Scale(t->width), Scale(t->height) };
         RenderTexture(target, t, null, &dst);
     }
     { // A
         t = &GetTexture(TEXTURE_A_KEY);
         RenderTextureAlphaMod(t, gs->wasd_popup_alpha);
-        SDL_Rect dst = { pad, gs->game_height/2 - t->height/2, t->width, t->height };
+        SDL_Rect dst = { pad, gs->game_height/2 - Scale(t->height)/2, Scale(t->width), Scale(t->height) };
         RenderTexture(target, t, null, &dst);
     }
     { // S
         t = &GetTexture(TEXTURE_S_KEY);
         RenderTextureAlphaMod(t, gs->wasd_popup_alpha);
-        SDL_Rect dst = { gs->game_width/2 - t->width/2, gs->game_height - t->height - pad, t->width, t->height };
+        SDL_Rect dst = { gs->game_width/2 - Scale(t->width)/2, gs->game_height - Scale(t->height) - pad, Scale(t->width), Scale(t->height) };
         RenderTexture(target, t, null, &dst);
     }
     { // D
         t = &GetTexture(TEXTURE_D_KEY);
         RenderTextureAlphaMod(t, gs->wasd_popup_alpha);
-        SDL_Rect dst = { gs->game_width - t->width - pad, gs->game_height/2 - t->height/2, t->width, t->height };
+        SDL_Rect dst = { gs->game_width - Scale(t->width) - pad, gs->game_height/2 - Scale(t->height)/2, Scale(t->width), Scale(t->height) };
         RenderTexture(target, t, null, &dst);
     }
 }

@@ -19,6 +19,8 @@ typedef struct Chisel {
     Chisel_Size size;
     int x, y;
     
+    f64 draw_x, draw_y;
+    
     int temp_idx;
 
     int click_delay;

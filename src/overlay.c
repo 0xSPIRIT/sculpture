@@ -1,4 +1,4 @@
-Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
+static Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     // Type              R    G    B
     CELL_NONE,          255,   0,   0,
     CELL_DIRT,          255,   0,   0,
@@ -8,7 +8,7 @@ Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_STEAM,          94,  86, 142,
     CELL_WOOD_LOG,       13,   9, 249,
     CELL_WOOD_PLANK,    150,   6, 118,
-    CELL_STONE,   255, 255, 255,
+    CELL_STONE,         255, 255, 255,
     CELL_MARBLE,          0,   0, 255,
     CELL_SANDSTONE,       0, 255, 255,
     CELL_CEMENT,        190,  22,  46,
@@ -415,7 +415,7 @@ static void overlay_draw_missed_pixels(int target, int *grid) {
 
 static void overlay_draw_grid(int target, int *grid, f32 alpha_coeff) {
     f32 alpha;
-    alpha = 100;
+    alpha = 255;
     alpha *= alpha_coeff;
 
     for (int y = 0; y < gs->gh; y++) {
@@ -425,11 +425,11 @@ static void overlay_draw_grid(int target, int *grid, f32 alpha_coeff) {
             Uint8 a = alpha;
 
             int t = grid[x+y*gs->gw];
-
+            
             SDL_Color c = {
-                type_to_outline_color[t*4 + 1],
-                type_to_outline_color[t*4 + 2],
-                type_to_outline_color[t*4 + 3],
+                type_to_outline_color[t*4+1],
+                type_to_outline_color[t*4+2],
+                type_to_outline_color[t*4+3],
                 255
             };
 
@@ -476,7 +476,7 @@ static void overlay_draw(int target) {
                           overlay->changes.grids[overlay->changes.index+1],
                           overlay->changes.alpha);
     } else {
-        overlay_draw_grid(target, overlay->grid, 1.0f);
+        overlay_draw_grid(target, overlay->grid, 0.8f);
     }
 
     if (compare_cells_to_int_count(gs->grid, overlay->grid) <= 15) {

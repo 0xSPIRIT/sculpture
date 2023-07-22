@@ -22,20 +22,12 @@ static bool chisel_click_repeatedly(Chisel *chisel) {
 
 static void hammer_tick(Hammer *hammer) {
     if (!is_tool_chisel()) return;
-        
-    if (gs->input.keys[SDL_SCANCODE_RSHIFT]) {
-        f64 rmx = (f64)gs->input.real_mx / (f64)gs->S;
-        f64 rmy = (f64)(gs->input.real_my-GUI_H) / (f64)gs->S;
-
-        hammer->angle = 180 + 360 * atan2f(rmy - hammer->y, rmx - hammer->x) / (f32)(2*M_PI);
-        hammer->temp_angle = hammer->angle;
-    } else {
-        f64 dist = gs->chisel->texture->width;
-
-        hammer->x = gs->chisel->x + dist;
-        hammer->y = gs->chisel->y;
-    }
-
+    
+    f64 dist = gs->chisel->texture->width;
+    
+    hammer->x = gs->chisel->draw_x + dist;
+    hammer->y = gs->chisel->draw_y;
+    
     if (gs->input.real_my > GUI_H &&
         !gs->tutorial.active &&
         !gs->gui.popup &&
@@ -139,48 +131,25 @@ static void hammer_draw(int final_target, Hammer *hammer) {
 
     // Now we render the target.
 
-    if (0) {
-        RenderColor(0, 0, 0, 0);
-        RenderClear(RENDER_TARGET_HAMMER2);
-
-        SDL_Point center = {
-            gs->chisel->x,
-            gs->chisel->y
-        };
-
-        RenderTargetToTargetRelativeEx(RENDER_TARGET_HAMMER2,
-                               RENDER_TARGET_HAMMER,
-                               null,
-                               null,
-                               180+gs->chisel->angle,
-                               &center,
-                               SDL_FLIP_NONE);
-
-        RenderTargetToTargetRelative(final_target,
-                             RENDER_TARGET_HAMMER2,
-                             null,
-                             null);
-    } else {
-        RenderColor(0, 0, 0, 0);
-        RenderClear(RENDER_TARGET_HAMMER2);
-
-        SDL_Point center = {
-            gs->chisel->x,
-            gs->chisel->y,
-        };
-
-        RenderTargetToTargetRelativeEx(RENDER_TARGET_HAMMER2,
-                               RENDER_TARGET_HAMMER,
-                               null,
-                               null,
-                               180+gs->chisel->angle,
-                               &center,
-                               SDL_FLIP_NONE);
-
-        RenderMaybeSwitchToTarget(final_target);
-        SDL_RenderCopy(gs->render.sdl,
-                       RenderTarget(RENDER_TARGET_HAMMER2)->texture.handle,
-                       null,
-                       null);
-    }
+    RenderColor(0, 0, 0, 0);
+    RenderClear(RENDER_TARGET_HAMMER2);
+    
+    SDL_Point center = {
+        gs->chisel->draw_x,
+        gs->chisel->draw_y,
+    };
+    
+    RenderTargetToTargetRelativeEx(RENDER_TARGET_HAMMER2,
+                                   RENDER_TARGET_HAMMER,
+                                   null,
+                                   null,
+                                   180+gs->chisel->angle,
+                                   &center,
+                                   SDL_FLIP_NONE);
+    
+    RenderMaybeSwitchToTarget(final_target);
+    SDL_RenderCopy(gs->render.sdl,
+                   RenderTarget(RENDER_TARGET_HAMMER2)->texture.handle,
+                   null,
+                   null);
 }

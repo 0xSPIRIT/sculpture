@@ -533,7 +533,7 @@ static void chisel_draw_highlights(int target,
                     RenderColor(255, 0, 0, 60);
                 }
             } else {
-                RenderColor(0, 0, 0, 60);
+                RenderColor(0, 255, 0, 128);
             }
         } else {
             RenderColor(0, 0, 0, 60);
@@ -551,6 +551,17 @@ static void chisel_draw_highlights(int target,
     RenderColor(255, 255, 255, 255);
     RenderPointRelative(target, idx % gs->gw, idx / gs->gw);
 #endif
+}
+
+static void update_other_chisel_draw_positions(int size, f64 draw_x, f64 draw_y) {
+    Chisel *chisels[3] = { &gs->chisel_small, &gs->chisel_medium, &gs->chisel_large };
+    
+    for (int i = 0; i < 3; i++) {
+        if (i != size) {
+            chisels[i]->draw_x = draw_x;
+            chisels[i]->draw_y = draw_y;
+        }
+    }
 }
 
 static void chisel_tick(Chisel *chisel) {
@@ -636,6 +647,16 @@ static void chisel_tick(Chisel *chisel) {
             break;
         }
     }
+    
+    if (!chisel->did_chisel_this_frame) {
+        chisel->draw_x = lerp64(chisel->draw_x, chisel->x, 0.7);
+        chisel->draw_y = lerp64(chisel->draw_y, chisel->y, 0.7);
+    } else {
+        chisel->draw_x = chisel->x;
+        chisel->draw_y = chisel->y;
+    }
+    
+    update_other_chisel_draw_positions(chisel->size, chisel->draw_x, chisel->draw_y);
 }
 
 // Don't worry, we'll remove this later when we
@@ -682,9 +703,9 @@ static void chisel_get_adjusted_positions(int angle, int size, int *x, int *y) {
 
 static void chisel_draw(int target, Chisel *chisel) {
     int x, y;
-
-    x = chisel->x;
-    y = chisel->y;
+    
+    x = chisel->draw_x;
+    y = chisel->draw_y;
 
     RenderTextureColorMod(chisel->texture, 255, 255, 255);
 

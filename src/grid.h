@@ -87,3 +87,4 @@ typedef struct Line {
 
 static int compare_cells_to_int_count(Cell *a, int *b);
 static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i);
+static SDL_Color pixel_from_index(enum Cell_Type type, int i);
