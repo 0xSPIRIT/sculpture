@@ -134,6 +134,17 @@ static void gui_draw_wasd_popup(int target) {
     }
 }
 
+static void gui_click_overlay_button(void) {
+    if (gs->overlay.show && gs->overlay.alpha_coefficient == OVERLAY_ALPHA_1) {
+        gs->overlay.alpha_coefficient = OVERLAY_ALPHA_2;
+    } else if (gs->overlay.show && gs->overlay.alpha_coefficient == OVERLAY_ALPHA_2) {
+        gs->overlay.show = false;
+    } else {
+        gs->overlay.show = true;
+        gs->overlay.alpha_coefficient = OVERLAY_ALPHA_1;
+    }
+}
+
 static void click_gui_tool_button(void *type_ptr) {
     int type = *(int*)type_ptr;
     
@@ -162,7 +173,7 @@ static void click_gui_tool_button(void *type_ptr) {
             break;
         }
         case TOOL_OVERLAY: {
-            gs->overlay.show = !gs->overlay.show;
+            gui_click_overlay_button();
             gs->current_tool = p_tool;
             return;
         }

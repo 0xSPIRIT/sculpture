@@ -287,7 +287,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     set_text_field("Output current grid to image:", "../", level_output_to_png);
                 } else {
-                    gs->overlay.show = !gs->overlay.show;
+                    gui_click_overlay_button();
                     gs->gui.tool_buttons[TOOL_OVERLAY]->highlighted = false;
                 }
                 break;
@@ -361,13 +361,6 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
-#if 0
-            case SDLK_4: {
-                gs->current_tool = TOOL_BLOCKER;
-                selected_tool = 1;
-                break;
-            }
-#endif
             case SDLK_5: {
                 gs->current_tool = TOOL_GRABBER;
                 selected_tool = 1;

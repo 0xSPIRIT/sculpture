@@ -100,6 +100,8 @@ static void overlay_init(void) {
 
     overlay->tool = OVERLAY_TOOL_BRUSH;
     overlay->temp = false;
+    
+    overlay->alpha_coefficient = OVERLAY_ALPHA_1;
 
     if (overlay->grid == null) {
         overlay->grid = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(int));
@@ -415,7 +417,7 @@ static void overlay_draw_missed_pixels(int target, int *grid) {
 
 static void overlay_draw_grid(int target, int *grid, f32 alpha_coeff) {
     f32 alpha;
-    alpha = 255;
+    alpha = 240;
     alpha *= alpha_coeff;
 
     for (int y = 0; y < gs->gh; y++) {
@@ -436,7 +438,7 @@ static void overlay_draw_grid(int target, int *grid, f32 alpha_coeff) {
             if (!int_array_any_neighbours_not_same(grid, x, y)) {
                 f64 f = (sin(SDL_GetTicks()/750.0)+1)/2.0;
                 if (gs->level_current+1 == 7) f *= 0.5;
-                a = fmax(0, min(255, alpha - f*30));
+                a = fmax(0, min(255, alpha - f*60));
             }
 
 #if 0
@@ -476,7 +478,7 @@ static void overlay_draw(int target) {
                           overlay->changes.grids[overlay->changes.index+1],
                           overlay->changes.alpha);
     } else {
-        overlay_draw_grid(target, overlay->grid, 0.8f);
+        overlay_draw_grid(target, overlay->grid, overlay->alpha_coefficient);
     }
 
     if (compare_cells_to_int_count(gs->grid, overlay->grid) <= 15) {

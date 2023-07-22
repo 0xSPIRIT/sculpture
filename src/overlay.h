@@ -1,5 +1,8 @@
 #define MAX_GRID_CHANGES 64
 
+#define OVERLAY_ALPHA_1 0.8f
+#define OVERLAY_ALPHA_2 0.3f
+
 enum Overlay_Tool {
     OVERLAY_TOOL_BRUSH,
     OVERLAY_TOOL_LINE,
@@ -30,6 +33,8 @@ typedef struct Overlay {
     int current_material;
 
     Overlay_Changes changes;
+    
+    f32 alpha_coefficient;
 
     SDL_Rect r;
     f32 size;
