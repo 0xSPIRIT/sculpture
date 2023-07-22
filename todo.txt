@@ -13,9 +13,6 @@
   - For level 7, change the confirmation popup when you finish to "no" and "no"
     instead of confirm and cancel.
 
-  - The cobblestone overlay color is too close to the grey cobblestone.
-    It should have a higher contrast. Keep the pink color, though.
-
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.
 

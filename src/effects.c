@@ -99,11 +99,15 @@ static void particle_tick(Effect *effect, int i) {
                 //particle->vx += 0.003f * sinf(SDL_GetTicks() / 1000.f);
             }
 
-            if (particle->x < effect->bounds.x) particle->x = (f32) effect->bounds.w-1;
-            if (particle->y < effect->bounds.y) particle->y = (f32) effect->bounds.h-1;
+            if (particle->x < effect->bounds.x)
+                particle->x = (f32) effect->bounds.w-1;
+            if (particle->y < effect->bounds.y)
+                particle->y = (f32) effect->bounds.h-1;
 
-            if (particle->x-particle->vx*3 > effect->bounds.w-1) particle->x = effect->bounds.x;
-            if (particle->y-particle->vy*3 > effect->bounds.h-1) particle->y = effect->bounds.y;
+            if (particle->x-particle->vx*3 > effect->bounds.w-1)
+                particle->x = effect->bounds.x;
+            if (particle->y-particle->vy*3 > effect->bounds.h-1)
+                particle->y = effect->bounds.y;
 
             break;
         }
@@ -133,12 +137,10 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
                 particle_tick(effect, i);
                 
                 if (!effect->high_fidelity) {
-                    if (particle->x < gs->gw/2 + gs->render.view.x/gs->S) continue;
-                    if (particle->y < gs->gh/2 + gs->render.view.y/gs->S) continue;
-                    if (particle->x > gs->gw/2 + gs->render.view.x/gs->S+gs->gw) continue;
-                    if (particle->y > gs->gh/2 + gs->render.view.y/gs->S+gs->gh) continue;
-                } else {
+                    if (particle->x < 32 + gs->render.view.x/gs->S) continue;
+                    if (particle->x > 32 + 64 + gs->render.view.x/gs->S) continue;
                 }
+				                
                 
                 f32 max;
                 
@@ -159,7 +161,7 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
                 
                 if (draw_points) {
                     RenderColor(255, 255, 255, col);
-                    RenderPoint(target, px, py);
+                    RenderPointRelative(target, px, py);
                 } else {
                     RenderColor(col, col, col, 255);
                     int size = Scale(6*(length/max));

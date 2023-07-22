@@ -54,7 +54,7 @@ static void dust_remove(int i) {
 static SDL_Color dust_strobe_color(SDL_Color input) {
     SDL_Color result;
     
-    int v = 40*sin(input.r + SDL_GetTicks()/50.0);
+    int v = 30*sin(input.r + SDL_GetTicks()/100.0);
     
     result.r = 0.5 * clamp(input.r + v, 0, 255);
     result.g = 0.5 * clamp(input.g + v, 0, 255);

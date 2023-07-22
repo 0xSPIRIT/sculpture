@@ -5,8 +5,7 @@ static Chisel chisel_init(Chisel_Size size) {
     chisel.texture = &GetTexture(TEXTURE_CHISEL+size);
     chisel.lookahead = 5;
     
-    chisel.mask = PushSize(gs->persistent_memory,
-                           gs->gw*gs->gh*1);
+    chisel.mask = PushSize(gs->persistent_memory, gs->gw*gs->gh*1);
     
     return chisel;
 }

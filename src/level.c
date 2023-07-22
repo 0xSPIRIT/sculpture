@@ -181,7 +181,7 @@ static void goto_level(int lvl) {
                    false,
                    0,
                    0,
-                   gs->gw*2,
+                   gs->gw,
                    gs->gh*2);
     }
 #else
@@ -228,7 +228,7 @@ static void level_set_state(int level, enum Level_State state) {
                        false,
                        0,
                        0,
-                       2*gs->gw,
+                       gs->gw,
                        2*gs->gh);
         }
     } else if (state == LEVEL_STATE_OUTRO) {
