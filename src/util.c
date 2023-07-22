@@ -127,7 +127,12 @@ static void move_mouse_to_grid_position(f32 x, f32 y) {
     // Hardcode
     if (gs->gw == 128) new_x -= gs->game_width/2;
     
+#if MOUSE_SIMULATED
+    gs->input.real_mx = new_x;
+    gs->input.real_my = new_y;
+#else
     SDL_WarpMouseInWindow(gs->window, new_x, new_y);
+#endif
 }
 
 void get_filename_from_type(int type, char *out) {

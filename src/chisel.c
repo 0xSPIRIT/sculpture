@@ -34,9 +34,9 @@ static void chisel_play_sound(Cell_Type material, int size) {
         } break;
         default: {
             switch (size) {
-                case CHISEL_SMALL: { Mix_PlayChannel(channel, gs->audio.small_chisel, 0); } break;
+                case CHISEL_SMALL:  { Mix_PlayChannel(channel, gs->audio.small_chisel, 0); } break;
                 case CHISEL_MEDIUM: { Mix_PlayChannel(channel, gs->audio.medium_chisel[rand()%3], 0); } break;
-                case CHISEL_LARGE: { Mix_PlayChannel(channel, gs->audio.medium_chisel[rand()%6], 0); } break;
+                case CHISEL_LARGE:  { Mix_PlayChannel(channel, gs->audio.medium_chisel[rand()%6], 0); } break;
             }
         } break;
     }
@@ -117,6 +117,56 @@ static int chisel_clamp_to_grid(f64 angle, int xx, int yy) {
     }
     
     return closest_idx;
+}
+
+static int small_chisel_fix_index(int idx) {
+    int sx = idx%gs->gw;
+    int sy = idx/gs->gw;
+    
+    enum { w = 3, h = 3 };
+    
+    int valid_indices[w*h] = {0};
+    int valid_index_count = 0;
+    
+    if (gs->overlay.grid[idx] != gs->grid[idx].type) return idx;
+    
+    for (int y = -h/2; y <= h/2; y++) {
+        for (int x = -w/2; x <= w/2; x++) {
+            if (abs(x) == abs(y)) continue;
+            
+            int xx = x + sx;
+            int yy = y + sy;
+            
+            if (!is_in_bounds(xx, yy)) continue;
+            
+            int current_index = xx+yy*gs->gw;
+            
+            bool is_valid_chisel = (gs->overlay.grid[current_index] != gs->grid[current_index].type);
+            
+            if (is_valid_chisel) {
+                valid_indices[valid_index_count++] = current_index;
+            }
+        }
+    }
+    
+    f32 smallest_distance = 9999;
+    int smallest_idx = -1;
+    for (int i = 0; i < valid_index_count; i++) {
+        int x = valid_indices[i]%gs->gw;
+        int y = valid_indices[i]/gs->gw;
+        f32 dist_sq = x*x + y*y;
+        
+        if (dist_sq < smallest_distance) {
+            smallest_distance = dist_sq;
+            smallest_idx = valid_indices[i];
+        }
+    }
+    
+    if (smallest_idx != -1) {
+        return smallest_idx;
+    }
+    
+    return idx;
 }
 
 static bool is_bad_corner(Chisel *chisel, int x, int y) {
@@ -432,7 +482,16 @@ static bool chisel_circle(Chisel *chisel, int size) {
                 dx = 2*dir_x;
                 dy = 2*dir_y;
             }
-            
+
+#if 0 // This doesn't seem to feel very good. :(
+            if (chisel->size == CHISEL_SMALL) {
+                int idx = xx+yy*gs->gw;
+                idx = small_chisel_fix_index(idx);
+                xx = idx % gs->gw;
+                yy = idx / gs->gw;
+            }
+#endif
+
             gs->chisel->temp_idx = find_nearest_successful_hit(xx, yy, 3);
             chisel_destroy_circle(chisel, xx, yy, dx, dy, size);
             return true;
@@ -499,7 +558,6 @@ static void chisel_calculate_highlights(Chisel *chisel) {
     memcpy(chisel->highlights, highlights, sizeof(int)*HIGHLIGHT_MAX);
     chisel->highlight_count = count;
 }
-
 
 static void chisel_draw_highlights(int target,
                                    int *highlights,
@@ -578,6 +636,7 @@ static void chisel_tick(Chisel *chisel) {
     switch (chisel->state) {
         case CHISEL_STATE_IDLE: {
             int idx = chisel_clamp_to_grid(chisel->angle, gs->input.mx, gs->input.my);
+            
             if (idx == -1) {
                 chisel->x = -1;
                 chisel->y = -1;

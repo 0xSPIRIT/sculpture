@@ -147,7 +147,8 @@ static void tooltip_draw(int output_target, Tooltip *tooltip) {
                      tooltip->preview,
                      gs->S*tooltip->x+margin,
                      gs->S*tooltip->y+(old_h)+margin*2,
-                     preview_scale);
+                     preview_scale,
+                     false);
     }
     
     if (clamped_x) {

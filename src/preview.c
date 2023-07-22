@@ -99,16 +99,21 @@ static void preview_record(Preview *p) {
     p->length++;
 }
 
-static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
+static void preview_draw(int target, Preview *p, int dx, int dy, int scale, bool alpha_background) {
     const int preview_w = 64;
     const int preview_h = 64;
     
     Assert(preview_w * preview_h == PREVIEW_GRID_SIZE);
+    
+    RenderColor(0,0,0,0);
+    RenderClear(RENDER_TARGET_PREVIEW);
 
     {
         for (int y = 0; y < preview_w; y++) {
             for (int x = 0; x < preview_h; x++) {
-                if (!p->states[p->index].grid[x+y*preview_w]) {
+                if (alpha_background && !p->states[p->index].grid[x+y*preview_w]) {
+                    continue;
+                } else if (!p->states[p->index].grid[x+y*preview_w]) {
                     RenderColor(0, 0, 0, 255);
                 } else {
                     SDL_Color col = pixel_from_index(p->states[p->index].grid[x+y*preview_w], x+y*preview_w);
@@ -156,25 +161,6 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale) {
                                    rect);
                 }
                 
-#if 0
-                // TODO!!!!
-                RenderLine(RENDER_TARGET_PREVIEW, 0, y, preview_w, y);
-                RenderLine(RENDER_TARGET_PREVIEW, x, 0, x, preview_h);
-
-                if (is_rect) {
-                    if (p->placer_rect.x == -1) {
-                        p->placer_rect.x = x;
-                        p->placer_rect.y = y;
-                    }
-                    p->placer_rect.w = 1+x - p->placer_rect.x;
-                    p->placer_rect.h = 1+y - p->placer_rect.y;
-
-                    RenderColor(255, 0, 0, 255);
-                    RenderDrawRect(RENDER_TARGET_PREVIEW, p->placer_rect);
-                } else {
-                    p->placer_rect.x = p->placer_rect.y = -1;
-                }
-#endif
                 break;
             }
             case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {

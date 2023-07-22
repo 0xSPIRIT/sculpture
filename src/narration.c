@@ -178,7 +178,7 @@ static void narrator_run(int target, SDL_Color col) {
                        false,
                        0,
                        0,
-                       2*gs->gw,
+                       gs->gw,
                        2*gs->gh);
             memset(&gs->narrator, 0, sizeof(Narrator));
         }

@@ -881,7 +881,7 @@ static void level_draw_outro_or_play(Level *level) {
         gui_popup_draw(RENDER_TARGET_MASTER);
         tutorial_rect_run(RENDER_TARGET_MASTER);
         tooltip_draw(RENDER_TARGET_MASTER, &gs->gui.tooltip);
-
+        
         if (gs->gui.popup)
             gui_draw_profile(RENDER_TARGET_MASTER);
     }

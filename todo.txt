@@ -1,7 +1,6 @@
 # TODO
 
-  - With the small chisel, slightly favor cells that are safe to
-    chisel to make it feel better.
+  - Polish up the end scene a little.
 
   - Titlescreen: add previews.
 
@@ -9,9 +8,6 @@
 
   - Idea: Replace some of the tutorial boxes with grid previews and key
     previews on how to do things?
-
-  - For level 7, change the confirmation popup when you finish to "no" and "no"
-    instead of confirm and cancel.
 
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.

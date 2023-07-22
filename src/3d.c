@@ -97,41 +97,31 @@ static void object_activate(Object3D *obj) {
     
     Mix_HaltMusic();
 
-    SDL_Texture *prev = SDL_GetRenderTarget(gs->renderer);
+    SDL_Texture *prev = SDL_GetRenderTarget(gs->render.sdl);
 
-#if 0
-    // When taking the pixels directly from the screen, and
-    // memcpying it into the surface's pixel buffer.
-    SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_PIXELGRID));
-#else
-    // Drawing the grid's pixels to a texture, then
-    // memcpying that into the surface's pixel buffer.
-
-    //SDL_SetRenderTarget(gs->renderer, RenderTarget(RENDER_TARGET_GRID));
     const int target = RENDER_TARGET_GRID;
-
+    
     SDL_ShowCursor(SDL_DISABLE);
-
+    
     RenderColor(0, 0, 0, 255);
     RenderClear(target);
-
+    
     grid_array_draw(target, gs->grid, 255);
-#endif
-
-    const SDL_Rect rect = {
-        32, 32,
+    
+    SDL_Rect rect = {
+        32, 0,
         64, 64
     };
-
-    void *pixels = PushArray(gs->transient_memory, gs->gw*gs->gh, 4); // sizeof(Uint32)
-    SDL_RenderReadPixels(gs->renderer, &rect, ALASKA_PIXELFORMAT, pixels, gs->gw*4);
+    
+    void *pixels = PushArray(gs->transient_memory, gs->gh*gs->gh, 4); // sizeof(Uint32)
+    SDL_RenderReadPixels(gs->renderer, &rect, ALASKA_PIXELFORMAT, pixels, gs->gh*4);
 
     gs->surfaces.a = SDL_CreateRGBSurfaceWithFormat(0,
-                                                    gs->gw,
+                                                    gs->gh,
                                                     gs->gh,
                                                     32,
                                                     ALASKA_PIXELFORMAT);
-    memcpy(gs->surfaces.a->pixels, pixels, gs->gw*gs->gh*4);
+    memcpy(gs->surfaces.a->pixels, pixels, gs->gh*gs->gh*4);
 
     SDL_SetRenderTarget(gs->renderer, prev);
 }
@@ -182,12 +172,6 @@ static void object_draw(Object3D *obj) {
 
     f64 dy = 0.0002;
 
-#if 0
-    if (gs->input.keys[SDL_SCANCODE_SPACE]) {
-        obj->state = OBJECT_DONE;
-    }
-#endif
-
     f64 speed = 1.5f;
 
     switch (obj->state) {
@@ -225,25 +209,9 @@ static void object_draw(Object3D *obj) {
             }
             break;
         }
-#if 0
-        case OBJECT_FALL: {
-            for (int i = 0; i < count; i++)
-                op[i].z = 0;
-
-            if (obj->xrot > -1.5) {
-                obj->jerk += 0.0000001;
-                obj->acc += obj->jerk;
-                obj->vel += obj->acc;
-                obj->xrot -= obj->vel;
-            }
-            break;
-        }
-#endif
     }
 
     vec3 *points = PushArray(gs->transient_memory, count, sizeof(vec3));
-
-    // Do something else here!
 
     for (int i = 0; i < count; i++) {
         switch (obj->state) {

@@ -186,7 +186,7 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
                 int p2y = (int) (py - particle->vy*3);
                 
                 RenderColor(255, 255, 255, 32);
-                SDL_RenderDrawLine(gs->renderer, px, py, p2x, p2y);
+                RenderLineRelative(target, px, py, p2x, p2y);
             }
             break;
         }

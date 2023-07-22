@@ -7,6 +7,8 @@ static void titlescreen_init(void) {
                0,
                gs->game_width,
                gs->game_height);
+    
+    preview_load(&t->preview, RES_DIR "previews/large_chisel.bin");
 }
 
 static void titlescreen_goto_next(void) {
@@ -49,6 +51,8 @@ static void titlescreen_draw(int target) {
                 false,
                 ONLY_SLOW_ALL);
     
+    preview_draw(target, &gs->titlescreen.preview, 0, 0, gs->S, true);
+    
     RenderTextQuick(target,
                     "titlescreen",
                     gs->fonts.font_titlescreen,
@@ -56,7 +60,7 @@ static void titlescreen_draw(int target) {
                     WHITE,
                     255,
                     gs->game_width/2 - text_width/2,
-                    gs->game_height/2 - text_height/2,
+                    gs->game_height/4 - text_height/2,
                     null,
                     null,
                     false);

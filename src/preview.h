@@ -23,4 +23,4 @@ typedef struct Preview {
     SDL_Rect placer_rect;
 } Preview;
 
-static void preview_draw(int target, Preview *p, int dx, int dy, int scale);
+static void preview_draw(int target, Preview *p, int dx, int dy, int scale, bool alpha_background);

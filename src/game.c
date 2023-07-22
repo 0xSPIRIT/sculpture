@@ -1,7 +1,7 @@
 #include "shared.h"
 
 // Include all files to compile in one translation unit for
-// compilation speed's sake. ("Unity Build")
+// compilation speed's sake. (Unity Build)
 #include "util.c"
 #include "render.c"
 #include "fades.c"
@@ -127,12 +127,6 @@ export void game_init(Game_State *state, int level) {
     previews_load();
     goto_level(level);
     titlescreen_init();
-    
-#ifdef ALASKA_RELEASE_MODE
-    #define SHOW_TITLESCREEN 1
-#else
-    #define SHOW_TITLESCREEN 0
-#endif
 
 #if SHOW_TITLESCREEN
     gs->gamestate = GAME_STATE_TITLESCREEN;
@@ -448,7 +442,8 @@ export void game_run(Game_State *state) {
                                  &gs->current_preview,
                                  0,
                                  0,
-                                 6);
+                                 6,
+                                 false);
 
                 if (gs->step_one) gs->step_one = false;
             }
