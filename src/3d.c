@@ -173,6 +173,8 @@ static void object_draw(Object3D *obj) {
     f64 dy = 0.0002;
 
     f64 speed = 1.5f;
+    
+    static f64 increasing = 0.0f;
 
     switch (obj->state) {
         case OBJECT_ZOOM: {
@@ -182,7 +184,7 @@ static void object_draw(Object3D *obj) {
                 obj->hold = 45;
             } else if (obj->t > 120) {
                 speed = min(1.5f, ((obj->t-120) / 360.0) * speed);
-                obj->z += speed * 0.001;
+                obj->z += speed * 0.002;
                 if (obj->z > 2) obj->z = 2;
                 obj->y += dy;
             }
@@ -200,8 +202,9 @@ static void object_draw(Object3D *obj) {
         case OBJECT_ROTY: case OBJECT_DONE: {
             if (obj->state != OBJECT_DONE) {
                 obj->y += dy;
-                obj->t2 += 0.2;
-                obj->yrot -= (min(360, obj->t2) / 360.0) * speed * 0.016;
+                obj->t2 += 0.002;
+                obj->yrot = smoothstep(obj->t2);
+                obj->yrot *= -M_PI/2;
             }
 
             if (obj->yrot <= -M_PI/2) {

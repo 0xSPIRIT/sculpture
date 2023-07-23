@@ -132,8 +132,8 @@ export void game_init(Game_State *state, int level) {
     gs->gamestate = GAME_STATE_TITLESCREEN;
 
     Mix_VolumeMusic(AUDIO_TITLESCREEN_VOLUME);
-    if (Mix_PlayMusic(gs->audio.music_titlescreen, -1))
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Failure!", "Failed to play music!", null);
+    //if (Mix_PlayMusic(gs->audio.music_titlescreen, -1))
+        //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Failure!", "Failed to play music!", null);
 #else
     gs->gamestate = GAME_STATE_PLAY;
 #endif

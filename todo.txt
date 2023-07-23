@@ -1,7 +1,5 @@
 # TODO
 
-  - Polish up the end scene a little.
-
   - Titlescreen: add previews.
 
   - Hand-make sprites for each rotation.

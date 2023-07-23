@@ -6,7 +6,7 @@ static f64 lerp64(f64 a, f64 b, f64 t) {
     f64 result = a + t*(b-a); // or a(1-t) + tb
 
     const f64 epsilon = 0.1;
-    if (fabs(result-a) < epsilon) return b;
+    if (fabs(result-b) < epsilon) return b;
 
     return result;
 }
@@ -319,7 +319,17 @@ static f64 interpolate(f64 a, f64 b, f64 step) {
     }
 }
 
-static f32 lerp(f32 a, f32 b, f32 t) {
+static f64 clamp64(f64 x, f64 a, f64 b) {
+    if (x < a) return a;
+    if (x > b) return b;
+    return x;
+}
+
+static f64 smoothstep(f64 x) {
+    return x * x * (3.0 - 2.0 * x);
+}
+
+static f64 lerp(f64 a, f64 b, f64 t) {
     return a + t*(b-a); // or a(1-t) + tb -- same thing.
 }
 
