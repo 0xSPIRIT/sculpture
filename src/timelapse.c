@@ -42,18 +42,21 @@ static void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
         Save_State *state = null;
         Cell *grid = null;
         
+        Uint8 type = 0;
+        
         if (tl->sticky) {
             grid = gs->grid;
+            type = grid[i].type;
         } else {
             state = &gs->save_states[tl->frame];
-            grid = state->grid_layers[0];
+            type = state->grid_layers[0][i].type;
         }
         
-        if (!grid[i].type) continue;
+        if (!type) continue;
         
         int x = i%gs->gw, y = i/gs->gw;
         
-        SDL_Color c = pixel_from_index_grid(grid, grid[i].type, i);
+        SDL_Color c = pixel_from_index_grid(gs->grid, type, i);
         c.a = 255;
         if (gs->gw == 128) {
             if (x < 32 || x > 32+64) {

@@ -1,5 +1,7 @@
 # TODO
 
+  - Make undo system less resource-intensive
+
   - Titlescreen: add previews.
 
   - Hand-make sprites for each rotation.

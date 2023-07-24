@@ -191,7 +191,6 @@ static void set_array(Cell *arr, int x, int y, int val, int object) {
     if (x < 0 || x >= gs->gw || y < 0 || y >= gs->gh) return;
 
     arr[x+y*gs->gw].type = val;
-    arr[x+y*gs->gw].time = 0;
     arr[x+y*gs->gw].is_initial = false;
 
     if (object == -2) {
@@ -257,6 +256,8 @@ static f32 water_spread(void) {
 static void grid_init(int w, int h) {
     gs->gw = w;
     gs->gh = h;
+    
+    Log("sizeof(Cell) = %zu\n", sizeof(Cell));
 
     if (gs->grid_layers[0] == null) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
@@ -276,6 +277,7 @@ static void grid_init(int w, int h) {
     gs->gas_grid = gs->grid_layers[1];
 }
 
+#if 0
 static SDL_Color get_pressure_color(Cell *cell) {
     SDL_Color c = {
         cell->pressure,
@@ -285,6 +287,7 @@ static SDL_Color get_pressure_color(Cell *cell) {
     };
     return c;
 }
+#endif
 
 static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
     SDL_Color color = {0};
@@ -585,7 +588,6 @@ static int grid_array_tick(Cell *array, int x_direction, int y_direction) {
             if (!c->type || c->object != -1 || c->updated) continue;
             
             c->updated = true;
-            c->time++;
             
             cells_updated++;
             
@@ -650,7 +652,7 @@ static int grid_array_tick(Cell *array, int x_direction, int y_direction) {
                     // If we hit something last frame...
                     if (is_in_bounds(x, y-1) && can_gas_cell_swap(x, y-1)) {
                         c->vy = -1;
-                        c->vx = amplitude * sinf(c->rand + c->time * fac);
+                        c->vx = amplitude * sinf(c->rand + gs->frames * fac);
                     } else if (is_in_bounds(x+1, y-1) && can_gas_cell_swap(x+1, y-1)) {
                         c->vx = 1;
                         c->vy = -1;
@@ -752,7 +754,7 @@ static void grid_array_draw(int target, Cell *array, Uint8 alpha) {
             
             const int DRAW_PRESSURE = 0;
             if (DRAW_PRESSURE && type) {
-                col = get_pressure_color(&array[x+y*gs->gw]);
+                //col = get_pressure_color(&array[x+y*gs->gw]);
             }
             
             f64 a = alpha/255.0;
@@ -826,6 +828,7 @@ void draw_grid_outline(int target) {
     //RenderDrawRect(target, (SDL_Rect){ -gs->render.view.x-1, -gs->render.view.y + GUI_H - 1, gs->game_width+2, gs->game_height-GUI_H+2 });
 }
 
+#if 0
 static bool is_pressure_low_enough(Cell cell) {
     if (cell.pressure < 220)
         return true;
@@ -840,6 +843,7 @@ static void calculate_pressure(Cell *grid) {
         grid[i].pressure = (Uint8) (255 * (f64)neighbours/total);
     }
 }
+#endif
 
 // Try to move us down 1 cell.
 // If any cell is unable to move, undo the work.
@@ -897,9 +901,8 @@ static void mark_neighbours(int x, int y, int obj, int pobj, int *cell_count) {
 static void objects_reevaluate(void) {
     gs->object_count = 0;
     gs->object_current = 0;
-    for (int i = 0; i < gs->gw*gs->gh; i++) {
-        gs->grid[i].temp = -1;
-    }
+    
+    for (int i = 0; i < gs->gw*gs->gh; i++) { gs->grid[i].temp = -1; }
 
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
@@ -915,7 +918,7 @@ static void objects_reevaluate(void) {
         gs->grid[i].temp = 0;
     }
 
-    calculate_pressure(gs->grid);
+    //calculate_pressure(gs->grid);
 }
 
 static int condition(int a, int end, int dir) {

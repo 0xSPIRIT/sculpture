@@ -1,9 +1,14 @@
 #define MAX_UNDO 1024
 
+typedef struct {
+    Uint8 type;
+    Uint8 object;
+} Stored_Cell;
+
 // We don't want to save the entire memory of the game since
-// that will destroy RAM usage.
+// that will destroy memory usage.
 typedef struct Save_State {
-    Cell *grid_layers[NUM_GRID_LAYERS];
+    Stored_Cell *grid_layers[NUM_GRID_LAYERS];
 
     Item placer_items[TOTAL_SLOT_COUNT+1];
     // Format: Inventory Slots(5),

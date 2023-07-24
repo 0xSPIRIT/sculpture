@@ -67,18 +67,16 @@ typedef enum Cell_Type {
 } Cell_Type;
 
 typedef struct Cell {
-    enum Cell_Type type;  // The type of this cell.
-    int id;               // Unique ID for each cell.
+    Uint8 type;           // The type of this cell. (Cell_Type)
+    Uint16 id;            // Unique ID for each cell.
     int object;           // Object index the cell belongs. -1 for none
     int temp;             // Temporary variable for algorithms
-    Uint8 pressure;       // Pressure from 0 to 255.
-    bool is_initial;      // Is this from the initial state?
-    bool updated;         // Updated for the frame yet?
-    int time;             // Time since set
+    Uint8 is_initial;     // Is this from the initial state?
+    Uint8 updated;        // Updated for the frame yet?
+    int rand;             // Random value per cell
     f32 vx, vy;           // Velocity
     f32 vx_acc, vy_acc;   // When vel < 1, we need to keep track of that
     int px, py;           // Previous positions
-    int rand;             // Random value per cell
 } Cell;
 
 typedef struct Line {

@@ -314,7 +314,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 Assert(obj != -1);
 
 
-                Log("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Time: %d, Vx: %f, Vy: %f\n",
+                Log("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Vx: %f, Vy: %f\n",
                     input->mx,
                     input->my,
                     c->vx_acc,
@@ -323,7 +323,6 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                     c->id,
                     c->rand,
                     c->object,
-                    c->time,
                     c->vx,
                     c->vy);
                 break;

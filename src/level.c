@@ -347,6 +347,7 @@ static void level_tick_play(Level *level) {
     simulation_tick();
     
     if (!gs->paused || gs->step_one) {
+        Log("%d\n", gs->object_count);
         for (int i = 0; i < gs->object_count; i++) {
             object_tick(i);
         }
