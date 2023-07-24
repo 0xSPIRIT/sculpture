@@ -19,9 +19,25 @@ typedef struct GameLoopData {
     Game_State *game_state;
 } GameLoopData;
 
+static void fail(int code) {
+    char message[256];
+    sprintf(message, "An error occurred when initializing. Code: %d", code);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error!", message, null);
+#ifndef ALASKA_RELEASE_MODE
+    __debugbreak();
+#else
+    exit(1);
+    #endif
+}
+
 static void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
-    SDL_Init(SDL_INIT_VIDEO);
-    Mix_Init(MIX_INIT_OGG);
+    bool ok = true;
+    
+    ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
+    if (!ok) fail(1);
+    
+    ok = (Mix_Init(MIX_INIT_OGG) != 0);
+    if (!ok) fail(2);
 
     state->window = SDL_CreateWindow(window_title,
                                      SDL_WINDOWPOS_CENTERED,
@@ -29,12 +45,16 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
                                      w,
                                      h,
                                      SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    Assert(state->window);
+    if (!state->window) fail(3);
 
-    IMG_Init(IMG_INIT_PNG);
-    TTF_Init();
+    ok = (IMG_Init(IMG_INIT_PNG) != 0);
+    if (!ok) fail(4);
+    
+    ok = (TTF_Init() == 0);
+    if (!ok) fail(5);
 
-    Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0;
+    ok = Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0;
+    if (!ok) fail(6);
 
     int flags = 0;
     if (use_software_renderer) {
@@ -44,7 +64,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
     }
 
     state->renderer = SDL_CreateRenderer(state->window, -1, flags);
-    Assert(state->renderer);
+    if (!state->renderer) fail(7);
 
     if (state->fullscreen) {
         SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);

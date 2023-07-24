@@ -357,7 +357,7 @@ static void placer_place_rect(Placer *placer) {
 
 static void placer_tick(Placer *placer) {
     Input *input = &gs->input;
-    
+
     placer->did_place_this_frame = false;
     
     placer->px = placer->x;

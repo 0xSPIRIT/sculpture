@@ -10,7 +10,7 @@ typedef struct {
     Uint8 grid[PREVIEW_GRID_SIZE];
     Uint8 tool; // Tool using
     Uint8 x, y; // Position of tool
-    Uint16 angle; // 0 to 360
+    Uint16 data; // 0 to 360
 } Preview_State;
 
 typedef struct Preview {

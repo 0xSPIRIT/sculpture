@@ -761,6 +761,8 @@ static void chisel_get_adjusted_positions(int angle, int size, int *x, int *y) {
 static void chisel_draw(int target, Chisel *chisel) {
     int x, y;
     
+    Log("%d\n", (int)chisel->angle);
+    
     x = chisel->draw_x;
     y = chisel->draw_y;
 

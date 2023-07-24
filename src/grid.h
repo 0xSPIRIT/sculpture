@@ -1,12 +1,12 @@
 #define MAX_PRESSURE (gs->chisel->size == 2 ? 48.0 : 120.0)
 
 #define MAX_OBJECTS 32
-#define NUM_GRID_LAYERS 4
+#define NUM_GRID_LAYERS 2
 
 #define GRAV 0.5
 #define MAX_GRAV 4
 
-#define DEGTORAD (2*M_PI / 360.0)
+#define DEGTORAD (M_PI / 180.0)
 
 enum Blob_Type {
     BLOB_CIRCLE_A,

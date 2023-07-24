@@ -1,8 +1,9 @@
 # TODO
 
-  - Make undo system less resource-intensive
-
   - Titlescreen: add previews.
+
+  - Music
+     - Ambient: piano, pads/synths, motifs?
 
   - Hand-make sprites for each rotation.
 
@@ -20,6 +21,3 @@
     or symbols.
 
   - Graphics :: make it have a rustic feel.
-
-  - Music
-     - Ambient: piano, pads/synths, motifs?

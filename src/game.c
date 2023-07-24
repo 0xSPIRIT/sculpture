@@ -70,6 +70,8 @@ static void game_resize(int h) {
 }
 
 static void game_update_view(void) {
+    if (gs->text_field.active) return;
+    
     Input *input = &gs->input;
     SDL_FPoint *to = &gs->render.to;
     

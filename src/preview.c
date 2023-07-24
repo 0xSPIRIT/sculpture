@@ -10,10 +10,8 @@ static void preview_finish_recording(Preview *p) {
     sprintf(filename, RES_DIR "previews/%s", p->name);
 
     FILE *fp = fopen(filename, "wb");
-
-    p->recording = false;
-    p->play = true;
-
+    Assert(fp);
+    
     fprintf(fp, "%d\n", p->length);
     fwrite((const void*)gs->overlay.grid,
            sizeof(int),
@@ -23,17 +21,20 @@ static void preview_finish_recording(Preview *p) {
            sizeof(Preview_State),
            p->length,
            fp);
-
+    
     fclose(fp);
+    
+    p->recording = false;
+    p->play = true;
 }
 
 static void preview_load(Preview *p, const char *file) {
     FILE *fp = fopen(file, "rb");
     Assert(fp);
-
+    
     memset(p, 0, sizeof(Preview));
     p->recording = false;
-
+    
     fscanf(fp, "%d\n", &p->length);
     fread(p->overlay,
           sizeof(int),
@@ -43,7 +44,7 @@ static void preview_load(Preview *p, const char *file) {
           sizeof(Preview_State),
           p->length,
           fp);
-
+    
     fclose(fp);
 }
 
@@ -65,37 +66,41 @@ static void preview_record(Preview *p) {
     }
     
     Preview_State *state = &p->states[p->length];
-
+    
     state->tool = gs->current_tool;
-
-    for (int i = 0; i < gs->gw*gs->gh; i++) {
-        state->grid[i] = (Uint8)gs->grid[i].type;
+    
+    const int w = 64;
+    const int h = 64;
+    
+    for (int i = 0; i < w*h; i++) {
+        int index = 32 + (i%w) + (i/w)*gs->gw;
+        state->grid[i] = (Uint8)gs->grid[index].type;
     }
-
+    
     switch (gs->current_tool) {
         case TOOL_PLACER: {
             Placer *placer = &gs->placers[gs->current_placer];
-            state->x = placer->x;
+            state->x = placer->x - 32;
             state->y = placer->y;
             if (placer->rect.x == -1) {
-                state->angle = 0xDEAD; // 0xDEAD represents an invalid rect.
+                state->data = 0xDEAD; // 0xDEAD represents an invalid rect.
             } else {
                 // placer->rect.x == placer->place_width
                 
-                state->angle = placer->place_width; // Value represents the rect size.
+                state->data = placer->place_width; // Value represents the rect size.
                 // If you forgot, the placer's height can be calculated as:
                 //   height = width * placer->place_aspect;
             }
             break;
         }
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-            state->x = gs->chisel->x;
+            state->x = gs->chisel->x - 32;
             state->y = gs->chisel->y;
-            state->angle = gs->chisel->angle;
+            state->data = gs->chisel->angle+180;
             break;
         }
     }
-
+    
     p->length++;
 }
 
@@ -107,7 +112,7 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale, bool
     
     RenderColor(0,0,0,0);
     RenderClear(RENDER_TARGET_PREVIEW);
-
+    
     {
         for (int y = 0; y < preview_w; y++) {
             for (int x = 0; x < preview_h; x++) {
@@ -119,36 +124,36 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale, bool
                     SDL_Color col = pixel_from_index(p->states[p->index].grid[x+y*preview_w], x+y*preview_w);
                     RenderColor(col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
                 }
-
+                
                 RenderPoint(RENDER_TARGET_PREVIEW, x, y);
             }
         }
-
+        
         for (int y = 0; y < preview_h; y++) {
             for (int x = 0; x < preview_w; x++) {
                 int t = p->overlay[x+y*preview_w];
                 
                 if (!t) continue;
-
+                
                 RenderColor(255, 255, 255, 127);
                 RenderPoint(RENDER_TARGET_PREVIEW, x, y);
             }
         }
-
+        
         RenderColor(255, 255, 0, 255);
-
+        
         int tool = p->states[p->index].tool;
-
+        
         switch (tool) {
             case TOOL_PLACER: {
                 int x = p->states[p->index].x;
                 int y = p->states[p->index].y;
-                bool is_rect = (p->states[p->index].angle != 0xDEAD);
-
+                bool is_rect = (p->states[p->index].data != 0xDEAD);
+                
                 RenderColor(255, 255, 255, 64);
                 
                 if (is_rect) {
-                    int width = p->states[p->index].angle;
+                    int width = p->states[p->index].data;
                     int height = width * gs->placers[gs->current_placer].place_aspect;
                     
                     SDL_Rect rect = {
@@ -166,7 +171,7 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale, bool
             case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
                 int x = p->states[p->index].x;
                 int y = p->states[p->index].y;
-                int angle = p->states[p->index].angle;
+                int angle = p->states[p->index].data;
 
                 Chisel *chisel = null;
                 if (tool == TOOL_CHISEL_SMALL)  chisel = &gs->chisel_small;
@@ -174,26 +179,28 @@ static void preview_draw(int target, Preview *p, int dx, int dy, int scale, bool
                 if (tool == TOOL_CHISEL_LARGE)  chisel = &gs->chisel_large;
                 Assert(chisel);
 
-                // Disgusting hardcoding to adjust the weird rotation SDL does.
-
-                //chisel_get_adjusted_positions(angle, tool, &x, &y);
-                if (angle == 270 && tool == TOOL_CHISEL_SMALL) {
-                    y++;
-                }
-
                 SDL_Rect dst = {
                     x, y - chisel->texture->height/2,
                     chisel->texture->width, chisel->texture->height
                 };
+                chisel_get_adjusted_positions(angle-180, tool, &dst.x, &dst.y);
+                
+                if (p->index == 0)
+                    Log("%d, %d\n", x, y);
+                
                 SDL_Point center = { 0, chisel->texture->height/2 };
 
-                RenderTextureEx(RENDER_TARGET_PREVIEW,
-                                chisel->texture,
-                                null,
-                                &dst,
-                                angle,
-                                &center,
-                                SDL_FLIP_NONE);
+                RenderTextureExRelative(RENDER_TARGET_PREVIEW,
+                                        chisel->texture,
+                                        null,
+                                        &dst,
+                                        angle,
+                                        &center,
+                                        SDL_FLIP_NONE);
+
+                RenderColor(127, 127, 127, 255);
+                RenderPointRelative(target, x, y);
+                
                 break;
             }
         }

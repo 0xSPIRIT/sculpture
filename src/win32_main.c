@@ -62,8 +62,13 @@ typedef struct Game_Code {
 } Game_Code;
 
 static void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
-    SDL_Init(SDL_INIT_VIDEO);
-    Mix_Init(MIX_INIT_OGG);
+    bool ok = true;
+    
+    ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
+    if (!ok) fail(1);
+    
+    ok = (Mix_Init(MIX_INIT_OGG) != 0);
+    if (!ok) fail(2);
     
     int x = 200;
     int y = 125;
@@ -79,17 +84,21 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
                                      w,
                                      h,
                                      SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    Assert(state->window);
+    if (!state->window) fail(3);
     
     SDL_Surface *window_icon = RenderLoadSurface("icon.png");
     SDL_SetWindowIcon(state->window, window_icon);
     
     SDL_FreeSurface(window_icon);
     
-    IMG_Init(IMG_INIT_PNG);
-    TTF_Init();
+    ok = (IMG_Init(IMG_INIT_PNG) != 0);
+    if (!ok) fail(4);
     
-    Mix_OpenAudio(44100, AUDIO_S16, 2, 4096);
+    ok = (TTF_Init() == 0);
+    if (!ok) fail(5);
+    
+    ok = (Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0);
+    if (!ok) fail(6);
     
     int flags = 0;
     if (use_software_renderer) {
@@ -101,7 +110,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
     flags |= SDL_RENDERER_PRESENTVSYNC;
     
     state->renderer = SDL_CreateRenderer(state->window, -1, flags);
-    Assert(state->renderer);
+    if (!state->renderer) fail(7);
     
     state->render = RenderInit(state->renderer);
     
@@ -111,7 +120,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
 }
 
 static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_memory) {
-    persistent_memory->size = Megabytes(1024);
+    persistent_memory->size = Megabytes(512);
     transient_memory->size = Megabytes(8);
     
     Assert(persistent_memory->size >= sizeof(Game_State));
@@ -125,7 +134,8 @@ static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *tra
                                            persistent_memory->size + transient_memory->size,
                                            MEM_COMMIT | MEM_RESERVE,
                                            PAGE_READWRITE);
-    Assert(persistent_memory->data);
+    if (!persistent_memory->data) fail(10);
+    
     persistent_memory->cursor = persistent_memory->data;
     
     // Set the transient memory as an offset into persistent memory.

@@ -8,7 +8,7 @@ static void titlescreen_init(void) {
                gs->game_width,
                gs->game_height);
     
-    preview_load(&t->preview, RES_DIR "previews/medium_chisel.bin");
+    preview_load(&t->preview, RES_DIR "previews/test.bin");
 }
 
 static void titlescreen_goto_next(void) {
