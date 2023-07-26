@@ -75,7 +75,9 @@ void converter_gui_init(void) {
     Conversions *c = &gs->conversions;
     memset(c, 0, sizeof(Conversions));
     
-    for (int i = 0; i < 15; i++) {
+    Log("%d\n", (int)CONVERSIONS_GUI_COUNT);
+    
+    for (int i = 0; i < CONVERSIONS_GUI_COUNT; i++) {
         int button_index = i*6+5;
         if (conversions[button_index])
             c->override_indices[i] = 1;
@@ -107,7 +109,7 @@ bool converter_gui_item_draw(int target, Cell_Type item, int override_index, int
         get_name_from_type(item, gs->gui.tooltip.str[0]);
         
         if (item != CELL_DIRT && item != CELL_SAND) {
-            strcpy(gs->gui.tooltip.str[1], "Click to go to definition");
+            strcpy(gs->gui.tooltip.str[1], "Click to go to recipe");
         }
         
         mouse_in_rect = true;
@@ -412,7 +414,7 @@ void converter_gui_draw(int final_target) {
                     null,
                     false);
     
-    for (int i = 3; i <= 14; i++) {
+    for (int i = 3; i < CONVERSIONS_GUI_COUNT; i++) {
         int idx = i*6;
         int converter = conversions[idx];
         Assert(converter == CONVERTER_MATERIAL);

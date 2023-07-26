@@ -143,7 +143,7 @@ static void hammer_draw(int final_target, Hammer *hammer) {
                                    RENDER_TARGET_HAMMER,
                                    null,
                                    null,
-                                   180+gs->chisel->angle,
+                                   180+gs->chisel->draw_angle,
                                    &center,
                                    SDL_FLIP_NONE);
     

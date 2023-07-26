@@ -148,6 +148,7 @@ static void tooltip_draw(int output_target, Tooltip *tooltip) {
                      gs->S*tooltip->x+margin,
                      gs->S*tooltip->y+(old_h)+margin*2,
                      preview_scale,
+                     false,
                      false);
     }
     

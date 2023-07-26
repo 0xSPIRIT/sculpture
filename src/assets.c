@@ -43,7 +43,7 @@ static void render_targets_init(void) {
                 continue;
             }
             case RENDER_TARGET_PREVIEW: {
-                gs->render.render_targets[i] = RenderMakeTarget(gs->gw, gs->gh, VIEW_STATE_PIXELS, false);
+                gs->render.render_targets[i] = RenderMakeTarget(PREVIEW_GRID_W, PREVIEW_GRID_W, VIEW_STATE_PIXELS, false);
                 continue;
             }
         }

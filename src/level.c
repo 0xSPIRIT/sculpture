@@ -180,7 +180,7 @@ static void goto_level(int lvl) {
                    gs->levels[gs->level_current].effect_type,
                    false,
                    0,
-                   0,
+                   -gs->gh,
                    gs->gw,
                    gs->gh*2);
     }
@@ -227,7 +227,7 @@ static void level_set_state(int level, enum Level_State state) {
                        l->effect_type,
                        false,
                        0,
-                       0,
+                       -gs->gh,
                        gs->gw,
                        2*gs->gh);
         }
@@ -786,9 +786,8 @@ static void level_draw_narration(int target) {
     RenderColor(20, 20, 20, 255);
     RenderClear(target);
     
-    effect_draw(target, &gs->current_effect, false, ONLY_SLOW_ALL);
+    effect_draw(target, &gs->current_effect, false);
     narrator_run(target, WHITE);
-    //effect_draw(target, &gs->current_effect, false, ONLY_SLOW_FAST);
 }
 
 static void game_draw_table(int target) {
@@ -821,7 +820,7 @@ static void level_draw_outro_or_play(Level *level) {
 
     background_draw(RENDER_TARGET_PIXELGRID, &gs->background);
 
-    effect_draw(RENDER_TARGET_PIXELGRID, &gs->current_effect, true, ONLY_SLOW_ALL);
+    effect_draw(RENDER_TARGET_PIXELGRID, &gs->current_effect, true);
 
     grid_draw(RENDER_TARGET_PIXELGRID);
 

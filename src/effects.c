@@ -115,7 +115,7 @@ static void particle_tick(Effect *effect, int i) {
     }
 }
 
-static void effect_draw(int target, Effect *effect, bool draw_points, int only_slow) {
+static void effect_draw(int target, Effect *effect, bool draw_points) {
     if (effect->type == EFFECT_NONE)
         return;
 
@@ -130,9 +130,6 @@ static void effect_draw(int target, Effect *effect, bool draw_points, int only_s
             for (int i = 0; i < effect->particle_count; i++) {
                 Effect_Particle *particle = &effect->particles[i];
                 f32 length = (f32) sqrt(particle->vx*particle->vx + particle->vy*particle->vy);
-                
-                if (only_slow == ONLY_SLOW_SLOW && length > 3)  continue;
-                if (only_slow == ONLY_SLOW_FAST && length <= 3) continue;
                 
                 particle_tick(effect, i);
                 

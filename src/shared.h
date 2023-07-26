@@ -20,10 +20,10 @@
 #endif
 
 // Assert using an SDL MessageBox popup. Prints to the console too.
-#ifdef ALASKA_RELEASE_MODE
-  #define Assert(cond)
-#else
+#ifndef ALASKA_RELEASE_MODE
   #define Assert(cond) if(!(cond)) { _assert(__func__, __FILE__, __LINE__), __debugbreak(); }
+#else
+  #define Assert(cond)
 #endif
 
 #define PushSize(arena, size) (_push_array(arena, 1, size, __FILE__, __LINE__))
@@ -150,11 +150,6 @@ typedef struct Game_State {
     
     bool undo_initialized;
     
-    Save_State save_states[MAX_UNDO];
-    int save_state_count; // Number of states saved.
-    bool has_player_interacted_since_last_state;
-    bool has_any_placed;
-    
     Text_Field text_field;
     
     bool creative_mode;
@@ -191,6 +186,11 @@ typedef struct Game_State {
     
     Chisel chisel_small, chisel_medium, chisel_large;
     Chisel *chisel;
+    
+    int save_state_count; // Number of states saved.
+    bool has_player_interacted_since_last_state;
+    bool has_any_placed;
+    Save_State save_states[MAX_UNDO]; // Big array (65MB I think?)
 } Game_State;
 
 static Game_State *gs = null;

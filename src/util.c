@@ -333,6 +333,32 @@ static f64 lerp(f64 a, f64 b, f64 t) {
     return a + t*(b-a); // or a(1-t) + tb -- same thing.
 }
 
+static f32 lerp_degrees(f32 start, f32 end, f32 amount) {
+    f32 difference = abs(end - start);
+    
+    if (difference > 180) {
+        // We need to add on to one of the values.
+        if (end > start) {
+            // We'll add it on to start...
+            start += 360;
+        } else {
+            // Add it on to end.
+            end += 360;
+        }
+    }
+    
+    // Interpolate it.
+    f32 value = (start + ((end - start) * amount));
+    
+    // Wrap it..
+    f32 rangeZero = 360;
+    
+    if (value >= 0 && value <= 360)
+        return value;
+    
+    return fmod(value, rangeZero);
+}
+
 static f32 lerp_no_error(f32 a, f32 b, f32 t, f32 error) {
     f32 result = a + t*(b-a);
     if (abs(result - b) <= error)

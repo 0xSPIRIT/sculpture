@@ -8,7 +8,7 @@ static void preview_start_recording(Preview *p, const char *name) {
 static void preview_finish_recording(Preview *p) {
     char filename[64] = {0};
     sprintf(filename, RES_DIR "previews/%s", p->name);
-
+    
     FILE *fp = fopen(filename, "wb");
     Assert(fp);
     
@@ -17,6 +17,7 @@ static void preview_finish_recording(Preview *p) {
            sizeof(int),
            PREVIEW_GRID_SIZE,
            fp);
+    
     fwrite((const void*)p->states,
            sizeof(Preview_State),
            p->length,
@@ -60,7 +61,7 @@ static void previews_load(void) {
 }
 
 static void preview_record(Preview *p) {
-    if (p->length > MAX_PREVIEW_STATES) {
+    if (p->length >= MAX_PREVIEW_STATES) {
         preview_finish_recording(p);
         return;
     }
@@ -94,8 +95,8 @@ static void preview_record(Preview *p) {
             break;
         }
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-            state->x = gs->chisel->x - 32;
-            state->y = gs->chisel->y;
+            state->x = round(gs->chisel->draw_x) - 32;
+            state->y = round(gs->chisel->draw_y);
             state->data = gs->chisel->angle+180;
             break;
         }
@@ -104,120 +105,122 @@ static void preview_record(Preview *p) {
     p->length++;
 }
 
-static void preview_draw(int target, Preview *p, int dx, int dy, int scale, bool alpha_background) {
+static SDL_Rect preview_draw(int final_target, Preview *p, int dx, int dy, int scale, bool alpha_background, bool dont_draw) {
     const int preview_w = 64;
     const int preview_h = 64;
+    
+    const int target = RENDER_TARGET_PREVIEW;
     
     Assert(preview_w * preview_h == PREVIEW_GRID_SIZE);
     
     RenderColor(0,0,0,0);
-    RenderClear(RENDER_TARGET_PREVIEW);
+    RenderClear(target);
     
-    {
-        for (int y = 0; y < preview_w; y++) {
-            for (int x = 0; x < preview_h; x++) {
-                if (alpha_background && !p->states[p->index].grid[x+y*preview_w]) {
-                    continue;
-                } else if (!p->states[p->index].grid[x+y*preview_w]) {
-                    RenderColor(0, 0, 0, 255);
-                } else {
-                    SDL_Color col = pixel_from_index(p->states[p->index].grid[x+y*preview_w], x+y*preview_w);
-                    RenderColor(col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
-                }
-                
-                RenderPoint(RENDER_TARGET_PREVIEW, x, y);
+    for (int y = 0; y < preview_w; y++) {
+        for (int x = 0; x < preview_h; x++) {
+            if (alpha_background && !p->states[p->index].grid[x+y*preview_w]) {
+                continue;
+            } else if (!p->states[p->index].grid[x+y*preview_w]) {
+                RenderColor(0, 0, 0, 255);
+            } else {
+                SDL_Color col = pixel_from_index(p->states[p->index].grid[x+y*preview_w], x+y*preview_w);
+                RenderColor(col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
             }
+            
+            RenderPoint(target, x, y);
         }
-        
-        for (int y = 0; y < preview_h; y++) {
-            for (int x = 0; x < preview_w; x++) {
-                int t = p->overlay[x+y*preview_w];
-                
-                if (!t) continue;
-                
-                RenderColor(255, 255, 255, 127);
-                RenderPoint(RENDER_TARGET_PREVIEW, x, y);
-            }
+    }
+    
+    for (int y = 0; y < preview_h; y++) {
+        for (int x = 0; x < preview_w; x++) {
+            int t = p->overlay[x+y*preview_w];
+            
+            if (!t) continue;
+            
+            RenderColor(255, 255, 255, 127);
+            RenderPoint(target, x, y);
         }
-        
-        RenderColor(255, 255, 0, 255);
-        
-        int tool = p->states[p->index].tool;
-        
-        switch (tool) {
-            case TOOL_PLACER: {
-                int x = p->states[p->index].x;
-                int y = p->states[p->index].y;
-                bool is_rect = (p->states[p->index].data != 0xDEAD);
+    }
+    
+    RenderColor(255, 255, 0, 255);
+    
+    int tool = p->states[p->index].tool;
+    
+    switch (tool) {
+        case TOOL_PLACER: {
+            int x = p->states[p->index].x;
+            int y = p->states[p->index].y;
+            bool is_rect = (p->states[p->index].data != 0xDEAD);
+            
+            RenderColor(255, 255, 255, 64);
+            
+            if (is_rect) {
+                int width = p->states[p->index].data;
+                int height = width * gs->placers[gs->current_placer].place_aspect;
                 
-                RenderColor(255, 255, 255, 64);
-                
-                if (is_rect) {
-                    int width = p->states[p->index].data;
-                    int height = width * gs->placers[gs->current_placer].place_aspect;
-                    
-                    SDL_Rect rect = {
-                        x-width/2,
-                        y-height/2,
-                        width,
-                        height
-                    };
-                    RenderDrawRect(RENDER_TARGET_PREVIEW,
-                                   rect);
-                }
-                
-                break;
-            }
-            case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-                int x = p->states[p->index].x;
-                int y = p->states[p->index].y;
-                int angle = p->states[p->index].data;
-
-                Chisel *chisel = null;
-                if (tool == TOOL_CHISEL_SMALL)  chisel = &gs->chisel_small;
-                if (tool == TOOL_CHISEL_MEDIUM) chisel = &gs->chisel_medium;
-                if (tool == TOOL_CHISEL_LARGE)  chisel = &gs->chisel_large;
-                Assert(chisel);
-
-                SDL_Rect dst = {
-                    x, y - chisel->texture->height/2,
-                    chisel->texture->width, chisel->texture->height
+                SDL_Rect rect = {
+                    x-width/2,
+                    y-height/2,
+                    width,
+                    height
                 };
-                chisel_get_adjusted_positions(angle-180, tool, &dst.x, &dst.y);
-                
-                if (p->index == 0)
-                    Log("%d, %d\n", x, y);
-                
-                SDL_Point center = { 0, chisel->texture->height/2 };
-
-                RenderTextureExRelative(RENDER_TARGET_PREVIEW,
-                                        chisel->texture,
-                                        null,
-                                        &dst,
-                                        angle,
-                                        &center,
-                                        SDL_FLIP_NONE);
-
-                RenderColor(127, 127, 127, 255);
-                RenderPointRelative(target, x, y);
-                
-                break;
+                RenderDrawRect(target, rect);
             }
+            
+            break;
+        }
+        case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
+            int x = p->states[p->index].x;
+            int y = p->states[p->index].y;
+            int angle = p->states[p->index].data;
+            
+            Chisel *chisel = null;
+            if (tool == TOOL_CHISEL_SMALL)  chisel = &gs->chisel_small;
+            if (tool == TOOL_CHISEL_MEDIUM) chisel = &gs->chisel_medium;
+            if (tool == TOOL_CHISEL_LARGE)  chisel = &gs->chisel_large;
+            Assert(chisel);
+
+            SDL_Rect dst = {
+                x, y - chisel->texture->height/2,
+                chisel->texture->width, chisel->texture->height
+            };
+            chisel_get_adjusted_positions(angle-180, tool, &dst.x, &dst.y);
+            
+            SDL_Point center = { 0, chisel->texture->height/2 };
+            
+            RenderTextureExRelative(target,
+                                    chisel->texture,
+                                    null,
+                                    &dst,
+                                    angle,
+                                    &center,
+                                    SDL_FLIP_NONE);
+
+            RenderColor(127, 127, 127, 255);
+            RenderPoint(target, x, y);
+            
+            break;
         }
     }
 
-    SDL_Rect target_dst = {
-        dx, dy+GUI_H,
-        scale*gs->gw, scale*gs->gh
-    };
-
-    RenderTargetToTarget(target,
-                         RENDER_TARGET_PREVIEW,
-                         null,
-                         &target_dst);
-
     p->index++;
     if (p->index >= p->length) p->index = 0;
+    
+    SDL_Rect target_dst = {
+        dx,
+        dy+GUI_H,
+        scale*PREVIEW_GRID_W,
+        scale*PREVIEW_GRID_W
+    };
+    
+    if (dont_draw) return target_dst;
+    
+    RenderTargetToTarget(final_target,
+                         target,
+                         null,
+                         &target_dst);
+    
+    return (SDL_Rect){0};
 }
 
 static void preview_start_current(const char *name) {

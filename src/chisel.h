@@ -34,7 +34,7 @@ typedef struct Chisel {
 
     Uint8 *mask;
 
-    f64 angle;
+    f64 angle, prev_angle, draw_angle;
     Texture *texture;
     
     f64 rotating_flash;

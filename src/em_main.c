@@ -1,5 +1,3 @@
-// EMSCRIPTEN MAIN.
-
 #define ALASKA_RELEASE_MODE
 
 #include "game.c"
@@ -21,7 +19,9 @@ typedef struct GameLoopData {
 
 static void fail(int code) {
     char message[256];
+    // TODO: Replace SDL_ShowSimpleMessageBox with something else!
     sprintf(message, "An error occurred when initializing. Code: %d", code);
+    puts(mesage);
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error!", message, null);
 #ifndef ALASKA_RELEASE_MODE
     __debugbreak();

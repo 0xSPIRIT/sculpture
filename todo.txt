@@ -1,14 +1,24 @@
 # TODO
 
-  - Titlescreen: add previews.
+  - Playtest Fixes
+     x Make the chisel rotations lerped
+     - Make the rain be able to be picked up along with the snow
+     - Make the snow -> ice
+     - Make escape exit the inv menu, and the I menu
+     - Add F1 F2 F3 F4 F5 to the inventory slots
+     - Make the tooltips clamp to the edge of the screen when hovering over cells
+     - Test the undo in the conversions popup... It should be fine but we never tested it thoroughly.
+     - Bug with the tooltip persisting after you close the I menu
+     - Include the conversion speed somewhere in the menu
+     - Does deleting items undo properly? never tested it
+     - Make diamond shine
+     - Change "demeanor" in level 11 narration
+     - Saving and loading
 
   - Music
      - Ambient: piano, pads/synths, motifs?
 
   - Hand-make sprites for each rotation.
-
-  - Idea: Replace some of the tutorial boxes with grid previews and key
-    previews on how to do things?
 
   - Add a mouse feature for the web version to emulate the movement
     of the mouse in the desktop version.

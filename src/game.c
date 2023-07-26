@@ -70,7 +70,8 @@ static void game_resize(int h) {
 }
 
 static void game_update_view(void) {
-    if (gs->text_field.active) return;
+    if (gs->text_field.active)  return;
+    if (gs->conversions.active) return;
     
     Input *input = &gs->input;
     SDL_FPoint *to = &gs->render.to;
@@ -134,8 +135,8 @@ export void game_init(Game_State *state, int level) {
     gs->gamestate = GAME_STATE_TITLESCREEN;
 
     Mix_VolumeMusic(AUDIO_TITLESCREEN_VOLUME);
-    //if (Mix_PlayMusic(gs->audio.music_titlescreen, -1))
-        //SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Failure!", "Failed to play music!", null);
+    if (Mix_PlayMusic(gs->audio.music_titlescreen, -1))
+       SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Failure!", "Failed to play music!", null);
 #else
     gs->gamestate = GAME_STATE_PLAY;
 #endif
@@ -438,13 +439,15 @@ export void game_run(Game_State *state) {
                 fade_draw(RENDER_TARGET_MASTER);
 
                 preview_tick();
-                if (gs->current_preview.play)
+                if (gs->current_preview.play) {
                     preview_draw(RENDER_TARGET_MASTER,
                                  &gs->current_preview,
                                  0,
                                  0,
                                  6,
+                                 false,
                                  false);
+                }
 
                 if (gs->step_one) gs->step_one = false;
             }

@@ -61,6 +61,17 @@ typedef struct Game_Code {
     GameRunProc game_run;
 } Game_Code;
 
+static void fail(int code) {
+    char message[256];
+    sprintf(message, "An error occurred when initializing. Code: %d", code);
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error!", message, null);
+#ifndef ALASKA_RELEASE_MODE
+    __debugbreak();
+#else
+    exit(1);
+    #endif
+}
+
 static void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
     bool ok = true;
     

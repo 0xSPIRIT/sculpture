@@ -3,7 +3,7 @@ static void undo_system_init(void) {
 
     gs->save_state_count = 1;
 
-    for (int i = 0; i < NUM_GRID_LAYERS; i++) {
+    for (int i = 0; i < UNDO_GRID_LAYERS; i++) {
         current_state()->grid_layers[i] = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(Stored_Cell));
     }
 
@@ -15,7 +15,7 @@ static void undo_system_init(void) {
 static void undo_system_reset(void) {
     gs->save_state_count = 0;
     for (int i = 0; i < MAX_UNDO; i++) {
-        for (int j = 0; j < NUM_GRID_LAYERS; j++) {
+        for (int j = 0; j < UNDO_GRID_LAYERS; j++) {
             if (gs->save_states[i].grid_layers[j]) {
                 memset(gs->save_states[i].grid_layers[j], 0, gs->gw*gs->gh*sizeof(Stored_Cell));
             }
@@ -40,7 +40,7 @@ static void save_state_to_next(void) {
         
         for (int i = 0; i < gs->save_state_count; i++) {
             // gs->save_states[i] = gs->save_states[i+1];
-            for (int j = 0; j < NUM_GRID_LAYERS; j++) {
+            for (int j = 0; j < UNDO_GRID_LAYERS; j++) {
                 for (int k = 0; k < gs->gw*gs->gh; k++) gs->save_states[i].grid_layers[j][k] = gs->save_states[i+1].grid_layers[j][k];
                 //memcpy(gs->save_states[i].grid_layers[j], gs->save_states[i+1].grid_layers[j], sizeof(Cell)*gs->gw*gs->gh);
             }
@@ -54,7 +54,7 @@ static void save_state_to_next(void) {
         }
 
         int i = gs->save_state_count;
-        for (int j = 0; j < NUM_GRID_LAYERS; j++) {
+        for (int j = 0; j < UNDO_GRID_LAYERS; j++) {
             if (gs->save_states[i].grid_layers[j]) {
                 memset(gs->save_states[i].grid_layers[j], 0, gs->gw*gs->gh*sizeof(Stored_Cell));
             }
@@ -70,12 +70,12 @@ static void save_state_to_next(void) {
     // is still used, the grid layer itself is just
     // zeroed out.
     if (!state->grid_layers[0]) {
-        for (int i = 0; i < NUM_GRID_LAYERS; i++) {
+        for (int i = 0; i < UNDO_GRID_LAYERS; i++) {
             state->grid_layers[i] = PushArray(gs->persistent_memory, gs->gw*gs->gh, sizeof(Stored_Cell));
         }
     }
 
-    for (int i = 0; i < NUM_GRID_LAYERS; i++) {
+    for (int i = 0; i < UNDO_GRID_LAYERS; i++) {
         for (int j = 0; j < gs->gw*gs->gh; j++) {
             Stored_Cell *stored_cell = &state->grid_layers[i][j];
             Cell *cell = &gs->grid_layers[i][j];
@@ -148,7 +148,7 @@ static void set_state(int num) {
 
     Assert(state->grid_layers[0]);
 
-    for (int i = 0; i < NUM_GRID_LAYERS; i++) {
+    for (int i = 0; i < UNDO_GRID_LAYERS; i++) {
         for (int j = 0; j < gs->gw*gs->gh; j++) {
             gs->grid_layers[i][j].object = state->grid_layers[i][j].object;
             gs->grid_layers[i][j].type = state->grid_layers[i][j].type;

@@ -177,7 +177,7 @@ static void narrator_run(int target, SDL_Color col) {
                        gs->levels[gs->level_current].effect_type,
                        false,
                        0,
-                       0,
+                       -gs->gh,
                        gs->gw,
                        2*gs->gh);
             memset(&gs->narrator, 0, sizeof(Narrator));

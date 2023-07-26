@@ -364,17 +364,17 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
 #endif
     if (!chisel->is_calculating_highlight)
         save_state_to_next();
-
+    
     // We want to only destroy the flood-filled object.
-
+    
     Uint8 *grid = PushArray(gs->transient_memory,
                             gs->gw * gs->gh,
                             sizeof(Uint8));
-
+    
     flood_fill(grid, x, y, 1, (int)(M_PI*size*size*2));
-
+    
     if (!chisel->is_calculating_highlight) chisel_play_sound(gs->grid[x+y*gs->gw].type, chisel->size);
-
+    
     if (size == 0) {
         if (special_case_for_diamond(x, y) && can_add_item_to_inventory(gs->grid[x+y*gs->gw].type)) {
             int type = gs->grid[x+y*gs->gw].type;
@@ -393,12 +393,12 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
     } else {
         // Destroy in a circle.
         int type = 0;
-
+        
         x -= dx;
         y -= dy;
-
+        
         generate_chisel_mask(chisel->mask, chisel->angle, x, y);
-
+        
         for (int yy = -size; yy <= size; yy++) {
             for (int xx = -size; xx <= size; xx++) {
                 if (xx*xx + yy*yy > size*size) continue;
@@ -407,10 +407,10 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
                 if (!is_cell_hard(gs->grid[x+xx+(y+yy)*gs->gw].type)) continue;
                 if (chisel->size == CHISEL_MEDIUM && !is_cell_in_front_of_chisel(chisel, x+xx, y+yy)) continue;
                 if (!special_case_for_diamond(x+xx, y+yy)) continue;
-
+                
                 if (gs->grid[x+xx+(y+yy)*gs->gw].type != 0)
                     type = gs->grid[x+xx+(y+yy)*gs->gw].type;
-
+                
                 if (can_add_item_to_inventory(gs->grid[x+xx + (y+yy)*gs->gw].type)) {
                     if (!chisel->is_calculating_highlight) {
                         chisel_attempt_add_to_inventory(x+xx, y+yy);
@@ -425,13 +425,13 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
             }
         }
     }
-
+    
     chisel->x = x;
     chisel->y = y;
     if (!chisel->is_calculating_highlight && size > 0) {
         chisel_move_mouse_until_cell(chisel, x, y, chisel->angle, size+1);
     }
-
+    
     objects_reevaluate();
 }
 
@@ -439,12 +439,12 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
 static bool chisel_handle_bad_corner(Chisel *chisel, int ix, int iy,  int dir_x, int size) {
     int y = 0;
     int x = dir_x;
-
+    
     if (gs->grid[ix+x+(iy+y)*gs->gw].type != CELL_NONE) {
         chisel_destroy_circle(chisel, ix+x, iy+y, 0, 0, size);
         return true;
     }
-
+    
     return false;
 }
 
@@ -453,13 +453,13 @@ static bool chisel_handle_bad_corner(Chisel *chisel, int ix, int iy,  int dir_x,
 // size of the circle to destroy.
 static bool chisel_circle(Chisel *chisel, int size) {
     f64 angle = M_PI * chisel->angle / 180.0;
-
+    
     f64 dir_x = round(cos(angle));
     f64 dir_y = round(sin(angle));
-
+    
     f64 xx = chisel->x;
     f64 yy = chisel->y;
-
+    
     // If we got a bad corner, snap to the closest cell.
     if (is_bad_corner(chisel, chisel->x, chisel->y)) {
         return chisel_handle_bad_corner(chisel, chisel->x, chisel->y, dir_x, size);
@@ -468,7 +468,7 @@ static bool chisel_circle(Chisel *chisel, int size) {
     for (int lookahead = chisel->lookahead; lookahead > 0; lookahead--) {
         int ix = (int)round(xx);
         int iy = (int)round(yy);
-
+        
         if (is_in_bounds(ix, iy) &&
             gs->grid[ix+iy*gs->gw].type != CELL_NONE)
         {
@@ -482,7 +482,7 @@ static bool chisel_circle(Chisel *chisel, int size) {
                 dx = 2*dir_x;
                 dy = 2*dir_y;
             }
-
+            
 #if 0 // This doesn't seem to feel very good. :(
             if (chisel->size == CHISEL_SMALL) {
                 int idx = xx+yy*gs->gw;
@@ -491,16 +491,16 @@ static bool chisel_circle(Chisel *chisel, int size) {
                 yy = idx / gs->gw;
             }
 #endif
-
+            
             gs->chisel->temp_idx = find_nearest_successful_hit(xx, yy, 3);
             chisel_destroy_circle(chisel, xx, yy, dx, dy, size);
             return true;
         }
-
+        
         if (is_bad_corner(chisel, ix, iy)) {
             return chisel_handle_bad_corner(chisel, ix, iy, dir_x, size);
         }
-
+        
         xx += dir_x;
         yy += dir_y;
     }
@@ -534,27 +534,27 @@ static void chisel_calculate_highlights(Chisel *chisel) {
     // Store some copies so we could roll back afterwards.
     Cell *grid_copy = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(Cell));
     memcpy(grid_copy, gs->grid, gs->gw*gs->gh*sizeof(Cell));
-
+    
     Chisel chisel_copy = *chisel;
-
+    
     chisel->is_calculating_highlight = true;
-
+    
     int count = 0;
     int highlights[HIGHLIGHT_MAX] = {0};
-
+    
     chisel_chisel(chisel);
-
+    
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         if (gs->grid[i].type != grid_copy[i].type) {
             highlights[count++] = i;
         }
     }
-
+    
     int idx = chisel->temp_idx;
     memcpy(chisel, &chisel_copy, sizeof(Chisel));
     chisel->temp_idx = idx;
     memcpy(gs->grid, grid_copy, gs->gw*gs->gh*sizeof(Cell));
-
+    
     memcpy(chisel->highlights, highlights, sizeof(int)*HIGHLIGHT_MAX);
     chisel->highlight_count = count;
 }
@@ -566,21 +566,21 @@ static void chisel_draw_highlights(int target,
                                    int yoff)
 {
     bool hit = false;
-
+    
     for (int i = 0; i < count; i++) {
         int x = highlights[i]%gs->gw;
         int y = highlights[i]/gs->gw;
-
+        
         if (gs->overlay.grid[x+y*gs->gw] == gs->grid[x+y*gs->gw].type) {
             hit = true;
             break;
         }
     }
-
+    
     for (int i = 0; i < count; i++) {
         int x = highlights[i]%gs->gw;
         int y = highlights[i]/gs->gw;
-
+        
         if (gs->overlay.show) {
             if (hit) {
                 if (gs->overlay.grid[x+y*gs->gw]) {
@@ -594,16 +594,16 @@ static void chisel_draw_highlights(int target,
         } else {
             RenderColor(0, 0, 0, 60);
         }
-
+        
         RenderPointRelative(target, xoff+x, yoff+y);
     }
-
+    
     // Note: I was doing some testing with trying to make chiseling
     //       auto-correct itself, through the function find_nearest_successful_hit,
     //       and using this to output the cell position temp_idx.
 #if 0
     int idx = gs->chisel->temp_idx;
-
+    
     RenderColor(255, 255, 255, 255);
     RenderPointRelative(target, idx % gs->gw, idx / gs->gw);
 #endif
@@ -624,15 +624,15 @@ static void chisel_tick(Chisel *chisel) {
     if (gs->gui.restart_popup_confirm.active) return;
     if (gs->is_mouse_on_tab_icon) return; // Hacky!!!!! ew
     if (gs->conversions.active) return; // There should really be a focus variable
-
+    
     chisel->did_chisel_this_frame = false;
     if (chisel->click_delay > 0) chisel->click_delay--;
     if (!(gs->input.mouse & SDL_BUTTON_LEFT))
         chisel->click_delay = -1;
-
+    
     if (gs->hammer.state == HAMMER_STATE_WINDUP ||
         gs->hammer.state == HAMMER_STATE_ATTACK) return;
-
+    
     switch (chisel->state) {
         case CHISEL_STATE_IDLE: {
             int idx = chisel_clamp_to_grid(chisel->angle, gs->input.mx, gs->input.my);
@@ -650,14 +650,14 @@ static void chisel_tick(Chisel *chisel) {
                 chisel->x = idx % gs->gw;
                 chisel->y = idx / gs->gw;
             }
-
+            
             if (gs->input.keys_pressed[SDL_SCANCODE_LSHIFT]) {
                 chisel->state = CHISEL_STATE_ROTATING;
                 move_mouse_to_grid_position(chisel->x, chisel->y);
             }
-
+            
             chisel_calculate_highlights(chisel);
-
+            
             break;
         }
         case CHISEL_STATE_ROTATING: {
@@ -669,23 +669,25 @@ static void chisel_tick(Chisel *chisel) {
                 x -= 32;
             }
             
+            chisel->prev_angle = chisel->angle;
+            
             f64 rmx = (f64)(gs->input.real_mx + gs->render.view.x) / (f64)gs->S;
             f64 rmy = (f64)(gs->input.real_my-GUI_H + gs->render.view.y) / (f64)gs->S;
-
+            
             chisel->angle = 180 + 360 * atan2f(rmy - y, rmx - x) / (f32)(2*M_PI);
-
+            
             f32 step = 45.0;
             chisel->angle /= step;
             chisel->angle = ((int)chisel->angle) * step;
             chisel->angle -= 180;
-
+            
             gs->chisel_small.angle = gs->chisel_medium.angle = gs->chisel_large.angle = chisel->angle;
-
+            
             if (!gs->input.keys[SDL_SCANCODE_LSHIFT]) {
                 chisel->state = CHISEL_STATE_IDLE;
                 move_mouse_to_grid_position(chisel->x, chisel->y);
             }
-
+            
             chisel->highlight_count = 0;
             break;
         }
@@ -697,9 +699,9 @@ static void chisel_tick(Chisel *chisel) {
                     chisel->did_chisel_this_frame = true;
                 }
             }
-
+            
             chisel->highlight_count = 0;
-
+            
             chisel->state = CHISEL_STATE_IDLE;
             break;
         }
@@ -720,7 +722,7 @@ static void chisel_tick(Chisel *chisel) {
 // make sprites for each rotation.
 static void chisel_get_adjusted_positions(int angle, int size, int *x, int *y) {
     angle += 180;
-
+    
     if (size == 0 || size == 1) {
         if (angle == 225) {
             (*y) += 2;
@@ -761,10 +763,21 @@ static void chisel_get_adjusted_positions(int angle, int size, int *x, int *y) {
 static void chisel_draw(int target, Chisel *chisel) {
     int x, y;
     
-    Log("%d\n", (int)chisel->angle);
-    
     x = chisel->draw_x;
     y = chisel->draw_y;
+    
+    { // Lerp the chisel angle
+        chisel->angle += 180;
+        chisel->draw_angle += 180;
+        
+        chisel->draw_angle = lerp_degrees(chisel->draw_angle, chisel->angle, 0.6);
+        if (abs(chisel->draw_angle-chisel->angle) < 2) {
+            chisel->draw_angle = chisel->angle;
+        }
+        
+        chisel->angle -= 180;
+        chisel->draw_angle -= 180;
+    }
 
     RenderTextureColorMod(chisel->texture, 255, 255, 255);
 
@@ -793,7 +806,7 @@ static void chisel_draw(int target, Chisel *chisel) {
                             chisel->texture,
                             null,
                             &dst,
-                            180+chisel->angle,
+                            180+chisel->draw_angle,
                             &center,
                             SDL_FLIP_NONE);
 
