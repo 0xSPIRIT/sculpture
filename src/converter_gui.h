@@ -2,6 +2,8 @@ typedef struct Conversions {
     bool active;
     f64 y, y_to;
     
+    Button button;
+    
     int timer;
     
     int override_indices[32];

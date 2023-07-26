@@ -121,15 +121,15 @@ static void tooltip_draw(int output_target, Tooltip *tooltip) {
     
     // Clamp the tooltips if it goes outside the window.
 #if CLAMP_TOOLTIP
-    if (tooltip->x*gs->S + highest_w + margin*2 >= gs->S*gs->gw) {
-        int dx = (tooltip->x*gs->S + highest_w + margin*2) - gs->S*gs->gw;
+    if (tooltip->x*gs->S + highest_w + margin*2 >= gs->game_width) {
+        int dx = (tooltip->x*gs->S + highest_w + margin*2) - gs->game_width;
         tooltip->x -= dx/gs->S;
         for (int i = 0; i < line_count; i++)
             dsts[i].x -= dx;
         clamped_x = true;
     }
-    if (tooltip->y*gs->S + cum_height + margin*2 >= gs->S*gs->gh) {
-        int dy = (tooltip->y*gs->S + cum_height) - gs->S*gs->gh + margin*2;
+    if (tooltip->y*gs->S + cum_height + margin*2 >= gs->game_width) {
+        int dy = (tooltip->y*gs->S + cum_height) - gs->game_width + margin*2;
         tooltip->y -= dy/gs->S;
         for (int i = 0; i < line_count; i++)
             dsts[i].y -= dy;

@@ -274,6 +274,35 @@ bool can_conversions_gui_be_active(void) {
     return gs->level_current+1 >= 4;
 }
 
+void gui_converter_toggle(void) {
+    gs->conversions.active = !gs->conversions.active;
+    tooltip_reset(&gs->gui.tooltip);
+}
+
+void converter_gui_draw_button(int target) {
+    Button *b = &gs->conversions.button;
+    
+    if (gs->gui.popup_inventory_y <= 0) return;
+    if (!can_conversions_gui_be_active()) return;
+    
+    b->index = -1;
+    b->w = ITEM_SIZE;
+    b->h = ITEM_SIZE;
+    b->x = gs->game_width - b->w*2;
+    b->y = gs->gui.popup_inventory_y - b->h/2 - GUI_H/2;
+    b->texture = &GetTexture(TEXTURE_RECIPE_BOOK_BUTTON);
+    strcpy(b->tooltip_text, "Recipe Book");
+    b->active = true;
+    b->on_pressed = null;
+    
+    bool pressed = button_tick(b, null);
+    button_draw(target, b);
+    
+    if (pressed) {
+        gui_converter_toggle();
+    }
+}
+
 void converter_gui_draw(int final_target) {
     int target = RENDER_TARGET_CONVERSION_PANEL;
     
@@ -286,11 +315,13 @@ void converter_gui_draw(int final_target) {
     RenderColor(0,0,0,175);
     RenderClear(target);
     
-    if (gs->input.keys_pressed[SDL_SCANCODE_I] && can_conversions_gui_be_active()) {
-        gs->conversions.active = !gs->conversions.active;
-    }
-    
     if (!gs->conversions.active) return;
+    
+    if (gs->input.keys[SDL_SCANCODE_ESCAPE]) {
+        gui_converter_toggle();
+        gs->input.keys[SDL_SCANCODE_ESCAPE] = 0; // eat the input
+        return;
+    }
     
     gs->conversions.max_height = Scale(2400);
     

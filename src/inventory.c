@@ -395,14 +395,10 @@ static void inventory_tick() {
     if (gs->conversions.active) return;
     
     if (gs->level_current == 6-1 && !gs->did_fuel_converter_tutorial) {
-        Tutorial_Rect *next = tutorial_rect(TUTORIAL_TEXT_FILE_STRING,
-                                            -1,
-                                            -1,
-                                            null);
         gs->tutorial = *tutorial_rect(TUTORIAL_FUEL_CONVERTER_STRING,
                                       -1,
                                       -1,
-                                      next);
+                                      null);
         gs->did_fuel_converter_tutorial = true;
     }
     if (gs->level_current == 4-1 && !gs->did_inventory_tutorial) {

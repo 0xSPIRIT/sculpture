@@ -222,10 +222,6 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                     placer->rect.y = -1;
                     placer->rect.w = 0;
                     placer->rect.h = 0;
-                } else {
-#ifndef ALASKA_RELEASE_MODE
-                    is_running = false;
-#endif
                 }
                 break;
             }

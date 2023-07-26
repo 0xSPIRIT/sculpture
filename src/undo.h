@@ -1,4 +1,4 @@
-#define MAX_UNDO 4096
+#define MAX_UNDO 16384
 
 typedef struct {
     Uint8 type;

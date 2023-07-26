@@ -389,6 +389,10 @@ static void gui_init(void) {
 }
 
 static void gui_popup_toggle(void) {
+    if (gs->item_holding.type != 0) {
+        return;
+    }
+    
     GUI *gui = &gs->gui;
     gui->popup = !gui->popup;
     gui->popup_y_vel = 0;
@@ -404,6 +408,10 @@ static void gui_tick(void) {
     Input *input = &gs->input;
     
     tool_button_set_disabled(gs->level_current);
+    
+    if (!gs->conversions.active && gs->gui.popup && gs->input.keys[SDL_SCANCODE_ESCAPE]) {
+        gui_popup_toggle();
+    }
     
     if (input->keys_pressed[SDL_SCANCODE_TAB] &&
         gs->levels[gs->level_current].state == LEVEL_STATE_PLAY &&
@@ -673,6 +681,7 @@ static void gui_popup_draw(int target) {
     all_converters_draw(target);
     inventory_draw(target);
     converter_gui_draw(target);
+    converter_gui_draw_button(target);
 }
 
 static bool is_cell_stone(int type) {

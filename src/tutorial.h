@@ -88,12 +88,6 @@
     "You may use RIGHT CLICK to split an amount of\n"\
     "material in two.\n" \
 
-#define TUTORIAL_TEXT_FILE_STRING \
-    "Tutorial\n" \
-    "--------\n\n" \
-    "To get a full list of converter, press I to toggle the\n" \
-    "conversion recipe book.\n"\
-
 #define TUTORIAL_RECTANGLE_PLACE \
     "Tutorial\n" \
     "--------\n\n" \
