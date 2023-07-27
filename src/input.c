@@ -14,61 +14,61 @@ static void input_tick_mouse_pressed(Input *in) {
         in->mouse_released[i] =
             !(in->mouse & SDL_BUTTON(i)) && (in->mouse_previous & SDL_BUTTON(i));
     }
-    
+
     in->mouse_previous = in->mouse;
 }
 
 static void input_tick_simulated(Game_State *state) {
     Input *in = &state->input;
-    
+
     in->s_pmx = in->s_mx;
     in->s_pmy = in->s_my;
     in->mouse = (Uint32) SDL_GetMouseState(&in->s_mx, &in->s_my);
-    
+
     int dx = in->s_mx - in->s_pmx;
     int dy = in->s_my - in->s_pmy;
-    
+
     in->real_mx += dx;
     in->real_my += dy;
-    
+
     in->mx = (in->real_mx+state->render.view.x)/state->S;
     in->my = (in->real_my+state->render.view.y)/state->S;
-    
+
     // Hardcode
     if (gs->gw == 128) {
         in->mx += 32;
     }
-    
+
     in->my -= GUI_H/state->S;
-    
+
     input_tick_mouse_pressed(in);
     input_tick_keys_pressed(in);
 }
 
 static void input_tick_normal(Game_State *state) {
     Input *in = &state->input;
-    
+
     in->pmx = in->mx;
     in->pmy = in->my;
-    
+
     in->real_pmx = in->real_mx;
     in->real_pmy = in->real_my;
-    
+
     in->mouse = (Uint32) SDL_GetMouseState(&in->real_mx, &in->real_my);
-    
+
     in->real_mx -= gs->real_width/2 - gs->game_width/2;
     in->real_my -= gs->real_height/2 - gs->game_height/2;
-    
+
     in->mx = (in->real_mx+state->render.view.x)/state->S;
     in->my = (in->real_my+state->render.view.y)/state->S;
-    
+
     // Hardcode
     if (gs->gw == 128) {
         in->mx += 32;
     }
-    
+
     in->my -= GUI_H/state->S;
-    
+
     input_tick_mouse_pressed(in);
     input_tick_keys_pressed(in);
 }

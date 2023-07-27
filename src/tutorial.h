@@ -73,7 +73,8 @@
 #define TUTORIAL_PLACER_F_KEYS \
     "Tutorial\n" \
     "--------\n\n" \
-    "- Use F1-F5 to switch to a different Placer slot.\n"
+    "- Use the F1-F5 keys to switch to a\n" \
+    "  different Placer slot.\n"
 
 #define TUTORIAL_INVENTORY_STRING \
     "Tutorial\n" \
@@ -116,8 +117,5 @@ typedef struct Tutorial_Rect {
     struct Tutorial_Rect *next;
 } Tutorial_Rect;
 
-static Tutorial_Rect* tutorial_rect(const char *str,
-                             f64 x,
-                             f64 y,
-                             Tutorial_Rect *next);
+static Tutorial_Rect* tutorial_rect(const char *str, Tutorial_Rect *next);
 static void tutorial_rect_close(void*);

@@ -61,11 +61,11 @@ static void tooltip_set_alpha(Tooltip *tooltip) {
         tooltip->alpha = tooltip->to_alpha = 255;
         tooltip->alpha_hang_timer = 0;
     }
-    
+
     if (tooltip->alpha_hang_timer) {
         tooltip->alpha_hang_timer--;
     }
-    
+
     if (tooltip->alpha_hang_timer == 0) {
         tooltip->alpha = lerp_no_error(tooltip->alpha, tooltip->to_alpha, 0.05f, 5);
     }
@@ -73,52 +73,52 @@ static void tooltip_set_alpha(Tooltip *tooltip) {
 
 static void tooltip_draw(int output_target, Tooltip *tooltip) {
     int target = RENDER_TARGET_TOOLTIP;
-    
+
     RenderColor(0, 0, 0, 0);
     RenderClear(target);
-    
+
     if (tooltip->x == -1 || tooltip->y == -1) return;
-    
+
     int margin = 8; // In real pixels.
-    
+
     int line_count = 0;
     SDL_Rect dsts[MAX_TOOLTIP_LINE_LEN]; // Destination rectangles
-    
+
     int highest_w = 0;
     int cum_height = 0; // Cumulative height
-    
+
     for (int i = 0; i < MAX_TOOLTIP_LINE_LEN; i++) {
         if (tooltip->str[i][0] == 0) continue;
-        
+
         line_count++;
-        
+
         int w, h;
         TTF_SizeText(gs->fonts.font->handle, tooltip->str[i], &w, &h);
-        
+
         dsts[i] = (SDL_Rect){
             (int) (gs->S * tooltip->x + margin),
             GUI_H + (int) (cum_height + gs->S * tooltip->y + margin),
             w,
             h
         };
-        
+
         cum_height += h;
-        
+
         if (w > highest_w) {
             highest_w = w;
         }
     }
-    
+
     int preview_scale = Scale(5);
     int old_h = cum_height;
-    
+
     if (tooltip->preview) {
         cum_height += 64*preview_scale+margin*2;
         if (preview_scale*64 > highest_w) highest_w = preview_scale*64;
     }
-    
+
     bool clamped_x = false, clamped_y = false;
-    
+
     // Clamp the tooltips if it goes outside the window.
 #if CLAMP_TOOLTIP
     if (tooltip->x*gs->S + highest_w + margin*2 >= gs->game_width) {
@@ -136,12 +136,12 @@ static void tooltip_draw(int output_target, Tooltip *tooltip) {
         clamped_y = true;
     }
 #endif
-    
+
     tooltip_draw_box(target,
                      tooltip,
                      highest_w + margin*2,
                      cum_height + margin*2);
-    
+
     if (tooltip->preview) {
         preview_draw(target,
                      tooltip->preview,
@@ -151,26 +151,26 @@ static void tooltip_draw(int output_target, Tooltip *tooltip) {
                      false,
                      false);
     }
-    
+
     if (clamped_x) {
         tooltip->x += highest_w;
     }
     if (clamped_y) {
         tooltip->y += cum_height;
     }
-    
+
     for (int i = 0; i < line_count; i++) {
         char identifier[64] = {0};
         sprintf(identifier, "tooltip %d", i);
-        
+
         SDL_Color text_color;
-        
+
         if (i == 0) {
             text_color = (SDL_Color){200,200,200,255};
         } else {
             text_color = WHITE;
         }
-        
+
         RenderTextQuick(target,
                         identifier,
                         gs->fonts.font,
@@ -183,10 +183,10 @@ static void tooltip_draw(int output_target, Tooltip *tooltip) {
                         null,
                         false);
     }
-    
+
     if (gs->current_tool == TOOL_PLACER && !gs->gui.popup && !gs->conversions.active)
         tooltip_set_alpha(tooltip);
-    
+
     SDL_Rect src = {
         0,
         0,

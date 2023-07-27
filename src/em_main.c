@@ -32,10 +32,10 @@ static void fail(int code) {
 
 static void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
     bool ok = true;
-    
+
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
     if (!ok) fail(1);
-    
+
     ok = (Mix_Init(MIX_INIT_OGG) != 0);
     if (!ok) fail(2);
 
@@ -49,7 +49,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
 
     ok = (IMG_Init(IMG_INIT_PNG) != 0);
     if (!ok) fail(4);
-    
+
     ok = (TTF_Init() == 0);
     if (!ok) fail(5);
 

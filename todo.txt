@@ -1,19 +1,20 @@
 # TODO
 
   - Playtest Fixes
-     x Make the chisel rotations lerped
-     - Make the rain & snow be able to be picked up
-     x Make escape exit the inv menu, and the I menu
-     - Add F1 F2 F3 F4 F5 to the inventory slots
-     x Make the tooltips clamp to the edge of the screen when hovering over cells
      - Test the undo in the conversions popup... It should be fine but we never tested it thoroughly.
-     x Bug with the tooltip persisting after you close the I menu
-     x You can close the menu if you're still holding something.
      - Include the conversion speed somewhere in the menu
      - Does deleting items undo properly? never tested it
      - Make diamond shine
+
+     x Add F1 F2 F3 F4 F5 to the inventory slots
+     x Make the chisel rotations lerped
+     x Make the rain & snow be able to be picked up
+     x Make escape exit the inv menu, and the I menu
+     x Make the tooltips clamp to the edge of the screen when hovering over cells
+     x Bug with the tooltip persisting after you close the I menu
+     x You can close the menu if you're still holding something.
      x Change "demeanor" in level 11 narration
-     - Saving and loading
+     x Saving and loading
 
   - Music
      - Ambient: piano, pads/synths, motifs?

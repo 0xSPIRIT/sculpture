@@ -15,8 +15,11 @@ typedef struct Effect {
     Effect_Type type;
     Effect_Particle *particles;
     int particle_count;
-
+    
     bool high_fidelity;
-
+    
     SDL_Rect bounds;
 } Effect;
+
+static Cell_Type effect_picked_up(Effect *effect);
+static void effect_handle_placer(Effect *effect, int x, int y, int r);

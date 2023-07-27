@@ -48,14 +48,14 @@
 
 #define ALASKA_START_FULLSCREEN 0
 
-typedef void (*GameInitProc)(Game_State *state, int start_level);
+typedef void (*GameInitProc)(Game_State *state);
 typedef bool (*GameTickEventProc)(Game_State *state, SDL_Event *event);
 typedef void (*GameRunProc)(Game_State *state);
 
 typedef struct Game_Code {
     HMODULE dll;
     FILETIME last_write_time;
-    
+
     GameInitProc game_init;
     GameTickEventProc game_tick_event;
     GameRunProc game_run;
@@ -74,21 +74,21 @@ static void fail(int code) {
 
 static void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
     bool ok = true;
-    
+
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
     if (!ok) fail(1);
-    
+
     ok = (Mix_Init(MIX_INIT_OGG) != 0);
     if (!ok) fail(2);
-    
+
     int x = 200;
     int y = 125;
-    
+
 #ifdef ALASKA_RELEASE_MODE
     x = SDL_WINDOWPOS_CENTERED;
     y = SDL_WINDOWPOS_CENTERED;
 #endif
-    
+
     state->window = SDL_CreateWindow(window_title,
                                      x,
                                      y,
@@ -96,35 +96,35 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
                                      h,
                                      SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (!state->window) fail(3);
-    
+
     SDL_Surface *window_icon = RenderLoadSurface("icon.png");
     SDL_SetWindowIcon(state->window, window_icon);
-    
+
     SDL_FreeSurface(window_icon);
-    
+
     ok = (IMG_Init(IMG_INIT_PNG) != 0);
     if (!ok) fail(4);
-    
+
     ok = (TTF_Init() == 0);
     if (!ok) fail(5);
-    
+
     ok = (Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0);
     if (!ok) fail(6);
-    
+
     int flags = 0;
     if (use_software_renderer) {
         flags = SDL_RENDERER_SOFTWARE;
     } else {
         flags = SDL_RENDERER_ACCELERATED;
     }
-    
+
     flags |= SDL_RENDERER_PRESENTVSYNC;
-    
+
     state->renderer = SDL_CreateRenderer(state->window, -1, flags);
     if (!state->renderer) fail(7);
-    
+
     state->render = RenderInit(state->renderer);
-    
+
     if (state->fullscreen) {
         SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
@@ -133,22 +133,22 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
 static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_memory) {
     persistent_memory->size = Megabytes(512);
     transient_memory->size = Megabytes(8);
-    
+
     Assert(persistent_memory->size >= sizeof(Game_State));
-    
+
     void *base_address = 0;
 #ifndef ALASKA_RELEASE_MODE
-    base_address = (void*)Terabytes(2); 
+    base_address = (void*)Terabytes(2);
 #endif
-    
+
     persistent_memory->data = VirtualAlloc(base_address,
                                            persistent_memory->size + transient_memory->size,
                                            MEM_COMMIT | MEM_RESERVE,
                                            PAGE_READWRITE);
     if (!persistent_memory->data) fail(10);
-    
+
     persistent_memory->cursor = persistent_memory->data;
-    
+
     // Set the transient memory as an offset into persistent memory.
     transient_memory->data = persistent_memory->data + persistent_memory->size;
     transient_memory->cursor = transient_memory->data;
@@ -160,10 +160,10 @@ static f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     GetWindowRect(hDesktop, &desktop);
     int w = desktop.right;
     int h = desktop.bottom;
-    
+
     if (dw) *dw=w;
     if (dh) *dh=h;
-    
+
     if (fullscreen) {
         return h/72.0;
         //return (int)round(7.0 * h/1080.0);
@@ -178,31 +178,31 @@ static bool prefix(const char *pre, const char *str) {
 
 static void win32_game_init(Game_State *state) {
     srand((unsigned int) time(0));
-    
+
     if (state->S == 0)
         state->S = calculate_scale(false, &state->desktop_w, &state->desktop_h);
-    
+
     state->game_width = (int)(64*state->S);
     state->game_height = (int)(64*state->S + GUI_H);
-    
+
     state->real_width = state->game_width;
     state->real_height = state->game_height;
-    
+
     game_init_sdl(state,
                   "Alaska",
                   state->game_width,
                   state->game_height,
                   state->use_software_renderer);
-    
+
     // Load all assets... except for render targets.
     // We can't create render targets until levels
     // are initialized.
     audio_init(&state->audio);
     textures_init(&state->textures);
-    surfaces_init(&state->surfaces); 
-    
+    surfaces_init(&state->surfaces);
+
     SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
-    
+
     fonts_init(&state->fonts);
 }
 
@@ -210,30 +210,30 @@ static void game_deinit(Game_State *state) {
     RenderCleanup(&state->render);
     fonts_deinit(&state->fonts);
     audio_deinit(&state->audio);
-    
+
     SDL_Quit();
 }
 
 static FILETIME get_last_write_time(char *filename) {
     FILETIME result = {0};
     WIN32_FILE_ATTRIBUTE_DATA data;
-    
+
     if (GetFileAttributesExA(filename, GetFileExInfoStandard, &data)) {
         result = data.ftLastWriteTime;
     }
-    
+
     return result;
 }
 
 static void load_game_code(Game_Code *code) {
     code->last_write_time = get_last_write_time(GAME_DLL_NAME);
-    
+
     // Copy File may fail the first few times ..?
     int copy_counter = 0;
     while (true) {
         copy_counter++;
         Assert(copy_counter <= 10);
-        
+
         if (CopyFileA(GAME_DLL_NAME, TEMP_DLL_NAME, FALSE)) {
             break;
         }
@@ -241,20 +241,20 @@ static void load_game_code(Game_Code *code) {
             break;
         }
     }
-    
+
     code->dll = LoadLibraryA(TEMP_DLL_NAME);
     if (!code->dll) {
         Error("Error loading the DLL!\n");
         exit(1);
     }
-    
+
     code->game_init = (GameInitProc)
         GetProcAddress(code->dll, "game_init");
     code->game_tick_event = (GameTickEventProc)
         GetProcAddress(code->dll, "game_tick_event");
     code->game_run = (GameRunProc)
         GetProcAddress(code->dll, "game_run");
-    
+
     if (!code->game_run || !code->game_tick_event || !code->game_run) {
         Error("Error finding the functions in the DLL!\n");
         exit(1);
@@ -266,7 +266,7 @@ static void reload_game_code(Game_Code *code) {
     if (GetFileAttributesExA(LOCK_NAME, GetFileExInfoStandard, &ignored)) {
         return;
     }
-    
+
     if (code->dll) {
         FreeLibrary(code->dll);
         code->game_init = 0;
@@ -274,7 +274,7 @@ static void reload_game_code(Game_Code *code) {
         code->game_tick_event = 0;
         code->dll = 0;
     }
-    
+
     load_game_code(code);
 }
 
@@ -304,14 +304,14 @@ inline bool win32_SetProcessDpiAware(void) {
     if (user32) {
         SetProcessDPIAware = (SETPROCESSDPIAWARE_T) GetProcAddress(user32, "SetProcessDPIAware");
     }
-    
+
     bool ret = false;
     if (SetProcessDpiAwareness) {
         ret = SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE) == S_OK;
     } else if (SetProcessDPIAware) {
         ret = SetProcessDPIAware() != 0;
     }
-    
+
     if (user32) {
         FreeLibrary(user32);
     }
@@ -323,43 +323,33 @@ inline bool win32_SetProcessDpiAware(void) {
 
 int win32_main(int argc, char **argv) {
     win32_SetProcessDpiAware();
-    
+
 #ifndef ALASKA_RELEASE_MODE
     // Make sure we're running in the right folder.
     {
         char cwd[1024] = {0};
         size_t length = 0;
         char *final_three_chars = null;
-        
+
         GetCurrentDirectory(1024, cwd);
         length = strlen(cwd);
-        
+
         final_three_chars = cwd+length-3;
-        
+
         Assert(0 == strcmp(final_three_chars, "bin"));
     }
 #endif
-    
-    // The level to start on
-    int start_level = 0;
-#ifndef ALASKA_RELEASE_MODE
-    if (argc == 2) {
-        start_level = atoi(argv[1])-1;
-        if (start_level < 0) start_level = 0;
-        if (start_level >= 10) start_level = 9;
-    }
-#endif
-    
+
     f64 scale = 0;
-    
+
     int fullscreen = ALASKA_START_FULLSCREEN;
-    
+
     int dw=0, dh=0;
-    
+
     if (fullscreen) {
         scale = calculate_scale(true, &dw, &dh);
     }
-    
+
     bool use_software_renderer = false;
     if (argc > 1) {
         for (int i = 1; i < argc; i++) {
@@ -374,69 +364,69 @@ int win32_main(int argc, char **argv) {
             }
         }
     }
-    
+
 #ifndef ALASKA_RELEASE_MODE
     Game_Code game_code = {0};
     load_game_code(&game_code);
 #endif
-    
+
     Memory_Arena persistent_memory, transient_memory;
     make_memory_arena(&persistent_memory, &transient_memory);
-    
+
     gs = PushSize(&persistent_memory, sizeof(Game_State));
-    
+
     gs->desktop_w = dw;
     gs->desktop_h = dh;
-    
+
     gs->use_software_renderer = use_software_renderer;
     gs->S = scale;
-    
+
     gs->fullscreen = fullscreen;
-    
+
     gs->persistent_memory = &persistent_memory;
     gs->transient_memory = &transient_memory;
-    
+
     win32_game_init(gs);
-    
+
 #ifdef ALASKA_RELEASE_MODE
-    game_init(gs, start_level);
+    game_init(gs);
 #else
-    game_code.game_init(gs, start_level);
+    game_code.game_init(gs);
 #endif
-    
+
     // Only now, since the levels have been instantiated,
     // can we initialize render targets (since they depend
     // on each level's width/height)
-    
+
     render_targets_init();
-    
+
     bool running = true;
-    
+
     LARGE_INTEGER time_start, time_elapsed;
-    
+
     LARGE_INTEGER frequency;
     QueryPerformanceFrequency(&frequency);
     QueryPerformanceCounter(&time_start);
-    
+
     f64 time_passed = 0.0;
     int fps = 0, fps_draw = 0;
-    
+
     while (running) {
         LARGE_INTEGER time_elapsed_for_frame;
         QueryPerformanceCounter(&time_elapsed_for_frame);
-        
+
 #ifndef ALASKA_RELEASE_MODE
         FILETIME new_dll_write_time = get_last_write_time(GAME_DLL_NAME);
-        
+
         if (CompareFileTime(&new_dll_write_time, &game_code.last_write_time) != 0) {
             reload_game_code(&game_code);
         }
 #endif
-        
+
         input_tick(gs);
-        
+
         SDL_Event event;
-        
+
         gs->resized = false;
         while (SDL_PollEvent(&event)) {
 #ifndef ALASKA_RELEASE_MODE

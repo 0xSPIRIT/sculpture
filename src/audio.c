@@ -11,17 +11,17 @@ void audio_play_music(Mix_Music *music) {
 
 void audio_set_ambience_accordingly(void) {
     Level *level = &gs->levels[gs->level_current];
-    
+
     if (level->state == LEVEL_STATE_INTRO) {
         audio_set_ambience(0);
         return;
     }
-    
+
     if (level->state == LEVEL_STATE_NARRATION || level->effect_type == EFFECT_SNOW || level->effect_type == EFFECT_NONE) {
         audio_set_ambience(AMBIENCE_NORMAL);
         return;
     }
-    
+
     if (level->effect_type == EFFECT_RAIN) {
         audio_set_ambience(AMBIENCE_RAIN);
     }
@@ -43,13 +43,13 @@ void audio_set_ambience(int ambience) {
         }
         gs->audio_handler.ambience = ambience;
     }
-    
+
     audio_set_ambience_levels();
 }
 
 void audio_set_ambience_levels(void) {
     f64 volume = 0;
-    
+
     switch (gs->audio_handler.ambience) {
         case AMBIENCE_NONE: { } break;
         case AMBIENCE_NORMAL: {
@@ -59,14 +59,14 @@ void audio_set_ambience_levels(void) {
             volume = AUDIO_AMBIENCE_RAIN_VOLUME;
         } break;
     }
-    
+
     int level_state = gs->levels[gs->level_current].state;
     if (gs->gui.popup || level_state == LEVEL_STATE_OUTRO) {
         volume /= 2;
     }
-    
+
     gs->audio_handler.ambience_volume_to = volume;
-    
+
     gs->audio_handler.ambience_volume = interpolate(gs->audio_handler.ambience_volume,
                                                     gs->audio_handler.ambience_volume_to,
                                                     0.5);

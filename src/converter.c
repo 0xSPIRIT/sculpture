@@ -146,7 +146,7 @@ static void converter_draw(int target, Converter *converter) {
                     null,
                     null,
                     false);
-    
+
     button_draw(target, converter->go_button);
 }
 
@@ -677,7 +677,7 @@ static void converter_tick(Converter *converter) {
 static void all_converters_tick(void) {
     // Grey out the buttons for each converter
     // if no converter are possible right now.
-    
+
     if (0 == material_converter_convert(&gs->material_converter->slots[SLOT_INPUT1].item,
                                         &gs->material_converter->slots[SLOT_INPUT2].item,
                                         &gs->material_converter->slots[SLOT_FUEL].item)) {

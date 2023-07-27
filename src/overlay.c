@@ -100,7 +100,7 @@ static void overlay_init(void) {
 
     overlay->tool = OVERLAY_TOOL_BRUSH;
     overlay->temp = false;
-    
+
     overlay->alpha_coefficient = OVERLAY_ALPHA_1;
 
     if (overlay->grid == null) {
@@ -427,7 +427,7 @@ static void overlay_draw_grid(int target, int *grid, f32 alpha_coeff) {
             Uint8 a = alpha;
 
             int t = grid[x+y*gs->gw];
-            
+
             SDL_Color c = {
                 type_to_outline_color[t*4+1],
                 type_to_outline_color[t*4+2],

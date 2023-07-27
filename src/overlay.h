@@ -27,13 +27,13 @@ typedef struct Overlay {
     int *grid;
     int *temp_grid;
     enum Overlay_Tool tool;
-    
+
     bool temp;
 
     int current_material;
 
     Overlay_Changes changes;
-    
+
     f32 alpha_coefficient;
 
     SDL_Rect r;

@@ -85,9 +85,9 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_KNIFE)      = RenderLoadTexture("knife.png");
     GetTexture(TEXTURE_POPUP)      = RenderLoadTexture("popup.png");
     GetTexture(TEXTURE_TEXT_ARROW) = RenderLoadTexture("text_arrow.png");
-    
+
     GetTexture(TEXTURE_PLANK) = RenderLoadTexture("plank.png");
-    
+
     GetTexture(TEXTURE_W_KEY) = RenderLoadTexture("buttons/W.png");
     GetTexture(TEXTURE_A_KEY) = RenderLoadTexture("buttons/A.png");
     GetTexture(TEXTURE_S_KEY) = RenderLoadTexture("buttons/S.png");
@@ -197,14 +197,14 @@ static void audio_init(Audio *audio) {
     }
     audio->small_chisel = Mix_LoadWAV(RES_DIR "audio/small_chisel.wav");
     audio->large_chisel = Mix_LoadWAV(RES_DIR "audio/large_chisel.wav");
-    
+
     for (int i = 0; i < sizeof(audio->ice_chisel)/sizeof(Mix_Chunk*); i++) {
         char name[64];
         sprintf(name, RES_DIR "audio/ice_chisel_%d.wav", i+1);
         audio->ice_chisel[i] = Mix_LoadWAV(name);
         Assert(audio->ice_chisel[i]);
     }
-    
+
     for (int i = 0; i < sizeof(audio->glass_chisel)/sizeof(Mix_Chunk*); i++) {
         char name[64];
         sprintf(name, RES_DIR "audio/glass_%d.wav", i+1);

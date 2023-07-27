@@ -64,8 +64,8 @@ typedef struct Audio {
     Mix_Music *music_creation;
     Mix_Music *music_rain;
     Mix_Music *ambience1;
-    
-    // Chunks 
+
+    // Chunks
     Mix_Chunk *sprinkle, *macabre;
     Mix_Chunk *accept;
     Mix_Chunk *pip;

@@ -300,27 +300,27 @@ RENDERAPI void RenderArrowRelative(int target_enum, SDL_Point from, SDL_Point to
 
 RENDERAPI void RenderArrow(int target_enum, SDL_Point from, SDL_Point to, int head_size) {
     RenderLine(target_enum, from.x, from.y, to.x, to.y);
-    
+
     f64 ux = to.x - from.x;
     f64 uy = to.y - from.y;
     f64 length = sqrt(ux*ux + uy*uy);
     if (length == 0) return;
-    
+
     ux /= length;
     uy /= length;
-    
+
     // Rotate by 135 degrees.
     const f64 angle = Radians(135);
-    
+
     f64 arrow_x = ux * cos(angle) - uy * sin(angle);
     f64 arrow_y = ux * sin(angle) + uy * cos(angle);
-    
+
     arrow_x *= head_size;
     arrow_y *= head_size;
-    
+
     arrow_x = round(arrow_x);
     arrow_y = round(arrow_y);
-    
+
     RenderLine(target_enum, to.x, to.y, to.x + arrow_x, to.y + arrow_y);
     RenderLine(target_enum, to.x, to.y, to.x - arrow_y, to.y + arrow_x); // Rotate by 90 degrees
 }
@@ -500,7 +500,7 @@ RENDERAPI void RenderTextQuick(int target_enum,
                                bool force_redraw)
 {
     Render_Text_Data text_data = {0};
-    
+
     strcpy(text_data.identifier, identifier);
     text_data.font = font;
     strcpy(text_data.str, str);
@@ -705,12 +705,12 @@ RENDERAPI void RenderUnlockTexture(Texture *texture) {
 // Method 3
 RENDERAPI void RenderFillCircle(int target, int x, int y, int r) {
     RenderMaybeSwitchToTarget(target);
-    
+
     int r2 = r * r;
     for (int cy = -r; cy <= r; cy++) {
         int cx = (int)(sqrt(r2 - cy * cy) + 0.5);
         int cyy = cy + y;
-        
+
         SDL_RenderDrawLine(gs->render.sdl, x - cx, cyy, x + cx, cyy);
     }
 }
@@ -719,14 +719,14 @@ RENDERAPI void RenderFillCircle(int target, int x, int y, int r) {
 // Method 1
 RENDERAPI void RenderFillCircle(int target, int center_x, int center_y, int radius) {
     RenderMaybeSwitchToTarget(target);
-    
+
     int radius_sqr = radius*radius;
-    
+
     for (int x = -radius; x < radius ; x++) {
         int hh = (int)sqrt(radius_sqr - x * x);
         int rx = center_x + x;
         int ph = center_y + hh;
-        
+
         for (int y = center_y-hh; y < ph; y++)
             SDL_RenderDrawPoint(gs->render.sdl, rx, y);
     }
@@ -735,15 +735,15 @@ RENDERAPI void RenderFillCircle(int target, int center_x, int center_y, int radi
 // Method 2
 RENDERAPI void RenderFillCircle(int target, int center_x, int center_y, int radius) {
     RenderMaybeSwitchToTarget(target);
-    
+
     int r2 = radius * radius;
     int area = r2 << 2;
     int rr = radius << 1;
-    
+
     for (int i = 0; i < area; i++) {
         int tx = (i % rr) - radius;
         int ty = (i / rr) - radius;
-        
+
         if (tx * tx + ty * ty <= r2)
             SDL_RenderDrawPoint(gs->render.sdl, center_x + tx, center_y + ty);
     }

@@ -10,7 +10,7 @@ typedef struct Tooltip {
     f32 x, y;
     char str[MAX_TOOLTIP_LEN][MAX_TOOLTIP_LINE_LEN];
     int w, h;
-    
+
     f32 alpha, to_alpha;
     int alpha_hang_timer;
 

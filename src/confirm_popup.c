@@ -15,7 +15,7 @@ static void end_of_level_popup_confirm_run(int target) {
 
 
     if (!popup->active) return;
-    
+
     bool next_level = can_goto_next_level();
 
     Popup_Confirm_Run_Data run_data = {0};
@@ -26,7 +26,7 @@ static void end_of_level_popup_confirm_run(int target) {
         popup->a->disabled = false;
         popup->a->texture = &GetTexture(TEXTURE_CONFIRM_BUTTON);
     }
-    
+
     popup->b->disabled = false;
 
     popup_confirm_base_tick_and_draw(&run_data, target, popup);
@@ -109,7 +109,7 @@ static void end_of_level_popup_confirm_cancel(void *unused) {
 void restart_popup_confirm_run(int target) {
     Popup_Confirm *popup = &gs->gui.restart_popup_confirm;
     if (!popup->active) return;
-    
+
     Popup_Confirm_Run_Data run_data = {0};
     popup_confirm_base_tick_and_draw(&run_data, target, popup);
 }
@@ -161,14 +161,14 @@ static void popup_confirm_activate(Popup_Confirm *popup) {
 // You must call this in your own update callback.
 static void popup_confirm_base_tick_and_draw(Popup_Confirm_Run_Data *data, int target, Popup_Confirm *popup) {
     if (!popup->active) return;
-    
+
     popup->r = (SDL_Rect){
         gs->game_width/6,
         gs->game_height/3,
         2*gs->game_width/3,
         gs->game_height/4
     };
-    
+
     RenderColor(0, 0, 0, 255);
     RenderFillRect(target, popup->r);
 
@@ -209,7 +209,7 @@ static void popup_confirm_base_tick_and_draw(Popup_Confirm_Run_Data *data, int t
                     null,
                     null,
                     false);
-    
+
     col = (SDL_Color){255, 255, 255, 255};
     RenderTextQuick(target,
                     "sdfsdf",

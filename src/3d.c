@@ -94,25 +94,25 @@ static void object_activate(Object3D *obj) {
     gs->obj.z = 1;
     gs->obj.yrot = 0;
     gs->obj.active = true;
-    
+
     Mix_HaltMusic();
 
     SDL_Texture *prev = SDL_GetRenderTarget(gs->render.sdl);
 
     const int target = RENDER_TARGET_GRID;
-    
+
     SDL_ShowCursor(SDL_DISABLE);
-    
+
     RenderColor(0, 0, 0, 255);
     RenderClear(target);
-    
+
     grid_array_draw(target, gs->grid, 255);
-    
+
     SDL_Rect rect = {
         32, 0,
         64, 64
     };
-    
+
     void *pixels = PushArray(gs->transient_memory, gs->gh*gs->gh, 4); // sizeof(Uint32)
     SDL_RenderReadPixels(gs->renderer, &rect, ALASKA_PIXELFORMAT, pixels, gs->gh*4);
 
@@ -173,7 +173,7 @@ static void object_draw(Object3D *obj) {
     f64 dy = 0.0002;
 
     f64 speed = 1.5f;
-    
+
     static f64 increasing = 0.0f;
 
     switch (obj->state) {

@@ -18,14 +18,14 @@ typedef struct Chisel {
     Chisel_State state;
     Chisel_Size size;
     int x, y;
-    
+
     f64 draw_x, draw_y;
-    
+
     int temp_idx;
 
     int click_delay;
     bool repeated;
-    
+
     int lookahead;
     bool is_calculating_highlight;
 
@@ -36,7 +36,7 @@ typedef struct Chisel {
 
     f64 angle, prev_angle, draw_angle;
     Texture *texture;
-    
+
     f64 rotating_flash;
 
     int did_chisel_this_frame;

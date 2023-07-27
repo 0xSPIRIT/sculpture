@@ -19,7 +19,7 @@ static void background_draw(int target, Background *bg) {
     rcoeff = NormalSine(bg->time);
     gcoeff = NormalSine(bg->time+M_PI);
     bcoeff = NormalSine(bg->time+M_PI/2);
-    
+
 #if 0
     for (int i = 0; i < w*h; i++) {
         f64 r, g, b;

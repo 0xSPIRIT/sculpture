@@ -8,23 +8,23 @@ static void preview_start_recording(Preview *p, const char *name) {
 static void preview_finish_recording(Preview *p) {
     char filename[64] = {0};
     sprintf(filename, RES_DIR "previews/%s", p->name);
-    
+
     FILE *fp = fopen(filename, "wb");
     Assert(fp);
-    
+
     fprintf(fp, "%d\n", p->length);
     fwrite((const void*)gs->overlay.grid,
            sizeof(int),
            PREVIEW_GRID_SIZE,
            fp);
-    
+
     fwrite((const void*)p->states,
            sizeof(Preview_State),
            p->length,
            fp);
-    
+
     fclose(fp);
-    
+
     p->recording = false;
     p->play = true;
 }
@@ -32,10 +32,10 @@ static void preview_finish_recording(Preview *p) {
 static void preview_load(Preview *p, const char *file) {
     FILE *fp = fopen(file, "rb");
     Assert(fp);
-    
+
     memset(p, 0, sizeof(Preview));
     p->recording = false;
-    
+
     fscanf(fp, "%d\n", &p->length);
     fread(p->overlay,
           sizeof(int),
@@ -45,7 +45,7 @@ static void preview_load(Preview *p, const char *file) {
           sizeof(Preview_State),
           p->length,
           fp);
-    
+
     fclose(fp);
 }
 
@@ -65,19 +65,19 @@ static void preview_record(Preview *p) {
         preview_finish_recording(p);
         return;
     }
-    
+
     Preview_State *state = &p->states[p->length];
-    
+
     state->tool = gs->current_tool;
-    
+
     const int w = 64;
     const int h = 64;
-    
+
     for (int i = 0; i < w*h; i++) {
         int index = 32 + (i%w) + (i/w)*gs->gw;
         state->grid[i] = (Uint8)gs->grid[index].type;
     }
-    
+
     switch (gs->current_tool) {
         case TOOL_PLACER: {
             Placer *placer = &gs->placers[gs->current_placer];
@@ -87,7 +87,7 @@ static void preview_record(Preview *p) {
                 state->data = 0xDEAD; // 0xDEAD represents an invalid rect.
             } else {
                 // placer->rect.x == placer->place_width
-                
+
                 state->data = placer->place_width; // Value represents the rect size.
                 // If you forgot, the placer's height can be calculated as:
                 //   height = width * placer->place_aspect;
@@ -101,21 +101,21 @@ static void preview_record(Preview *p) {
             break;
         }
     }
-    
+
     p->length++;
 }
 
 static SDL_Rect preview_draw(int final_target, Preview *p, int dx, int dy, int scale, bool alpha_background, bool dont_draw) {
     const int preview_w = 64;
     const int preview_h = 64;
-    
+
     const int target = RENDER_TARGET_PREVIEW;
-    
+
     Assert(preview_w * preview_h == PREVIEW_GRID_SIZE);
-    
+
     RenderColor(0,0,0,0);
     RenderClear(target);
-    
+
     for (int y = 0; y < preview_w; y++) {
         for (int x = 0; x < preview_h; x++) {
             if (alpha_background && !p->states[p->index].grid[x+y*preview_w]) {
@@ -126,38 +126,38 @@ static SDL_Rect preview_draw(int final_target, Preview *p, int dx, int dy, int s
                 SDL_Color col = pixel_from_index(p->states[p->index].grid[x+y*preview_w], x+y*preview_w);
                 RenderColor(col.r, col.g, col.b, 255); // 255 on this because desired_grid doesn't have depth set.
             }
-            
+
             RenderPoint(target, x, y);
         }
     }
-    
+
     for (int y = 0; y < preview_h; y++) {
         for (int x = 0; x < preview_w; x++) {
             int t = p->overlay[x+y*preview_w];
-            
+
             if (!t) continue;
-            
+
             RenderColor(255, 255, 255, 127);
             RenderPoint(target, x, y);
         }
     }
-    
+
     RenderColor(255, 255, 0, 255);
-    
+
     int tool = p->states[p->index].tool;
-    
+
     switch (tool) {
         case TOOL_PLACER: {
             int x = p->states[p->index].x;
             int y = p->states[p->index].y;
             bool is_rect = (p->states[p->index].data != 0xDEAD);
-            
+
             RenderColor(255, 255, 255, 64);
-            
+
             if (is_rect) {
                 int width = p->states[p->index].data;
                 int height = width * gs->placers[gs->current_placer].place_aspect;
-                
+
                 SDL_Rect rect = {
                     x-width/2,
                     y-height/2,
@@ -166,14 +166,14 @@ static SDL_Rect preview_draw(int final_target, Preview *p, int dx, int dy, int s
                 };
                 RenderDrawRect(target, rect);
             }
-            
+
             break;
         }
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
             int x = p->states[p->index].x;
             int y = p->states[p->index].y;
             int angle = p->states[p->index].data;
-            
+
             Chisel *chisel = null;
             if (tool == TOOL_CHISEL_SMALL)  chisel = &gs->chisel_small;
             if (tool == TOOL_CHISEL_MEDIUM) chisel = &gs->chisel_medium;
@@ -185,9 +185,9 @@ static SDL_Rect preview_draw(int final_target, Preview *p, int dx, int dy, int s
                 chisel->texture->width, chisel->texture->height
             };
             chisel_get_adjusted_positions(angle-180, tool, &dst.x, &dst.y);
-            
+
             SDL_Point center = { 0, chisel->texture->height/2 };
-            
+
             RenderTextureExRelative(target,
                                     chisel->texture,
                                     null,
@@ -198,28 +198,28 @@ static SDL_Rect preview_draw(int final_target, Preview *p, int dx, int dy, int s
 
             RenderColor(127, 127, 127, 255);
             RenderPoint(target, x, y);
-            
+
             break;
         }
     }
 
     p->index++;
     if (p->index >= p->length) p->index = 0;
-    
+
     SDL_Rect target_dst = {
         dx,
         dy+GUI_H,
         scale*PREVIEW_GRID_W,
         scale*PREVIEW_GRID_W
     };
-    
+
     if (dont_draw) return target_dst;
-    
+
     RenderTargetToTarget(final_target,
                          target,
                          null,
                          &target_dst);
-    
+
     return (SDL_Rect){0};
 }
 

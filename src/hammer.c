@@ -22,12 +22,12 @@ static bool chisel_click_repeatedly(Chisel *chisel) {
 
 static void hammer_tick(Hammer *hammer) {
     if (!is_tool_chisel()) return;
-    
+
     f64 dist = gs->chisel->texture->width;
-    
+
     hammer->x = gs->chisel->draw_x + dist;
     hammer->y = gs->chisel->draw_y;
-    
+
     if (gs->input.real_my > GUI_H &&
         !gs->tutorial.active &&
         !gs->gui.popup &&
@@ -63,7 +63,7 @@ static void hammer_tick(Hammer *hammer) {
         case HAMMER_STATE_ATTACK: {
             int p_sign = sign(hammer->angle - hammer->temp_angle);
             hammer->angle -= speed * hammer->dir * 16;
-            
+
             if (p_sign != sign(hammer->angle - hammer->temp_angle)) {
                 gs->chisel->state = CHISEL_STATE_CHISELING;
                 hammer->state = HAMMER_STATE_BLOWBACK;
@@ -133,12 +133,12 @@ static void hammer_draw(int final_target, Hammer *hammer) {
 
     RenderColor(0, 0, 0, 0);
     RenderClear(RENDER_TARGET_HAMMER2);
-    
+
     SDL_Point center = {
         gs->chisel->draw_x,
         gs->chisel->draw_y,
     };
-    
+
     RenderTargetToTargetRelativeEx(RENDER_TARGET_HAMMER2,
                                    RENDER_TARGET_HAMMER,
                                    null,
@@ -146,7 +146,7 @@ static void hammer_draw(int final_target, Hammer *hammer) {
                                    180+gs->chisel->draw_angle,
                                    &center,
                                    SDL_FLIP_NONE);
-    
+
     RenderMaybeSwitchToTarget(final_target);
     SDL_RenderCopy(gs->render.sdl,
                    RenderTarget(RENDER_TARGET_HAMMER2)->texture.handle,

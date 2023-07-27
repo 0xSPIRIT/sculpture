@@ -10,7 +10,7 @@ static void emit_dust(enum Cell_Type type,
                       f64 vy)
 {
     if (gs->dust_count >= MAX_DUST_COUNT) return;
-    
+
     gs->dust[gs->dust_count++] = (Dust){
         .type = type,
         .x = x,
@@ -53,27 +53,27 @@ static void dust_remove(int i) {
 
 static SDL_Color dust_strobe_color(SDL_Color input) {
     SDL_Color result;
-    
+
     int v = 30*sin(input.r + SDL_GetTicks()/100.0);
-    
+
     result.r = 0.5 * clamp(input.r + v, 0, 255);
     result.g = 0.5 * clamp(input.g + v, 0, 255);
     result.b = 0.5 * clamp(input.b + v, 0, 255);
     result.a = 255;
-    
+
     return result;
 }
 
 static void dust_grid_run(int target) {
     for (int i = gs->dust_count-1; i >= 0; i--) {
         Dust *dust = &gs->dust[i];
-        
+
         if (!gs->paused) {
             if (distance(dust->x, dust->y, gs->gw/2, 0) < 3) {
                 dust_remove(i);
                 continue;
             }
-            
+
             if (dust->timer == dust->timer_max) {
                 if (can_conversions_gui_be_active()) {
                     dust->going_into_inventory = true;
@@ -83,52 +83,52 @@ static void dust_grid_run(int target) {
                     continue;
                 }
             }
-            
+
             dust->timer++;
-            
+
             if (dust->going_into_inventory) {
                 f64 dx = gs->gw / 2 - dust->x;
                 f64 dy = -dust->y;
                 f64 length = sqrt(dx*dx + dy*dy);
                 dx /= length;
                 dy /= length;
-                
+
                 f64 max = 30;
                 dust->timer2 = min(dust->timer2, max);
                 f64 coeff = dust->timer2 / max;
-                
+
                 dust->timer2++;
-                
+
                 dust->vx = coeff * 2 * dx;
                 dust->vy = coeff * 2 * dy;
             } else if (dust->y < gs->gw-1) {
                 dust->vy += 0.2;
             }
-            
+
             dust->x += dust->vx;
             dust->y += dust->vy;
-            
+
             if (dust->y >= gs->gh) {
                 dust->y = gs->gh-1;
                 dust->vy *= -(randf(0.5)+0.25);
                 dust->vx *= 0.75 + randf(0.25)-0.125;
             }
-            
+
             if (abs(dust->y-gs->gh-1) < 2 && abs(dust->vy) < 1) {
                 dust->y = gs->gh-1;
                 dust->vy = 0;
                 dust->vx *= 0.25;
             }
         }
-        
+
         // Draw:
         Uint8 alpha = 200;
-        
+
         SDL_Color c = pixel_from_index_grid(gs->grid,
                                             dust->type,
                                             0);
         c = dust_strobe_color(c);
-        
+
         RenderColor(c.r, c.g, c.b, alpha);
         RenderPointRelative(target, dust->x, dust->y);
     }

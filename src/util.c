@@ -13,23 +13,23 @@ static f64 lerp64(f64 a, f64 b, f64 t) {
 
 static SDL_Color invert_color(SDL_Color c) {
     SDL_Color result;
-    
+
     result.r = 255 - c.r;
     result.g = 255 - c.g;
     result.b = 255 - c.b;
     result.a = 255;
-    
+
     return result;
 }
 
 static SDL_Color contrasting_color(SDL_Color c) {
     SDL_Color result;
-    
+
     result.r = c.r > 127 ? 0 : 255;
     result.g = c.g > 127 ? 0 : 255;
     result.b = c.b > 127 ? 0 : 255;
     result.a = 255;
-    
+
     return result;
 }
 
@@ -109,12 +109,12 @@ static bool is_in_view(int x, int y) {
         (int)(gs->render.view.w / gs->S),
         (int)(gs->render.view.h / gs->S),
     };
-    
+
     // Hardcode
     if (gs->gw == 128) {
         view.x += 32;
     }
-    
+
     bool result = (x >= view.x && y >= view.y && x <= view.x+view.w && y <= view.y+view.h);
     return result;
 }
@@ -123,10 +123,10 @@ static bool is_in_view(int x, int y) {
 static void move_mouse_to_grid_position(f32 x, f32 y) {
     int new_x = (int)(x*gs->S + gs->S/2 - gs->render.view.x + (gs->real_width/2 - gs->game_width/2));
     int new_y = GUI_H + (int)(y*gs->S + gs->S/2 - gs->render.view.y + (gs->real_height/2 - gs->game_height/2));
-    
+
     // Hardcode
     if (gs->gw == 128) new_x -= gs->game_width/2;
-    
+
 #if MOUSE_SIMULATED
     gs->input.real_mx = new_x;
     gs->input.real_my = new_y;
@@ -305,9 +305,9 @@ static int randB(int i) {
 
 static f64 interpolate(f64 a, f64 b, f64 step) {
     if (a == b) return b;
-    
+
     int sign = (b-a > 0) ? 1 : -1;
-    
+
     if (sign > 0) {
         f64 result = a+step;
         if (result > b) return b;
@@ -335,7 +335,7 @@ static f64 lerp(f64 a, f64 b, f64 t) {
 
 static f32 lerp_degrees(f32 start, f32 end, f32 amount) {
     f32 difference = abs(end - start);
-    
+
     if (difference > 180) {
         // We need to add on to one of the values.
         if (end > start) {
@@ -346,16 +346,16 @@ static f32 lerp_degrees(f32 start, f32 end, f32 amount) {
             end += 360;
         }
     }
-    
+
     // Interpolate it.
     f32 value = (start + ((end - start) * amount));
-    
+
     // Wrap it..
     f32 rangeZero = 360;
-    
+
     if (value >= 0 && value <= 360)
         return value;
-    
+
     return fmod(value, rangeZero);
 }
 

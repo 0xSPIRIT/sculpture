@@ -32,6 +32,7 @@
 #include "titlescreen.c"
 #include "background.c"
 #include "audio.c"
+#include "save.c"
 
 static void game_resize(int h) {
     gs->gui.popup_y /= gs->gh*gs->S;
@@ -72,12 +73,12 @@ static void game_resize(int h) {
 static void game_update_view(void) {
     if (gs->text_field.active)  return;
     if (gs->conversions.active) return;
-    
+
     Input *input = &gs->input;
     SDL_FPoint *to = &gs->render.to;
-    
+
     f64 amount = gs->game_width*0.25;
-    
+
     bool changed = false;
 
     if (input->keys_pressed[SDL_SCANCODE_D] || input->keys_pressed[SDL_SCANCODE_RIGHT]) {
@@ -88,7 +89,7 @@ static void game_update_view(void) {
         to->x -= amount;
         changed = true;
     }
-    
+
     to->x = clampf(to->x, -gs->game_width*0.5, gs->game_width*0.5);
 
     // NOTE: This is not a typo, they are supposed to be width, not height.
@@ -100,11 +101,11 @@ static void game_update_view(void) {
         to->y -= amount;
         changed = true;
     }
-    
+
     if (changed) {
         gs->wasd_popup_alpha--;
     }
-    
+
     to->y = clampf(to->y, -gs->game_width*0.5, gs->game_width*0.5);
 
     gs->render.view.x = lerp64(gs->render.view.x, gs->render.to.x, 0.2);
@@ -113,9 +114,11 @@ static void game_update_view(void) {
     if (abs(gs->render.view.y - gs->render.to.y) <= 1) gs->render.view.y = gs->render.to.y;
 }
 
-export void game_init(Game_State *state, int level) {
+export void game_init(Game_State *state) {
     gs = state;
-
+    
+    load_game();
+    
     gs->render.view.x = 0;
     gs->render.view.y = 0;
     gs->render.view.w = gs->game_width;
@@ -128,7 +131,7 @@ export void game_init(Game_State *state, int level) {
 
     levels_setup();
     previews_load();
-    goto_level(level);
+    goto_level(gs->level_current);
     titlescreen_init();
 
 #if SHOW_TITLESCREEN
@@ -150,6 +153,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
     Input *input = &gs->input;
 
     if (event->type == SDL_QUIT) {
+        save_game();
         is_running = false;
     }
 
@@ -179,7 +183,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
         } else if (is_tool_chisel()) {
             gs->current_tool += event->wheel.y;
             gs->current_tool = clamp(gs->current_tool, TOOL_CHISEL_SMALL, TOOL_CHISEL_LARGE);
-            
+
             switch (gs->current_tool) {
                 case TOOL_CHISEL_SMALL: {
                     gs->chisel = &gs->chisel_small;
@@ -193,7 +197,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
             }
             gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
             gs->gui.tool_buttons[gs->current_tool]->active = true;
-            
+
         }
     }
 
@@ -425,9 +429,9 @@ export void game_run(Game_State *state) {
                 gui_tick();
                 inventory_tick();
                 all_converters_tick();
-                
+
                 audio_set_ambience_accordingly();
-                
+
                 level_tick(&gs->levels[gs->level_current]);
                 level_draw(&gs->levels[gs->level_current]);
                 text_field_draw(RENDER_TARGET_MASTER);
@@ -475,7 +479,7 @@ export void game_run(Game_State *state) {
     Uint64 delta = time_end.QuadPart - time_start.QuadPart;
     f64 d = (f64)delta / (f64)frequency.QuadPart;
     gs->dt = d;
-    
+
     SDL_RenderPresent(gs->renderer);
 
     gs->is_mouse_over_any_button = false;

@@ -9,7 +9,7 @@ static void narrator_draw_text_blended(int i,
 {
     char identifier[64] = {0};
     sprintf(identifier, "narrator %d", i);
-    
+
     RenderTextQuick(RENDER_TARGET_MASTER,
                     identifier,
                     font,
@@ -117,7 +117,7 @@ static void narrator_tick() {
 
     if (n->off) return;
     if (gs->fade.active) return;
-    
+
     if (n->first_frame) {
         n->first_frame = false;
         return;
@@ -199,7 +199,7 @@ static void narrator_run(int target, SDL_Color col) {
         SDL_Color c = col;
 
         int xoff = 0;
-        
+
         if (*s == '"') c = COLOR_MAX_DIALOGUE;
 
         int surf_h;
