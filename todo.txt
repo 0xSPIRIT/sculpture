@@ -1,11 +1,9 @@
 # TODO
 
-  - Playtest Fixes
-     - Test the undo in the conversions popup... It should be fine but we never tested it thoroughly.
-     - Include the conversion speed somewhere in the menu
-     - Does deleting items undo properly? never tested it
-     - Make diamond shine
-
+  x Playtest Fixes
+     x Make diamond shine
+     x Does deleting items undo properly? never tested it
+     x Include the conversion speed somewhere in the menu
      x Add F1 F2 F3 F4 F5 to the inventory slots
      x Make the chisel rotations lerped
      x Make the rain & snow be able to be picked up

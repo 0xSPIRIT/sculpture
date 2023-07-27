@@ -42,6 +42,14 @@ static void render_targets_init(void) {
                                                                   true);
                 continue;
             }
+            case RENDER_TARGET_GLOW: {
+                gs->render.render_targets[i] = RenderMakeTargetEx(gs->gw,
+                                                                  gs->gh,
+                                                                  VIEW_STATE_PIXELS,
+                                                                  false,
+                                                                  true);
+                continue;
+            }
             case RENDER_TARGET_PREVIEW: {
                 gs->render.render_targets[i] = RenderMakeTarget(PREVIEW_GRID_W, PREVIEW_GRID_W, VIEW_STATE_PIXELS, false);
                 continue;

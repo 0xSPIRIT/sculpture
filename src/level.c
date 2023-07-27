@@ -819,14 +819,11 @@ static void level_draw_outro_or_play(Level *level) {
     RenderClear(RENDER_TARGET_PIXELGRID);
 
     background_draw(RENDER_TARGET_PIXELGRID, &gs->background);
-
-    effect_draw(RENDER_TARGET_PIXELGRID, &gs->current_effect, true);
-
-    grid_draw(RENDER_TARGET_PIXELGRID);
-
+    effect_draw    (RENDER_TARGET_PIXELGRID, &gs->current_effect, true);
+    grid_draw      (RENDER_TARGET_PIXELGRID);
     game_draw_table(RENDER_TARGET_PIXELGRID);
-
-    dust_grid_run(RENDER_TARGET_PIXELGRID);
+    dust_grid_run  (RENDER_TARGET_PIXELGRID);
+    grid_draw_glow (RENDER_TARGET_PIXELGRID);
 
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {

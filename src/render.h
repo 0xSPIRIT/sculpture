@@ -135,3 +135,4 @@ RENDERAPI int  RenderLockTexture(Texture *texture, SDL_Rect *rect, void **pixels
 RENDERAPI void RenderUnlockTexture(Texture *texture);
 
 RENDERAPI void RenderFillCircle(int target, int x, int y, int radius);
+RENDERAPI void RenderFillCircleRelative(int target, int x, int y, int radius);

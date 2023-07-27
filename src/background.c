@@ -4,10 +4,6 @@ static Background background_init(void) {
     return background;
 }
 
-static f64 NormalSine(f64 t) {
-    return 0.5*(1 + sin(t));
-}
-
 static void background_draw(int target, Background *bg) {
     int w = bg->surface->w, h = bg->surface->h;
     (void)w, h;

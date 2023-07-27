@@ -715,6 +715,13 @@ RENDERAPI void RenderFillCircle(int target, int x, int y, int r) {
     }
 }
 
+RENDERAPI void RenderFillCircleRelative(int target_enum, int x, int y, int r) {
+    Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
+    x += target->top_left.x;
+    y += target->top_left.y;
+    RenderFillCircle(target_enum, x, y, r);
+}
+
 #if 0
 // Method 1
 RENDERAPI void RenderFillCircle(int target, int center_x, int center_y, int radius) {
