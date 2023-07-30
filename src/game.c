@@ -28,6 +28,7 @@
 #include "timelapse.c"
 #include "narration.c"
 #include "3d.c"
+#include "shadows.c"
 #include "level.c"
 #include "titlescreen.c"
 #include "background.c"
@@ -116,9 +117,9 @@ static void game_update_view(void) {
 
 export void game_init(Game_State *state) {
     gs = state;
-    
+
     load_game();
-    
+
     gs->render.view.x = 0;
     gs->render.view.y = 0;
     gs->render.view.w = gs->game_width;
@@ -128,7 +129,7 @@ export void game_init(Game_State *state) {
     gs->real_top_left.y = gs->game_height/4;
 
     gs->show_tutorials = true;
-
+    
     levels_setup();
     previews_load();
     goto_level(gs->level_current);
@@ -245,8 +246,15 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 if (gs->input.keys[SDL_SCANCODE_LSHIFT])
                     gs->paused = !gs->paused;
 #endif
+                if (gs->credits.state == CREDITS_SHOW) is_running = false;
                 break;
             }
+            case SDLK_RETURN: {
+                if (gs->credits.state == CREDITS_SHOW) is_running = false;
+            } break;
+            case SDLK_TAB: {
+                if (gs->credits.state == CREDITS_SHOW) is_running = false;
+            } break;
             case SDLK_n: {
                 gs->step_one = 1;
                 break;
@@ -425,7 +433,7 @@ export void game_run(Game_State *state) {
                                &dst);
             } else {
                 //view_tick(&gs->view, &gs->input);
-
+                
                 gui_tick();
                 inventory_tick();
                 all_converters_tick();
@@ -434,6 +442,7 @@ export void game_run(Game_State *state) {
 
                 level_tick(&gs->levels[gs->level_current]);
                 level_draw(&gs->levels[gs->level_current]);
+                
                 text_field_draw(RENDER_TARGET_MASTER);
 
                 fade_draw(RENDER_TARGET_MASTER);

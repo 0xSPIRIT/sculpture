@@ -212,7 +212,7 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
     if (*slot->name) {
         { // Slot name
             Render_Text_Data text_data = {0};
-            
+
             text_data.font = gs->fonts.font_small;
             sprintf(text_data.identifier, "Slot %p thing", slot);
             strcpy(text_data.str, slot->name);
@@ -227,16 +227,16 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
             text_data.alignment = ALIGNMENT_CENTER;
             text_data.render_type = TEXT_RENDER_BLENDED;
             text_data.alpha = 255;
-            
+
             RenderText(target, &text_data);
         }
-        
+
         if (slot->inventory_index != -1) { // F key
             Render_Text_Data text_data = {0};
-            
+
             char msg[10];
             sprintf(msg, "F%d", slot->inventory_index+1);
-            
+
             text_data.font = gs->fonts.font_small;
             sprintf(text_data.identifier, "sdf%p", slot);
             strcpy(text_data.str, msg);
@@ -251,7 +251,7 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
             text_data.alignment = ALIGNMENT_CENTER;
             text_data.render_type = TEXT_RENDER_BLENDED;
             text_data.alpha = 255;
-            
+
             RenderText(target, &text_data);
         }
     }

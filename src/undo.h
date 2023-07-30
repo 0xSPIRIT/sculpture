@@ -7,8 +7,6 @@ typedef struct {
 
 #define UNDO_GRID_LAYERS 1
 
-// We don't want to save the entire memory of the game since
-// that will destroy memory usage.
 typedef struct Save_State {
     Stored_Cell *grid_layers[1];
 

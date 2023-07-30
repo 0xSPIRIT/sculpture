@@ -82,7 +82,7 @@ static void levels_setup(void) {
     level_add("Transformation",
               RES_DIR "lvl/desired/level 4.png",
               RES_DIR "lvl/initial/level 4.png",
-              EFFECT_RAIN);
+              EFFECT_NONE);
     level_add("Reformation",
               RES_DIR "lvl/desired/level 5.png",
               RES_DIR "lvl/initial/level 5.png",
@@ -90,7 +90,7 @@ static void levels_setup(void) {
     level_add("Monster",
               RES_DIR "lvl/desired/level 6.png",
               RES_DIR "lvl/initial/level 6.png",
-              EFFECT_NONE);
+              EFFECT_RAIN);
     level_add("Monster (II)",
               RES_DIR "lvl/desired/level 7.png",
               RES_DIR "lvl/initial/level 7.png",
@@ -325,7 +325,7 @@ static void level_tick_outro(Level *level) {
         level_click_next_level();
     }
 
-    if (!gs->gui.eol_popup_confirm.active && gs->input.keys_pressed[SDL_SCANCODE_F]) {
+    if (!gs->gui.eol_popup_confirm.active && (gs->input.keys_pressed[SDL_SCANCODE_F] || gs->input.keys_pressed[SDL_SCANCODE_ESCAPE])) {
         level_click_close_outro(level);
     }
 
@@ -513,28 +513,22 @@ static void level_draw_name_intro(int target, Level *level, SDL_Rect rect) {
 
 static void level_draw_desired_grid(Level *level, int dx, int dy) {
     const int scale = round(LEVEL_DESIRED_GRID_SCALE);
-
-    int start_x = 0;
-    int width = gs->gw;
-
-    // Hardcode
-    if (gs->gw == 128) {
-        start_x += 32;
-        width = 32+64;
-    }
+    
+    dx += -32*scale; // Center it
 
     for (int y = 0; y < gs->gh; y++) {
-        for (int x = start_x; x < width; x++) {
+        for (int x = 0; x < gs->gw; x++) {
             SDL_Rect r;
 
             if (!level->desired_grid[x+y*gs->gw].type) {
-                RenderColor(0, 0, 0, 255);
+                //RenderColor(0, 0, 0, 255);
+                continue;
             } else {
                 SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
                 RenderColor(col.r, col.g, col.b, 255);
             }
 
-            r = (SDL_Rect){ scale*(x-start_x) + dx, scale*y + dy + 32, scale, scale };
+            r = (SDL_Rect){ scale*x + dx, scale*y + dy + 32, scale, scale };
             SDL_RenderFillRect(gs->renderer, &r);
         }
     }
@@ -812,33 +806,37 @@ static void game_draw_table(int target) {
 }
 
 static void level_draw_outro_or_play(Level *level) {
+    int target = RENDER_TARGET_PIXELGRID;
+    
     if (gs->current_preview.recording)
         RenderColor(53, 20, 20, 255);
     else
         RenderColor(0, 0, 0, 255);
-    RenderClear(RENDER_TARGET_PIXELGRID);
+    RenderClear(target);
 
-    background_draw(RENDER_TARGET_PIXELGRID, &gs->background);
-    effect_draw    (RENDER_TARGET_PIXELGRID, &gs->current_effect, true);
-    grid_draw      (RENDER_TARGET_PIXELGRID);
-    game_draw_table(RENDER_TARGET_PIXELGRID);
-    dust_grid_run  (RENDER_TARGET_PIXELGRID);
-    grid_draw_glow (RENDER_TARGET_PIXELGRID);
+    background_draw(target, &gs->background);
+    effect_draw    (target, &gs->current_effect, true);
+    grid_draw      (target);
+    game_draw_table(target);
+    draw_rain_splashes(target, &gs->current_effect.rain);
+    dust_grid_run  (target);
+    grid_draw_glow (target);
+    shadows_draw   (target);
 
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-            chisel_draw(RENDER_TARGET_PIXELGRID, gs->chisel);
-            hammer_draw(RENDER_TARGET_PIXELGRID, &gs->hammer);
+            chisel_draw(target, gs->chisel);
+            hammer_draw(target, &gs->hammer);
             break;
         }
         case TOOL_PLACER: {
             if (!gs->gui.popup) // When gui.popup = true, we draw in converter
-                placer_draw(RENDER_TARGET_PIXELGRID, &gs->placers[gs->current_placer], false);
+                placer_draw(target, &gs->placers[gs->current_placer], false);
             break;
         }
     }
 
-    draw_objects(RENDER_TARGET_PIXELGRID);
+    draw_objects(target);
 
     RenderColor(0,0,0,255);
     RenderClear(RENDER_TARGET_MASTER);

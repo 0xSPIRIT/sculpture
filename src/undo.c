@@ -39,11 +39,13 @@ static void save_state_to_next(void) {
         gs->save_state_count--;
 
         for (int i = 0; i < gs->save_state_count; i++) {
-            // gs->save_states[i] = gs->save_states[i+1];
+            
             for (int j = 0; j < UNDO_GRID_LAYERS; j++) {
-                for (int k = 0; k < gs->gw*gs->gh; k++) gs->save_states[i].grid_layers[j][k] = gs->save_states[i+1].grid_layers[j][k];
-                //memcpy(gs->save_states[i].grid_layers[j], gs->save_states[i+1].grid_layers[j], sizeof(Cell)*gs->gw*gs->gh);
+                for (int k = 0; k < gs->gw*gs->gh; k++) {
+                    gs->save_states[i].grid_layers[j][k] = gs->save_states[i+1].grid_layers[j][k];
+                }
             }
+            
             for (int j = 0; j < TOTAL_SLOT_COUNT+1; j++) {
                 gs->save_states[i].placer_items[j] = gs->save_states[i+1].placer_items[j];
             }
@@ -51,6 +53,7 @@ static void save_state_to_next(void) {
             for (int j = 0; j < SOURCE_CELL_MAX; j++) {
                 gs->save_states[i].source_cell[j] = gs->save_states[i+1].source_cell[j];
             }
+            
         }
 
         int i = gs->save_state_count;
@@ -176,7 +179,6 @@ static void set_state(int num) {
     }
     gs->levels[gs->level_current].source_cell_count = state->source_cell_count;
 }
-
 static void set_state_to_string_hook(const char *string) {
     int state_num = atoi(string);
     set_state(state_num);
@@ -197,9 +199,8 @@ static void undo(void) {
     } else {
         if (gs->gui.popup) {
             if (is_current_slots_same_as(current_state())) {
-                if (gs->save_state_count == 1) {
+                if (gs->save_state_count == 1)
                     return;
-                }
 
                 set_state(gs->save_state_count-2);
                 gs->save_state_count--;

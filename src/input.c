@@ -18,6 +18,7 @@ static void input_tick_mouse_pressed(Input *in) {
     in->mouse_previous = in->mouse;
 }
 
+// This is pretty bad
 static void input_tick_simulated(Game_State *state) {
     Input *in = &state->input;
 

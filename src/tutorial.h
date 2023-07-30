@@ -1,7 +1,7 @@
 #ifdef ALASKA_RELEASE_MODE
   #define SHOW_TUTORIAL 1
 #else
-  #define SHOW_TUTORIAL 0
+  #define SHOW_TUTORIAL 1
 #endif
 
 #define MAX_TUTORIAL_LINES 10
@@ -98,9 +98,10 @@
 typedef struct Tutorial_Rect {
     bool active;
 
-    TTF_Font *font;
-    SDL_Texture *textures[MAX_TUTORIAL_LINES];
-    SDL_Rect texture_rects[MAX_TUTORIAL_LINES];
+    Font *font;
+    //TTF_Font *font;
+    //SDL_Texture *textures[MAX_TUTORIAL_LINES];
+    //SDL_Rect texture_rects[MAX_TUTORIAL_LINES];
 
     int margin;
 

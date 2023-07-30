@@ -8,14 +8,7 @@
 
 #define DEGTORAD (M_PI / 180.0)
 
-enum Blob_Type {
-    BLOB_CIRCLE_A,
-    BLOB_CIRCLE_B,
-    BLOB_CIRCLE_C,
-    BLOB_RECTANGLE,
-};
-
-enum Tool_Type {
+typedef enum {
     TOOL_CHISEL_SMALL,
     TOOL_CHISEL_MEDIUM,
     TOOL_CHISEL_LARGE,
@@ -25,7 +18,7 @@ enum Tool_Type {
     TOOL_DESTROY,
     TOOL_FINISH_LEVEL,
     TOOL_COUNT
-};
+} Tool_Type;
 
 // Don't mess with the arrangement,
 // It'll fuck up the table in level.c!

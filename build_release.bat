@@ -14,7 +14,7 @@ IF ERRORLEVEL 1 (
 
 pushd bin_release\
 
-cl.exe %Common_Compiler_Flags% ..\src\win32_main.c ..\src\game.c %Linker_Flags% SDL2main.lib /link /NOIMPLIB /NOEXP /incremental:no /out:alaska.exe /SUBSYSTEM:windows
+cl.exe %Common_Compiler_Flags% ..\src\win32_main.c %Linker_Flags% SDL2main.lib /link /NOIMPLIB /NOEXP /incremental:no /out:alaska.exe /SUBSYSTEM:windows
 
 if NOT %errorlevel%==0 (set err=%errorlevel%)
 

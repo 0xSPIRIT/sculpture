@@ -62,21 +62,21 @@ static void placer_suck_circle(Placer *placer) {
     Cell *arr = gs->grid;
 
     Cell_Type effect_pickup = effect_picked_up(&gs->current_effect);
-        
+
     bool took_anything = false;
     while (arr == gs->grid || arr == gs->gas_grid) {
         while (distance(x, y, (f32)placer->px, (f32)placer->py) < len) {
             // Remove cells in a circle
             const int r = placer->radius;
-            
+
             for (int ky = -r; ky <= r; ky++) {
                 for (int kx = -r; kx <= r; kx++) {
                     if (kx*kx + ky*ky > r*r)  continue;
-                    
+
                     int xx = (int) (x+kx);
                     int yy = (int) (y+ky);
                     if (!is_in_bounds(xx, yy)) continue;
-                    
+
                     int type = arr[xx+yy*gs->gw].type;
                     if (type == 0) continue;
 
@@ -100,7 +100,7 @@ static void placer_suck_circle(Placer *placer) {
                     }
                 }
             }
-            
+
             if (!took_anything && effect_pickup) {
                 effect_handle_placer(&gs->current_effect, x, y, r);
             }

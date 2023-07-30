@@ -27,26 +27,31 @@
 // dll reloads.
 //
 
+
+// Includes
+
 #include <windows.h>
 
-#include "shared.h"
-
-#include "render.c"
-#include "assets.c"
-#ifndef ALASKA_RELEASE_MODE
+#ifndef ALASKA_RELEASE_MODE // Debug mode
+  #include "shared.h"
+  #include "render.c"
   #include "util.c"
+#else                       // Release mode
+  #include "game.c"
 #endif
+
+#include "assets.c"
 #include "input.c"
+
+// Defines
 
 #define GAME_DLL_NAME "sculpture.dll"
 #define TEMP_DLL_NAME "sculpture_temp.dll"
 #define LOCK_NAME     "lock.tmp"
 
-#ifdef ALASKA_RELEASE_MODE
-#include "game.h"
-#endif
-
 #define ALASKA_START_FULLSCREEN 0
+
+// Some function pointers for the hot-loading.
 
 typedef void (*GameInitProc)(Game_State *state);
 typedef bool (*GameTickEventProc)(Game_State *state, SDL_Event *event);

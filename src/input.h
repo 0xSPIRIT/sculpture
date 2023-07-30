@@ -4,7 +4,7 @@
 typedef struct Input {
     int s_mx, s_my, s_pmx, s_pmy; // Used when MOUSE_SIMULATED == true
 
-    int mx, my; // Fake in game coordinates (pixel art scaled)
+    int mx, my; // Scaled to the pixel-art grid.
     int real_mx, real_my; // In real window coordinates
     int pmx, pmy;
     int real_pmx, real_pmy;

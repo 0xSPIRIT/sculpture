@@ -329,6 +329,7 @@ static f64 clamp64(f64 x, f64 a, f64 b) {
     return x;
 }
 
+// smoothstep(x) = 3x^2 - 2x^3
 static f64 smoothstep(f64 x) {
     return x * x * (3.0 - 2.0 * x);
 }

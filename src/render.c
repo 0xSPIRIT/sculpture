@@ -1,6 +1,5 @@
 // A wrapper for calls to SDL's draw functions.
-// We use this for things like global offsets,
-// and to manage render targets better.
+// We pretty much use this to manage render targets better.
 
 //~ Initializations and Creations
 
@@ -11,7 +10,7 @@ RENDERAPI Render RenderInit(SDL_Renderer *sdl_renderer) {
     result.render_targets = PushArray(gs->persistent_memory,
                                       RENDER_TARGET_COUNT,
                                       sizeof(Render_Target));
-
+    
     return result;
 }
 
@@ -20,19 +19,19 @@ RENDERAPI void RenderCleanup(Render *render) {
     for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
         RenderDestroyTarget(&render->render_targets[i]);
     }
-
+    
     // Cleanup textures.
     for (int i = 0; i < TEXTURE_COUNT; i++) {
         if (gs->textures.texs[i].handle)
             RenderDestroyTexture(&gs->textures.texs[i]);
     }
-
+    
     // Cleanup surfaces.
     for (size_t i = 0; i < SURFACE_COUNT; i++) {
         if (gs->surfaces.surfaces[i])
             SDL_FreeSurface(gs->surfaces.surfaces[i]);
     }
-
+    
     // Cleanup text data cache. Non-cached temporary text rendering calls
     // are cleaned up at end-of-frame.
     RenderCleanupTextCache(&gs->render.text_cache);
@@ -40,16 +39,15 @@ RENDERAPI void RenderCleanup(Render *render) {
 
 RENDERAPI SDL_Surface *RenderLoadSurface(const char *fp) {
     if (!gs->pixel_format_surf) {
-        gs->pixel_format_surf = SDL_CreateRGBSurfaceWithFormat(0, 16, 16, 32,
-                                                               ALASKA_PIXELFORMAT);
+        gs->pixel_format_surf = SDL_CreateRGBSurfaceWithFormat(0, 16, 16, 32, ALASKA_PIXELFORMAT);
     }
-
+    
     char filepath[8192] = {0};
     strcat(filepath, RES_DIR);
     strcat(filepath, fp);
     SDL_Surface *surf = IMG_Load(filepath);
     if (!surf) puts(SDL_GetError());
-
+    
     if (surf->format->format != ALASKA_PIXELFORMAT) {
         SDL_Surface *new_surf = SDL_ConvertSurface(surf,
                                                    gs->pixel_format_surf->format,
@@ -57,36 +55,36 @@ RENDERAPI SDL_Surface *RenderLoadSurface(const char *fp) {
         SDL_FreeSurface(surf);
         surf = new_surf;
     }
-
+    
     Assert(surf);
     return surf;
 }
 
 RENDERAPI Texture RenderLoadTexture(const char *fp) {
     Texture texture = {0};
-
+    
     SDL_Surface *surf = RenderLoadSurface(fp);
     Assert(surf);
-
+    
     texture.width = surf->w;
     texture.height = surf->h;
     texture.handle = SDL_CreateTextureFromSurface(gs->render.sdl, surf);
     Assert(texture.handle);
-
+    
     SDL_FreeSurface(surf);
-
+    
     return texture;
 }
 
 RENDERAPI Texture RenderCreateTextureFromSurface(SDL_Surface *surf) {
     Texture texture = {0};
-
+    
     texture.handle = SDL_CreateTextureFromSurface(gs->render.sdl, surf);
     Assert(texture.handle);
-
+    
     texture.width = surf->w;
     texture.height = surf->h;
-
+    
     return texture;
 }
 
@@ -102,7 +100,7 @@ RENDERAPI Font *RenderLoadFont(const char *fp, int size) {
     strcat(filename, fp);
     font->handle = TTF_OpenFont(filename, size);
     Assert(font->handle);
-
+    
     TTF_SizeText(font->handle, "A", &font->char_width, &font->char_height);
     return font;
 }
@@ -111,10 +109,10 @@ RENDERAPI Font *RenderLoadFont(const char *fp, int size) {
 
 RENDERAPI SDL_Rect RenderGetUpdatedRect(Render_Target *target, SDL_Rect *rect) {
     if (!target) return *rect;
-
+    
     SDL_Rect result;
     SDL_Rect actual_rect;
-
+    
     if (!rect) {
         return (SDL_Rect){
             target->top_left.x,
@@ -125,12 +123,12 @@ RENDERAPI SDL_Rect RenderGetUpdatedRect(Render_Target *target, SDL_Rect *rect) {
     } else {
         actual_rect = *rect;
     }
-
+    
     result.x = actual_rect.x + target->top_left.x;
     result.y = actual_rect.y + target->top_left.y;
     result.w = actual_rect.w;
     result.h = actual_rect.h;
-
+    
     return result;
 }
 
@@ -141,39 +139,39 @@ RENDERAPI Render_Target RenderMakeTargetEx(int width,
                                            bool streaming)
 {
     Render_Target target = {0};
-
+    
     int full_width, full_height;
-
+    
     if (!use_negative_coords) {
         target.working_width = full_width = width;
         target.working_height = full_height = height;
-
+        
         target.top_left = (SDL_Point){0, 0};
     } else {
         target.working_width = width;
         target.working_height = height;
-
+        
         full_width = width*2;
         full_height = height*2;
-
+        
         target.top_left = (SDL_Point){
             width  - target.working_width/2,
             height - target.working_height/2
         };
     }
-
+    
     target.view = view;
-
+    
     target.texture.handle = SDL_CreateTexture(gs->render.sdl,
                                               ALASKA_PIXELFORMAT,
                                               streaming ? SDL_TEXTUREACCESS_STREAMING : SDL_TEXTUREACCESS_TARGET,
                                               full_width,
                                               full_height);
     SDL_SetTextureBlendMode(target.texture.handle, SDL_BLENDMODE_BLEND);
-
+    
     target.texture.width = full_width;
     target.texture.height = full_height;
-
+    
     return target;
 }
 
@@ -203,10 +201,10 @@ RENDERAPI void RenderTargetToTargetRelative(int target_dst,
                                             SDL_Rect *dst)
 {
     RenderMaybeSwitchToTarget(target_dst);
-
+    
     SDL_Rect updated_src = RenderGetUpdatedRect(RenderTarget(target_src), src);
     SDL_Rect updated_dst = RenderGetUpdatedRect(RenderTarget(target_dst), dst);
-
+    
     SDL_RenderCopy(gs->render.sdl,
                    RenderTarget(target_src)->texture.handle,
                    &updated_src,
@@ -223,15 +221,15 @@ RENDERAPI void RenderTargetToTargetRelativeEx(int target_dst,
 {
     // Note: we dont modify src and dst to target_dst's top_left.
     //       If you want to do that, do it yourself before the call.
-
+    
     RenderMaybeSwitchToTarget(target_dst);
     SDL_Point output_center = *center;
-
+    
     output_center = (SDL_Point){
         center->x + RenderTarget(target_dst)->top_left.x,
         center->y + RenderTarget(target_dst)->top_left.y
     };
-
+    
     SDL_RenderCopyEx(gs->render.sdl,
                      RenderTarget(target_src)->texture.handle,
                      src,
@@ -265,7 +263,7 @@ RENDERAPI Render_Target *RenderMaybeSwitchToTarget(int target_enum) {
         gs->render.current_target = null;
         return null;
     }
-
+    
     Render_Target *target = RenderTarget(target_enum);
     if (gs->render.current_target != target) {
         SDL_Texture *texture_target = target->texture.handle;
@@ -705,10 +703,9 @@ RENDERAPI void RenderUnlockTexture(Texture *texture) {
 // Method 3
 RENDERAPI void RenderFillCircle(int target, int x, int y, int r) {
     RenderMaybeSwitchToTarget(target);
-
-    int r2 = r * r;
+    
     for (int cy = -r; cy <= r; cy++) {
-        int cx = (int)(sqrt(r2 - cy * cy) + 0.5);
+        int cx = (int)(sqrt(r * r - cy * cy) + 0.5);
         int cyy = cy + y;
 
         SDL_RenderDrawLine(gs->render.sdl, x - cx, cyy, x + cx, cyy);

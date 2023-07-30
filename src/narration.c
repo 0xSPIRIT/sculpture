@@ -23,7 +23,7 @@ static void narrator_draw_text_blended(int i,
                     false);
 }
 
-static char* get_narration(int level) {
+static const char* get_narration(int level) {
     switch (level+1) {
         case 1:  return NARRATION_LEVEL_1;
         case 3:  return NARRATION_LEVEL_3;
@@ -44,13 +44,13 @@ static void narrator_init(int level) {
 
     memset(&gs->narrator, 0, sizeof(Narrator));
 
-    char *narration = null;
+    const char *narration = null;
 
     narration = get_narration(level);
 
     if (!narration) return;
 
-    char *c = narration;
+    const char *c = narration;
     int i = 0;
 
     while (*c) {
@@ -123,7 +123,7 @@ static void narrator_tick() {
         return;
     }
 
-    if (gs->input.keys_pressed[SDL_SCANCODE_TAB]) {
+    if (gs->input.keys_pressed[SDL_SCANCODE_TAB] && gs->level_current+1 != 11) {
         set_fade(FADE_NARRATOR, 0, 255);
     }
 

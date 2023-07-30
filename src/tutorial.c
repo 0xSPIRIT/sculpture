@@ -9,7 +9,7 @@ static void calculate_tutorial_rect_size(Tutorial_Rect *tut) {
             idx = i;
         }
     }
-    TTF_SizeText(tut->font, tut->lines[idx], &fw, &fh);
+    TTF_SizeText(tut->font->handle, tut->lines[idx], &fw, &fh);
 
     Assert(fw);
     Assert(fh);
@@ -37,7 +37,7 @@ static void calculate_tutorial_rect_size(Tutorial_Rect *tut) {
 static Tutorial_Rect* tutorial_rect(const char *str, Tutorial_Rect *next) {
     Tutorial_Rect *tut = PushSize(gs->persistent_memory, sizeof(Tutorial_Rect));
 
-    tut->font = gs->fonts.font->handle;
+    tut->font = gs->fonts.font;
     tut->active = gs->show_tutorials;
     tut->next = next;
 
@@ -77,11 +77,6 @@ static void tutorial_rect_close(void *ptr) {
     Tutorial_Rect *tut = &gs->tutorial;
     tut->active = false;
 
-    for (int i = 0; i < MAX_TUTORIAL_LINES; i++) {
-        SDL_DestroyTexture(tut->textures[i]);
-        tut->textures[i] = 0;
-    }
-
     if (tut->next) {
         gs->tutorial = *tut->next;
         gs->tutorial.active = true;
@@ -116,37 +111,35 @@ static void tutorial_rect_run(int target) {
 
     RenderColor(255, 255, 255, 255);
 
-    int c = 0;
+    int cum = 0;
     SDL_Rect dst;
-    dst.h = -1;
-
+    
     for (int i = 0; i < tut->line_count; i++) {
         if (!*tut->lines[i]) {
-            if (dst.h == -1)
-                TTF_SizeText(tut->font, "L", null, &dst.h);
-            c += dst.h;
+            cum += tut->font->char_height;
             continue;
         }
-
-        // TODO: Change to the new font renderer.
-        if (!tut->textures[i]) {
-            (void)bg;
-            SDL_Surface *surf = TTF_RenderText_Blended(tut->font, tut->lines[i], WHITE);
-            tut->textures[i] = SDL_CreateTextureFromSurface(gs->renderer, surf);
-            tut->texture_rects[i].w = surf->w;
-            tut->texture_rects[i].h = surf->h;
-            SDL_FreeSurface(surf);
-        }
-
-        dst.w = tut->texture_rects[i].w;
-        dst.h = tut->texture_rects[i].h;
+        
         dst.x = tut->rect.x + tut->margin;
-        dst.y = tut->rect.y + c + tut->margin;
-
+        dst.y = tut->rect.y + cum + tut->margin;
+        
+        char identifier[64];
+        sprintf(identifier, "tut%d", i);
+        
         RenderColor(255, 255, 255, 255);
-        SDL_RenderCopy(gs->renderer, tut->textures[i], null, &dst);
+        RenderTextQuick(target,
+                        identifier,
+                        tut->font,
+                        tut->lines[i],
+                        WHITE,
+                        255,
+                        dst.x,
+                        dst.y,
+                        &dst.w,
+                        &dst.h,
+                        false);
 
-        c += dst.h + 2;
+        cum += dst.h + 2;
     }
 
     button_tick(tut->ok_button, null);

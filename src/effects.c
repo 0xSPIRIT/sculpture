@@ -1,3 +1,50 @@
+static void rain_splash(Rain_Splash *rain, int amount, int x) {
+    if (rain->splash_count + amount > MAX_SPLASH) return;
+    
+    int y = gs->gh-1;
+    
+    for (int i = 0; i < amount; i++) {
+        f32 vx = randf(2.0) - 1;
+        f32 vy = -randf(2.0);
+        
+        f32 speed = 0.5;
+        
+        vx *= speed;
+        vy *= speed;
+        
+        rain->splashes[rain->splash_count++] = (Effect_Particle){ x, y, vx, vy };
+    }
+}
+
+static void draw_rain_splashes(int target, Rain_Splash *rain) {
+    int sub_target = RENDER_TARGET_EFFECTS;
+    
+    RenderColor(0,0,0,0);
+    RenderClear(sub_target);
+    
+    for (int i = rain->splash_count-1; i >= 0; i--) {
+        Effect_Particle *p = &rain->splashes[i];
+        
+        int col = 255;
+        RenderColor(col, col, col, 255);
+        RenderPointRelative(sub_target, p->x, p->y);
+        
+        p->x += p->vx;
+        p->y += p->vy;
+        
+        p->vy += 0.10; // gravity
+        
+        if (p->y > gs->gh) {
+            rain->splash_count--;
+            for (int j = i; j < rain->splash_count; j++)
+                rain->splashes[j] = rain->splashes[j+1];
+        }
+    }
+    
+    RenderTextureAlphaMod(&RenderTarget(sub_target)->texture, 30);
+    RenderTargetToTarget(target, sub_target, null, null);
+}
+
 static void reset_snow_particle(Effect *effect, Effect_Particle *particle) {
     SDL_Rect bounds = effect->bounds;
     
@@ -8,7 +55,7 @@ static void reset_snow_particle(Effect *effect, Effect_Particle *particle) {
     f32 r2 = randf(1.0);
     particle->vx = 0.3f + r1*r1*r1;
     particle->vy = 0.3f + r2*r2*r2;
-    
+
     const f64 spd = 0.3f;
     particle->vx *= spd;
     particle->vy *= spd;
@@ -16,12 +63,18 @@ static void reset_snow_particle(Effect *effect, Effect_Particle *particle) {
 
 static void reset_rain_particle(Effect *effect, Effect_Particle *particle) {
     SDL_Rect bounds = effect->bounds;
-    
+
     particle->x = (f32) (bounds.x+(rand()%(bounds.w-bounds.x)));
     particle->y = (f32) (bounds.y+(rand()%(bounds.h-bounds.y)));
     
-    particle->vx = 0.3f;
-    particle->vy = 1.f;
+    // Favor slower particles than faster ones.
+    
+    f32 r1 = randf(0.5)+0.5f;
+    
+    r1 *= r1;
+
+    particle->vx = r1 * 0.5f;
+    particle->vy = r1 * 1.9f;
 }
 
 static void effect_reset_snow(Effect *effect, bool high_fidelity) {
@@ -46,11 +99,11 @@ static void effect_reset_snow(Effect *effect, bool high_fidelity) {
 
 static Cell_Type effect_picked_up(Effect *effect) {
     if (effect->type == EFFECT_NONE) return CELL_NONE;
-    
+
     if (effect->type == EFFECT_SNOW || effect->type == EFFECT_RAIN) {
         return CELL_WATER;
     }
-    
+
     return CELL_NONE;
 }
 
@@ -58,16 +111,16 @@ static void effect_handle_placer(Effect *effect, int x, int y, int r) {
     // Loop through all of the particles and check if they
     // are within our circle.
     Cell_Type effect_pickup = effect_picked_up(&gs->current_effect);
-    
+
     if (!effect_pickup) return;
     Placer *current = get_current_placer();
-    
+
     if (current->contains->type == 0 || current->contains->type == effect_pickup) {
         // good
     } else {
         return;
     }
-    
+
     for (int i = effect->particle_count; i > 0; i--) {
         Effect_Particle *p = &effect->particles[i];
         if (distance(x, y, p->x, p->y) <= r) {
@@ -102,7 +155,7 @@ static void effect_set(Effect *effect, Effect_Type type, bool high_fidelity, int
             break;
         }
         case EFFECT_RAIN: {
-            effect->particle_count = 200;
+            effect->particle_count = 500;
             break;
         }
     }
@@ -126,14 +179,17 @@ static void effect_set(Effect *effect, Effect_Type type, bool high_fidelity, int
     }
 }
 
-static void particle_tick(Effect *effect, int i) {
+// returns if the particle collided with the ground, and had to be reset
+static bool particle_tick(Effect *effect, int i) {
+    bool ground = false;
+    
     if (gs->levels[gs->level_current].state == LEVEL_STATE_OUTRO)
-        return;
+        return ground;
     if (gs->paused && !gs->step_one)
-        return;
+        return ground;
     if (effect->type == EFFECT_NONE)
-        return;
-
+        return ground;
+    
     switch (effect->type) {
         case EFFECT_SNOW: case EFFECT_RAIN: {
             Effect_Particle *particle = &effect->particles[i];
@@ -143,24 +199,24 @@ static void particle_tick(Effect *effect, int i) {
             particle->x += reverse * particle->vx;
             particle->y += reverse * particle->vy;
 
-            if (effect->type == EFFECT_RAIN) {
-                //particle->vx += 0.003f * sinf(SDL_GetTicks() / 1000.f);
-            }
-
             if (particle->x < effect->bounds.x)
                 particle->x = (f32) effect->bounds.w-1;
             if (particle->y < effect->bounds.y)
                 particle->y = (f32) effect->bounds.h-1;
 
-            if (particle->x-particle->vx*3 > effect->bounds.w-1)
+            if (particle->x-particle->vx*3 > effect->bounds.x+effect->bounds.w-1)
                 particle->x = effect->bounds.x;
-            if (particle->y-particle->vy*3 > effect->bounds.h-1)
+            if (particle->y-particle->vx*3 > effect->bounds.y+effect->bounds.h-1) {
                 particle->y = effect->bounds.y;
+                ground = true;
+            }
 
             break;
         }
         default: break;
     }
+    
+    return ground;
 }
 
 static void effect_draw(int target, Effect *effect, bool draw_points) {
@@ -198,8 +254,7 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
                 int px = (int)particle->x;
                 int py = (int)particle->y;
 
-                //RenderColor(my_rand(px), my_rand(py), my_rand(px*py), (Uint8) (255 * (length/max)));
-                float coeff = 0.4f;
+                f32 coeff = 0.4f;
                 if (effect->bounds.w > gs->gw) coeff = 0.6f;
 
                 Uint8 col = (Uint8) (255 * coeff*length/max);
@@ -219,20 +274,45 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
             break;
         }
         case EFFECT_RAIN: {
+            int sub_target = RENDER_TARGET_EFFECTS;
+            
+            RenderColor(0,0,0,0);
+            RenderClear(sub_target);
+            
             for (int i = 0; i < effect->particle_count; i++) {
-                particle_tick(effect, i);
+                Effect_Particle *p = &effect->particles[i];
+                
+                int px = (int)p->x;
+                int py = (int)p->y;
+                
+                bool should_splash = particle_tick(effect, i);
+                if (should_splash && rand()<RAND_MAX/7) {
+                    rain_splash(&effect->rain, 7, px);
+                }
 
-                Effect_Particle *particle = &effect->particles[i];
+                // Updated from the particle_tick()
+                px = (int)p->x;
+                py = (int)p->y;
 
-                int px = (int)particle->x;
-                int py = (int)particle->y;
-
-                int p2x = (int) (px - particle->vx*3);
-                int p2y = (int) (py - particle->vy*3);
-
-                RenderColor(255, 255, 255, 32);
-                RenderLineRelative(target, px, py, p2x, p2y);
+                int p2x = (int) (px - p->vx*3);
+                int p2y = (int) (py - p->vy*3);
+                
+                {
+                    f32 length = p->vx * p->vx + p->vy * p->vy;
+                    
+                    f32 normalized = length / 3.854;
+                    normalized /= 2;
+                    normalized += 0.5;
+                    
+                    Uint8 alpha = normalized * 255;
+                    RenderColor(255, 255, 255, alpha);
+                }
+                
+                RenderLineRelative(sub_target, px, py, p2x, p2y);
             }
+            
+            RenderTextureAlphaMod(&RenderTarget(sub_target)->texture, 35);
+            RenderTargetToTarget(target, sub_target, null, null);
             break;
         }
         default: break;

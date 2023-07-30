@@ -23,7 +23,7 @@
 #ifndef ALASKA_RELEASE_MODE
   #define Assert(cond) if(!(cond)) { _assert(__func__, __FILE__, __LINE__), __debugbreak(); }
 #else
-  #define Assert(cond)
+  #define Assert(cond) ;
 #endif
 
 #define PushSize(arena, size) (_push_array(arena, 1, size, __FILE__, __LINE__))
@@ -45,7 +45,7 @@ typedef struct Memory_Arena {
     Uint64 size;
 } Memory_Arena;
 
-typedef enum  {
+typedef enum {
     GAME_STATE_TITLESCREEN,
     GAME_STATE_PLAY
 } GameStateEnum;

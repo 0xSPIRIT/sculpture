@@ -6,7 +6,7 @@ static int is_cell_hard(int type) {
         type == CELL_STONE ||
         type == CELL_MARBLE      ||
         type == CELL_SANDSTONE   ||
-        
+
         type == CELL_CONCRETE    ||
         type == CELL_QUARTZ      ||
         type == CELL_GLASS       ||
@@ -176,7 +176,7 @@ static bool compare_cells_to_int_weak(Cell *a, int *b, int leeway) {
 static int compare_cells_to_int_count(Cell *a, int *b) {
     int hits = 0;
     for (int i = 0; i < gs->gw*gs->gh; i++) {
-        if (a[i].type != b[i]) 
+        if (a[i].type != b[i])
             hits++;
     }
     return hits;
@@ -202,10 +202,10 @@ static bool compare_cells(Cell *a, Cell *b) {
 //
 static void set_array(Cell *arr, int x, int y, int val, int object) {
     if (x < 0 || x >= gs->gw || y < 0 || y >= gs->gh) return;
-    
+
     arr[x+y*gs->gw].type = val;
     arr[x+y*gs->gw].is_initial = false;
-    
+
     if (object == -2) {
         arr[x+y*gs->gw].object = -1;
     } else if (object != -1) {
@@ -220,13 +220,13 @@ static void set_array(Cell *arr, int x, int y, int val, int object) {
             arr[x+y*gs->gw].object = gs->object_count++;
         }
     }
-    
+
     int obj = arr[x+y*gs->gw].object;
-    
+
     if (obj == -1 || obj >= MAX_OBJECTS) {
         return;
     }
-    
+
     if (val == 0) {
         arr[x+y*gs->gw].object = -1;
     }
@@ -241,13 +241,13 @@ static void set(int x, int y, int val, int object) {
 static void swap_array(Cell *arr, int x1, int y1, int x2, int y2) {
     if (x1 < 0 || x1 >= gs->gw || y1 < 0 || y1 >= gs->gh) return;
     if (x2 < 0 || x2 >= gs->gw || y2 < 0 || y2 >= gs->gh) return;
-    
+
     arr[x1+y1*gs->gw].px = x1;
     arr[x1+y1*gs->gw].py = y1;
-    
+
     arr[x2+y2*gs->gw].px = x2;
     arr[x2+y2*gs->gw].py = y2;
-    
+
     Cell temp = arr[x2+y2*gs->gw];
     arr[x2+y2*gs->gw] = arr[x1+y1*gs->gw];
     arr[x1+y1*gs->gw] = temp;
@@ -269,13 +269,13 @@ static f32 water_spread(void) {
 static void grid_init(int w, int h) {
     gs->gw = w;
     gs->gh = h;
-    
+
     if (gs->grid_layers[0] == null) {
         for (int i = 0; i < NUM_GRID_LAYERS; i++) {
             gs->grid_layers[i] = PushArray(gs->persistent_memory, w*h, sizeof(Cell));
         }
     }
-    
+
     for (int i = 0; i < w*h; i++) {
         for (int j = 0; j < NUM_GRID_LAYERS; j++) {
             gs->grid_layers[j][i] = (Cell){.type = 0, .object = -1 };
@@ -283,26 +283,26 @@ static void grid_init(int w, int h) {
             gs->grid_layers[j][i].id = i;
         }
     }
-    
+
     gs->grid = gs->grid_layers[0];
     gs->gas_grid = gs->grid_layers[1];
 }
 
 static void grid_glow_set(Uint32 *pixels, int x, int y, Uint8 alpha) {
     int i = x+y*gs->gw;
-    
+
     SDL_Color c;
     c.r = 255;
     c.g = 255;
     c.b = 255;
-    
+
     Uint32 old_pixel = pixels[i];
     Uint8 a = old_pixel >> 24;
-    
+
     c.a = alpha;
     c.a += a;
     if (c.a > 255) c.a = 255;
-    
+
     Uint32 pixel = (Uint32)c.a << 24 | (Uint32)c.b << 16 | (Uint32)c.g << 8 | c.r;
     pixels[i] = pixel;
 }
@@ -310,20 +310,20 @@ static void grid_glow_set(Uint32 *pixels, int x, int y, Uint8 alpha) {
 static void grid_draw_glow(int target) {
     Uint32 *pixels;
     int pitch;
-    
+
     int w = gs->gw;
     int h = gs->gh;
-    
+
     if (RenderLockTexture(&RenderTarget(RENDER_TARGET_GLOW)->texture, null, &pixels, &pitch) != 0) {
         Log("%s\n", SDL_GetError());
         Assert(0);
     }
-    
+
     memset(pixels, 0, pitch*h);
-    
+
     for (int i = 0; i < w*h; i++) {
         if (gs->grid[i].type != CELL_DIAMOND) continue;
-        
+
         int r = 6;
         for (int y = -r; y <= r; y++) {
             for (int x = -r; x <= r; x++) {
@@ -333,27 +333,26 @@ static void grid_draw_glow(int target) {
             }
         }
     }
-    
+
     RenderUnlockTexture(&RenderTarget(RENDER_TARGET_GLOW)->texture);
-    
-    // Don't ask me why it's offset like this.
+
     SDL_Rect dst = {
-        64,
-        32,
+        RenderTarget(target)->top_left.x,
+        RenderTarget(target)->top_left.y,
         128,
         64
     };
-    
+
     RenderTexture(target, &RenderTarget(RENDER_TARGET_GLOW)->texture, null, &dst);
 }
 
 static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
     SDL_Color color = {0};
     int r, amt;
-    
+
     switch (type) {
         default: break;
-        
+
         case CELL_DIRT: {
             const int variance = 10;
             color = (SDL_Color){
@@ -376,14 +375,14 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
         }
         case CELL_STEAM: {
             color = (SDL_Color){
-                35+my_rand(i+0)%30,
-                35+my_rand(i+1)%30,
-                35+my_rand(i+2)%30,
+                35+my_rand(i)%30,
+                35+my_rand(i)%30,
+                35+my_rand(i)%30,
                 255
             };
             break;
         }
-        
+
         case CELL_WATER: {
             color = (SDL_Color){131, 160, 226, 255};
             break;
@@ -394,17 +393,17 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             color.g *= 0.80;
             break;
         }
-        
+
         case CELL_WOOD_LOG: {
             color = get_pixel(gs->surfaces.bark_surface, i%gs->gw, i/gs->gh);
             break;
         }
-        
+
         case CELL_WOOD_PLANK: {
             color = get_pixel(gs->surfaces.wood_plank_surface, i%gs->gw, i/gs->gw);
             break;
         }
-        
+
         case CELL_STONE: {
             r = randR(i) % 100 < 10;
             amt = 25;
@@ -412,14 +411,14 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             // color = (SDL_Color){127, 255, 0, 255};
             break;
         }
-        
+
         case CELL_MARBLE: {
             //color = (SDL_Color){245+randR(i)%10, 245+randG(i)%10, 245+randB(i)%10, 255};
             int id = grid[i].id*2;
             color = get_pixel(gs->surfaces.marble_surface, id%gs->gw, id/gs->gw);
             break;
         }
-        
+
         case CELL_SANDSTONE: {
             r = randR(i) % 100 < 10;
             amt = 25;
@@ -427,12 +426,12 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             /* color = (SDL_Color){127, 255, 0, 255}; */
             break;
         }
-        
+
         case CELL_CEMENT: {
             color = (SDL_Color){100, 100, 100, 255};
             break;
         }
-        
+
         case CELL_CONCRETE: {
             color = (SDL_Color){125, 125, 125, 255};
             break;
@@ -448,13 +447,13 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             };
             break;
         }
-        
+
         case CELL_GLASS: {
             color = get_pixel(gs->surfaces.glass_surface, i%gs->gw, i/gs->gw);
             color.a = 255;
             break;
         }
-        
+
         case CELL_GRANITE: {
             color = get_pixel(gs->surfaces.granite_surface, i%gs->gw, i/gs->gw);
             color.r *= 0.79;
@@ -462,7 +461,7 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             color.b *= 0.79;
             break;
         }
-        
+
         case CELL_BASALT: {
             color = (SDL_Color){64, 64, 64, 255};
             color.r += randR(i)%20;
@@ -470,7 +469,7 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             color.b += randR(i)%20;
             break;
         }
-        
+
         case CELL_DIAMOND: {
             int id = grid[i].id*2;
             color = get_pixel(gs->surfaces.diamond_surface, id%gs->gw, id/gs->gw);
@@ -845,7 +844,7 @@ static void grid_draw(int target) {
     grid_array_draw(target, gs->grid, 255);
 
     overlay_draw(target);
-    
+
     // Draw inspiration ghost
     if (gs->grid_show_ghost) {
         for (int y = 0; y < gs->gh; y++) {

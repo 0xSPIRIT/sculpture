@@ -13,7 +13,7 @@
 static void render_targets_init(void) {
     int width = gs->desktop_w;
     int height = gs->desktop_h;
-
+    
     for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
         switch (i) {
             case RENDER_TARGET_MASTER: {
@@ -42,12 +42,8 @@ static void render_targets_init(void) {
                                                                   true);
                 continue;
             }
-            case RENDER_TARGET_GLOW: {
-                gs->render.render_targets[i] = RenderMakeTargetEx(gs->gw,
-                                                                  gs->gh,
-                                                                  VIEW_STATE_PIXELS,
-                                                                  false,
-                                                                  true);
+            case RENDER_TARGET_GLOW: case RENDER_TARGET_SHADOWS: {
+                gs->render.render_targets[i] = RenderMakeTargetEx(gs->gw, gs->gh, VIEW_STATE_PIXELS, false, true);
                 continue;
             }
             case RENDER_TARGET_PREVIEW: {
@@ -101,7 +97,7 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_S_KEY) = RenderLoadTexture("buttons/S.png");
     GetTexture(TEXTURE_D_KEY) = RenderLoadTexture("buttons/D.png");
 
-    for (enum Tool_Type i = 0; i < TOOL_COUNT; i++) {
+    for (Tool_Type i = 0; i < TOOL_COUNT; i++) {
         char filename[128] = {0};
         char path[128] = {0};
 

@@ -12,6 +12,6 @@ static void load_game(void) {
     if (!fp) return;
     fscanf(fp, "%d", &gs->level_current);
     fclose(fp);
-    
+
     if (gs->level_current < 0 || gs->level_current > 11) gs->level_current = 0;
 }
