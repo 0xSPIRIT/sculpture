@@ -163,7 +163,6 @@ static void item_draw(int target, Item item, int x, int y, int w, int h) {
     text_data.x = x+w;
     text_data.y = y+h;
     text_data.alignment = ALIGNMENT_BOTTOM_RIGHT;
-    text_data.alpha = 255;
     text_data.render_type = TEXT_RENDER_LCD;
 
     RenderText(target, &text_data);
@@ -226,7 +225,6 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
             text_data.y = (int) (bounds.y - Scale(10));
             text_data.alignment = ALIGNMENT_CENTER;
             text_data.render_type = TEXT_RENDER_BLENDED;
-            text_data.alpha = 255;
 
             RenderText(target, &text_data);
         }
@@ -244,14 +242,13 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
                 Red(SLOT_TEXT_COLOR),
                 Green(SLOT_TEXT_COLOR),
                 Blue(SLOT_TEXT_COLOR),
-                128
+                255
             };
             text_data.x = (int) (bounds.x + slot->w/2);
             text_data.y = (int) (bounds.y + bounds.h + Scale(13));
             text_data.alignment = ALIGNMENT_CENTER;
             text_data.render_type = TEXT_RENDER_BLENDED;
-            text_data.alpha = 255;
-
+            
             RenderText(target, &text_data);
         }
     }

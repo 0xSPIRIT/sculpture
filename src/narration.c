@@ -9,13 +9,14 @@ static void narrator_draw_text_blended(int i,
 {
     char identifier[64] = {0};
     sprintf(identifier, "narrator %d", i);
+    
+    col.a = max(min(gs->narrator.alpha, 255), 0);
 
     RenderTextQuick(RENDER_TARGET_MASTER,
                     identifier,
                     font,
                     str,
                     col,
-                    max(min(gs->narrator.alpha, 255), 0),
                     x,
                     y,
                     out_w,

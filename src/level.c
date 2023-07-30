@@ -90,7 +90,7 @@ static void levels_setup(void) {
     level_add("Monster",
               RES_DIR "lvl/desired/level 6.png",
               RES_DIR "lvl/initial/level 6.png",
-              EFFECT_RAIN);
+              EFFECT_NONE);
     level_add("Monster (II)",
               RES_DIR "lvl/desired/level 7.png",
               RES_DIR "lvl/initial/level 7.png",
@@ -443,7 +443,6 @@ static void level_draw_intro(Level *level) {
                     font,
                     name,
                     BLACK,
-                    255,
                     gs->game_width/2 - width/2+5,
                     64+5,
                     null,
@@ -454,7 +453,6 @@ static void level_draw_intro(Level *level) {
                     font,
                     name,
                     WHITE,
-                    255,
                     gs->game_width/2 - width/2,
                     64,
                     null,
@@ -501,7 +499,6 @@ static void level_draw_name_intro(int target, Level *level, SDL_Rect rect) {
                     gs->fonts.font,
                     string,
                     WHITE,
-                    255,
                     x,
                     y,
                     null,
@@ -544,7 +541,7 @@ static void level_draw_outro(int target, Level *level) {
     RenderColor(0, 0, 0, 0);
     RenderClear(outro);
 
-    Uint8 alpha = 255;
+    const Uint8 alpha = 255;
 
     SDL_Rect rect = {gs->S*size/8, GUI_H + gs->S*size/2 - (gs->S*3*size/4)/2, gs->S*3*size/4, gs->S*3*size/4};
     RenderColor(0, 0, 0, alpha);
@@ -568,7 +565,6 @@ static void level_draw_outro(int target, Level *level) {
                     gs->fonts.font,
                     "What Max intended",
                     WHITE,
-                    alpha,
                     dx,
                     dy,
                     null,
@@ -579,7 +575,6 @@ static void level_draw_outro(int target, Level *level) {
                     gs->fonts.font,
                     "The result",
                     WHITE,
-                    alpha,
                     dx+rect.w - LEVEL_MARGIN - scale*size - margin,
                     dy,
                     null,
@@ -611,40 +606,39 @@ static void level_draw_outro(int target, Level *level) {
 
     //~ Buttons
 
-    SDL_Color color_next_level = (SDL_Color){255,255,255,255};
-
     { // Next level button
-        int x, y;
-        int w, h;
-
-        x = rect.x + rect.w - Scale(200);
-        y = rect.y + rect.h - margin - Scale(20);
-
-        RenderTextQuick(outro,
-                        "next level",
-                        gs->fonts.font,
-                        "Next Level [n]",
-                        color_next_level,
-                        255,
-                        x,
-                        y,
-                        &w,
-                        &h,
-                        false);
+        Render_Text_Data text_data = {0};
+        strcpy(text_data.identifier, "nextlevel");
+        text_data.font = gs->fonts.font;
+        strcpy(text_data.str, "Next Level"),
+        text_data.x = rect.x + rect.w - margin;
+        text_data.y = rect.y + rect.h - 3 * margin/4;
+        text_data.foreground = WHITE;
+        text_data.alignment = ALIGNMENT_BOTTOM_RIGHT;
+        text_data.render_type = TEXT_RENDER_BLENDED;
+        
+        RenderText(outro, &text_data);
+        
+        SDL_Rect button_rect = {
+            text_data.draw_x,
+            text_data.draw_y,
+            text_data.texture.width,
+            text_data.texture.height,
+        };
 
         SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
-        if (is_point_in_rect(mouse, (SDL_Rect){x,y,w,h})) {
+        if (is_point_in_rect(mouse, button_rect)) {
             RenderColor(0,0,0,64);
-            RenderFillRect(outro, (SDL_Rect){x,y,w,h});
+            RenderFillRect(outro, button_rect);
         }
 
         Button b = {0};
         b.texture = null;
         b.on_pressed = null;
-        b.x = x;
-        b.y = y;
-        b.w = w;
-        b.h = h;
+        b.x = button_rect.x;
+        b.y = button_rect.y;
+        b.w = button_rect.w;
+        b.h = button_rect.h;
         b.index = -1;
 
         bool clicked = button_tick(&b, null);
@@ -654,36 +648,38 @@ static void level_draw_outro(int target, Level *level) {
     }
 
     { // Close button
-        int x, y, w, h;
-
-        x = rect.x + margin;
-        y = rect.y + rect.h - margin - Scale(20);
-
-        RenderTextQuick(outro,
-                        "close",
-                        gs->fonts.font,
-                        "Close [f]",
-                        (SDL_Color){128, 128, 128, alpha},
-                        255,
-                        x,
-                        y,
-                        &w,
-                        &h,
-                        false);
+        Render_Text_Data text_data = {0};
+        strcpy(text_data.identifier, "outroclose");
+        text_data.font = gs->fonts.font;
+        strcpy(text_data.str, "Close"),
+        text_data.x = rect.x + margin;
+        text_data.y = rect.y + rect.h - 3 * margin/4;
+        text_data.foreground = WHITE;
+        text_data.alignment = ALIGNMENT_BOTTOM_LEFT;
+        text_data.render_type = TEXT_RENDER_BLENDED;
+        
+        RenderText(outro, &text_data);
+        
+        SDL_Rect button_rect = {
+            text_data.draw_x,
+            text_data.draw_y,
+            text_data.texture.width,
+            text_data.texture.height,
+        };
 
         SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
-        if (is_point_in_rect(mouse, (SDL_Rect){x,y,w,h})) {
+        if (is_point_in_rect(mouse, button_rect)) {
             RenderColor(0,0,0,64);
-            RenderFillRect(outro, (SDL_Rect){x,y,w,h});
+            RenderFillRect(outro, button_rect);
         }
 
         Button b = {0};
         b.texture = null;
         b.on_pressed = null;
-        b.x = x;
-        b.y = y;
-        b.w = w;
-        b.h = h;
+        b.x = button_rect.x;
+        b.y = button_rect.y;
+        b.w = button_rect.w;
+        b.h = button_rect.h;
         b.index = -1;
 
         bool clicked = button_tick(&b, null);
@@ -821,7 +817,7 @@ static void level_draw_outro_or_play(Level *level) {
     draw_rain_splashes(target, &gs->current_effect.rain);
     dust_grid_run  (target);
     grid_draw_glow (target);
-    shadows_draw   (target);
+    //shadows_draw   (target);
 
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {

@@ -1,6 +1,4 @@
 static void shadows_draw(int target) {
-    (void) target;
-#if 0    
     Texture *texture = &RenderTarget(RENDER_TARGET_SHADOWS)->texture;
     Uint32 *pixels;
     int pitch;
@@ -14,7 +12,7 @@ static void shadows_draw(int target) {
         Uint8 a, b, g, r;
         
         a = 255;
-        b = 127;
+        b = 0;
         g = 0;
         r = 0;
         
@@ -29,5 +27,4 @@ static void shadows_draw(int target) {
         gs->gw, gs->gh
     };
     RenderTargetToTarget(target, RENDER_TARGET_SHADOWS, null, &dst);
-#endif
 }

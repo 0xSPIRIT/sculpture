@@ -132,7 +132,6 @@ static void tutorial_rect_run(int target) {
                         tut->font,
                         tut->lines[i],
                         WHITE,
-                        255,
                         dst.x,
                         dst.y,
                         &dst.w,

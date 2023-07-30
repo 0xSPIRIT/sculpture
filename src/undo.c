@@ -31,7 +31,7 @@ static Save_State *current_state(void) {
 
 static void save_state_to_next(void) {
     gs->has_player_interacted_since_last_state = false;
-
+    
     if (gs->save_state_count == MAX_UNDO) {
         // Move everything back by one, destroying the first
         // save state and leaving the last slot open.
@@ -107,6 +107,8 @@ static void save_state_to_next(void) {
         state->source_cell[i] = gs->levels[gs->level_current].source_cell[i];
     }
     state->source_cell_count = gs->levels[gs->level_current].source_cell_count;
+    
+    Log("Count: %d\n", gs->save_state_count);
 }
 
 static bool is_current_grid_same_as(Save_State *state) {
@@ -190,10 +192,10 @@ static void undo(void) {
     }
 
     if (!gs->gui.popup && gs->has_player_interacted_since_last_state) {//is_current_grid_same_as(current_state())) {
-        if (gs->save_state_count == 1) {
+        if (gs->save_state_count <= 1) {
             return;
         }
-
+        
         set_state(gs->save_state_count-2);
         gs->save_state_count--;
     } else {

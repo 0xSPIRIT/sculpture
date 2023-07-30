@@ -140,7 +140,6 @@ static void converter_draw(int target, Converter *converter) {
                     gs->fonts.font_courier,
                     converter->name,
                     ColorFromInt(CONVERTER_NAME_COLOR),
-                    255,
                     (int) (converter->x + margin),
                     (int) (converter->y + margin + GUI_H),
                     null,

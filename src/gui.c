@@ -135,6 +135,13 @@ static void gui_draw_wasd_popup(int target) {
 }
 
 static void gui_click_overlay_button(void) {
+    bool special_case = (gs->level_current+1 == 7);
+    
+    if (gs->overlay.show && special_case) {
+        gs->overlay.show = false;
+        return;
+    }
+    
     if (gs->overlay.show && gs->overlay.alpha_coefficient == OVERLAY_ALPHA_1) {
         gs->overlay.alpha_coefficient = OVERLAY_ALPHA_2;
     } else if (gs->overlay.show && gs->overlay.alpha_coefficient == OVERLAY_ALPHA_2) {
@@ -547,8 +554,8 @@ static void gui_draw_profile(int target) {
             255,
             255,
             0,
+            255,
         };
-        text_data.alpha = 255;
         text_data.background = BLACK;
         text_data.render_type = TEXT_RENDER_LCD;
 
@@ -567,7 +574,6 @@ static void gui_draw_profile(int target) {
         text_data.y = GUI_H+Scale(50)+c;
         text_data.foreground = WHITE;
         text_data.background = BLACK;
-        text_data.alpha = 255;
 
         RenderText(target, &text_data);
 

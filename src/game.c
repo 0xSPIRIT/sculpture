@@ -288,7 +288,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
-            case SDLK_4: case SDLK_o: {
+            case SDLK_4: {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     set_text_field("Output current grid to image:", "../", level_output_to_png);
                 } else {
@@ -297,20 +297,8 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
-            case SDLK_u: {
-                objects_reevaluate();
-                break;
-            }
             case SDLK_z: {
-                if (input->keys[SDL_SCANCODE_LCTRL]) {
-                    if (input->keys[SDL_SCANCODE_LSHIFT]) {
-                        set_text_field("Go to State", "", set_state_to_string_hook);
-                    } else {
-                        undo();
-                    }
-                } else {
-                    undo();
-                }
+                undo();
                 break;
             }
             case SDLK_q: {

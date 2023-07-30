@@ -402,10 +402,8 @@ static bool _has_text_data_changed(Render_Text_Data text_old,
     if (text_old.game_scale != text_new.game_scale)
         return true;
 
-    // Compare both foregroud and background.
-    if (memcmp(&text_old.foreground,
-               &text_new.foreground,
-               sizeof(SDL_Color)*2) != 0)
+    // Compare background only, not foreground.
+    if (memcmp(&text_old.background, &text_new.background, sizeof(SDL_Color)) != 0)
         return true;
 
     return false;
@@ -490,7 +488,6 @@ RENDERAPI void RenderTextQuick(int target_enum,
                                Font *font,
                                const char *str,
                                SDL_Color color,
-                               Uint8 alpha,
                                int x,
                                int y,
                                int *w,
@@ -507,7 +504,6 @@ RENDERAPI void RenderTextQuick(int target_enum,
     text_data.y = y;
     text_data.alignment = ALIGNMENT_TOP_LEFT;
     text_data.render_type = TEXT_RENDER_BLENDED;
-    text_data.alpha = alpha;
     text_data.force_update = force_redraw;
 
     RenderText(target_enum, &text_data);
@@ -599,19 +595,22 @@ RENDERAPI void RenderText(int target_enum, Render_Text_Data *text_data) {
         };
 
         RenderApplyAlignmentToRect(&dst, text_data->alignment);
-
+        
         // NOTE: We use the text data's alpha here, not the cached alpha,
         //       since it may have changed. We obviously don't update
         //       the cache if the alpha of the draw call changed.
         //       Same concept behind using text_data's x and y for the
         //       dst rect.
-        RenderTextureAlphaMod(&cache_object->texture, text_data->alpha);
+        RenderTextureAlphaMod(&cache_object->texture, text_data->foreground.a);
         RenderTexture(target_enum, &cache_object->texture, null, &dst);
 
-        // Retain the text_data's alpha.
-        Uint8 text_data_alpha = text_data->alpha;
+        // Retain the text_data's color, as well as the draw_x and draw_y
+        SDL_Color text_data_color = text_data->foreground;
         *text_data = *cache_object;
-        text_data->alpha = text_data_alpha;
+        text_data->foreground = text_data_color;
+        
+        text_data->draw_x = dst.x;
+        text_data->draw_y = dst.y;
 
         return;
     }
@@ -662,8 +661,10 @@ RENDERAPI void RenderText(int target_enum, Render_Text_Data *text_data) {
     };
 
     RenderApplyAlignmentToRect(&dst, text_data->alignment);
-
-    RenderTextureAlphaMod(&text_data->texture, text_data->alpha);
+    text_data->draw_x = dst.x;
+    text_data->draw_y = dst.y;
+    
+    RenderTextureAlphaMod(&text_data->texture, text_data->foreground.a);
     RenderTexture(target_enum, &text_data->texture, null, &dst);
 }
 

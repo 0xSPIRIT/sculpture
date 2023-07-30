@@ -176,7 +176,6 @@ static void tooltip_draw(int output_target, Tooltip *tooltip) {
                         gs->fonts.font,
                         tooltip->str[i],
                         text_color,
-                        255,
                         dsts[i].x,
                         dsts[i].y,
                         null,

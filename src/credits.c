@@ -31,10 +31,10 @@ static void credits_run(int target) {
             text_data.x = gs->game_width/2;
             text_data.y = gs->game_height/2 - 100;
             text_data.foreground = col;
+            text_data.foreground.a = co;
             text_data.background = WHITE;
             text_data.alignment = ALIGNMENT_CENTER;
             text_data.render_type = TEXT_RENDER_BLENDED;
-            text_data.alpha = co;
 
             RenderText(target,
                        &text_data);

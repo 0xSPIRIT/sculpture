@@ -58,8 +58,8 @@ typedef struct {
     Alignment alignment;
     Text_Render_Type render_type;
     bool force_update;
-    Uint8 alpha;
 
+    int draw_x, draw_y;   // OUT: If alignment is not top-left, it differs from x and y.
     f64 game_scale;       // OUT: The scale of the game at the time of rendering.
     Texture texture;      // OUT: The texture generated
     SDL_Surface *surface; // OUT: The surface generated
@@ -125,7 +125,7 @@ RENDERAPI void RenderTextureExRelative          (int target_enum, Texture *textu
 RENDERAPI void RenderTextureRelative            (int target, Texture *texture, SDL_Rect *src, SDL_Rect *dst);
 
 RENDERAPI void RenderText                       (int target, Render_Text_Data *text_data);
-RENDERAPI void RenderTextQuick                  (int target_enum, const char *identifier, Font *font, const char *str, SDL_Color color, Uint8 alpha, int x, int y, int *w, int *h, bool force_redraw);
+RENDERAPI void RenderTextQuick                  (int target_enum, const char *identifier, Font *font, const char *str, SDL_Color color, int x, int y, int *w, int *h, bool force_redraw);
 RENDERAPI void RenderCleanupTextCache           (Render_Text_Data_Cache *cache);
 RENDERAPI void RenderSetFontSize                (Font *font, int size);
 RENDERAPI void RenderReadPixels                 (int target, Uint8 *pixels, int pitch);
