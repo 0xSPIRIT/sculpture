@@ -4,7 +4,7 @@
 #define NARRATOR_ALPHA 10
 #define NARRATOR_HANG_TIME 14 // Frames
 
-#define SHOW_NARRATION ALASKA_RELEASE_MODE
+#define SHOW_NARRATION 1//ALASKA_RELEASE_MODE
 
 ////////////////////////////////////////////////////////////////
 #define NARRATION_LEVEL_1 \
@@ -34,14 +34,13 @@
 #define NARRATION_LEVEL_5 \
 "When he was younger, Max\r"\
 "frequently admired popular artwork.\n"\
-"Over the years, hundreds integrated into his head.\r"\
-"In an unpredictable manner, they combined and fused,\r"\
-"resulting in something new.\n"\
-"It was a gaseous, abstract substance, made of\r"\
-"the processed remains of others' creations.\n"\
-"It advised him what he could create,\r"\
-"and what he shouldn't-\n"\
-"What he liked, and what he didn't.\n"
+"Over the years, dozens molded into his head,\r"\
+"combining into a soup of likes and dislikes-\n"\
+"Flowing streams, interlaced with notions of\r"\
+"greatness, waiting to be.\n"\
+"By then, the liquid that had formed precipitated\r"\
+"torrentially from Max's mind.\n"\
+"And so, the rain poured.\n"
 
 #define NARRATION_LEVEL_7 \
 "Surely by then he must've been ready.\n"\

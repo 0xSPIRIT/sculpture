@@ -1,9 +1,9 @@
 # TODO
 
-  - The thing with the steam isn't consistent as it only appears
+  x The thing with the steam isn't consistent as it only appears
     once in the game. Also, sometimes the rain is just there for
     show, eg. level 6.
-     - Maybe rework the narration for level 5.
+     x Maybe rework the narration for level 5.
 
   - Test out some shadows (WIP) [shadows.c]
 

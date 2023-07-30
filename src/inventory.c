@@ -309,9 +309,16 @@ static void item_tick(Item *item, Slot *slot, int x, int y, int w, int h) {
     // and this item is not currently being held.
 
     bool can_place_item = false;
+    bool can_take_item = true;
 
     can_place_item = can_place_item_in_slot(gs->item_holding.type, slot->type);
-    if (!gs->item_holding.type) can_place_item = true;
+    if (!gs->item_holding.type)
+        can_place_item = true;
+    
+    if (gs->level_current+1 == 4 && item->type == CELL_UNREFINED_COAL)
+        can_take_item = false;
+    
+    if (!can_take_item) return;
 
     if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
 

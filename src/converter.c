@@ -212,11 +212,11 @@ static void auto_set_material_converter_slots(Converter *converter) {
 static void converter_setup_position(Converter *converter) {
     converter->slots[SLOT_INPUT1].x = converter->w/3.f;
     converter->slots[SLOT_INPUT1].y = GUI_H + converter->h/4.f;
-    strcpy(converter->slots[SLOT_INPUT1].name, "Inp. 1");
+    strcpy(converter->slots[SLOT_INPUT1].name, "Input 1");
 
     converter->slots[SLOT_INPUT2].x = 2.f*converter->w/3.f;
     converter->slots[SLOT_INPUT2].y = GUI_H + converter->h/4.f;
-    strcpy(converter->slots[SLOT_INPUT2].name, "Inp. 2");
+    strcpy(converter->slots[SLOT_INPUT2].name, "Input 2");
 
     if (converter->type == CONVERTER_MATERIAL) {
         converter->slots[SLOT_FUEL].x = 3.f*converter->w/4.f;

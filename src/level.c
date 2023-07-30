@@ -86,7 +86,7 @@ static void levels_setup(void) {
     level_add("Reformation",
               RES_DIR "lvl/desired/level 5.png",
               RES_DIR "lvl/initial/level 5.png",
-              EFFECT_NONE);
+              EFFECT_RAIN);
     level_add("Monster",
               RES_DIR "lvl/desired/level 6.png",
               RES_DIR "lvl/initial/level 6.png",
