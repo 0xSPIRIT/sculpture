@@ -402,6 +402,11 @@ static bool _has_text_data_changed(Render_Text_Data text_old,
     if (text_old.game_scale != text_new.game_scale)
         return true;
 
+    if (text_old.foreground.r != text_new.foreground.r ||
+        text_old.foreground.g != text_new.foreground.g ||
+        text_old.foreground.b != text_new.foreground.b)
+        return true;
+
     // Compare background only, not foreground.
     if (memcmp(&text_old.background, &text_new.background, sizeof(SDL_Color)) != 0)
         return true;
