@@ -1,6 +1,9 @@
 @echo off
 
-set Common_Compiler_Flags=/nologo /Z7 /O2 /fp:fast /GR- /GS- /EHa- /MT /FC /DALASKA_RELEASE_MODE /D_CRT_SECURE_NO_WARNINGS
+rem set Compiler=cl.exe
+set Compiler=clang-cl.exe
+
+set Common_Compiler_Flags=/nologo /w /Z7 /O2 /fp:fast /GR- /GS- /EHa- /MT /FC /DALASKA_RELEASE_MODE /D_CRT_SECURE_NO_WARNINGS
 set Linker_Flags=user32.lib shell32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib SDL2_mixer.lib
 
 if not exist src/win32_main.c goto INVALID_DIR
@@ -14,15 +17,13 @@ IF ERRORLEVEL 1 (
 
 pushd bin_release\
 
-cl.exe %Common_Compiler_Flags% ..\src\win32_main.c %Linker_Flags% SDL2main.lib /link /NOIMPLIB /NOEXP /incremental:no /out:alaska.exe /SUBSYSTEM:windows
+%Compiler% %Common_Compiler_Flags% ..\src\win32_main.c %Linker_Flags% SDL2main.lib /link /NOIMPLIB /NOEXP /incremental:no /out:alaska.exe /SUBSYSTEM:windows
 
 if NOT %errorlevel%==0 (set err=%errorlevel%)
 
 if not exist res\ mkdir res
 rem Copy the resources and its subdirectories
 xcopy /q /y /e /k /h /i ..\res\ res\
-
-del /q win32_main.obj game.obj
 
 popd
 goto end

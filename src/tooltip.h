@@ -2,8 +2,15 @@
 #define MAX_TOOLTIP_LINE_LEN 128
 #define CLAMP_TOOLTIP 1
 
+typedef enum {
+    TOOLTIP_TYPE_OFF,    // Off state
+    TOOLTIP_TYPE_BUTTON, // From GUI Buttons
+    TOOLTIP_TYPE_ITEM,   // From hovering over items
+    TOOLTIP_TYPE_PLACER  // From the placer
+} Tooltip_Type;
+
 typedef struct Tooltip {
-    enum Tooltip_Type type;
+    Tooltip_Type type;
 
     bool set_this_frame;
 

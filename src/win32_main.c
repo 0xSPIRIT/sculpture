@@ -473,7 +473,7 @@ int win32_main(int argc, char **argv) {
             fps++;
         }
 
-//#ifndef ALASKA_RELEASE_MODE
+#ifndef ALASKA_RELEASE_MODE
         Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
         Uint64 size_max = persistent_memory.size;
         f32 percentage = (f32)size_current / (f32)size_max;
@@ -486,7 +486,7 @@ int win32_main(int argc, char **argv) {
                 percentage);
 
         SDL_SetWindowTitle(gs->window, title);
-//#endif
+#endif
     }
 
     game_deinit(gs);
@@ -501,6 +501,9 @@ int WINAPI WinMain(HINSTANCE hInstance,
                    LPSTR     lpCmdLine,
                    int       nShowCmd)
 {
-    (void)hInstance, hPrevInstance, lpCmdLine, nShowCmd;
+    (void)hInstance;
+    (void)hPrevInstance;
+    (void)lpCmdLine;
+    (void)nShowCmd;
     win32_main(0, null);
 }

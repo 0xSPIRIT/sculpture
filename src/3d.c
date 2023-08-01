@@ -105,10 +105,10 @@ static vec2* project(vec3 *input, int count) {
 
         points[i].x = input[i].x / input[i].z;
         points[i].x++; // Make it from 0 to 2
-        points[i].x *= SCALE_3D * (gs->game_width)/2.0;  // Make it from 0 to W
+        points[i].x *= SCALE_3D * (gs->game_width)/2.f;  // Make it from 0 to W
         points[i].y = input[i].y / input[i].z;
         points[i].y++; // Make it from 0 to 2
-        points[i].y *= SCALE_3D * (gs->game_height-GUI_H)/2.0; // Make it from 0 to H
+        points[i].y *= SCALE_3D * (gs->game_height-GUI_H)/2.f; // Make it from 0 to H
     }
 
     return points;
@@ -141,11 +141,11 @@ static void object_draw(Object3D *obj) {
     op[2] = (vec3){-1, +1, obj->z};
     op[3] = (vec3){+1, +1, obj->z};
 
-    f64 dy = 0.0002;
+    f32 dy = 0.0002;
 
-    f64 speed = 1.5f;
+    f32 speed = 1.5f;
 
-    static f64 increasing = 0.0f;
+    static f32 increasing = 0.0f;
 
     switch (obj->state) {
         case OBJECT_ZOOM: {
@@ -154,8 +154,8 @@ static void object_draw(Object3D *obj) {
             if (obj->hold == 0 && obj->z >= 2) {
                 obj->hold = 45;
             } else if (obj->t > 120) {
-                speed = min(1.5f, ((obj->t-120) / 360.0) * speed);
-                obj->z += speed * 0.002;
+                speed = min(1.5f, ((obj->t-120) / 360.f) * speed);
+                obj->z += speed * 0.002f;
                 if (obj->z > 2) obj->z = 2;
                 obj->y += dy;
             }
@@ -173,7 +173,7 @@ static void object_draw(Object3D *obj) {
         case OBJECT_ROTY: case OBJECT_DONE: {
             if (obj->state != OBJECT_DONE) {
                 obj->y += dy;
-                obj->t2 += 0.002;
+                obj->t2 += 0.002f;
                 obj->yrot = smoothstep(obj->t2);
                 obj->yrot *= -M_PI/2;
             }
@@ -195,7 +195,7 @@ static void object_draw(Object3D *obj) {
                 break;
             }
             case OBJECT_ROTY: case OBJECT_DONE: {
-                f64 t = obj->yrot;
+                f32 t = obj->yrot;
 
                 // We comment out the Z part because we're rotating
                 // about the point 0,0,
@@ -210,8 +210,8 @@ static void object_draw(Object3D *obj) {
                 break;
             }
             case OBJECT_FALL: {
-                f64 ty = -obj->yrot;
-                f64 tx = obj->xrot;
+                f32 ty = -obj->yrot;
+                f32 tx = obj->xrot;
 
                 int x = op[i].x;
                 int y = op[i].y;

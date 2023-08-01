@@ -1,6 +1,6 @@
 typedef struct {
     SDL_Surface *surface;
-    float time;
+    f32 time;
 } Background;
 
 static Background background_init(void);

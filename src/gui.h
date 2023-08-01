@@ -6,13 +6,6 @@
 #define ITEM_SIZE (0.0625*gs->game_width)
 
 typedef enum {
-    TOOLTIP_TYPE_OFF,    // Off state
-    TOOLTIP_TYPE_BUTTON, // From GUI Buttons
-    TOOLTIP_TYPE_ITEM,   // From hovering over items
-    TOOLTIP_TYPE_PLACER  // From the placer
-} Tooltip_Type;
-
-typedef enum {
     BUTTON_TOOL_BAR = 1,
     BUTTON_CONVERTER,
     BUTTON_OVERLAY_INTERFACE,
@@ -79,7 +72,6 @@ static void gui_tick(void);
 static void profile_array(Cell *desired, char out[64][CELL_TYPE_COUNT], int *count);
 static void gui_draw_profile();
 static void gui_draw(int target);
-static Popup_Confirm popup_confirm_init();
 static void gui_popup_draw(int target);
 static bool is_cell_stone(int type);
 static int get_cell_tier(int type);
