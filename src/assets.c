@@ -9,6 +9,9 @@
 // This is included only in the platform/SDL layer.
 //
 
+
+//~ Textures and Surfaces
+
 // Creates all render targets for all the levels.
 static void render_targets_init(void) {
     int width = gs->desktop_w;
@@ -162,6 +165,8 @@ static void surfaces_init(Surfaces *surfaces) {
     gs->pixel_format_surf = null;
 }
 
+//~ Fonts
+
 static void fonts_init(Fonts *fonts) {
     fonts->font          = RenderLoadFont("Courier Prime.ttf", Scale(font_sizes[0]));
     fonts->font_times    = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[1]));
@@ -185,11 +190,13 @@ static void fonts_deinit(Fonts *fonts) {
     }
 }
 
+//~ Audio
+
 static void audio_init(Audio *audio) {
     audio->music_titlescreen = Mix_LoadMUS(RES_DIR "audio/titlescreen.ogg");
-    audio->music_creation = Mix_LoadMUS(RES_DIR "audio/music_creation.ogg");
-    audio->ambience1  = Mix_LoadMUS(RES_DIR "audio/ambience1.ogg");
-    audio->music_rain = Mix_LoadMUS(RES_DIR "audio/rain.ogg");
+    
+    audio->ambience1  = Mix_LoadWAV(RES_DIR "audio/ambience1.ogg");
+    audio->music_rain = Mix_LoadWAV(RES_DIR "audio/rain.ogg");
 
     audio->pip = Mix_LoadWAV(RES_DIR "audio/pip.ogg");
 
@@ -227,9 +234,9 @@ static void audio_init(Audio *audio) {
 
 static void audio_deinit(Audio *audio) {
     Mix_FreeMusic(audio->music_titlescreen);
-    Mix_FreeMusic(audio->music_creation);
-    Mix_FreeMusic(audio->ambience1);
-    Mix_FreeMusic(audio->music_rain);
+    
+    Mix_FreeChunk(audio->ambience1);
+    Mix_FreeChunk(audio->music_rain);
 
     for (int i = 0; i < 6; i++)
         Mix_FreeChunk(audio->medium_chisel[i]);

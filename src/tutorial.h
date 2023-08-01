@@ -84,10 +84,10 @@
 #define TUTORIAL_FUEL_CONVERTER_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "The FUEL CONVERTER can be used to create fuel from\n" \
-    "existing material.\n" \
-    "You may use RIGHT CLICK to split an amount of\n"\
-    "material in two.\n" \
+    "- The FUEL CONVERTER can be used to create fuel from\n" \
+    "  existing material.\n" \
+    "- You may use RIGHT CLICK to split an amount of\n"\
+    "  material in two.\n" \
 
 #define TUTORIAL_RECTANGLE_PLACE \
     "Tutorial\n" \

@@ -8,14 +8,6 @@
 
 #define ITEM_COUNT 32
 
-#define Volume(x) ((int) ((f64)(x) * MIX_MAX_VOLUME))
-
-enum {
-    AUDIO_CHANNEL_CHISEL,
-    AUDIO_CHANNEL_NARRATOR,
-    AUDIO_CHANNEL_GUI
-};
-
 // 768x768 is the benchmark resolution I used so when
 // converting to new resolutions, I just put Scale(...)
 // around all the values working with the old 768x768 res.
@@ -64,11 +56,12 @@ typedef enum {
 typedef struct Audio {
     // Music
     Mix_Music *music_titlescreen;
-    Mix_Music *music_creation;
-    Mix_Music *music_rain;
-    Mix_Music *ambience1;
 
     // Chunks
+    
+    Mix_Chunk *music_rain;
+    Mix_Chunk *ambience1;
+    
     Mix_Chunk *sprinkle, *macabre;
     Mix_Chunk *accept;
     Mix_Chunk *pip;
@@ -77,6 +70,9 @@ typedef struct Audio {
     Mix_Chunk *glass_chisel[3];
     Mix_Chunk *small_chisel, *large_chisel;
 } Audio;
+
+
+
 
 enum {
     TEXTURE_LEVEL_BACKGROUNDS,
@@ -128,6 +124,8 @@ enum {
 typedef struct Textures {
     Texture texs[TEXTURE_COUNT];
 } Textures;
+
+
 
 // A bit nasty...
 #define SURFACE_COUNT (55+TOTAL_SLOT_COUNT+CONVERTER_COUNT)

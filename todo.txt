@@ -1,6 +1,6 @@
 # TODO
 
-  - Test out some shadows (WIP) [shadows.c]
+  - Make the rain be used in another level? Feels underused
 
   - Music
      - Ambient: piano, pads/synths, motifs?

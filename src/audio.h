@@ -6,6 +6,15 @@
 
 #define AUDIO_PLAY_AMBIANCE 1
 
+#define Volume(x) ((int) ((f64)(x) * MIX_MAX_VOLUME))
+
+enum {
+    AUDIO_CHANNEL_CHISEL,
+    AUDIO_CHANNEL_NARRATOR,
+    AUDIO_CHANNEL_GUI,
+    AUDIO_CHANNEL_MUSIC
+};
+
 typedef struct {
     int ambience; // Current ambience
     f64 ambience_volume, ambience_volume_to;
@@ -18,7 +27,7 @@ enum {
 };
 
 void audio_halt_music(void);
-void audio_play_music(Mix_Music *music);
+void audio_play_music(Mix_Chunk *music);
 void audio_set_ambience_accordingly(void);
 void audio_set_ambience_levels(void);
 void audio_set_ambience(int ambience);

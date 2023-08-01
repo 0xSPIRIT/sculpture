@@ -1,14 +1,15 @@
 void audio_halt_music(void) {
-    Mix_HaltMusic();
+    Mix_HaltChannel(AUDIO_CHANNEL_MUSIC);
     gs->audio_handler.ambience = 0;
     gs->audio_handler.ambience_volume = 0;
     gs->audio_handler.ambience_volume_to = 0;
 }
 
-void audio_play_music(Mix_Music *music) {
-    Mix_PlayMusic(music, -1);
+void audio_play_music(Mix_Chunk *music) {
+    Mix_PlayChannel(AUDIO_CHANNEL_MUSIC, music, -1);
 }
 
+// Called every frame.
 void audio_set_ambience_accordingly(void) {
     Level *level = &gs->levels[gs->level_current];
 
@@ -70,5 +71,5 @@ void audio_set_ambience_levels(void) {
     gs->audio_handler.ambience_volume = interpolate(gs->audio_handler.ambience_volume,
                                                     gs->audio_handler.ambience_volume_to,
                                                     0.5);
-    Mix_VolumeMusic(gs->audio_handler.ambience_volume);
+    Mix_Volume(AUDIO_CHANNEL_MUSIC, gs->audio_handler.ambience_volume);
 }

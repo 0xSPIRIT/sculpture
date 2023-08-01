@@ -701,10 +701,7 @@ static void level_draw_outro(int target, Level *level) {
     };
 
     RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_OUTRO)->texture, level->outro_alpha);
-    RenderTargetToTarget(target,
-                         RENDER_TARGET_OUTRO,
-                         &src,
-                         &dst);
+    RenderTargetToTarget(target, RENDER_TARGET_OUTRO, &src, &dst);
 }
 
 static void level_get_cells_from_image(const char *path,
@@ -809,15 +806,17 @@ static void level_draw_outro_or_play(Level *level) {
     else
         RenderColor(0, 0, 0, 255);
     RenderClear(target);
+    
+    // The meat!
 
-    background_draw(target, &gs->background);
+    //background_draw(target, &gs->background);
     effect_draw    (target, &gs->current_effect, true);
+    draw_rain_splashes(target, &gs->current_effect.rain);
     grid_draw      (target);
     game_draw_table(target);
-    draw_rain_splashes(target, &gs->current_effect.rain);
     dust_grid_run  (target);
-    grid_draw_glow (target);
     //shadows_draw   (target);
+    grid_draw_glow (target);
 
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
