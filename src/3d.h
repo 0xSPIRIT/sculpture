@@ -1,6 +1,5 @@
 #ifdef ALASKA_RELEASE_MODE
-    //#define SCALE_3D 1
-    #define SCALE_3D 0.5
+    #define SCALE_3D 1
 #else
     #define SCALE_3D 0.5
 #endif

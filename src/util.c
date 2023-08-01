@@ -70,23 +70,19 @@ static bool ispunctuation(char c) {
     return false;
 }
 
-static vec2 vec2_mult(vec2 a, vec2 b) {
-    return (vec2){a.x*b.x, a.y*b.y};
-}
-
-static vec2 vec2_scale(vec2 a, f32 scale) {
+static inline vec2 vec2_scale(vec2 a, f32 scale) {
     return (vec2){a.x*scale, a.y*scale};
 }
 
-static vec2 vec2_add(vec2 a, vec2 b) {
+static inline vec2 vec2_add(vec2 a, vec2 b) {
     return (vec2){a.x+b.x, a.y+b.y};
 }
 
-static vec2 vec2_add3(const vec2 a, const vec2 b, const vec2 c) {
+static inline vec2 vec2_add3(const vec2 a, const vec2 b, const vec2 c) {
     return (vec2){a.x+b.x+c.x, a.y+b.y+c.y};
 }
 
-static vec3 vec3_add(vec3 a, vec3 b) {
+static inline vec3 vec3_add(vec3 a, vec3 b) {
     return (vec3){a.x+b.x, a.y+b.y, a.z+b.z};
 }
 

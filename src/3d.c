@@ -1,92 +1,63 @@
-//
 // Simple 3D Software Renderer
-//
 
-typedef struct {
-    int start_y, end_y;
-    Uint32 *pixels;
-    SDL_Surface *surf;
-
-    int w;
-    Vertex points[3];
-} TriangleDrawData;
-
-// 3 vertices required
-
-static void draw_triangle_row(Uint32 *pixels, SDL_Surface *surf, int w, int y, Vertex *p) {
+static inline void draw_triangle(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p) {
     const vec2 t[3] = {p[0].p, p[1].p, p[2].p};
-    const SDL_PixelFormat *format = surf->format;
+    const Uint32 *spixels = (Uint32*)surf->pixels;
 
-    for (int x = 0; x < w; x++) {
-        f64 denominator = (t[1].y - t[2].y)*(t[0].x - t[2].x) + (t[2].x - t[1].x)*(t[0].y - t[2].y);
+    int sw = surf->w;
+    int sh = surf->h;
 
-        f64 w0 = (t[1].y - t[2].y)*(x - t[2].x) + (t[2].x - t[1].x)*(y - t[2].y);
-        w0 /= denominator;
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            f32 denominator = (t[1].y - t[2].y)*(t[0].x - t[2].x) + (t[2].x - t[1].x)*(t[0].y - t[2].y);
 
-        if (w0 < 0) continue; // If any weight < 0, the point is not in the triangle
+            f32 w0 = (t[1].y - t[2].y)*(x - t[2].x) + (t[2].x - t[1].x)*(y - t[2].y);
+            if (w0*denominator < 0) continue;
 
-        f64 w1 = (t[2].y - t[0].y)*(x - t[2].x) + (t[0].x - t[2].x)*(y - t[2].y);
-        w1 /= denominator;
+            w0 /= denominator;
 
-        if (w1 < 0) continue; // If any weight < 0, the point is not in the triangle
+            f32 w1 = (t[2].y - t[0].y)*(x - t[2].x) + (t[0].x - t[2].x)*(y - t[2].y);
+            if (w1*denominator < 0) continue; // If any weight < 0, the point is not in the triangle
 
-        f64 w2 = 1.00001 - w0 - w1; // Hack. Should be 1 , but weird glitches
+            w1 /= denominator;
 
-        if (w2 < 0) continue; // If any weight < 0, the point is not in the triangle
+            f32 w2 = 1.00001f - w0 - w1; // Hack. Should be 1 , but weird glitches
 
-        vec2 tex_coord = vec2_add3(vec2_scale(p[0].tex, w0),
-                                   vec2_scale(p[1].tex, w1),
-                                   vec2_scale(p[2].tex, w2));
+            if (w2 < 0) continue; // If any weight < 0, the point is not in the triangle
 
-        SDL_Color c = get_pixel(surf, tex_coord.x * surf->w, tex_coord.y * surf->h);
-        Uint32 pixel = SDL_MapRGB(format, c.r, c.g, c.b);
+            //const vec2 tex_coord = vec2_add3(vec2_scale(p[0].tex, w0),
+            //                                 vec2_scale(p[1].tex, w1),
+            //                                 vec2_scale(p[2].tex, w2));
 
-        pixels[x+y*w] = pixel;
+            const vec2 a = (vec2){p[0].tex.x*w0, p[0].tex.y*w0};
+            const vec2 b = (vec2){p[1].tex.x*w1, p[1].tex.y*w1};
+            const vec2 c = (vec2){p[2].tex.x*w2, p[2].tex.y*w2};
+
+            const vec2 tex_coord = (vec2){
+                a.x+b.x+c.x,
+                a.y+b.y+c.y
+            };
+
+            int xx = tex_coord.x * sw;//surf->w;
+            int yy = tex_coord.y * sh;//surf->h;
+
+            xx %= sw;//surf->w;
+            yy %= sh;//surf->h;
+
+            pixels[x+y*w] = spixels[xx+yy*surf->h];
+        }
     }
 }
-
-static void draw_triangle(void *ptr) {
-    TriangleDrawData *data = (TriangleDrawData*)ptr;
-
-    for (int y = data->start_y; y < data->end_y; y++) {
-        draw_triangle_row(data->pixels, data->surf, data->w, y, data->points);
-    }
-}
-
-#define PROFILE 0
 
 // Draw a surface given 4 points.
-static void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p) {
-#if PROFILE
-    LARGE_INTEGER start;
-    QueryPerformanceCounter(&start);
-#endif
-
+static inline void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p) {
     // We must use the vertex array as a set of
     // two triangles, in order to use classical
     // interpolation techniques for texture
     // coordinates and positions.
 
-    TriangleDrawData data = {
-        0, h,
-        pixels,
-        surf,
-        w,
-        {p[0], p[1], p[2]}
-    };
-    draw_triangle(&data);
-
-#if PROFILE
-    LARGE_INTEGER end;
-    QueryPerformanceCounter(&end);
-
-    LARGE_INTEGER frequency;
-    QueryPerformanceFrequency(&frequency);
-
-    f64 d = (end.QuadPart - start.QuadPart) / (f64) frequency.QuadPart;
-
-    Log("Function: %f ms\n", d*1000);
-#endif
+    draw_triangle(w, h, surf, pixels, p);
+    draw_triangle(w, h, surf, pixels, p+1);
 }
 
 static void object_activate(Object3D *obj) {
@@ -272,20 +243,6 @@ static void object_draw(Object3D *obj) {
         final_points[i].p.y = projected[i].y;
     }
 
-#if 0
-    final_points[0].col.x = 255;
-    final_points[0].col.y = 0;
-    final_points[0].col.z = 0;
-
-    final_points[1].col.x = 0;
-    final_points[1].col.y = 255;
-    final_points[1].col.z = 0;
-
-    final_points[2].col.x = 0;
-    final_points[2].col.y = 0;
-    final_points[2].col.z = 255;
-#endif
-
     final_points[0].tex.x = 0;
     final_points[0].tex.y = 0;
 
@@ -312,14 +269,9 @@ static void object_draw(Object3D *obj) {
     int w = SCALE_3D * gs->game_width;
     int h = SCALE_3D * (gs->game_height-GUI_H);
 
-#ifdef __EMSCRIPTEN__
     memset(pixels, 0, pitch*h);
-#else
-    ZeroMemory(pixels, pitch*h);
-#endif
 
     draw_image_skew(w, h, gs->surfaces.a, pixels, final_points);
-    draw_image_skew(w, h, gs->surfaces.a, pixels, final_points+1);
 
     RenderUnlockTexture(&RenderTarget(RENDER_TARGET_3D)->texture);
 
