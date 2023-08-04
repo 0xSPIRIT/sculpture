@@ -52,7 +52,6 @@ void audio_set_ambience_levels(void) {
     f64 volume = 0;
 
     switch (gs->audio_handler.ambience) {
-        case AMBIENCE_NONE: { } break;
         case AMBIENCE_NORMAL: {
             volume = AUDIO_AMBIENCE_VOLUME;
         } break;

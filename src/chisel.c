@@ -647,7 +647,7 @@ static void chisel_tick(Chisel *chisel) {
                 chisel->y = idx / gs->gw;
             }
 
-            if (gs->input.keys_pressed[SDL_SCANCODE_LSHIFT]) {
+            if (gs->input.mouse_pressed[SDL_BUTTON_RIGHT] || gs->input.keys_pressed[SDL_SCANCODE_LSHIFT]) {
                 chisel->state = CHISEL_STATE_ROTATING;
                 move_mouse_to_grid_position(chisel->x, chisel->y);
             }
@@ -660,7 +660,7 @@ static void chisel_tick(Chisel *chisel) {
             int x = chisel->x;
             int y = chisel->y;
 
-            // Hardcode
+            // Disgusting hardcode to move the chisel's position to the grid position.
             if (gs->gw == 128) {
                 x -= 32;
             }
@@ -674,12 +674,12 @@ static void chisel_tick(Chisel *chisel) {
 
             f32 step = 45.0;
             chisel->angle /= step;
-            chisel->angle = ((int)chisel->angle) * step;
+            chisel->angle = (int)(chisel->angle) * step;
             chisel->angle -= 180;
 
             gs->chisel_small.angle = gs->chisel_medium.angle = gs->chisel_large.angle = chisel->angle;
 
-            if (!gs->input.keys[SDL_SCANCODE_LSHIFT]) {
+            if (!(gs->input.mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) && !gs->input.keys[SDL_SCANCODE_LSHIFT]) {
                 chisel->state = CHISEL_STATE_IDLE;
                 move_mouse_to_grid_position(chisel->x, chisel->y);
             }

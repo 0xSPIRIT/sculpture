@@ -1,4 +1,4 @@
-#define SAVE_PATH "save.sav"
+#define SAVE_PATH "save.file"
 
 static void save_game(void) {
     FILE *fp = fopen(SAVE_PATH, "w");

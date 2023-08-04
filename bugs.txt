@@ -1,5 +1,0 @@
-# Bugs
-
-- Crash on level 7 when trying to press N to go to the next
-  level. The buttons in the confirmations seem to be pointing to
-  nowhere useful.

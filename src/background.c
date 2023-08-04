@@ -4,7 +4,7 @@ static Background background_init(void) {
     return background;
 }
 
-static void background_draw(int target, Background *bg) {
+static void background_draw_disco(int target, Background *bg) {
     int w = bg->surface->w, h = bg->surface->h;
     (void)w, h;
 
@@ -16,20 +16,30 @@ static void background_draw(int target, Background *bg) {
     gcoeff = NormalSine(bg->time+M_PI);
     bcoeff = NormalSine(bg->time+M_PI/2);
 
-#if 0
     for (int i = 0; i < w*h; i++) {
         f64 r, g, b;
 
-        r = 0;
-        g = 0;
-        b = 0;
+        r = 100*rcoeff;
+        g = 100*gcoeff;
+        b = 100*bcoeff;
 
+        // Build pixel from rgb
         Uint32 pixel = 0xFF000000 | (Uint8)b << 16 | (Uint8)g << 8 | (Uint8)r;
         set_pixel(bg->surface, i%w, i/w, pixel);
     }
-#endif
 
     Texture texture = RenderCreateTextureFromSurface(bg->surface);
     RenderTexture(target, &texture, null, null);
     RenderDestroyTexture(&texture);
 }
+
+static void background_draw(int target, Background *bg) {
+    bool disco_mode = true;
+    
+    if (disco_mode) {
+        background_draw_disco(target, bg);
+    } else {
+        // the actual stuff
+    }
+}
+    

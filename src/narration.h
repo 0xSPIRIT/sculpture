@@ -4,7 +4,7 @@
 #define NARRATOR_ALPHA 10
 #define NARRATOR_HANG_TIME 14 // Frames
 
-#define SHOW_NARRATION 0//ALASKA_RELEASE_MODE
+#define SHOW_NARRATION ALASKA_RELEASE_MODE
 
 ////////////////////////////////////////////////////////////////
 #define NARRATION_LEVEL_1 \
@@ -80,10 +80,10 @@
 "but this time, he was ready.\n"\
 "A glittering white radiated from Max's imagination,\r"\
 "outlining an object with layers of diamond and ice.\n"\
-"The prize taunted him, with Max aching to reveal it.\n"\
-"Max said,\r"\
+"The prize taunted Max. He ached to reveal it.\n"\
+"He said,\r"\
 "\"I can do this.\"\n"\
-"\"I know I can do this.\"\n"\
+"\"I know I can.\"\n"\
 "\"I have to.\"\n"\
 
 #define NARRATION_LEVEL_11 \

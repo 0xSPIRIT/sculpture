@@ -53,9 +53,9 @@
 
 // Some function pointers for the hot-loading.
 
-typedef void (*GameInitProc)(Game_State *state);
-typedef bool (*GameTickEventProc)(Game_State *state, SDL_Event *event);
-typedef void (*GameRunProc)(Game_State *state);
+typedef void (*GameInitProc)(Game_State*);
+typedef bool (*GameTickEventProc)(Game_State*, SDL_Event*);
+typedef void (*GameRunProc)(Game_State*);
 
 typedef struct Game_Code {
     HMODULE dll;
@@ -74,7 +74,7 @@ static void fail(int code) {
     __debugbreak();
 #else
     exit(1);
-    #endif
+#endif
 }
 
 static void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
@@ -93,13 +93,13 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
     x = SDL_WINDOWPOS_CENTERED;
     y = SDL_WINDOWPOS_CENTERED;
 #endif
-
-    state->window = SDL_CreateWindow(window_title,
-                                     x,
-                                     y,
-                                     w,
-                                     h,
-                                     SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    
+    int window_flags = 0;
+    
+    window_flags |= SDL_WINDOW_RESIZABLE;
+    //window_flags |= SDL_WINDOW_ALWAYS_ON_TOP;
+    
+    state->window = SDL_CreateWindow(window_title, x, y, w, h, window_flags);
     if (!state->window) fail(3);
 
     SDL_Surface *window_icon = RenderLoadSurface("icon.png");
@@ -116,16 +116,16 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
     ok = (Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0);
     if (!ok) fail(6);
 
-    int flags = 0;
+    int renderer_flags = 0;
     if (use_software_renderer) {
-        flags = SDL_RENDERER_SOFTWARE;
+        renderer_flags = SDL_RENDERER_SOFTWARE;
     } else {
-        flags = SDL_RENDERER_ACCELERATED;
+        renderer_flags = SDL_RENDERER_ACCELERATED;
     }
 
-    flags |= SDL_RENDERER_PRESENTVSYNC;
+    renderer_flags |= SDL_RENDERER_PRESENTVSYNC;
 
-    state->renderer = SDL_CreateRenderer(state->window, -1, flags);
+    state->renderer = SDL_CreateRenderer(state->window, -1, renderer_flags);
     if (!state->renderer) fail(7);
 
     state->render = RenderInit(state->renderer);

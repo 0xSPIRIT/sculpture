@@ -10,8 +10,6 @@
     "Tutorial\n" \
     "--------\n\n" \
     "Use the chisels to create your sculpture!\n"\
-    "  Left Click - Chisel\n"\
-    "  Hold SHIFT & Move Mouse - Rotate Chisel\n\n"\
     "Click the checkmark when you're satisfied\n"\
     "with a level.\n"
 
@@ -22,7 +20,7 @@
     "wants to create.\n\n" \
     "With the POINTER tool selected, you can\n"\
     "display the material of the cell by\n" \
-    "hovering over the overlay.\n"
+    "hovering your cursor over the overlay.\n"
 
 #define TUTORIAL_COMPLETE_LEVEL \
     "Tutorial\n" \
@@ -41,8 +39,8 @@
 #define TUTORIAL_UNDO_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Press Z to undo if you make a mistake.\n" \
-    "Press R to restart a level, losing all progress.\n"
+    "Z - Undo\n" \
+    "R - Restart Level\n"
 
 #define TUTORIAL_CHISEL_ROTATE_STRING \
     "Tutorial\n" \

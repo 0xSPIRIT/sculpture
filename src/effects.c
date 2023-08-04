@@ -19,6 +19,8 @@ static void draw_rain_splashes(int target, Rain_Splash *rain) {
     
     RenderColor(0,0,0,0);
     RenderClear(sub_target);
+
+    bool should_tick = !gs->paused || gs->step_one;
     
     for (int i = rain->splash_count-1; i >= 0; i--) {
         Effect_Particle *p = &rain->splashes[i];
@@ -26,20 +28,28 @@ static void draw_rain_splashes(int target, Rain_Splash *rain) {
         int col = 255;
         RenderColor(col, col, col, 255);
         RenderPointRelative(sub_target, p->x, p->y);
+
+        int int_x = p->x;
+        int int_y = p->y;
         
-        p->x += p->vx;
-        p->y += p->vy;
+        if (should_tick) {
+            p->x += p->vx;
+            p->y += p->vy;
+
+            int_x = p->x;
+            int_y = p->y;
         
-        p->vy += 0.10; // gravity
+            p->vy += 0.1; // gravity
+        }
         
-        if (p->y > gs->gh) {
+        if (p->y > gs->gh || gs->grid[int_x+int_y*gs->gw].type) {
             rain->splash_count--;
             for (int j = i; j < rain->splash_count; j++)
                 rain->splashes[j] = rain->splashes[j+1];
         }
     }
     
-    RenderTextureAlphaMod(&RenderTarget(sub_target)->texture, 30);
+    RenderTextureAlphaMod(&RenderTarget(sub_target)->texture, 40);
     RenderTargetToTarget(target, sub_target, null, null);
 }
 
@@ -177,7 +187,7 @@ static void effect_set(Effect *effect, Effect_Type type, bool high_fidelity, int
     }
 }
 
-// if the length^2 of a particle is > this limit,
+// If the length of velocity^2 of a particle is > this value,
 // then it is in the "foreground" and can do things like
 // generate splashes, or be obstructed by cells on the grid.
 static f32 _get_particle_square_limit(int effect_type) {
@@ -223,7 +233,18 @@ static ParticleSplashResult particle_tick(Effect *effect, int i) {
             
             f32 limit = _get_particle_square_limit(effect->type);
             
-            if (is_in_bounds(int_px, int_py) && sq_length > limit && gs->grid[int_px+int_py*gs->gw].type != CELL_NONE && gs->level_current+1 != 11) {
+            bool hit_cell;
+            if (effect->high_fidelity) {
+                hit_cell = false; // we don't deal with that in high fidelity narration scenes
+            } else {
+                hit_cell = (gs->grid[int_px+int_py*gs->gw].type != CELL_NONE);
+            }
+            
+            if (is_in_bounds(int_px, int_py) &&
+                sq_length > limit &&
+                hit_cell &&
+                gs->level_current+1 != 11)
+           {
                 if (effect->type == EFFECT_RAIN) {
                     // Go through every pixel from (prev_x, prev_y)
                     // to (particle->x, particle->y) to find the actual contact point
@@ -254,7 +275,8 @@ static ParticleSplashResult particle_tick(Effect *effect, int i) {
                     result.y = y;
                 }
                 
-                particle->x = effect->bounds.x + rand()%effect->bounds.w;
+                Log("%d, %d\n", effect->bounds.x, effect->bounds.x + effect->bounds.w);
+                particle->x = effect->bounds.x + rand()%(effect->bounds.w-effect->bounds.x);
                 particle->y = effect->bounds.y;
             }
             
@@ -353,7 +375,6 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
                 int py = (int)p->y;
                 
                 ParticleSplashResult splash = particle_tick(effect, i);
-                // p->splash_x, and p->splash_y are filled out here.
                 
                 if (gs->level_current+1 == 11) splash.hit = false;
                 
@@ -369,7 +390,7 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
                 int p2y = (int) (py - p->vy*3);
                 
                 {
-                    f32 normalized = length / 3.854;
+                    f32 normalized = length / 3.854; // magic
                     normalized /= 2;
                     normalized += 0.5;
                     
@@ -380,7 +401,7 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
                 RenderLineRelative(sub_target, px, py, p2x, p2y);
             }
             
-            RenderTextureAlphaMod(&RenderTarget(sub_target)->texture, 35);
+            RenderTextureAlphaMod(&RenderTarget(sub_target)->texture, 40);
             RenderTargetToTarget(target, sub_target, null, null);
             break;
         }

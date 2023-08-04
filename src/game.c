@@ -161,6 +161,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
     if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) {
         gs->real_width = event->window.data1;
         gs->real_height = event->window.data2;
+        if (gs->real_width == 0 || gs->real_height == 0) __debugbreak();
         game_resize(gs->real_height);
     }
 

@@ -107,8 +107,6 @@ static void save_state_to_next(void) {
         state->source_cell[i] = gs->levels[gs->level_current].source_cell[i];
     }
     state->source_cell_count = gs->levels[gs->level_current].source_cell_count;
-    
-    Log("Count: %d\n", gs->save_state_count);
 }
 
 static bool is_current_grid_same_as(Save_State *state) {

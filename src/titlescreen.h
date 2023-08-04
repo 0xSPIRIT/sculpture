@@ -1,4 +1,4 @@
-typedef struct Titlescreen {
+typedef struct {
     int text_width;
     bool stop;
     Effect effect;
@@ -6,7 +6,7 @@ typedef struct Titlescreen {
 } Titlescreen;
 
 #ifdef ALASKA_RELEASE_MODE
-  #define SHOW_TITLESCREEN 0
+  #define SHOW_TITLESCREEN 1
 #else
   #define SHOW_TITLESCREEN 0
 #endif
