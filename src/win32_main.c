@@ -77,11 +77,42 @@ static void fail(int code) {
 #endif
 }
 
-static void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
+static f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
+    SDL_DisplayMode dm;
+    
+    if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
+        SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+        __debugbreak();
+    }
+    
+    int w, h;
+    w = dm.w;
+    h = dm.h;    
+    
+    if (dw) *dw=w;
+    if (dh) *dh=h;
+
+    if (fullscreen) {
+        return h/72.0;
+        //return (int)round(7.0 * h/1080.0);
+    } else {
+        return (int)round(12.0 * h/1080.0);
+    }
+}
+
+static void game_init_sdl(Game_State *state, const char *window_title, bool use_software_renderer) {
     bool ok = true;
 
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
     if (!ok) fail(1);
+    
+    state->S = calculate_scale(false, &state->desktop_w, &state->desktop_h);
+
+    state->game_width = (int)(64*state->S);
+    state->game_height = (int)(64*state->S + GUI_H);
+
+    state->real_width = state->game_width;
+    state->real_height = state->game_height;
 
     ok = (Mix_Init(MIX_INIT_OGG) != 0);
     if (!ok) fail(2);
@@ -99,7 +130,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, int w, in
     window_flags |= SDL_WINDOW_RESIZABLE;
     //window_flags |= SDL_WINDOW_ALWAYS_ON_TOP;
     
-    state->window = SDL_CreateWindow(window_title, x, y, w, h, window_flags);
+    state->window = SDL_CreateWindow(window_title, x, y, state->real_width, state->real_height, window_flags);
     if (!state->window) fail(3);
 
     SDL_Surface *window_icon = RenderLoadSurface("icon.png");
@@ -159,24 +190,6 @@ static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *tra
     transient_memory->cursor = transient_memory->data;
 }
 
-static f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
-    RECT desktop;
-    HWND hDesktop = GetDesktopWindow();
-    GetWindowRect(hDesktop, &desktop);
-    int w = desktop.right;
-    int h = desktop.bottom;
-
-    if (dw) *dw=w;
-    if (dh) *dh=h;
-
-    if (fullscreen) {
-        return h/72.0;
-        //return (int)round(7.0 * h/1080.0);
-    } else {
-        return (int)round(12.0 * h/1080.0);
-    }
-}
-
 static bool prefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
 }
@@ -184,20 +197,7 @@ static bool prefix(const char *pre, const char *str) {
 static void win32_game_init(Game_State *state) {
     srand((unsigned int) time(0));
 
-    if (state->S == 0)
-        state->S = calculate_scale(false, &state->desktop_w, &state->desktop_h);
-
-    state->game_width = (int)(64*state->S);
-    state->game_height = (int)(64*state->S + GUI_H);
-
-    state->real_width = state->game_width;
-    state->real_height = state->game_height;
-
-    game_init_sdl(state,
-                  "Alaska",
-                  state->game_width,
-                  state->game_height,
-                  state->use_software_renderer);
+    game_init_sdl(state, "Alaska", state->use_software_renderer);
 
     // Load all assets... except for render targets.
     // We can't create render targets until levels

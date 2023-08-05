@@ -27,12 +27,20 @@ static void fail(int code) {
     #endif
 }
 
-static void game_init_sdl(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
+static void game_init_sdl_em(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
     bool ok = true;
 
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
     if (!ok) fail(1);
-
+    
+    state->S = calculate_scale(false, &state->desktop_w, &state->desktop_h);
+    
+    state->game_width = (int)(64*state->S);
+    state->game_height = (int)(64*state->S + GUI_H);
+    
+    state->real_width = state->game_width;
+    state->real_height = state->game_height;
+    
     ok = (Mix_Init(MIX_INIT_OGG) != 0);
     if (!ok) fail(2);
 
@@ -103,11 +111,11 @@ static void game_init_a(Game_State *state) {
     state->real_width = state->game_width;
     state->real_height = state->game_height;
 
-    game_init_sdl(state,
-                  "Alaska",
-                  state->game_width,
-                  state->game_height,
-                  state->use_software_renderer);
+    game_init_sdl_em(state,
+                     "Alaska",
+                     state->game_width,
+                     state->game_height,
+                     state->use_software_renderer);
 
     // Load all assets... except for render targets.
     // We can't create render targets until levels
