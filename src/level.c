@@ -14,16 +14,15 @@ static void level_setup_initial_grid(void) {
 }
 
 static void play_level_end_sound(int level) {
-    Mix_Chunk *sound = null;
+    Sound *sound = null;
     
     if (level+1 != 7) {
-        sound = gs->audio.sprinkle;
+        sound = &gs->audio.sprinkle;
     } else {
-        sound = gs->audio.macabre;
+        sound = &gs->audio.macabre;
     }
     
-    Assert(sound);
-    Mix_PlayChannel(AUDIO_CHANNEL_GUI, sound, 0);
+    play_sound(AUDIO_CHANNEL_GUI, *sound, 0);
 }
 
 static int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
@@ -610,7 +609,12 @@ static void level_draw_outro(int target, Level *level) {
         Render_Text_Data text_data = {0};
         strcpy(text_data.identifier, "nextlevel");
         text_data.font = gs->fonts.font;
-        strcpy(text_data.str, "Next Level"),
+        if (gs->level_current+1 != 11) {
+            strcpy(text_data.str, "Next Level");
+        } else {
+            strcpy(text_data.str, "Finish");
+        }
+        
         text_data.x = rect.x + rect.w - margin;
         text_data.y = rect.y + rect.h - 3 * margin/4;
         text_data.foreground = WHITE;

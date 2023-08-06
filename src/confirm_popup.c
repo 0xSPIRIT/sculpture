@@ -154,7 +154,7 @@ static Popup_Confirm popup_confirm_init(const char *string,
 static void popup_confirm_activate(Popup_Confirm *popup) {
     popup->active = true;
     Mix_HaltChannel(AUDIO_CHANNEL_GUI);
-    Mix_PlayChannel(AUDIO_CHANNEL_GUI, gs->audio.accept, 0);
+    play_sound(AUDIO_CHANNEL_GUI, gs->audio.accept, 0);
 }
 
 // You must call this in your own update callback.

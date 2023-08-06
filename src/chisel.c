@@ -22,21 +22,21 @@ static void chisel_play_sound(Cell_Type material, int size) {
             switch (size) {
                 case CHISEL_SMALL:  {
                     int indices[] = {5, 6};
-                    Mix_PlayChannel(channel, gs->audio.ice_chisel[indices[rand()%2]], 0);
+                    play_sound(channel, gs->audio.ice_chisel[indices[rand()%2]], 0);
                 } break;
                 case CHISEL_MEDIUM: {
                     int indices[] = {1, 2, 3};
                     int idx = indices[rand()%3];
-                    Mix_PlayChannel(channel, gs->audio.ice_chisel[idx], 0);
+                    play_sound(channel, gs->audio.ice_chisel[idx], 0);
                 } break;
-                case CHISEL_LARGE:  { Mix_PlayChannel(channel, gs->audio.ice_chisel[0], 0); } break;
+                case CHISEL_LARGE:  { play_sound(channel, gs->audio.ice_chisel[0], 0); } break;
             }
         } break;
         default: {
             switch (size) {
-                case CHISEL_SMALL:  { Mix_PlayChannel(channel, gs->audio.small_chisel, 0); } break;
-                case CHISEL_MEDIUM: { Mix_PlayChannel(channel, gs->audio.medium_chisel[rand()%3], 0); } break;
-                case CHISEL_LARGE:  { Mix_PlayChannel(channel, gs->audio.medium_chisel[rand()%6], 0); } break;
+                case CHISEL_SMALL:  { play_sound(channel, gs->audio.small_chisel, 0); } break;
+                case CHISEL_MEDIUM: { play_sound(channel, gs->audio.medium_chisel[rand()%3], 0); } break;
+                case CHISEL_LARGE:  { play_sound(channel, gs->audio.medium_chisel[rand()%6], 0); } break;
             }
         } break;
     }

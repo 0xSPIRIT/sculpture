@@ -168,9 +168,7 @@ static void effect_set(Effect *effect, Effect_Type type, bool high_fidelity, int
         }
     }
 
-    if (effect->particles == null) {
-        effect->particles = PushArray(gs->persistent_memory, effect->particle_count, sizeof(Effect_Particle));
-    }
+    effect->particles = PushArray(gs->persistent_memory, effect->particle_count, sizeof(Effect_Particle));
 
     switch (type) {
         case EFFECT_SNOW: {
@@ -275,7 +273,6 @@ static ParticleSplashResult particle_tick(Effect *effect, int i) {
                     result.y = y;
                 }
                 
-                Log("%d, %d\n", effect->bounds.x, effect->bounds.x + effect->bounds.w);
                 particle->x = effect->bounds.x + rand()%(effect->bounds.w-effect->bounds.x);
                 particle->y = effect->bounds.y;
             }

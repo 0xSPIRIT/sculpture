@@ -59,16 +59,18 @@ typedef struct Audio {
 
     // Chunks
     
-    Mix_Chunk *music_rain;
-    Mix_Chunk *ambience1;
+    Sound ambience_rain;
+    Sound ambience1;
     
-    Mix_Chunk *sprinkle, *macabre;
-    Mix_Chunk *accept;
-    Mix_Chunk *pip;
-    Mix_Chunk *medium_chisel[6];
-    Mix_Chunk *ice_chisel[7];
-    Mix_Chunk *glass_chisel[3];
-    Mix_Chunk *small_chisel, *large_chisel;
+    //Sound music0;
+    Sound music0;
+    
+    Sound sprinkle, macabre;
+    Sound accept;
+    Sound pip;
+    Sound medium_chisel[6];
+    Sound ice_chisel[7];
+    Sound small_chisel;
 } Audio;
 
 

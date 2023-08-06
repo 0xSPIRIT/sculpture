@@ -192,62 +192,74 @@ static void fonts_deinit(Fonts *fonts) {
 
 //~ Audio
 
+static void audio_setup_initial_channel_volumes(void) {
+    Mix_Volume(AUDIO_CHANNEL_CHISEL, AUDIO_CHISEL_VOLUME);
+    Mix_Volume(AUDIO_CHANNEL_GUI, AUDIO_GUI_VOLUME);
+    Mix_Volume(AUDIO_CHANNEL_MUSIC, AUDIO_MUSIC_VOLUME);
+}
+
+static Sound load_sound(const char *file, f64 volume) {
+    Sound result = {0};
+    
+    result.sound = Mix_LoadWAV(file);
+    Assert(result.sound);
+    
+    result.volume = Volume(volume);
+    
+    Mix_VolumeChunk(result.sound, result.volume);
+    
+    return result;
+}
+
+static void free_sound(Sound *sound) {
+    Mix_FreeChunk(sound->sound);
+    sound->volume = -1;
+}
+
 static void audio_init(Audio *audio) {
     audio->music_titlescreen = Mix_LoadMUS(RES_DIR "audio/titlescreen.ogg");
     
-    audio->ambience1  = Mix_LoadWAV(RES_DIR "audio/ambience1.ogg");
-    audio->music_rain = Mix_LoadWAV(RES_DIR "audio/rain.ogg");
+    audio->ambience1     = load_sound(RES_DIR "audio/ambience1.ogg", 0.4);
+    audio->ambience_rain = load_sound(RES_DIR "audio/rain.ogg",      0.16);
+    audio->music0        = load_sound(RES_DIR "audio/music0.ogg",    0.30);
 
-    audio->pip = Mix_LoadWAV(RES_DIR "audio/pip.ogg");
+    audio->pip = load_sound(RES_DIR "audio/pip.ogg", 1);
 
     for (int i = 0; i < 6; i++) {
         char name[64];
         sprintf(name, RES_DIR "audio/chisel_%d.wav", i+1);
-        audio->medium_chisel[i] = Mix_LoadWAV(name);
-        Assert(audio->medium_chisel[i]);
+        audio->medium_chisel[i] = load_sound(name, 1);
     }
-    audio->small_chisel = Mix_LoadWAV(RES_DIR "audio/small_chisel.wav");
-    audio->large_chisel = Mix_LoadWAV(RES_DIR "audio/large_chisel.wav");
+    audio->small_chisel = load_sound(RES_DIR "audio/small_chisel.wav", 1);
 
-    for (int i = 0; i < sizeof(audio->ice_chisel)/sizeof(Mix_Chunk*); i++) {
+    for (int i = 0; i < sizeof(audio->ice_chisel)/sizeof(Sound); i++) {
         char name[64];
         sprintf(name, RES_DIR "audio/ice_chisel_%d.wav", i+1);
-        audio->ice_chisel[i] = Mix_LoadWAV(name);
-        Assert(audio->ice_chisel[i]);
+        audio->ice_chisel[i] = load_sound(name, 1);
     }
 
-    for (int i = 0; i < sizeof(audio->glass_chisel)/sizeof(Mix_Chunk*); i++) {
-        char name[64];
-        sprintf(name, RES_DIR "audio/glass_%d.wav", i+1);
-        audio->glass_chisel[i] = Mix_LoadWAV(name);
-        Assert(audio->glass_chisel[i]);
-    }
+    audio->sprinkle = load_sound(RES_DIR "audio/sprinkle.ogg", 1);
+    audio->macabre = load_sound(RES_DIR "audio/macabre.ogg", 1);
 
-    audio->sprinkle = Mix_LoadWAV(RES_DIR "audio/sprinkle.ogg");
-    audio->macabre = Mix_LoadWAV(RES_DIR "audio/macabre.ogg");
+    audio->accept = load_sound(RES_DIR "audio/accept.ogg", 1);
 
-    audio->accept = Mix_LoadWAV(RES_DIR "audio/accept.ogg");
-
-    Mix_Volume(AUDIO_CHANNEL_CHISEL, AUDIO_CHISEL_VOLUME);
-    Mix_Volume(AUDIO_CHANNEL_GUI, AUDIO_GUI_VOLUME);
+    audio_setup_initial_channel_volumes();
 }
 
 static void audio_deinit(Audio *audio) {
     Mix_FreeMusic(audio->music_titlescreen);
     
-    Mix_FreeChunk(audio->ambience1);
-    Mix_FreeChunk(audio->music_rain);
+    free_sound(&audio->ambience1);
+    free_sound(&audio->ambience_rain);
+    free_sound(&audio->music0);
 
     for (int i = 0; i < 6; i++)
-        Mix_FreeChunk(audio->medium_chisel[i]);
+        free_sound(&audio->medium_chisel[i]);
     for (int i = 0; i < sizeof(audio->ice_chisel)/sizeof(Mix_Chunk*); i++)
-        Mix_FreeChunk(audio->ice_chisel[i]);
-    for (int i = 0; i < sizeof(audio->glass_chisel)/sizeof(Mix_Chunk*); i++)
-        Mix_FreeChunk(audio->glass_chisel[i]);
-    Mix_FreeChunk(audio->small_chisel);
-    Mix_FreeChunk(audio->pip);
-    Mix_FreeChunk(audio->large_chisel);
+        free_sound(&audio->ice_chisel[i]);
+    free_sound(&audio->small_chisel);
+    free_sound(&audio->pip);
 
-    Mix_FreeChunk(audio->sprinkle);
-    Mix_FreeChunk(audio->macabre);
+    free_sound(&audio->sprinkle);
+    free_sound(&audio->macabre);
 }

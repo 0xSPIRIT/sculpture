@@ -593,6 +593,7 @@ RENDERAPI void RenderText(int target_enum, Render_Text_Data *text_data) {
                 text_data->texture = cache_object->texture;
             }
         }
+        
     } else {
         Render_Text_Data_Cache *temp_cache = &gs->render.temp_text_cache;
         cache_object = &temp_cache->data[temp_cache->size++];

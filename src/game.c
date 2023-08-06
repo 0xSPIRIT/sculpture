@@ -117,8 +117,10 @@ static void game_update_view(void) {
 
 export void game_init(Game_State *state) {
     gs = state;
-
+    
     load_game();
+    
+    gs->border_color = (SDL_Color){0,0,0};
 
     gs->render.view.x = 0;
     gs->render.view.y = 0;
@@ -285,7 +287,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 if (input->keys[SDL_SCANCODE_LCTRL] || input->keys[SDL_SCANCODE_RCTRL]) {
                     set_text_field("Goto Level", "", goto_level_string_hook);
                 } else {
-                    //Mix_PlayChannel(-1, gs->audio.chisel[rand()%6], 0);
+                    //play_sound(-1, gs->audio.chisel[rand()%6], 0);
                 }
                 break;
             }
@@ -428,6 +430,7 @@ export void game_run(Game_State *state) {
                 all_converters_tick();
 
                 audio_set_ambience_accordingly();
+                audio_set_music_accordingly();
 
                 level_tick(&gs->levels[gs->level_current]);
                 level_draw(&gs->levels[gs->level_current]);
@@ -452,9 +455,24 @@ export void game_run(Game_State *state) {
             break;
         }
     }
+    
+    
+    SDL_Color border_color_desired = {0};
+    
+    if (gs->level_current+1 == 11) {
+        border_color_desired.r = 255;
+        border_color_desired.g = 255;
+        border_color_desired.b = 255;
+    }
+    
+    gs->border_color.r = interpolate(gs->border_color.r, border_color_desired.r, 2);
+    gs->border_color.g = interpolate(gs->border_color.g, border_color_desired.g, 2);
+    gs->border_color.b = interpolate(gs->border_color.b, border_color_desired.b, 2);
 
-    RenderColor(0, 0, 0, 255);
+    RenderColor(gs->border_color.r, gs->border_color.g, gs->border_color.b, 255);
     RenderClear(-1);
+    
+    RenderColor(255, 255, 255, 255);
 
     SDL_Rect src = {
         0, 0,

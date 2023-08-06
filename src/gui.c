@@ -265,7 +265,7 @@ static bool button_tick(Button *b, void *data) {
 
         if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
             Mix_HaltChannel(AUDIO_CHANNEL_GUI);
-            Mix_PlayChannel(AUDIO_CHANNEL_GUI, gs->audio.accept, 0);
+            play_sound(AUDIO_CHANNEL_GUI, gs->audio.accept, 0);
 
             if (b->on_pressed) b->on_pressed(data);
 
