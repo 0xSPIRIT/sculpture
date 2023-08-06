@@ -170,7 +170,6 @@ static void surfaces_init(Surfaces *surfaces) {
 static void fonts_init(Fonts *fonts) {
     fonts->font          = RenderLoadFont("Courier Prime.ttf", Scale(font_sizes[0]));
     fonts->font_times    = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[1]));
-    fonts->font_consolas = RenderLoadFont("consola.ttf", Scale(font_sizes[2]));
     fonts->font_courier  = RenderLoadFont("LiberationMono-Regular.ttf", Scale(font_sizes[3]));
     fonts->font_small    = RenderLoadFont("consola.ttf", Scale(font_sizes[4]));
     fonts->font_bold_small = RenderLoadFont("courbd.ttf", Scale(font_sizes[5]));
@@ -255,7 +254,7 @@ static void audio_deinit(Audio *audio) {
 
     for (int i = 0; i < 6; i++)
         free_sound(&audio->medium_chisel[i]);
-    for (int i = 0; i < sizeof(audio->ice_chisel)/sizeof(Mix_Chunk*); i++)
+    for (int i = 0; i < sizeof(audio->ice_chisel)/sizeof(Sound); i++)
         free_sound(&audio->ice_chisel[i]);
     free_sound(&audio->small_chisel);
     free_sound(&audio->pip);
