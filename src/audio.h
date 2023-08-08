@@ -48,5 +48,6 @@ void audio_set_ambience_accordingly(void);
 void audio_set_ambience_levels(void);
 void audio_set_ambience(AmbienceType ambience);
 
-void audio_set_music(MusicType music);
+void audio_halt_music(void);
 void audio_set_music_accordingly(void);
+void audio_set_music(MusicType music);

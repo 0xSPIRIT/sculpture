@@ -22,6 +22,7 @@ static void play_level_end_sound(int level) {
         sound = &gs->audio.macabre;
     }
     
+    audio_halt_music();
     play_sound(AUDIO_CHANNEL_GUI, *sound, 0);
 }
 
@@ -320,11 +321,11 @@ static void level_tick_outro(Level *level) {
     if (fabs(level->outro_alpha - level->desired_alpha) < 15)
         level->outro_alpha = level->desired_alpha;
     
-    if (!gs->gui.eol_popup_confirm.active && gs->input.keys[SDL_SCANCODE_N]) {
-        level_click_next_level();
-    }
+    //if (!gs->gui.eol_popup_confirm.active && gs->input.keys[SDL_SCANCODE_N]) {
+        //level_click_next_level();
+    //}
     
-    if (!gs->gui.eol_popup_confirm.active && (gs->input.keys_pressed[SDL_SCANCODE_F] || gs->input.keys_pressed[SDL_SCANCODE_ESCAPE])) {
+    if (!gs->gui.eol_popup_confirm.active && gs->input.keys_pressed[SDL_SCANCODE_ESCAPE]) {
         level_click_close_outro(level);
     }
     

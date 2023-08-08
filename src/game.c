@@ -50,6 +50,7 @@ static void game_resize(int h) {
     gs->render.view.w = gs->game_width;
     gs->render.view.h = gs->game_height-GUI_H;
 
+    // Horrible. This should just be a part of gs->render.view.x and y
     gs->real_top_left.x = gs->game_width/4;
     gs->real_top_left.y = gs->game_height/4;
 

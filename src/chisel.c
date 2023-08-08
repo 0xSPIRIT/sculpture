@@ -75,43 +75,49 @@ static bool chisel_is_facing_cell(int i, f64 angle, int lookahead) {
     return chisel_get_distance_from_facing_cell(i, angle) <= lookahead;
 }
 
+static inline int diagonal_aware_sqaured_distance(int dx, int dy) {
+    if (dx*dx == 1 && dy*dy == 1) return 1;
+    return dx*dx + dy*dy;
+}
+
 // Finds a position closest to (x, y) that is on the grid
 // Returns: The index of the position
 static int chisel_clamp_to_grid(f64 angle, int xx, int yy) {
     f64 closest_distance = gs->gw*gs->gh;
-
+    closest_distance *= closest_distance;
+    
     bool is_mouse_on_cell = (gs->grid[xx+yy*gs->gw].type != CELL_NONE);
-
+    
     // Special case for when mouse is on a cell
-
+    
     if (is_mouse_on_cell) {
         f64 rad_angle = M_PI * angle / 180.0;
         int dir_x = round(cos(rad_angle));
         int dir_y = round(sin(rad_angle));
-
+        
         int nx = xx - dir_x;
         int ny = yy - dir_y;
-
+        
         if (gs->grid[nx+ny*gs->gw].type == CELL_NONE)
             return nx+ny*gs->gw;
     }
-
+    
     int closest_idx = -1;
-
+    
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         int x = i%gs->gw;
         int y = i/gs->gw;
         int neighbours = number_neighbours(gs->grid, x, y, 1);
-
+        
         if (neighbours == 0) continue;
         if (gs->grid[i].type != CELL_NONE) continue;
+        
+        int dx = x - xx;
+        int dy = y - yy;
+        int dist = dx*dx + dy*dy;
 
-        f64 dx = x - xx;
-        f64 dy = y - yy;
-        f64 distance = sqrt(dx*dx + dy*dy);
-
-        if (distance < closest_distance) {
-            closest_distance = distance;
+        if (dist < closest_distance) {
+            closest_distance = dist;
             closest_idx = i;
         }
     }
@@ -174,7 +180,7 @@ static bool is_bad_corner(Chisel *chisel, int x, int y) {
 
     int nx, ny;
 
-    f64 angle = M_PI * chisel->angle / 180.0;
+    f64 angle = Radians(chisel->angle);
 
     f64 dir_x = cos(angle);
     f64 dir_y = sin(angle);
@@ -228,15 +234,15 @@ static bool is_bad_medium_chisel_position(Chisel *chisel) {
     return ((int)chisel->angle % 90 == 0);
 }
 
-static void chisel_move_mouse_until_cell(Chisel *chisel, int x, int y, f64 angle, f64 max_length) {
-    angle = M_PI * angle / 180.0;
+static void chisel_move_mouse_until_cell(Chisel *chisel, int x, int y, f64 deg_angle, f64 max_length) {
+    f64 angle = Radians(deg_angle);
     f64 dir_x = cos(angle);
     f64 dir_y = sin(angle);
     f64 xx = x;
     f64 yy = y;
 
     f64 length = sqrt((x-xx)*(x-xx) + (y-yy)*(y-yy));
-
+    
     while (length < max_length &&
            is_in_bounds(xx,yy) &&
            gs->grid[(int)round(xx)+((int)round(yy))*gs->gw].type == CELL_NONE)

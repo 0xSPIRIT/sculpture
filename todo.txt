@@ -1,8 +1,5 @@
 TODO
 
-  - Off-by-one move_mouse_to_grid_position when chiseling something
-    to the left of the main screen.
-
   - Move the Note: in the material converter section of the recipe book
     to be item counts instead.
 
