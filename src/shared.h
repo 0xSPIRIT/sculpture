@@ -63,8 +63,6 @@ typedef struct Game_State {
 
     Audio_Handler audio_handler;
     
-    bool use_software_renderer;
-
     SDL_Window *window;
     SDL_Renderer *renderer;
     Render render;

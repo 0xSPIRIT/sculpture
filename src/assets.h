@@ -160,8 +160,7 @@ typedef union Surfaces {
     };
 } Surfaces;
 
-static_assert(sizeof(Surfaces) == SURFACE_COUNT*sizeof(SDL_Surface*),
-              "The Surfaces struct size is not equal to the surface count size!");
+static_assert(sizeof(Surfaces) == SURFACE_COUNT*sizeof(SDL_Surface*), "a");
 
 #define FONT_COUNT 9
 

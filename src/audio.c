@@ -68,10 +68,11 @@ void audio_halt_music(void) {
     gs->audio_handler.music_volume = 0;
 }
 
+// This is called every frame and sets the current music according to certain conditions.
 void audio_set_music_accordingly(void) {
     int level_number = gs->level_current+1;
     
-    if (level_number == 11) {
+    if (level_number == 11 && gs->obj.active) {
         audio_set_music(MUSIC_EXPLITIVE);
     } else {
         audio_set_music(MUSIC_NONE);

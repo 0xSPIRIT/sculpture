@@ -197,7 +197,7 @@ static bool prefix(const char *pre, const char *str) {
 static void win32_game_init(Game_State *state) {
     srand((unsigned int) time(0));
 
-    game_init_sdl(state, "Alaska", state->use_software_renderer);
+    game_init_sdl(state, "Alaska", false);
 
     // Load all assets... except for render targets.
     // We can't create render targets until levels
@@ -326,7 +326,7 @@ inline bool win32_SetProcessDpiAware(void) {
     return ret;
 }
 
-int win32_main(int argc, char **argv) {
+int win32_main(void) {
     win32_SetProcessDpiAware();
 
 #ifndef ALASKA_RELEASE_MODE
@@ -354,22 +354,7 @@ int win32_main(int argc, char **argv) {
     if (fullscreen) {
         scale = calculate_scale(true, &dw, &dh);
     }
-
-    bool use_software_renderer = false;
-    if (argc > 1) {
-        for (int i = 1; i < argc; i++) {
-            if (0==strcmp(argv[i], "-renderer=gpu")) {
-                use_software_renderer = false;
-            } else if (0==strcmp(argv[i], "-renderer=cpu")) {
-                use_software_renderer = true;
-            } else if (prefix("-scale=", argv[i])) {
-                scale = atoi(argv[i]+7);
-            } else if (0==strcmp(argv[i], "-fullscreen")) {
-                fullscreen = 1;
-            }
-        }
-    }
-
+    
 #ifndef ALASKA_RELEASE_MODE
     Game_Code game_code = {0};
     load_game_code(&game_code);
@@ -383,7 +368,6 @@ int win32_main(int argc, char **argv) {
     gs->desktop_w = dw;
     gs->desktop_h = dh;
 
-    gs->use_software_renderer = use_software_renderer;
     gs->S = scale;
 
     gs->fullscreen = fullscreen;
@@ -505,5 +489,5 @@ int WINAPI WinMain(HINSTANCE hInstance,
     (void)hPrevInstance;
     (void)lpCmdLine;
     (void)nShowCmd;
-    win32_main(0, null);
+    win32_main();
 }

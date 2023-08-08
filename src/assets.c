@@ -168,15 +168,15 @@ static void surfaces_init(Surfaces *surfaces) {
 //~ Fonts
 
 static void fonts_init(Fonts *fonts) {
-    fonts->font          = RenderLoadFont("Courier Prime.ttf", Scale(font_sizes[0]));
-    fonts->font_times    = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[1]));
-    fonts->font_courier  = RenderLoadFont("LiberationMono-Regular.ttf", Scale(font_sizes[3]));
-    fonts->font_small    = RenderLoadFont("consola.ttf", Scale(font_sizes[4]));
-    fonts->font_bold_small = RenderLoadFont("courbd.ttf", Scale(font_sizes[5]));
-    fonts->font_title    = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[6]));
-    fonts->font_title_2  = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[7]));
-    fonts->font_titlescreen = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[8]));
-    fonts->font_converter_gui = RenderLoadFont("consola.ttf", Scale(font_sizes[9]));
+    fonts->font               = RenderLoadFont("Courier Prime.ttf", Scale(font_sizes[0]));
+    fonts->font_times         = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[1]));
+    fonts->font_courier       = RenderLoadFont("LiberationMono-Regular.ttf", Scale(font_sizes[2]));
+    fonts->font_small         = RenderLoadFont("consola.ttf", Scale(font_sizes[3]));
+    fonts->font_bold_small    = RenderLoadFont("courbd.ttf", Scale(font_sizes[4]));
+    fonts->font_title         = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[5]));
+    fonts->font_title_2       = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[6]));
+    fonts->font_titlescreen   = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[7]));
+    fonts->font_converter_gui = RenderLoadFont("consola.ttf", Scale(font_sizes[8]));
 
     for (size_t i = 0; i < FONT_COUNT; i++) {
         TTF_SetFontHinting(fonts->fonts[i]->handle, TTF_HINTING_LIGHT_SUBPIXEL);
@@ -193,11 +193,11 @@ static void fonts_deinit(Fonts *fonts) {
 
 static void audio_setup_initial_channel_volumes(void) {
     Mix_Volume(AUDIO_CHANNEL_CHISEL, AUDIO_CHISEL_VOLUME);
-    Mix_Volume(AUDIO_CHANNEL_GUI, AUDIO_GUI_VOLUME);
-    Mix_Volume(AUDIO_CHANNEL_MUSIC, AUDIO_MUSIC_VOLUME);
+    Mix_Volume(AUDIO_CHANNEL_GUI,    AUDIO_GUI_VOLUME);
+    Mix_Volume(AUDIO_CHANNEL_MUSIC,  AUDIO_MUSIC_VOLUME);
 }
 
-static Sound load_sound(const char *file, f64 volume) {
+static Sound load_sound(const char *file, f32 volume) {
     Sound result = {0};
     
     result.sound = Mix_LoadWAV(file);

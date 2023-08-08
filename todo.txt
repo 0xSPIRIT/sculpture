@@ -1,6 +1,17 @@
-# TODO
+TODO
 
-  - Update: "The prize taunted him, with Max aching to reveal it."
+  - Off-by-one move_mouse_to_grid_position when chiseling something
+    to the left of the main screen.
+
+  - Move the Note: in the material converter section of the recipe book
+    to be item counts instead.
+
+  - The whole thing with Max not making the sculptures to his desires
+    doesn't work as well if the player doesn't adhere to Max's desired-s
+    in the first couple levels. So we need to explicitly make it so that
+    Max is fine doing whatever he wants with the first couple levels,
+    because he doesn't view it as "real". Level 7+ however he believes
+    are more significant to him.
 
   - Something to do with the rain preferring the left side of
     the scene, when stuff is splashing on to material?

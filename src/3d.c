@@ -230,12 +230,6 @@ static void object_draw(Object3D *obj) {
 
     vec2 *projected = project(points, count);
 
-#if 0
-    for (int i = 0; i < count; i++) {
-        projected[i].y += GUI_H;
-    }
-#endif
-
     Vertex *final_points = PushArray(gs->transient_memory, 4, sizeof(Vertex));
 
     for (int i = 0; i < count; i++) {
