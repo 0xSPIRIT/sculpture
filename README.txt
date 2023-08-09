@@ -1,4 +1,4 @@
-View src\main.c for more information on how the project is laid
+View src\win32_main.c for more information on how the project is laid
 out and such.
 
 == Building ==

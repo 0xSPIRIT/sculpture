@@ -28,7 +28,7 @@
 "endless complex details.\n"\
 "... No.\n"\
 "Only once he sharpened his skills would he\r"\
-"dare create something real.\n"\
+"dare create something real.\r"\
 "For a moment, his flame flickered.\n"\
 
 #define NARRATION_LEVEL_5 \
@@ -133,6 +133,3 @@ typedef struct Narrator {
 
     bool off;
 } Narrator;
-
-static void narrator_next_line(bool init);
-static int get_glitched_offset(void);

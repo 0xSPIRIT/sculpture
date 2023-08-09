@@ -249,9 +249,9 @@ static void overlay_swap_to_next(void) {
 }
 
 static bool has_any_chisel_chiseled(void) {
-    if (gs->chisel_small.num_times_chiseled  > 0) return true;
-    if (gs->chisel_medium.num_times_chiseled > 0) return true;
-    if (gs->chisel_large.num_times_chiseled  > 0) return true;
+    for (int i = 0; i < 3; i++) {
+        if (gs->chisels[i].num_times_chiseled > 0) return true;
+    }
     return false;
 }
 

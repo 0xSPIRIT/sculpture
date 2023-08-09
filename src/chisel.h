@@ -2,22 +2,29 @@
 #define HIGHLIGHT_MAX 64
 #define CHISEL_FLASHING false
 
-typedef enum Chisel_Size {
+typedef enum ChiselSize {
     CHISEL_SMALL = 0,
     CHISEL_MEDIUM,
     CHISEL_LARGE,
-} Chisel_Size;
+} ChiselSize;
 
-typedef enum Chisel_State {
+typedef enum ChiselState {
     CHISEL_STATE_IDLE = 0,
     CHISEL_STATE_ROTATING,
     CHISEL_STATE_CHISELING
-} Chisel_State;
+} ChiselState;
+
+typedef struct Chisel_Texture {
+    Texture *straight;
+    Texture *diagonal;
+} Chisel_Texture;
 
 typedef struct Chisel {
-    Chisel_State state;
-    Chisel_Size size;
+    ChiselState state;
+    ChiselSize size;
     int x, y;
+    
+    int aa;
 
     f64 draw_x, draw_y;
 
@@ -35,6 +42,7 @@ typedef struct Chisel {
     Uint8 *mask;
 
     f64 angle, prev_angle, draw_angle;
+    Chisel_Texture textures;
     Texture *texture;
 
     f64 rotating_flash;
@@ -44,7 +52,10 @@ typedef struct Chisel {
 } Chisel;
 
 // Called in grid_draw.
+
+static Chisel_Texture get_chisel_texture(ChiselSize size);
+
 static void chisel_draw_highlights(int target, int *highlights, int count, int xoff, int yoff);
-static void chisel_get_adjusted_positions(int angle, int size, int *x, int *y);
+static void chisel_get_adjusted_positions(int texture_height, bool diagonal, f32 *dx, f32 *dy);
 
 static bool is_tool_chisel(void);

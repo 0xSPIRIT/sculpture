@@ -132,6 +132,31 @@ RENDERAPI SDL_Rect RenderGetUpdatedRect(Render_Target *target, SDL_Rect *rect) {
     return result;
 }
 
+RENDERAPI SDL_FRect RenderGetUpdatedRectF(Render_Target *target, SDL_FRect *rect) {
+    if (!target) return *rect;
+    
+    SDL_FRect result;
+    SDL_FRect actual_rect;
+    
+    if (!rect) {
+        return (SDL_FRect){
+            target->top_left.x,
+            target->top_left.y,
+            target->working_width,
+            target->working_height
+        };
+    } else {
+        actual_rect = *rect;
+    }
+    
+    result.x = actual_rect.x + target->top_left.x;
+    result.y = actual_rect.y + target->top_left.y;
+    result.w = actual_rect.w;
+    result.h = actual_rect.h;
+    
+    return result;
+}
+
 RENDERAPI Render_Target RenderMakeTargetEx(int width,
                                            int height,
                                            View_State view,
@@ -453,6 +478,8 @@ RENDERAPI void RenderTextureExRelative(int target_enum,
                                        SDL_Point *center,
                                        SDL_RendererFlip flip)
 {
+    Assert(center);
+    
     Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
     
     SDL_Rect output_dst = RenderGetUpdatedRect(target, dst);
@@ -474,6 +501,37 @@ RENDERAPI void RenderTextureExRelative(int target_enum,
                      flip);
 }
 
+RENDERAPI void RenderTextureExRelativeF(int target_enum,
+                                        Texture *texture,
+                                        SDL_Rect *src,
+                                        SDL_FRect *dst,
+                                        f64 angle,
+                                        SDL_FPoint *center,
+                                        SDL_RendererFlip flip)
+{
+    Assert(center);
+    
+    Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
+    
+    SDL_FRect output_dst = RenderGetUpdatedRectF(target, dst);
+    
+    SDL_FPoint output_center = *center;
+    if (target) {
+        output_center = (SDL_FPoint){
+            center->x + target->top_left.x,
+            center->y + target->top_left.y
+        };
+    }
+    
+    SDL_RenderCopyExF(gs->render.sdl,
+                      texture->handle,
+                      src,
+                      &output_dst,
+                      angle,
+                      center,
+                      flip);
+}
+
 RENDERAPI void RenderTextureEx(int target_enum,
                                Texture *texture,
                                SDL_Rect *src,
@@ -490,6 +548,24 @@ RENDERAPI void RenderTextureEx(int target_enum,
                      angle,
                      center,
                      flip);
+}
+
+RENDERAPI void RenderTextureExF(int target_enum,
+                                Texture *texture,
+                                SDL_Rect *src,
+                                SDL_FRect *dst,
+                                f64 angle,
+                                SDL_FPoint *center,
+                                SDL_RendererFlip flip)
+{
+    RenderMaybeSwitchToTarget(target_enum);
+    SDL_RenderCopyExF(gs->render.sdl,
+                      texture->handle,
+                      src,
+                      dst,
+                      angle,
+                      center,
+                      flip);
 }
 
 RENDERAPI void RenderTextQuick(int target_enum,

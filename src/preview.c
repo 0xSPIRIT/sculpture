@@ -173,28 +173,37 @@ static SDL_Rect preview_draw(int final_target, Preview *p, int dx, int dy, int s
             int x = p->states[p->index].x;
             int y = p->states[p->index].y;
             int angle = p->states[p->index].data;
+            
+            Chisel *chisel = &gs->chisels[tool - TOOL_CHISEL_SMALL];
 
-            Chisel *chisel = null;
-            if (tool == TOOL_CHISEL_SMALL)  chisel = &gs->chisel_small;
-            if (tool == TOOL_CHISEL_MEDIUM) chisel = &gs->chisel_medium;
-            if (tool == TOOL_CHISEL_LARGE)  chisel = &gs->chisel_large;
-            Assert(chisel);
-
-            SDL_Rect dst = {
-                x, y - chisel->texture->height/2,
+            bool is_diagonal = false;
+            if (angle % 90 == 0) {
+                chisel->texture = chisel->textures.straight;
+            } else {
+                chisel->texture = chisel->textures.diagonal;
+                is_diagonal = true;
+                angle += 45;
+            }
+            
+            SDL_FRect dst = {
+                x, y - chisel->texture->height/2, // integer divide
                 chisel->texture->width, chisel->texture->height
             };
-            chisel_get_adjusted_positions(angle-180, tool, &dst.x, &dst.y);
+            
+            f32 cx, cy;
+            chisel_get_adjusted_positions(chisel->texture->height, is_diagonal, &cx, &cy);
+            dst.x += cx;
+            dst.y += cy;
 
-            SDL_Point center = { 0, chisel->texture->height/2 };
+            SDL_FPoint center = chisel_get_center_of_rotation(is_diagonal, chisel->texture->height);
 
-            RenderTextureExRelative(target,
-                                    chisel->texture,
-                                    null,
-                                    &dst,
-                                    angle,
-                                    &center,
-                                    SDL_FLIP_NONE);
+            RenderTextureExRelativeF(target,
+                                     chisel->texture,
+                                     null,
+                                     &dst,
+                                     angle,
+                                     &center,
+                                     SDL_FLIP_NONE);
 
             RenderColor(127, 127, 127, 255);
             RenderPoint(target, x, y);

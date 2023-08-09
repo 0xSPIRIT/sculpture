@@ -1,13 +1,35 @@
-static Chisel chisel_init(Chisel_Size size) {
+static Chisel chisel_init(ChiselSize size) {
     Chisel chisel = {0};
-
+    
     chisel.size = size;
-    chisel.texture = &GetTexture(TEXTURE_CHISEL+size);
+    chisel.textures = get_chisel_texture(size);
+    chisel.texture = chisel.textures.straight;
+    
     chisel.lookahead = 5;
-
+    
     chisel.mask = PushSize(gs->persistent_memory, gs->gw*gs->gh*1);
-
+    
     return chisel;
+}
+
+static Chisel_Texture get_chisel_texture(ChiselSize size) {
+    Chisel_Texture result = {0};
+    
+    switch (size) {
+        case CHISEL_SMALL: {
+            result.straight = &GetTexture(TEXTURE_CHISEL_SMALL);
+        } break;
+        case CHISEL_MEDIUM: {
+            result.straight = &GetTexture(TEXTURE_CHISEL_MEDIUM);
+        } break;
+        case CHISEL_LARGE: {
+            result.straight = &GetTexture(TEXTURE_CHISEL_LARGE);
+        } break;
+    }
+    
+    result.diagonal = result.straight+1;
+    
+    return result;
 }
 
 static bool is_tool_chisel(void) {
@@ -612,12 +634,10 @@ static void chisel_draw_highlights(int target,
 }
 
 static void update_other_chisel_draw_positions(int size, f64 draw_x, f64 draw_y) {
-    Chisel *chisels[3] = { &gs->chisel_small, &gs->chisel_medium, &gs->chisel_large };
-
     for (int i = 0; i < 3; i++) {
         if (i != size) {
-            chisels[i]->draw_x = draw_x;
-            chisels[i]->draw_y = draw_y;
+            gs->chisels[i].draw_x = draw_x;
+            gs->chisels[i].draw_y = draw_y;
         }
     }
 }
@@ -683,7 +703,9 @@ static void chisel_tick(Chisel *chisel) {
             chisel->angle = (int)(chisel->angle) * step;
             chisel->angle -= 180;
 
-            gs->chisel_small.angle = gs->chisel_medium.angle = gs->chisel_large.angle = chisel->angle;
+            for (int i = 0; i < 3; i++) {
+                gs->chisels[i].angle = chisel->angle;
+            }
 
             if (!(gs->input.mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) && !gs->input.keys[SDL_SCANCODE_LSHIFT]) {
                 chisel->state = CHISEL_STATE_IDLE;
@@ -720,46 +742,22 @@ static void chisel_tick(Chisel *chisel) {
     update_other_chisel_draw_positions(chisel->size, chisel->draw_x, chisel->draw_y);
 }
 
-// Don't worry, we'll remove this later when we
-// make sprites for each rotation.
-static void chisel_get_adjusted_positions(int angle, int size, int *x, int *y) {
-    angle += 180;
-
-    if (size == 0 || size == 1) {
-        if (angle == 225) {
-            (*y) += 2;
-            (*x)++;
-        } else if (angle == 180) {
-            (*x)++;
-            (*y)++;
-        } else if (angle == 90) {
-            (*x)++;
-        } else if (angle == 45) {
-            (*x)++;
-        } else if (angle == 135) {
-            (*x) += 2;
-        } else if (angle == 270) {
-            (*y)++;
-        }
-    } else if (size == 2) {
-        if (angle == 0) {
-            (*x)++;
-        } else if (angle == 225) {
-            (*y)++;
-        } else if (angle == 45) {
-            (*x)++;
-            (*y)++;
-        } else if (angle == 135) {
-            (*x)++;
-            (*y)++;
-        } else if (angle == 315) {
-            (*x)++;
-        } else if (angle == 180) {
-            (*y)++;
-        } else if (angle == 90) {
-            (*x)++;
-        }
+static void chisel_get_adjusted_positions(int texture_height, bool diagonal, f32 *dx, f32 *dy) {
+    *dy = 0;
+    *dx = 0;
+    
+    if (diagonal) {
+        *dy = -texture_height/2.0 + 1;
     }
+}
+
+static SDL_FPoint chisel_get_center_of_rotation(bool diagonal, int texture_height) {
+    SDL_FPoint center = { 0.5, (f32)texture_height/2.0 };
+    if (diagonal) {
+        center.x = 0.5;
+        center.y = texture_height - 0.5;
+    }
+    return center;
 }
 
 static void chisel_draw(int target, Chisel *chisel) {
@@ -767,58 +765,85 @@ static void chisel_draw(int target, Chisel *chisel) {
 
     x = chisel->draw_x;
     y = chisel->draw_y;
+    
+    bool diagonal = false;
+    int diagonal_offset_angle = 0;
+    
+    if (((int)chisel->angle) % 90 == 0) {
+        chisel->texture = chisel->textures.straight;
+    } else {
+        chisel->texture = chisel->textures.diagonal;
+        diagonal = true;
+        diagonal_offset_angle = 45;
+    }
 
     { // Lerp the chisel angle
         chisel->angle += 180;
         chisel->draw_angle += 180;
-
+        
         chisel->draw_angle = lerp_degrees(chisel->draw_angle, chisel->angle, 0.6);
         if (abs(chisel->draw_angle-chisel->angle) < 2) {
             chisel->draw_angle = chisel->angle;
         }
-
+        
         chisel->angle -= 180;
         chisel->draw_angle -= 180;
     }
+    
+    chisel->draw_angle += diagonal_offset_angle;
 
     RenderTextureColorMod(chisel->texture, 255, 255, 255);
 
-    SDL_Rect dst = {
-        x, y - chisel->texture->height/2,
+    SDL_FRect dst = {
+        x, y - chisel->texture->height/2, // integer divide
         chisel->texture->width, chisel->texture->height
     };
-    chisel_get_adjusted_positions(chisel->angle, chisel->size, &dst.x, &dst.y);
-
-    SDL_Point center = { 0, chisel->texture->height/2 };
-
-#if CHISEL_FLASHING
-    if (chisel->state == CHISEL_STATE_ROTATING) {
-        const f64 speed = 0.01;
-        chisel->rotating_flash = 0.5*(1+sin(speed * SDL_GetTicks()));
-
-        Uint8 a = (Uint8) (255 * chisel->rotating_flash);
-
-        a = 127+a/2;
-
-        RenderTextureColorMod(chisel->texture, a, a, 0);
-    }
-#endif
-
-    RenderTextureExRelative(target,
-                            chisel->texture,
-                            null,
-                            &dst,
-                            180+chisel->draw_angle,
-                            &center,
-                            SDL_FLIP_NONE);
-
+    
+    f32 dx, dy;
+    chisel_get_adjusted_positions(chisel->texture->height, diagonal, &dx, &dy);
+    
+    dst.x += dx;
+    dst.y += dy;
+    
+    SDL_FPoint center = chisel_get_center_of_rotation(diagonal, chisel->texture->height);
+    
+    RenderTextureExRelativeF(target,
+                             chisel->texture,
+                             null,
+                             &dst,
+                             180+chisel->draw_angle,
+                             &center,
+                             SDL_FLIP_NONE);
+    
     RenderColor(127, 127, 127, 255);
     RenderPointRelative(target, (int)chisel->draw_x, (int)chisel->draw_y);
-
+    
     if (chisel->state == CHISEL_STATE_IDLE)
         chisel_draw_highlights(target,
                                chisel->highlights,
                                chisel->highlight_count,
                                0,
                                0);
+    
+    chisel->draw_angle -= diagonal_offset_angle;
+    
+    //
+
+#if 0    
+    chisel->aa++;
+    chisel->aa %= 360;
+    
+    SDL_FPoint centerf = { 0.5, 0.5 };
+    
+    SDL_FRect dstf = { gs->gw/2, gs->gh/2, 10, 1};
+    
+    RenderColor(255, 255, 255, 255);
+    RenderTextureExRelativeF(target,
+                             &GetTexture(TEXTURE_TEST),
+                             null,
+                             &dstf,
+                             chisel->aa,
+                             &centerf,
+                             SDL_FLIP_NONE);
+#endif
 }

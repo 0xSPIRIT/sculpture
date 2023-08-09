@@ -1,17 +1,9 @@
 TODO
 
+  x Chisel diagonals & improved rotation
+
   - Move the Note: in the material converter section of the recipe book
     to be item counts instead.
-
-  - The whole thing with Max not making the sculptures to his desires
-    doesn't work as well if the player doesn't adhere to Max's desired-s
-    in the first couple levels. So we need to explicitly make it so that
-    Max is fine doing whatever he wants with the first couple levels,
-    because he doesn't view it as "real". Level 7+ however he believes
-    are more significant to him.
-
-  - Something to do with the rain preferring the left side of
-    the scene, when stuff is splashing on to material?
 
   - Music!!!!!! Focus on the music! Don't procrastinate it!
      - Ambient: piano, pads/synths, motifs?

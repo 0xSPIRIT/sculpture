@@ -36,9 +36,9 @@ static void tool_button_set_disabled(int level) {
 
                 typedef struct { Chisel *chisel; Button *tool; }ChiselAndTool;
                 ChiselAndTool map[3] = {
-                    {&gs->chisel_small, tools[TOOL_CHISEL_SMALL]},
-                    {&gs->chisel_medium, tools[TOOL_CHISEL_MEDIUM]},
-                    {&gs->chisel_large, tools[TOOL_CHISEL_LARGE]}
+                    {&gs->chisels[0], tools[TOOL_CHISEL_SMALL]},
+                    {&gs->chisels[1], tools[TOOL_CHISEL_MEDIUM]},
+                    {&gs->chisels[2], tools[TOOL_CHISEL_LARGE]}
                 };
 
                 for (int i = 0; i < 3; i++) {
@@ -167,16 +167,16 @@ static void click_gui_tool_button(void *type_ptr) {
 
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: {
-            gs->chisel = &gs->chisel_small;
+            gs->chisel = &gs->chisels[0];
             break;
         }
         case TOOL_CHISEL_MEDIUM: {
-            gs->chisel = &gs->chisel_medium;
+            gs->chisel = &gs->chisels[1];
             break;
         }
         case TOOL_CHISEL_LARGE: {
             gs->current_tool = TOOL_CHISEL_LARGE;
-            gs->chisel = &gs->chisel_large;
+            gs->chisel = &gs->chisels[2];
             break;
         }
         case TOOL_OVERLAY: {

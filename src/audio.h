@@ -1,9 +1,7 @@
-//#define AUDIO_AMBIENCE_RAIN_VOLUME Volume(0.16)
-//#define AUDIO_AMBIENCE_VOLUME      Volume(0.40)
-#define AUDIO_CHISEL_VOLUME        Volume(0.20)
-#define AUDIO_GUI_VOLUME           Volume(0.27)
-#define AUDIO_MUSIC_VOLUME         Volume(1.00)
-#define AUDIO_TITLESCREEN_VOLUME   Volume(1.00)
+#define AUDIO_CHISEL_VOLUME       Volume(0.20)
+#define AUDIO_GUI_VOLUME          Volume(0.27)
+#define AUDIO_MUSIC_VOLUME        Volume(1.00)
+#define AUDIO_TITLESCREEN_VOLUME  Volume(1.00)
 
 #define AUDIO_PLAY_AMBIANCE 1
 

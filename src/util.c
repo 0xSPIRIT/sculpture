@@ -4,6 +4,8 @@ QueryPerformanceCounter(&__start);
 
 #define EndTimer() __end_timer(__start)
 
+#define ArrayCount(x) (sizeof(x)/sizeof(*x))
+
 static inline f64 __end_timer(LARGE_INTEGER start) {
     LARGE_INTEGER f, e;
     QueryPerformanceCounter(&e);
@@ -336,7 +338,7 @@ static f64 interpolate(f64 a, f64 b, f64 step) {
     }
 }
 
-static f64 clamp64(f64 x, f64 a, f64 b) {
+static inline f64 clamp64(f64 x, f64 a, f64 b) {
     if (x < a) return a;
     if (x > b) return b;
     return x;
@@ -369,12 +371,10 @@ static f32 lerp_degrees(f32 start, f32 end, f32 amount) {
     f32 value = (start + ((end - start) * amount));
 
     // Wrap it..
-    f32 rangeZero = 360;
-
     if (value >= 0 && value <= 360)
         return value;
 
-    return fmod(value, rangeZero);
+    return fmod(value, 360);
 }
 
 static f32 lerp_no_error(f32 a, f32 b, f32 t, f32 error) {

@@ -88,8 +88,19 @@ enum {
     TEXTURE_POPUP,
     TEXTURE_BLOB_HAMMER,
     TEXTURE_CONVERTER_ARROW,
-    TEXTURE_CHISEL,
-    TEXTURE_CHISEL_END = TEXTURE_CHISEL+3,
+    
+    // This is fucking disgusting.
+    TEXTURE_CHISEL_SMALL,
+    TEXTURE_CHISEL_SMALL_DIAGONAL,
+    
+    TEXTURE_CHISEL_MEDIUM,
+    TEXTURE_CHISEL_MEDIUM_DIAGONAL,
+    
+    TEXTURE_CHISEL_LARGE,
+    TEXTURE_CHISEL_LARGE_DIAGONAL,
+    
+    TEXTURE_TEST,
+    
     TEXTURE_CHISEL_HAMMER,
     TEXTURE_PLANK,
     TEXTURE_W_KEY,
@@ -126,7 +137,6 @@ enum {
 typedef struct Textures {
     Texture texs[TEXTURE_COUNT];
 } Textures;
-
 
 
 // A bit nasty...

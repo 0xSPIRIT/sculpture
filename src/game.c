@@ -189,17 +189,8 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
             gs->current_tool += event->wheel.y;
             gs->current_tool = clamp(gs->current_tool, TOOL_CHISEL_SMALL, TOOL_CHISEL_LARGE);
 
-            switch (gs->current_tool) {
-                case TOOL_CHISEL_SMALL: {
-                    gs->chisel = &gs->chisel_small;
-                } break;
-                case TOOL_CHISEL_MEDIUM: {
-                    gs->chisel = &gs->chisel_medium;
-                } break;
-                case TOOL_CHISEL_LARGE: {
-                    gs->chisel = &gs->chisel_large;
-                } break;
-            }
+            gs->chisel = &gs->chisels[gs->current_tool - TOOL_CHISEL_SMALL];
+            
             gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
             gs->gui.tool_buttons[gs->current_tool]->active = true;
 
@@ -333,7 +324,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
             case SDLK_1: {
                 if (!gs->gui.tool_buttons[TOOL_CHISEL_SMALL]->disabled) {
                     gs->current_tool = TOOL_CHISEL_SMALL;
-                    gs->chisel = &gs->chisel_small;
+                    gs->chisel = &gs->chisels[0];
                     //gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) gs->chisel->w+2;
                     selected_tool = 1;
                 }
@@ -342,7 +333,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
             case SDLK_2: {
                 if (!gs->gui.tool_buttons[TOOL_CHISEL_MEDIUM]->disabled) {
                     gs->current_tool = TOOL_CHISEL_MEDIUM;
-                    gs->chisel = &gs->chisel_medium;
+                    gs->chisel = &gs->chisels[1];
                     //gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) gs->chisel->w+4;
                     selected_tool = 1;
                 }
@@ -351,7 +342,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
             case SDLK_3: {
                 if (!gs->gui.tool_buttons[TOOL_CHISEL_LARGE]->disabled) {
                     gs->current_tool = TOOL_CHISEL_LARGE;
-                    gs->chisel = &gs->chisel_large;
+                    gs->chisel = &gs->chisels[2];
                     //gs->chisel_hammer.normal_dist = gs->chisel_hammer.dist = (f32) gs->chisel->w+4;
                     selected_tool = 1;
                 }

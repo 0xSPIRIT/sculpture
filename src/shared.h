@@ -183,7 +183,7 @@ typedef struct Game_State {
 
     SDL_Surface *pixel_format_surf;
 
-    Chisel chisel_small, chisel_medium, chisel_large;
+    Chisel chisels[3];
     Chisel *chisel;
 
     int save_state_count; // Number of states saved.

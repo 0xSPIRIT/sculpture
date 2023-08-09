@@ -117,28 +117,29 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_ALTERNATE_BUTTON) = RenderLoadTexture("buttons/alternate.png");
     GetTexture(TEXTURE_RECIPE_BOOK_BUTTON) = RenderLoadTexture("buttons/recipebook.png");
     GetTexture(TEXTURE_OK_BUTTON) = RenderLoadTexture("buttons/tutorial_ok.png");
-
-    const char *chisel_files[] = {
-        "chisel_small",
-        "chisel_medium",
-        "chisel_large",
-    };
     GetTexture(TEXTURE_CHISEL_HAMMER) = RenderLoadTexture("hammer.png");
+    
+    GetTexture(TEXTURE_TEST) = RenderLoadTexture("test.png");
+    
+    struct File_To_Index {
+        const char *filename;
+        int index;
+    };
 
+    struct File_To_Index chisel_files[] = {
+        { "chisel_small.png",           TEXTURE_CHISEL_SMALL },
+        { "chisel_small_diagonal.png",  TEXTURE_CHISEL_SMALL_DIAGONAL },
+        
+        { "chisel_medium.png",          TEXTURE_CHISEL_MEDIUM },
+        { "chisel_medium_diagonal.png", TEXTURE_CHISEL_MEDIUM_DIAGONAL },
+        
+        { "chisel_large.png",           TEXTURE_CHISEL_LARGE },
+        { "chisel_large_diagonal.png",  TEXTURE_CHISEL_LARGE_DIAGONAL },
+    };
+    
     // Loop through all chisels
-    for (int i = 0; i < 3; i++) {
-        // Alternate through face mode
-        for (int face = 1; face != -1; face--) {
-            char file[512] = {0};
-            strcpy(file, chisel_files[i]);
-
-            if (face)
-                strcat(file, "_face");
-
-            strcat(file, ".png");
-
-            GetTexture(TEXTURE_CHISEL+i) = RenderLoadTexture(file);
-        }
+    for (int i = 0; i < ArrayCount(chisel_files); i++) {
+        GetTexture(chisel_files[i].index) = RenderLoadTexture(chisel_files[i].filename);
     }
 }
 

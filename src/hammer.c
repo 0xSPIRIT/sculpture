@@ -95,12 +95,12 @@ static void hammer_tick(Hammer *hammer) {
 //
 static void hammer_draw(int final_target, Hammer *hammer) {
     {
-        SDL_Point center = {
+        SDL_FPoint center = {
             hammer->tex->width/2,
             7*hammer->tex->height/8.0
         };
 
-        SDL_Rect dst = {
+        SDL_FRect dst = {
             hammer->x + 1,
             hammer->y - 2,
             hammer->tex->width, hammer->tex->height
@@ -120,7 +120,7 @@ static void hammer_draw(int final_target, Hammer *hammer) {
             angle *= -1;
         }
 
-        RenderTextureExRelative(RENDER_TARGET_HAMMER,
+        RenderTextureExRelativeF(RENDER_TARGET_HAMMER,
                                 hammer->tex,
                                 null,
                                 &dst,

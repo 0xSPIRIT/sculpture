@@ -98,6 +98,7 @@ RENDERAPI Texture RenderCreateTextureFromSurface(SDL_Surface *surf);
 RENDERAPI Font *RenderLoadFont                  (const char *fp, int size);
 
 RENDERAPI SDL_Rect RenderGetUpdatedRect         (Render_Target *target, SDL_Rect *rect);
+RENDERAPI SDL_FRect RenderGetUpdatedRectF       (Render_Target *target, SDL_FRect *rect);
 RENDERAPI Render_Target RenderMakeTarget        (int width, int height, View_State view, bool use_negative_coords);
 RENDERAPI Render_Target RenderMakeTargetEx      (int width, int height, View_State view, bool use_negative_coords, bool streaming);
 RENDERAPI void RenderTargetToTarget             (int target_dst, int target_src, SDL_Rect *src, SDL_Rect *dst);
@@ -120,7 +121,9 @@ RENDERAPI void RenderClear                      (int target);
 
 RENDERAPI void RenderTexture                    (int target, Texture *texture, SDL_Rect *src, SDL_Rect *dst);
 RENDERAPI void RenderTextureEx                  (int target, Texture *texture, SDL_Rect *src, SDL_Rect *dst, f64 angle, SDL_Point *center, SDL_RendererFlip flip);
+RENDERAPI void RenderTextureExF                 (int target, Texture *texture, SDL_Rect *src, SDL_FRect *dst, f64 angle, SDL_FPoint *center, SDL_RendererFlip flip);
 
+RENDERAPI void RenderTextureExRelativeF         (int target_enum, Texture *texture, SDL_Rect *src, SDL_FRect *dst, f64 angle, SDL_FPoint *center, SDL_RendererFlip flip);
 RENDERAPI void RenderTextureExRelative          (int target_enum, Texture *texture, SDL_Rect *src, SDL_Rect *dst, f64 angle, SDL_Point *center, SDL_RendererFlip flip);
 RENDERAPI void RenderTextureRelative            (int target, Texture *texture, SDL_Rect *src, SDL_Rect *dst);
 

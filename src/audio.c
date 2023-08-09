@@ -1,11 +1,12 @@
-void play_sound(int channel, Sound sound, int loops) {
-    Mix_PlayChannel(channel, sound.sound, loops);
-}
-
-void audio_halt_ambience(void) {
-    Mix_HaltChannel(AUDIO_CHANNEL_AMBIENCE);
-    gs->audio_handler.ambience = 0;
-    gs->audio_handler.ambience_volume = 0;
+// This is called every frame and sets the current music according to certain conditions.
+void audio_set_music_accordingly(void) {
+    int level_number = gs->level_current+1;
+    
+    if (level_number == 11 && gs->obj.active) {
+        audio_set_music(MUSIC_EXPLITIVE);
+    } else {
+        audio_set_music(MUSIC_NONE);
+    }
 }
 
 // Called every frame.
@@ -25,6 +26,16 @@ void audio_set_ambience_accordingly(void) {
     if (level->effect_type == EFFECT_RAIN) {
         audio_set_ambience(AMBIENCE_RAIN);
     }
+}
+
+void play_sound(int channel, Sound sound, int loops) {
+    Mix_PlayChannel(channel, sound.sound, loops);
+}
+
+void audio_halt_ambience(void) {
+    Mix_HaltChannel(AUDIO_CHANNEL_AMBIENCE);
+    gs->audio_handler.ambience = 0;
+    gs->audio_handler.ambience_volume = 0;
 }
 
 // Should be called every frame.
@@ -59,24 +70,10 @@ void audio_set_ambience_levels(void) {
     Mix_Volume(AUDIO_CHANNEL_AMBIENCE, gs->audio_handler.ambience_volume);
 }
 
-
-// Music
-
 void audio_halt_music(void) {
     Mix_HaltChannel(AUDIO_CHANNEL_MUSIC);
     gs->audio_handler.music = 0;
     gs->audio_handler.music_volume = 0;
-}
-
-// This is called every frame and sets the current music according to certain conditions.
-void audio_set_music_accordingly(void) {
-    int level_number = gs->level_current+1;
-    
-    if (level_number == 11 && gs->obj.active) {
-        audio_set_music(MUSIC_EXPLITIVE);
-    } else {
-        audio_set_music(MUSIC_NONE);
-    }
 }
 
 void audio_set_music(MusicType music) {

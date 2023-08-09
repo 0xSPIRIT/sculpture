@@ -1,3 +1,5 @@
+static void narrator_next_line(bool init);
+
 static void narrator_draw_text_blended(int i,
                                        Font *font,
                                        const char *str,

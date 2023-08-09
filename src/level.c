@@ -144,11 +144,11 @@ static void goto_level(int lvl) {
     
     dust_init();
     
-    gs->chisel_small  = chisel_init(CHISEL_SMALL);
-    gs->chisel_medium = chisel_init(CHISEL_MEDIUM);
-    gs->chisel_large  = chisel_init(CHISEL_LARGE);
+    gs->chisels[0] = chisel_init(CHISEL_SMALL);
+    gs->chisels[1] = chisel_init(CHISEL_MEDIUM);
+    gs->chisels[2] = chisel_init(CHISEL_LARGE);
     
-    gs->chisel = &gs->chisel_small;
+    gs->chisel = &gs->chisels[0];
     
     gs->hammer = hammer_init();
     
@@ -320,10 +320,6 @@ static void level_tick_outro(Level *level) {
     level->outro_alpha = goto64(level->outro_alpha, level->desired_alpha, 25);
     if (fabs(level->outro_alpha - level->desired_alpha) < 15)
         level->outro_alpha = level->desired_alpha;
-    
-    //if (!gs->gui.eol_popup_confirm.active && gs->input.keys[SDL_SCANCODE_N]) {
-        //level_click_next_level();
-    //}
     
     if (!gs->gui.eol_popup_confirm.active && gs->input.keys_pressed[SDL_SCANCODE_ESCAPE]) {
         level_click_close_outro(level);
