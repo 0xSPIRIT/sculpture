@@ -394,6 +394,9 @@ export void game_run(Game_State *state) {
         case GAME_STATE_PLAY: {
             game_update_view();
 
+            audio_set_ambience_accordingly();
+            audio_set_music_accordingly();
+            
             if (gs->obj.active) {
                 RenderColor(255, 255, 255, 255);
                 RenderClear(RENDER_TARGET_MASTER);
@@ -420,9 +423,6 @@ export void game_run(Game_State *state) {
                 gui_tick();
                 inventory_tick();
                 all_converters_tick();
-
-                audio_set_ambience_accordingly();
-                audio_set_music_accordingly();
 
                 level_tick(&gs->levels[gs->level_current]);
                 level_draw(&gs->levels[gs->level_current]);

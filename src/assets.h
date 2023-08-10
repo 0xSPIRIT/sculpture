@@ -62,8 +62,8 @@ typedef struct Audio {
     Sound ambience_rain;
     Sound ambience1;
     
-    //Sound music0;
     Sound music0;
+    Sound music1;
     
     Sound sprinkle, macabre;
     Sound accept;

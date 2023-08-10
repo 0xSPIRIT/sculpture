@@ -23,7 +23,8 @@ typedef enum {
 
 typedef enum {
     MUSIC_NONE,
-    MUSIC_EXPLITIVE
+    MUSIC_TEST,
+    MUSIC_EXPLITIVE,
 } MusicType;
 
 typedef struct {
@@ -32,6 +33,7 @@ typedef struct {
     
     MusicType music;
     int music_volume;
+    bool music_end;
 } Audio_Handler;
 
 typedef struct {

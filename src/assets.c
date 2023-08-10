@@ -222,6 +222,7 @@ static void audio_init(Audio *audio) {
     audio->ambience1     = load_sound(RES_DIR "audio/ambience1.ogg", 0.4);
     audio->ambience_rain = load_sound(RES_DIR "audio/rain.ogg",      0.16);
     audio->music0        = load_sound(RES_DIR "audio/music0.ogg",    0.30);
+    audio->music1        = load_sound(RES_DIR "audio/music1.ogg",    0.50);
 
     audio->pip = load_sound(RES_DIR "audio/pip.ogg", 1);
 
@@ -232,7 +233,7 @@ static void audio_init(Audio *audio) {
     }
     audio->small_chisel = load_sound(RES_DIR "audio/small_chisel.wav", 1);
 
-    for (int i = 0; i < sizeof(audio->ice_chisel)/sizeof(Sound); i++) {
+    for (int i = 0; i < ArrayCount(audio->ice_chisel); i++) {
         char name[64];
         sprintf(name, RES_DIR "audio/ice_chisel_%d.wav", i+1);
         audio->ice_chisel[i] = load_sound(name, 1);
@@ -252,10 +253,11 @@ static void audio_deinit(Audio *audio) {
     free_sound(&audio->ambience1);
     free_sound(&audio->ambience_rain);
     free_sound(&audio->music0);
+    free_sound(&audio->music1);
 
     for (int i = 0; i < 6; i++)
         free_sound(&audio->medium_chisel[i]);
-    for (int i = 0; i < sizeof(audio->ice_chisel)/sizeof(Sound); i++)
+    for (int i = 0; i < ArrayCount(audio->ice_chisel); i++)
         free_sound(&audio->ice_chisel[i]);
     free_sound(&audio->small_chisel);
     free_sound(&audio->pip);

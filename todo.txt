@@ -1,7 +1,5 @@
 TODO
 
-  x Chisel diagonals & improved rotation
-
   - Move the Note: in the material converter section of the recipe book
     to be item counts instead.
 

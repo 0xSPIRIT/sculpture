@@ -14,18 +14,22 @@ static Button *button_allocate(Button_Type type, Texture *texture, const char *t
     return b;
 }
 
-static void tool_button_set_disabled(int level) {
+void tool_button_set_disabled(int level) {
     Button **tools = gs->gui.tool_buttons;
 
-    //tools[TOOL_BLOCKER]->disabled = true;
-
-    //bool is_leeway_compared = compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY);
     bool is_exactly = compare_cells_to_int(gs->grid, gs->overlay.grid, 0);
+    bool is_grid_empty = is_array_empty(gs->grid);
 
     if (is_exactly && !gs->levels[level].done) {
         play_level_end_sound(level);
         gs->levels[level].done = true;
         tools[TOOL_FINISH_LEVEL]->highlighted = true;
+    }
+    
+    if (is_grid_empty) {
+        for (int i = TOOL_CHISEL_SMALL; i <= TOOL_CHISEL_LARGE; i++) {
+            tools[i]->disabled = true;
+        }
     }
 
     switch (level+1) {
@@ -49,21 +53,6 @@ static void tool_button_set_disabled(int level) {
                     }
                 }
             }
-
-#if 0
-            if (gs->chisel_small.num_times_chiseled < 10) {
-                tools[TOOL_CHISEL_MEDIUM]->disabled = true;
-                tools[TOOL_CHISEL_LARGE]->disabled = true;
-            } else {
-                tools[TOOL_CHISEL_MEDIUM]->disabled = false;
-                tools[TOOL_CHISEL_LARGE]->disabled = false;
-                if (!gs->level1_set_highlighted) {
-                    gs->level1_set_highlighted = true;
-                    tools[TOOL_CHISEL_MEDIUM]->highlighted = true;
-                    tools[TOOL_CHISEL_LARGE]->highlighted = true;
-                }
-            }
-#endif
         }
         case 2: {
             //tools[TOOL_DELETER]->disabled = true;
@@ -75,8 +64,10 @@ static void tool_button_set_disabled(int level) {
             break;
         }
         default: {
-            for (int i = 0; i < TOOL_COUNT; i++)
-                tools[i]->disabled = false;
+            if (!is_grid_empty) {
+                for (int i = 0; i < TOOL_COUNT; i++)
+                    tools[i]->disabled = false;
+            }
         }
     }
 }

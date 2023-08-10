@@ -2,7 +2,14 @@
 void audio_set_music_accordingly(void) {
     int level_number = gs->level_current+1;
     
-    if (level_number == 11 && gs->obj.active) {
+    if (gs->audio_handler.music_end) {
+        audio_set_music(MUSIC_NONE);
+        return;
+    }
+    
+    if (level_number == 5) {
+        audio_set_music(MUSIC_TEST);
+    } else if (level_number == 11 && gs->obj.active) {
         audio_set_music(MUSIC_EXPLITIVE);
     } else {
         audio_set_music(MUSIC_NONE);
@@ -13,7 +20,7 @@ void audio_set_music_accordingly(void) {
 void audio_set_ambience_accordingly(void) {
     Level *level = &gs->levels[gs->level_current];
 
-    if (level->state == LEVEL_STATE_INTRO) {
+    if (level->state == LEVEL_STATE_INTRO || gs->obj.active) {
         audio_set_ambience(0);
         return;
     }
@@ -74,6 +81,7 @@ void audio_halt_music(void) {
     Mix_HaltChannel(AUDIO_CHANNEL_MUSIC);
     gs->audio_handler.music = 0;
     gs->audio_handler.music_volume = 0;
+    gs->audio_handler.music_end = true;
 }
 
 void audio_set_music(MusicType music) {
@@ -83,6 +91,9 @@ void audio_set_music(MusicType music) {
         switch (music) {
             case MUSIC_EXPLITIVE: {
                 play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music0, -1);
+            } break;
+            case MUSIC_TEST: {
+                play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music1, -1);
             } break;
             default: {
                 audio_halt_music();
