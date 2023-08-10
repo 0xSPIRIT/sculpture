@@ -700,7 +700,7 @@ static void chisel_tick(Chisel *chisel) {
 
             f32 step = 45.0;
             chisel->angle /= step;
-            chisel->angle = (int)(chisel->angle) * step;
+            chisel->angle = round(chisel->angle) * step;
             chisel->angle -= 180;
 
             for (int i = 0; i < 3; i++) {
