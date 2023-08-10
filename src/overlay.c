@@ -258,25 +258,18 @@ static bool has_any_chisel_chiseled(void) {
 static void overlay_swap_tick(void) {
     Overlay *overlay = &gs->overlay;
 
+    overlay->changes.is_grid_none_previous = overlay->changes.was_grid_none;
     if (!overlay->changes.was_grid_none) {
-        bool none = true;
-        for (int i = 0; i < gs->gw*gs->gh; i++) {
-            if (gs->grid[i].type) {
-                none = false;
-                break;
-            }
-        }
-
-        if (none) {
-            overlay->changes.was_grid_none = true;
-        }
+        overlay->changes.was_grid_none = is_array_empty(gs->grid);
     }
 
-    if (overlay->changes.was_grid_none) {
-        if (gs->chisel->did_chisel_this_frame)
+    if (overlay->changes.was_grid_none && overlay->changes.is_grid_none_previous) {
+        if (gs->chisel->did_chisel_this_frame) {
             overlay->temp = true;
-        if (gs->placers[gs->current_placer].did_place_this_frame)
+        }
+        if (gs->placers[gs->current_placer].did_place_this_frame) {
             overlay->temp = true;
+        }
     }
     if (overlay->changes.was_grid_none && overlay->temp) {
         if (gs->overlay.show && !gs->gui.popup && !gs->conversions.active) { overlay->changes.temp += 0.02f; }

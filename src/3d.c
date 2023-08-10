@@ -25,10 +25,6 @@ static inline void draw_triangle(int w, int h, SDL_Surface *surf, Uint32 *pixels
 
             if (w2 < 0) continue; // If any weight < 0, the point is not in the triangle
 
-            //const vec2 tex_coord = vec2_add3(vec2_scale(p[0].tex, w0),
-            //                                 vec2_scale(p[1].tex, w1),
-            //                                 vec2_scale(p[2].tex, w2));
-
             const vec2 a = (vec2){p[0].tex.x*w0, p[0].tex.y*w0};
             const vec2 b = (vec2){p[1].tex.x*w1, p[1].tex.y*w1};
             const vec2 c = (vec2){p[2].tex.x*w2, p[2].tex.y*w2};
@@ -38,11 +34,11 @@ static inline void draw_triangle(int w, int h, SDL_Surface *surf, Uint32 *pixels
                 a.y+b.y+c.y
             };
 
-            int xx = tex_coord.x * sw;//surf->w;
-            int yy = tex_coord.y * sh;//surf->h;
+            int xx = tex_coord.x * sw;
+            int yy = tex_coord.y * sh;
 
-            xx %= sw;//surf->w;
-            yy %= sh;//surf->h;
+            xx %= sw;
+            yy %= sh;
 
             pixels[x+y*w] = spixels[xx+yy*surf->h];
         }

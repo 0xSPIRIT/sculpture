@@ -1,10 +1,10 @@
 TODO
 
-  - Move the Note: in the material converter section of the recipe book
-    to be item counts instead.
-
   - Music!!!!!! Focus on the music! Don't procrastinate it!
      - Ambient: piano, pads/synths, motifs?
+
+  - Move the Note: in the material converter section of the recipe book
+    to be item counts instead.
 
   - Make the rain be used in another level? Feels underused
 

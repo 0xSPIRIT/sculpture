@@ -19,6 +19,7 @@ typedef struct Overlay_Changes {
 
     f32 temp;
     bool was_grid_none; // Was the games grid completely zeroed out at some point?
+    bool is_grid_none_previous; // For the previous frame
 
     f32 alpha;
 } Overlay_Changes;

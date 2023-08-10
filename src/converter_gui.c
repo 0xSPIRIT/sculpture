@@ -1,17 +1,17 @@
 int get_item_from_any(int type, int timer, int override_index) {
     Assert(type < 0);
     timer /= 2;
-
+    
     const int step = 30; // The interval between switches.
-
+    
     if (override_index != -1) {
         timer = override_index * step;
     }
-
+    
     switch(type) {
         case CELL_ANY_STONE: {
             int t = timer % (step*7);
-
+            
             if (t < step)    return CELL_STONE;
             if (t < step*2)  return CELL_MARBLE;
             if (t < step*3)  return CELL_SANDSTONE;
@@ -19,47 +19,47 @@ int get_item_from_any(int type, int timer, int override_index) {
             if (t < step*5)  return CELL_GRANITE;
             if (t < step*6)  return CELL_BASALT;
             if (t < step*7)  return CELL_DIAMOND;
-
+            
         } break;
         case CELL_ANY_COAL: {
             int t = timer % (step*2);
-
+            
             if (t < step)    return CELL_UNREFINED_COAL;
             if (t < step*2)  return CELL_REFINED_COAL;
-
+            
         } break;
         case CELL_ANY_CONVERT_TO_COAL: {
             int t = timer % (step*5);
-
+            
             if (t < step)    return CELL_MARBLE;
             if (t < step*2)  return CELL_STONE;
             if (t < step*3)  return CELL_SANDSTONE;
             if (t < step*4)  return CELL_DIRT;
             if (t < step*5)  return CELL_SAND;
-
+            
         } break;
         case CELL_ANY_FUEL: {
             int t = timer % (step*3);
-
+            
             if (t < step)    return CELL_UNREFINED_COAL;
             if (t < step*2)  return CELL_REFINED_COAL;
             if (t < step*3)  return CELL_LAVA;
         } break;
         case CELL_ANY_STEAM_OR_ICE: {
             int t = timer % (step*2);
-
+            
             if (t < step)    return CELL_STEAM;
             if (t < step*2)  return CELL_ICE;
         } break;
         case CELL_ANY_NONE_OR_UNREFINED_COAL: {
             int t = timer % (step*2);
-
+            
             if (t < step)    return CELL_NONE;
             if (t < step*2)  return CELL_UNREFINED_COAL;
         } break;
         case CELL_ANY_WATER_OR_ICE: {
             int t = timer % (step*2);
-
+            
             if (t < step)    return CELL_WATER;
             if (t < step*2)  return CELL_ICE;
         } break;
@@ -67,14 +67,14 @@ int get_item_from_any(int type, int timer, int override_index) {
             Assert(0); // Unknown any type.
         } break;
     }
-
+    
     return 0;
 }
 
 void converter_gui_init(void) {
     Conversions *c = &gs->conversions;
     memset(c, 0, sizeof(Conversions));
-
+    
     for (int i = 0; i < CONVERSIONS_GUI_COUNT; i++) {
         int button_index = i*6+5;
         if (conversions[button_index])
@@ -84,44 +84,44 @@ void converter_gui_init(void) {
 
 bool converter_gui_item_draw(int target, Cell_Type item, int override_index, int x, int y, int w, int h) {
     bool mouse_in_rect = false;
-
+    
     SDL_Rect r = { x, y, w, h };
-
+    
     if (r.x+r.w < 0 || r.y+r.h < 0 || r.x >= gs->game_width || r.y >= gs->game_height) return false;
-
+    
     if (item < 0) {
         item = get_item_from_any(item, gs->conversions.timer, override_index-1);
     }
-
+    
     SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
     if (is_point_in_rect(mouse, r) && item != 0) {
         tooltip_reset(&gs->gui.tooltip);
         tooltip_set_position_to_cursor(&gs->gui.tooltip, item);
         memset(gs->gui.tooltip.str, 0, MAX_TOOLTIP_LEN*MAX_TOOLTIP_LINE_LEN);
-
+        
         get_name_from_type(item, gs->gui.tooltip.str[0]);
-
+        
         if (item != CELL_DIRT && item != CELL_SAND) {
             strcpy(gs->gui.tooltip.str[1], "Click to go to recipe");
         }
-
+        
         mouse_in_rect = true;
-
+        
         if (gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
             gs->conversions.definition = item;
             gs->conversions.definition_alpha = 255;
         }
     }
-
+    
     RenderColor(0, 0, 0, 255);
     RenderFillRect(target, r);
     RenderColor(128, 128, 128, 255);
     RenderDrawRect(target, r);
-
-    RenderTexture(target,
-                  &GetTexture(TEXTURE_ITEMS+item),
-                  null,
-                  &r);
+    
+    Texture *texture = &GetTexture(TEXTURE_ITEMS+item);
+    
+    RenderTextureColorMod(texture, 255, 255, 255);
+    RenderTexture(target, texture, null, &r);
 
     return mouse_in_rect;
 }

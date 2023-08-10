@@ -1,0 +1,158 @@
+FileVersion = 1
+LastConfig = "Debug"
+LastPlatform = "Win64"
+RecentFilesList = ["d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\gui.c", "Disassembly", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
+
+[MainWindow]
+X = 0
+Y = 45
+Width = 1801
+Height = 894
+ShowKind = "Normal"
+
+[MainDockingFrame]
+Type = "DockingFrame"
+SplitType = 1
+
+[[MainDockingFrame.DockedWidgets]]
+IsFillWidget = true
+Permanent = true
+RequestedWidth = 150.0
+RequestedHeight = 150.0
+SizePriority = 1.0
+DefaultDocumentsTabbedView = true
+Type = "TabbedView"
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+Active = true
+TabLabel = "audio.c"
+TabWidth = 81.203
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\audio.c"
+CursorPos = 416
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "gui.c"
+TabWidth = 57.06767
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\gui.c"
+CursorPos = 17711
+VertPos = 12298.0
+
+[[MainDockingFrame.DockedWidgets]]
+RequestedWidth = 724.0
+RequestedHeight = 152.0
+Type = "DockingFrame"
+SplitType = 2
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets]]
+RequestedWidth = 679.0
+RequestedHeight = 152.0
+SizePriority = 0.5652725
+Type = "TabbedView"
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+Active = true
+TabLabel = "Output"
+TabWidth = 91.35338
+Type = "OutputPanel"
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+TabLabel = "Watch"
+TabWidth = 86.8421
+Type = "WatchPanel"
+Columns = [{Width = 231.0}, {Width = 682.0}, {Width = 227.0}]
+Items = ["(bool*)(0x200'126BAAB1)", "i", "gui->tool_buttons", ""]
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+TabLabel = "Auto"
+TabWidth = 77.81955
+Type = "AutoWatchPanel"
+Columns = [{Width = 227.0}, {Width = 274.0}, {Width = 227.0}]
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+TabLabel = "Memory"
+TabWidth = 97.36842
+Type = "MemoryPanel"
+AutoResize = "Auto_Mul8"
+RequestedWidth = 198.0
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets]]
+RequestedWidth = 448.68
+RequestedHeight = 152.0
+SizePriority = 0.4347275
+Type = "TabbedView"
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+TabLabel = "Threads"
+TabWidth = 95.11278
+Type = "ThreadPanel"
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+TabLabel = "Call Stack"
+TabWidth = 104.8872
+Type = "CallStackPanel"
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+TabLabel = "Immediate"
+TabWidth = 111.6541
+Type = "ImmediatePanel"
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+Active = true
+TabLabel = "Breakpoints"
+TabWidth = 116.9173
+Type = "BreakpointPanel"
+
+[[BookmarkFolders]]
+Title = ""
+
+[DebugSession]
+FileVersion = 1
+Dependencies = {}
+
+[DebugSession.Project]
+Name = "Debug Session"
+TargetType = "CustomBuild"
+StartupObject = "Program"
+DefaultNamespace = ""
+
+[DebugSession.Configs.Debug.Win32]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Debug.Win64]
+TargetName = "D:\\dev\\sculpture\\bin\\win32_sculpture.exe"
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Release.Win32]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Release.Win64]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Paranoid.Win32]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Paranoid.Win64]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Test.Win32]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Test.Win64]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""

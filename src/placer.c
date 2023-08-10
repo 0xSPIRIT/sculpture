@@ -346,6 +346,7 @@ static void placer_place_rect(Placer *placer) {
             gs->has_any_placed = true;
             set(x, y, placer->contains->type, object_index);
             placer->contains->amount--;
+            
             placer->did_place_this_frame = true;
         }
     }
