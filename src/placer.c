@@ -62,7 +62,7 @@ static void placer_suck_circle(Placer *placer) {
     Cell *arr = gs->grid;
 
     Cell_Type effect_pickup = effect_picked_up(&gs->current_effect);
-    
+
     bool took_anything = false;
     while (arr == gs->grid || arr == gs->gas_grid) {
         while (distance(x, y, (f32)placer->px, (f32)placer->py) < len) {
@@ -91,7 +91,7 @@ static void placer_suck_circle(Placer *placer) {
                         if (is_initial) {
                             amt = my_rand(xx+yy*gs->gw)%2 == 0 ? 1 : 2;
                         }
-                        
+
                         placer->contains->amount += amt;
                         took_anything = true;
 
@@ -346,7 +346,7 @@ static void placer_place_rect(Placer *placer) {
             gs->has_any_placed = true;
             set(x, y, placer->contains->type, object_index);
             placer->contains->amount--;
-            
+
             placer->did_place_this_frame = true;
         }
     }
@@ -421,7 +421,7 @@ static void placer_tick(Placer *placer) {
     switch (placer->state) {
         case PLACER_SUCK_MODE: {
             if (!can_click) break;
-            
+
             if (input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
                 if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
                     save_state_to_next();

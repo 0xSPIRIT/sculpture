@@ -1,20 +1,20 @@
 static Chisel chisel_init(ChiselSize size) {
     Chisel chisel = {0};
-    
+
     chisel.size = size;
     chisel.textures = get_chisel_texture(size);
     chisel.texture = chisel.textures.straight;
-    
+
     chisel.lookahead = 5;
-    
+
     chisel.mask = PushSize(gs->persistent_memory, gs->gw*gs->gh*1);
-    
+
     return chisel;
 }
 
 static Chisel_Texture get_chisel_texture(ChiselSize size) {
     Chisel_Texture result = {0};
-    
+
     switch (size) {
         case CHISEL_SMALL: {
             result.straight = &GetTexture(TEXTURE_CHISEL_SMALL);
@@ -26,9 +26,9 @@ static Chisel_Texture get_chisel_texture(ChiselSize size) {
             result.straight = &GetTexture(TEXTURE_CHISEL_LARGE);
         } break;
     }
-    
+
     result.diagonal = result.straight+1;
-    
+
     return result;
 }
 
@@ -107,33 +107,33 @@ static inline int diagonal_aware_sqaured_distance(int dx, int dy) {
 static int chisel_clamp_to_grid(f64 angle, int xx, int yy) {
     f64 closest_distance = gs->gw*gs->gh;
     closest_distance *= closest_distance;
-    
+
     bool is_mouse_on_cell = (gs->grid[xx+yy*gs->gw].type != CELL_NONE);
-    
+
     // Special case for when mouse is on a cell
-    
+
     if (is_mouse_on_cell) {
         f64 rad_angle = M_PI * angle / 180.0;
         int dir_x = round(cos(rad_angle));
         int dir_y = round(sin(rad_angle));
-        
+
         int nx = xx - dir_x;
         int ny = yy - dir_y;
-        
+
         if (gs->grid[nx+ny*gs->gw].type == CELL_NONE)
             return nx+ny*gs->gw;
     }
-    
+
     int closest_idx = -1;
-    
+
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         int x = i%gs->gw;
         int y = i/gs->gw;
         int neighbours = number_neighbours(gs->grid, x, y, 1);
-        
+
         if (neighbours == 0) continue;
         if (gs->grid[i].type != CELL_NONE) continue;
-        
+
         int dx = x - xx;
         int dy = y - yy;
         int dist = dx*dx + dy*dy;
@@ -264,7 +264,7 @@ static void chisel_move_mouse_until_cell(Chisel *chisel, int x, int y, f64 deg_a
     f64 yy = y;
 
     f64 length = sqrt((x-xx)*(x-xx) + (y-yy)*(y-yy));
-    
+
     while (length < max_length &&
            is_in_bounds(xx,yy) &&
            gs->grid[(int)round(xx)+((int)round(yy))*gs->gw].type == CELL_NONE)
@@ -745,7 +745,7 @@ static void chisel_tick(Chisel *chisel) {
 static void chisel_get_adjusted_positions(int texture_height, bool diagonal, f32 *dx, f32 *dy) {
     *dy = 0;
     *dx = 0;
-    
+
     if (diagonal) {
         *dy = -texture_height/2.0 + 1;
     }
@@ -765,10 +765,10 @@ static void chisel_draw(int target, Chisel *chisel) {
 
     x = chisel->draw_x;
     y = chisel->draw_y;
-    
+
     bool diagonal = false;
     int diagonal_offset_angle = 0;
-    
+
     if (((int)chisel->angle) % 90 == 0) {
         chisel->texture = chisel->textures.straight;
     } else {
@@ -780,16 +780,16 @@ static void chisel_draw(int target, Chisel *chisel) {
     { // Lerp the chisel angle
         chisel->angle += 180;
         chisel->draw_angle += 180;
-        
+
         chisel->draw_angle = lerp_degrees(chisel->draw_angle, chisel->angle, 0.6);
         if (abs(chisel->draw_angle-chisel->angle) < 2) {
             chisel->draw_angle = chisel->angle;
         }
-        
+
         chisel->angle -= 180;
         chisel->draw_angle -= 180;
     }
-    
+
     chisel->draw_angle += diagonal_offset_angle;
 
     RenderTextureColorMod(chisel->texture, 255, 255, 255);
@@ -798,15 +798,15 @@ static void chisel_draw(int target, Chisel *chisel) {
         x, y - chisel->texture->height/2, // integer divide
         chisel->texture->width, chisel->texture->height
     };
-    
+
     f32 dx, dy;
     chisel_get_adjusted_positions(chisel->texture->height, diagonal, &dx, &dy);
-    
+
     dst.x += dx;
     dst.y += dy;
-    
+
     SDL_FPoint center = chisel_get_center_of_rotation(diagonal, chisel->texture->height);
-    
+
     RenderTextureExRelativeF(target,
                              chisel->texture,
                              null,
@@ -814,29 +814,29 @@ static void chisel_draw(int target, Chisel *chisel) {
                              180+chisel->draw_angle,
                              &center,
                              SDL_FLIP_NONE);
-    
+
     RenderColor(127, 127, 127, 255);
     RenderPointRelative(target, (int)chisel->draw_x, (int)chisel->draw_y);
-    
+
     if (chisel->state == CHISEL_STATE_IDLE)
         chisel_draw_highlights(target,
                                chisel->highlights,
                                chisel->highlight_count,
                                0,
                                0);
-    
+
     chisel->draw_angle -= diagonal_offset_angle;
-    
+
     //
 
-#if 0    
+#if 0
     chisel->aa++;
     chisel->aa %= 360;
-    
+
     SDL_FPoint centerf = { 0.5, 0.5 };
-    
+
     SDL_FRect dstf = { gs->gw/2, gs->gh/2, 10, 1};
-    
+
     RenderColor(255, 255, 255, 255);
     RenderTextureExRelativeF(target,
                              &GetTexture(TEXTURE_TEST),

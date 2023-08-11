@@ -63,7 +63,7 @@ static void input_tick_normal(Game_State *state) {
     //in->mx = round(((f32)in->real_mx+state->render.view.x)/state->S);
     in->mx = (in->real_mx+state->render.view.x+32*state->S)/state->S;
     in->my = (in->real_my+state->render.view.y)/state->S;
-    
+
     in->my -= round((f32)GUI_H/state->S);
 
     input_tick_mouse_pressed(in);

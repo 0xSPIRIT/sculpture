@@ -1,16 +1,16 @@
 typedef struct Conversions {
     bool active;
     f64 y, y_to;
-    
+
     Button button;
-    
+
     int timer;
-    
+
     int override_indices[32];
-    
+
     int definition;
     Uint8 definition_alpha;
-    
+
     bool holding_scroll_bar;
     int max_height;
 } Conversions;

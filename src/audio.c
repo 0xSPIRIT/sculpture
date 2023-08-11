@@ -1,12 +1,12 @@
 // This is called every frame and sets the current music according to certain conditions.
 void audio_set_music_accordingly(void) {
     int level_number = gs->level_current+1;
-    
+
     if (gs->audio_handler.music_end) {
         audio_set_music(MUSIC_NONE);
         return;
     }
-    
+
     if (level_number == 5) {
         audio_set_music(MUSIC_TEST);
     } else if (level_number == 11 && gs->obj.active) {
@@ -67,7 +67,7 @@ void audio_set_ambience(AmbienceType ambience) {
 
 void audio_set_ambience_levels(void) {
     int volume = MIX_MAX_VOLUME;
-    
+
     int level_state = gs->levels[gs->level_current].state;
     if (gs->gui.popup || level_state == LEVEL_STATE_OUTRO) {
         volume /= 2;
@@ -86,7 +86,7 @@ void audio_halt_music(void) {
 
 void audio_set_music(MusicType music) {
     Audio_Handler *handler = &gs->audio_handler;
-    
+
     if (handler->music != music) {
         switch (music) {
             case MUSIC_EXPLITIVE: {
@@ -99,7 +99,7 @@ void audio_set_music(MusicType music) {
                 audio_halt_music();
             } break;
         }
-    
+
         handler->music = music;
     }
 }

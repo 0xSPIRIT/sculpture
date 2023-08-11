@@ -16,7 +16,7 @@
 static void render_targets_init(void) {
     int width = gs->desktop_w;
     int height = gs->desktop_h;
-    
+
     for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
         switch (i) {
             case RENDER_TARGET_MASTER: {
@@ -118,9 +118,9 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_RECIPE_BOOK_BUTTON) = RenderLoadTexture("buttons/recipebook.png");
     GetTexture(TEXTURE_OK_BUTTON) = RenderLoadTexture("buttons/tutorial_ok.png");
     GetTexture(TEXTURE_CHISEL_HAMMER) = RenderLoadTexture("hammer.png");
-    
+
     GetTexture(TEXTURE_TEST) = RenderLoadTexture("test.png");
-    
+
     struct File_To_Index {
         const char *filename;
         int index;
@@ -129,14 +129,14 @@ static void textures_init(Textures *textures) {
     struct File_To_Index chisel_files[] = {
         { "chisel_small.png",           TEXTURE_CHISEL_SMALL },
         { "chisel_small_diagonal.png",  TEXTURE_CHISEL_SMALL_DIAGONAL },
-        
+
         { "chisel_medium.png",          TEXTURE_CHISEL_MEDIUM },
         { "chisel_medium_diagonal.png", TEXTURE_CHISEL_MEDIUM_DIAGONAL },
-        
+
         { "chisel_large.png",           TEXTURE_CHISEL_LARGE },
         { "chisel_large_diagonal.png",  TEXTURE_CHISEL_LARGE_DIAGONAL },
     };
-    
+
     // Loop through all chisels
     for (int i = 0; i < ArrayCount(chisel_files); i++) {
         GetTexture(chisel_files[i].index) = RenderLoadTexture(chisel_files[i].filename);
@@ -200,14 +200,14 @@ static void audio_setup_initial_channel_volumes(void) {
 
 static Sound load_sound(const char *file, f32 volume) {
     Sound result = {0};
-    
+
     result.sound = Mix_LoadWAV(file);
     Assert(result.sound);
-    
+
     result.volume = Volume(volume);
-    
+
     Mix_VolumeChunk(result.sound, result.volume);
-    
+
     return result;
 }
 
@@ -218,7 +218,7 @@ static void free_sound(Sound *sound) {
 
 static void audio_init(Audio *audio) {
     audio->music_titlescreen = Mix_LoadMUS(RES_DIR "audio/titlescreen.ogg");
-    
+
     audio->ambience1     = load_sound(RES_DIR "audio/ambience1.ogg", 0.4);
     audio->ambience_rain = load_sound(RES_DIR "audio/rain.ogg",      0.16);
     audio->music0        = load_sound(RES_DIR "audio/music0.ogg",    0.30);
@@ -249,7 +249,7 @@ static void audio_init(Audio *audio) {
 
 static void audio_deinit(Audio *audio) {
     Mix_FreeMusic(audio->music_titlescreen);
-    
+
     free_sound(&audio->ambience1);
     free_sound(&audio->ambience_rain);
     free_sound(&audio->music0);

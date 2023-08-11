@@ -118,9 +118,9 @@ static void game_update_view(void) {
 
 export void game_init(Game_State *state) {
     gs = state;
-    
+
     load_game();
-    
+
     gs->border_color = (SDL_Color){0,0,0};
 
     gs->render.view.x = 0;
@@ -132,7 +132,7 @@ export void game_init(Game_State *state) {
     gs->real_top_left.y = gs->game_height/4;
 
     gs->show_tutorials = true;
-    
+
     levels_setup();
     previews_load();
     goto_level(gs->level_current);
@@ -190,7 +190,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
             gs->current_tool = clamp(gs->current_tool, TOOL_CHISEL_SMALL, TOOL_CHISEL_LARGE);
 
             gs->chisel = &gs->chisels[gs->current_tool - TOOL_CHISEL_SMALL];
-            
+
             gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
             gs->gui.tool_buttons[gs->current_tool]->active = true;
 
@@ -396,7 +396,7 @@ export void game_run(Game_State *state) {
 
             audio_set_ambience_accordingly();
             audio_set_music_accordingly();
-            
+
             if (gs->obj.active) {
                 RenderColor(255, 255, 255, 255);
                 RenderClear(RENDER_TARGET_MASTER);
@@ -419,14 +419,14 @@ export void game_run(Game_State *state) {
                                &dst);
             } else {
                 //view_tick(&gs->view, &gs->input);
-                
+
                 gui_tick();
                 inventory_tick();
                 all_converters_tick();
 
                 level_tick(&gs->levels[gs->level_current]);
                 level_draw(&gs->levels[gs->level_current]);
-                
+
                 text_field_draw(RENDER_TARGET_MASTER);
 
                 fade_draw(RENDER_TARGET_MASTER);
@@ -447,23 +447,23 @@ export void game_run(Game_State *state) {
             break;
         }
     }
-    
-    
+
+
     SDL_Color border_color_desired = {0};
-    
+
     if (gs->level_current+1 == 11) {
         border_color_desired.r = 255;
         border_color_desired.g = 255;
         border_color_desired.b = 255;
     }
-    
+
     gs->border_color.r = interpolate(gs->border_color.r, border_color_desired.r, 2);
     gs->border_color.g = interpolate(gs->border_color.g, border_color_desired.g, 2);
     gs->border_color.b = interpolate(gs->border_color.b, border_color_desired.b, 2);
 
     RenderColor(gs->border_color.r, gs->border_color.g, gs->border_color.b, 255);
     RenderClear(-1);
-    
+
     RenderColor(255, 255, 255, 255);
 
     SDL_Rect src = {

@@ -25,7 +25,7 @@ void tool_button_set_disabled(int level) {
         gs->levels[level].done = true;
         tools[TOOL_FINISH_LEVEL]->highlighted = true;
     }
-    
+
     if (is_grid_empty) {
         for (int i = TOOL_CHISEL_SMALL; i <= TOOL_CHISEL_LARGE; i++) {
             tools[i]->disabled = true;
@@ -127,12 +127,12 @@ static void gui_draw_wasd_popup(int target) {
 
 static void gui_click_overlay_button(void) {
     bool special_case = (gs->level_current+1 == 7);
-    
+
     if (gs->overlay.show && special_case) {
         gs->overlay.show = false;
         return;
     }
-    
+
     if (gs->overlay.show && gs->overlay.alpha_coefficient == OVERLAY_ALPHA_1) {
         gs->overlay.alpha_coefficient = OVERLAY_ALPHA_2;
     } else if (gs->overlay.show && gs->overlay.alpha_coefficient == OVERLAY_ALPHA_2) {

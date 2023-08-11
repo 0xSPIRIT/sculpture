@@ -23,7 +23,7 @@ typedef struct Chisel {
     ChiselState state;
     ChiselSize size;
     int x, y;
-    
+
     int aa;
 
     f64 draw_x, draw_y;

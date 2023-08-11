@@ -173,7 +173,7 @@ static SDL_Rect preview_draw(int final_target, Preview *p, int dx, int dy, int s
             int x = p->states[p->index].x;
             int y = p->states[p->index].y;
             int angle = p->states[p->index].data;
-            
+
             Chisel *chisel = &gs->chisels[tool - TOOL_CHISEL_SMALL];
 
             bool is_diagonal = false;
@@ -184,12 +184,12 @@ static SDL_Rect preview_draw(int final_target, Preview *p, int dx, int dy, int s
                 is_diagonal = true;
                 angle += 45;
             }
-            
+
             SDL_FRect dst = {
                 x, y - chisel->texture->height/2, // integer divide
                 chisel->texture->width, chisel->texture->height
             };
-            
+
             f32 cx, cy;
             chisel_get_adjusted_positions(chisel->texture->height, is_diagonal, &cx, &cy);
             dst.x += cx;

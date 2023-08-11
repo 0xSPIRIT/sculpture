@@ -32,15 +32,15 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
 
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
     if (!ok) fail(1);
-    
+
     state->S = calculate_scale(false, &state->desktop_w, &state->desktop_h);
-    
+
     state->game_width = (int)(64*state->S);
     state->game_height = (int)(64*state->S + GUI_H);
-    
+
     state->real_width = state->game_width;
     state->real_height = state->game_height;
-    
+
     ok = (Mix_Init(MIX_INIT_OGG) != 0);
     if (!ok) fail(2);
 

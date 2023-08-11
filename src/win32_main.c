@@ -79,16 +79,16 @@ static void fail(int code) {
 
 static f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     SDL_DisplayMode dm;
-    
+
     if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
         SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
         __debugbreak();
     }
-    
+
     int w, h;
     w = dm.w;
-    h = dm.h;    
-    
+    h = dm.h;
+
     if (dw) *dw=w;
     if (dh) *dh=h;
 
@@ -105,7 +105,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
 
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
     if (!ok) fail(1);
-    
+
     state->S = calculate_scale(false, &state->desktop_w, &state->desktop_h);
 
     state->game_width = (int)(64*state->S);
@@ -124,12 +124,12 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
     x = SDL_WINDOWPOS_CENTERED;
     y = SDL_WINDOWPOS_CENTERED;
 #endif
-    
+
     int window_flags = 0;
-    
+
     window_flags |= SDL_WINDOW_RESIZABLE;
     //window_flags |= SDL_WINDOW_ALWAYS_ON_TOP;
-    
+
     state->window = SDL_CreateWindow(window_title, x, y, state->real_width, state->real_height, window_flags);
     if (!state->window) fail(3);
 
@@ -354,7 +354,7 @@ int win32_main(void) {
     if (fullscreen) {
         scale = calculate_scale(true, &dw, &dh);
     }
-    
+
 #ifndef ALASKA_RELEASE_MODE
     Game_Code game_code = {0};
     load_game_code(&game_code);

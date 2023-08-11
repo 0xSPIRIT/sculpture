@@ -113,19 +113,19 @@ static void tutorial_rect_run(int target) {
 
     int cum = 0;
     SDL_Rect dst;
-    
+
     for (int i = 0; i < tut->line_count; i++) {
         if (!*tut->lines[i]) {
             cum += tut->font->char_height;
             continue;
         }
-        
+
         dst.x = tut->rect.x + tut->margin;
         dst.y = tut->rect.y + cum + tut->margin;
-        
+
         char identifier[64];
         sprintf(identifier, "tut%d", i);
-        
+
         RenderColor(255, 255, 255, 255);
         RenderTextQuick(target,
                         identifier,

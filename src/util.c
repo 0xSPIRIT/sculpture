@@ -10,10 +10,10 @@ static inline f64 __end_timer(LARGE_INTEGER start) {
     LARGE_INTEGER f, e;
     QueryPerformanceCounter(&e);
     QueryPerformanceFrequency(&f);
-    
+
     Uint64 delta = e.QuadPart - start.QuadPart;
     f64 result = (f64)delta / f.QuadPart;
-    
+
     return result;
 }
 

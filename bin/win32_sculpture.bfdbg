@@ -1,10 +1,10 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\gui.c", "Disassembly", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\overlay.c", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\gui.c", "Disassembly", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
 
 [MainWindow]
-X = 0
+X = 94
 Y = 45
 Width = 1801
 Height = 894
@@ -25,8 +25,16 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
+TabLabel = "overlay.c"
+TabWidth = 88.7218
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\overlay.c"
+CursorPos = 7310
+VertPos = 5764.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "audio.c"
-TabWidth = 81.203
+TabWidth = 71.35339
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\audio.c"
 CursorPos = 416
@@ -37,7 +45,6 @@ TabWidth = 57.06767
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\gui.c"
 CursorPos = 17711
-VertPos = 12298.0
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 724.0

@@ -30,7 +30,7 @@ typedef enum {
 typedef struct {
     AmbienceType ambience;
     int ambience_volume;
-    
+
     MusicType music;
     int music_volume;
     bool music_end;

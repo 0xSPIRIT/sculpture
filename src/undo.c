@@ -31,7 +31,7 @@ static Save_State *current_state(void) {
 
 static void save_state_to_next(void) {
     gs->has_player_interacted_since_last_state = false;
-    
+
     if (gs->save_state_count == MAX_UNDO) {
         // Move everything back by one, destroying the first
         // save state and leaving the last slot open.
@@ -39,13 +39,13 @@ static void save_state_to_next(void) {
         gs->save_state_count--;
 
         for (int i = 0; i < gs->save_state_count; i++) {
-            
+
             for (int j = 0; j < UNDO_GRID_LAYERS; j++) {
                 for (int k = 0; k < gs->gw*gs->gh; k++) {
                     gs->save_states[i].grid_layers[j][k] = gs->save_states[i+1].grid_layers[j][k];
                 }
             }
-            
+
             for (int j = 0; j < TOTAL_SLOT_COUNT+1; j++) {
                 gs->save_states[i].placer_items[j] = gs->save_states[i+1].placer_items[j];
             }
@@ -53,7 +53,7 @@ static void save_state_to_next(void) {
             for (int j = 0; j < SOURCE_CELL_MAX; j++) {
                 gs->save_states[i].source_cell[j] = gs->save_states[i+1].source_cell[j];
             }
-            
+
         }
 
         int i = gs->save_state_count;
@@ -193,7 +193,7 @@ static void undo(void) {
         if (gs->save_state_count <= 1) {
             return;
         }
-        
+
         set_state(gs->save_state_count-2);
         gs->save_state_count--;
     } else {

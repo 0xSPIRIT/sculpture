@@ -58,13 +58,13 @@ typedef struct Audio {
     Mix_Music *music_titlescreen;
 
     // Chunks
-    
+
     Sound ambience_rain;
     Sound ambience1;
-    
+
     Sound music0;
     Sound music1;
-    
+
     Sound sprinkle, macabre;
     Sound accept;
     Sound pip;
@@ -88,19 +88,19 @@ enum {
     TEXTURE_POPUP,
     TEXTURE_BLOB_HAMMER,
     TEXTURE_CONVERTER_ARROW,
-    
+
     // This is fucking disgusting.
     TEXTURE_CHISEL_SMALL,
     TEXTURE_CHISEL_SMALL_DIAGONAL,
-    
+
     TEXTURE_CHISEL_MEDIUM,
     TEXTURE_CHISEL_MEDIUM_DIAGONAL,
-    
+
     TEXTURE_CHISEL_LARGE,
     TEXTURE_CHISEL_LARGE_DIAGONAL,
-    
+
     TEXTURE_TEST,
-    
+
     TEXTURE_CHISEL_HAMMER,
     TEXTURE_PLANK,
     TEXTURE_W_KEY,

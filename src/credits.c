@@ -15,7 +15,7 @@ static void credits_run(int target) {
         }
         case CREDITS_SHOW: {
             f64 f = 18.f;
-            
+
             if (c->timer < f)
                 c->timer++;
 

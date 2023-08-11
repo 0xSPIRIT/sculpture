@@ -35,11 +35,11 @@ static void background_draw_disco(int target, Background *bg) {
 
 static void background_draw(int target, Background *bg) {
     bool disco_mode = false;
-    
+
     if (disco_mode) {
         background_draw_disco(target, bg);
     } else {
         // TODO the actual stuff
     }
 }
-    
+
