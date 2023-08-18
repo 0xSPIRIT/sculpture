@@ -60,7 +60,7 @@ typedef void (*GameRunProc)(Game_State*);
 typedef struct Game_Code {
     HMODULE dll;
     FILETIME last_write_time;
-    
+
     GameInitProc game_init;
     GameTickEventProc game_tick_event;
     GameRunProc game_run;
@@ -79,19 +79,19 @@ static void fail(int code) {
 
 static f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     SDL_DisplayMode dm;
-    
+
     if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
         SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
         __debugbreak();
     }
-    
+
     int w, h;
     w = dm.w;
     h = dm.h;
-    
+
     if (dw) *dw=w;
     if (dh) *dh=h;
-    
+
     if (fullscreen) {
         return h/72.0;
         //return (int)round(7.0 * h/1080.0);
@@ -102,37 +102,37 @@ static f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
 
 static void game_init_sdl(Game_State *state, const char *window_title, bool use_software_renderer) {
     bool ok = true;
-    
+
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
     if (!ok) fail(1);
-    
+
     state->S = calculate_scale(false, &state->desktop_w, &state->desktop_h);
-    
+
     state->game_width = (int)(64*state->S);
     state->game_height = (int)(64*state->S + GUI_H);
-    
+
     state->real_width = state->game_width;
     state->real_height = state->game_height;
-    
+
     ok = (Mix_Init(MIX_INIT_OGG) != 0);
     if (!ok) fail(2);
-    
+
     int x = 200;
     int y = 125;
-    
+
 #ifdef ALASKA_RELEASE_MODE
     x = SDL_WINDOWPOS_CENTERED;
     y = SDL_WINDOWPOS_CENTERED;
 #endif
-    
+
     int window_flags = 0;
-    
+
     window_flags |= SDL_WINDOW_RESIZABLE;
     //window_flags |= SDL_WINDOW_ALWAYS_ON_TOP;
-    
+
     state->window = SDL_CreateWindow(window_title, x, y, state->real_width, state->real_height, window_flags);
     if (!state->window) fail(3);
-    
+
     SDL_Surface *window_icon = RenderLoadSurface("icon.png");
     SDL_SetWindowIcon(state->window, window_icon);
 

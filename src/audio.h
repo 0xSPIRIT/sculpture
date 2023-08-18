@@ -34,7 +34,7 @@ typedef struct {
     MusicType music;
     int music_volume;
     bool music_end;
-    
+
     // used for audio_lower_channel_for_ms
     bool lower_music;
     f32 fader; // 0.0 to 1.0

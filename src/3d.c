@@ -3,14 +3,14 @@
 static inline void draw_triangle(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p) {
     const vec2 t[3] = {p[0].p, p[1].p, p[2].p};
     const Uint32 *spixels = (Uint32*)surf->pixels;
-    
+
     int sw = surf->w;
     int sh = surf->h;
-    
+
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
             f32 denominator = (t[1].y - t[2].y)*(t[0].x - t[2].x) + (t[2].x - t[1].x)*(t[0].y - t[2].y);
-            
+
             f32 w0 = (t[1].y - t[2].y)*(x - t[2].x) + (t[2].x - t[1].x)*(y - t[2].y);
             if (w0*denominator < 0) continue;
 

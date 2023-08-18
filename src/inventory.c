@@ -248,7 +248,7 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
             text_data.y = (int) (bounds.y + bounds.h + Scale(13));
             text_data.alignment = ALIGNMENT_CENTER;
             text_data.render_type = TEXT_RENDER_BLENDED;
-            
+
             RenderText(target, &text_data);
         }
     }
@@ -311,10 +311,10 @@ static void item_tick(Item *item, Slot *slot, int x, int y, int w, int h) {
     can_place_item = can_place_item_in_slot(gs->item_holding.type, slot->type);
     if (!gs->item_holding.type)
         can_place_item = true;
-    
+
     if (gs->level_current+1 == 4 && item->type == CELL_UNREFINED_COAL)
         can_take_item = false;
-    
+
     if (!can_take_item) return;
 
     if (input->mouse_pressed[SDL_BUTTON_LEFT]) {

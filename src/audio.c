@@ -14,7 +14,7 @@ void audio_set_music_accordingly(void) {
     } else {
         audio_set_music(MUSIC_NONE);
     }
-    
+
     if (gs->audio_handler.lower_music) {
         if (audio_lower_channel_for(AUDIO_CHANNEL_MUSIC, 120)) {
             gs->audio_handler.lower_music = false;
@@ -49,21 +49,21 @@ void play_sound(int channel, Sound sound, int loops) {
 // Returns when it's done.
 bool audio_lower_channel_for(int channel, int frames) {
     Audio_Handler *handler = &gs->audio_handler;
-    
+
     if (!handler->fade_initted) {
         handler->fader = 1;
         handler->time = gs->frames;
         handler->fader = 0.0;
         handler->waiting = true;
         handler->fade_initted = true;
-    
+
         handler->old_volume = Mix_Volume(channel, (int)(handler->fader * MIX_MAX_VOLUME));
     }
-    
+
     if (handler->waiting) {
         if (gs->frames - handler->time >= frames) {
             Mix_Volume(channel, handler->old_volume);
-            
+
             // reset
             handler->fader = 0;
             handler->time = 0;
@@ -73,7 +73,7 @@ bool audio_lower_channel_for(int channel, int frames) {
             return true;
         }
     }
-    
+
     return false;
 }
 
