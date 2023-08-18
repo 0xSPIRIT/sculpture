@@ -23,7 +23,7 @@ typedef enum {
 
 typedef enum {
     MUSIC_NONE,
-    MUSIC_TEST,
+    MUSIC_FARCE,
     MUSIC_EXPLITIVE,
 } MusicType;
 
@@ -34,6 +34,13 @@ typedef struct {
     MusicType music;
     int music_volume;
     bool music_end;
+    
+    // used for audio_lower_channel_for_ms
+    bool lower_music;
+    f32 fader; // 0.0 to 1.0
+    int old_volume;
+    int time;
+    bool fade_initted, waiting;
 } Audio_Handler;
 
 typedef struct {
@@ -42,6 +49,9 @@ typedef struct {
 } Sound;
 
 void play_sound(int channel, Sound sound, int loops);
+
+void audio_lower_music_for_a_bit(void);
+bool audio_lower_channel_for(int channel, int frames);
 
 void audio_halt_ambience(void);
 void audio_set_ambience_accordingly(void);

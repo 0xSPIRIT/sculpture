@@ -7,12 +7,18 @@ void audio_set_music_accordingly(void) {
         return;
     }
 
-    if (level_number == 5) {
-        audio_set_music(MUSIC_TEST);
+    if (level_number <= 3) {
+        audio_set_music(MUSIC_FARCE);
     } else if (level_number == 11 && gs->obj.active) {
         audio_set_music(MUSIC_EXPLITIVE);
     } else {
         audio_set_music(MUSIC_NONE);
+    }
+    
+    if (gs->audio_handler.lower_music) {
+        if (audio_lower_channel_for(AUDIO_CHANNEL_MUSIC, 120)) {
+            gs->audio_handler.lower_music = false;
+        }
     }
 }
 
@@ -37,6 +43,42 @@ void audio_set_ambience_accordingly(void) {
 
 void play_sound(int channel, Sound sound, int loops) {
     Mix_PlayChannel(channel, sound.sound, loops);
+}
+
+// Must be called every frame.
+// Returns when it's done.
+bool audio_lower_channel_for(int channel, int frames) {
+    Audio_Handler *handler = &gs->audio_handler;
+    
+    if (!handler->fade_initted) {
+        handler->fader = 1;
+        handler->time = gs->frames;
+        handler->fader = 0.0;
+        handler->waiting = true;
+        handler->fade_initted = true;
+    
+        handler->old_volume = Mix_Volume(channel, (int)(handler->fader * MIX_MAX_VOLUME));
+    }
+    
+    if (handler->waiting) {
+        if (gs->frames - handler->time >= frames) {
+            Mix_Volume(channel, handler->old_volume);
+            
+            // reset
+            handler->fader = 0;
+            handler->time = 0;
+            handler->waiting = false;
+            handler->fade_initted = false;
+            handler->old_volume = 0;
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+void audio_lower_music_for_a_bit(void) {
+    gs->audio_handler.lower_music = true;
 }
 
 void audio_halt_ambience(void) {
@@ -92,8 +134,8 @@ void audio_set_music(MusicType music) {
             case MUSIC_EXPLITIVE: {
                 play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music0, -1);
             } break;
-            case MUSIC_TEST: {
-                play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music1, -1);
+            case MUSIC_FARCE: {
+                play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music2, -1);
             } break;
             default: {
                 audio_halt_music();

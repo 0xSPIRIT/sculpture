@@ -219,10 +219,11 @@ static void free_sound(Sound *sound) {
 static void audio_init(Audio *audio) {
     audio->music_titlescreen = Mix_LoadMUS(RES_DIR "audio/titlescreen.ogg");
 
-    audio->ambience1     = load_sound(RES_DIR "audio/ambience1.ogg", 0.4);
+    audio->ambience1     = load_sound(RES_DIR "audio/ambience1.ogg", 0.32);
     audio->ambience_rain = load_sound(RES_DIR "audio/rain.ogg",      0.16);
-    audio->music0        = load_sound(RES_DIR "audio/music0.ogg",    0.30);
-    audio->music1        = load_sound(RES_DIR "audio/music1.ogg",    0.50);
+    audio->music0        = load_sound(RES_DIR "audio/music0.ogg",    0.55);
+    //audio->music1        = load_sound(RES_DIR "audio/music1.ogg",    0.50);
+    audio->music2        = load_sound(RES_DIR "audio/music2.ogg",    0.50);
 
     audio->pip = load_sound(RES_DIR "audio/pip.ogg", 1);
 
@@ -239,7 +240,7 @@ static void audio_init(Audio *audio) {
         audio->ice_chisel[i] = load_sound(name, 1);
     }
 
-    audio->sprinkle = load_sound(RES_DIR "audio/sprinkle.ogg", 1);
+    audio->sprinkle = load_sound(RES_DIR "audio/sprinkle 3.wav", 1);
     audio->macabre = load_sound(RES_DIR "audio/macabre.ogg", 1);
 
     audio->accept = load_sound(RES_DIR "audio/accept.ogg", 1);
@@ -253,7 +254,8 @@ static void audio_deinit(Audio *audio) {
     free_sound(&audio->ambience1);
     free_sound(&audio->ambience_rain);
     free_sound(&audio->music0);
-    free_sound(&audio->music1);
+    //free_sound(&audio->music1);
+    free_sound(&audio->music2);
 
     for (int i = 0; i < 6; i++)
         free_sound(&audio->medium_chisel[i]);

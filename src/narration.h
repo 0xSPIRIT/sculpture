@@ -109,7 +109,8 @@
 "...\n"\
 "Let's move to Alaska.\n"\
 "We'll sculpt the little birds and trees.\n"\
-"And it'll feel good.\n"\
+"And it'll feel good.\n"
+
 
 typedef struct Narrator {
     char current_lines[10][256];

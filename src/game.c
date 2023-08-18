@@ -418,8 +418,6 @@ export void game_run(Game_State *state) {
                                null,
                                &dst);
             } else {
-                //view_tick(&gs->view, &gs->input);
-
                 gui_tick();
                 inventory_tick();
                 all_converters_tick();

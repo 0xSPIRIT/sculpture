@@ -22,7 +22,7 @@ static void play_level_end_sound(int level) {
         sound = &gs->audio.macabre;
     }
 
-    audio_halt_music();
+    audio_lower_music_for_a_bit();
     play_sound(AUDIO_CHANNEL_GUI, *sound, 0);
 }
 
