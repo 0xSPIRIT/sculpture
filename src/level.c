@@ -391,6 +391,7 @@ static void level_draw(Level *level) {
         case LEVEL_STATE_INTRO:        { level_draw_intro(level);         break; }
         case LEVEL_STATE_OUTRO:        { level_draw_outro_or_play(level); break; }
         case LEVEL_STATE_PLAY:         { level_draw_outro_or_play(level); break; }
+        default: {} break;
     }
 
     level_draw_popup_confirms(RENDER_TARGET_MASTER);

@@ -1,5 +1,8 @@
 TODO
 
+  - Having different text if you completed all levels perfectly
+    up to level 7, compared to if you didn't.
+
   - Music!!!!!! Focus on the music! Don't procrastinate it!
      - Ambient: piano, pads/synths, motifs?
 

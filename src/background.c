@@ -6,7 +6,6 @@ static Background background_init(void) {
 
 static void background_draw_disco(int target, Background *bg) {
     int w = bg->surface->w, h = bg->surface->h;
-    (void)w, h;
 
     bg->time += 1.f/60.f;
 

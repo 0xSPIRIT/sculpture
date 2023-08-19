@@ -1,12 +1,19 @@
 #define ALASKA_RELEASE_MODE
 
-#include "headers.h"
+#define MAX_PATH 260
+#define M_PI 3.14159265358979323
+
+#define min(a, b) ((a < b) ? (a) : (b))
+#define max(a, b) ((a > b) ? (a) : (b))
+
+#include <math.h>
+
+#include "game.c"
+
 #include "assets.c"
 #include "input.c"
 
-#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
-#endif
 
 #include <dirent.h>
 #include <errno.h>
@@ -19,7 +26,7 @@ typedef struct GameLoopData {
 static void fail(int code) {
     char message[256];
     sprintf(message, "An error occurred when initializing. Code: %d", code);
-    puts(mesage);
+    puts(message);
 #ifndef ALASKA_RELEASE_MODE
     __debugbreak();
 #else
@@ -27,13 +34,13 @@ static void fail(int code) {
     #endif
 }
 
-static void game_init_sdl_em(Game_State *state, const char *window_title, int w, int h, bool use_software_renderer) {
+static void game_init_sdl_em(Game_State *state, const char *window_title, int w, int h) {
     bool ok = true;
 
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
     if (!ok) fail(1);
 
-    state->S = calculate_scale(false, &state->desktop_w, &state->desktop_h);
+    state->S = 12;//calculate_scale(false, &state->desktop_w, &state->desktop_h);
 
     state->game_width = (int)(64*state->S);
     state->game_height = (int)(64*state->S + GUI_H);
@@ -61,12 +68,7 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
     ok = Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0;
     if (!ok) fail(6);
 
-    int flags = 0;
-    if (use_software_renderer) {
-        flags = SDL_RENDERER_SOFTWARE;
-    } else {
-        flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
-    }
+    int flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 
     state->renderer = SDL_CreateRenderer(state->window, -1, flags);
     if (!state->renderer) fail(7);
@@ -80,10 +82,8 @@ static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *tra
     persistent_memory->size = Megabytes(512);
     transient_memory->size = Megabytes(8);
 
-    AssertNW(persistent_memory->size >= sizeof(Game_State));
-
     persistent_memory->data = malloc(persistent_memory->size + transient_memory->size);
-    AssertNW(persistent_memory->data);
+    if (!persistent_memory->data) fail(8);
     persistent_memory->cursor = persistent_memory->data;
 
     // Set the transient memory as an offset into persistent memory.
@@ -99,7 +99,7 @@ static bool prefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
 }
 
-static void game_init_a(Game_State *state) {
+static void game_init_emscripten(Game_State *state) {
     srand((unsigned int) time(0));
 
     if (state->S == 0)
@@ -114,21 +114,16 @@ static void game_init_a(Game_State *state) {
     game_init_sdl_em(state,
                      "Alaska",
                      state->game_width,
-                     state->game_height,
-                     state->use_software_renderer);
+                     state->game_height);
 
     // Load all assets... except for render targets.
     // We can't create render targets until levels
     // are initialized.
     audio_init(&state->audio);
-    textures_init(state->renderer, &state->textures);
+    textures_init(&state->textures);
     surfaces_init(&state->surfaces);
 
     SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
-
-    state->normal_cursor = SDL_GetCursor();
-    state->grabber_cursor = init_system_cursor(arrow_cursor_data);
-    state->placer_cursor = init_system_cursor(placer_cursor_data);
 
     fonts_init(&state->fonts);
 }
@@ -161,12 +156,11 @@ static void em_mainloop(void *arg) {
     data->transient_memory.cursor = data->transient_memory.data;
 }
 
-static int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     GameLoopData data;
 
     DIR *d;
-    dirent *dir;
+    struct dirent *dir;
     d = opendir(".");
     if (d) {
         while ((dir = readdir(d)) != null) {
@@ -179,20 +173,16 @@ static int main(int argc, char **argv)
     data.game_state = PushSize(&data.persistent_memory, sizeof(Game_State));
     gs = data.game_state;
 
-    gs->use_software_renderer = false;
     gs->S = 5;
     gs->fullscreen = false;
 
     gs->persistent_memory = &data.persistent_memory;
     gs->transient_memory = &data.transient_memory;
 
-    game_init_a(gs);
-    game_init(gs, 0);
+    game_init_emscripten(gs);
+    game_init(gs);
 
-    render_targets_init(gs->renderer,
-                        gs->game_width,
-                        gs->levels,
-                        &gs->textures);
+    render_targets_init();
 
     emscripten_set_main_loop_arg(em_mainloop, &data, 0, 1);
 

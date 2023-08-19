@@ -119,9 +119,7 @@ typedef struct Game_State {
 
     int current_tool, previous_tool;
 
-    SDL_Cursor *grabber_cursor, *normal_cursor, *placer_cursor;
-
-    enum Blob_Type blob_type;
+    int blob_type;
 
     Dust dust[MAX_DUST_COUNT];
     int dust_count;
@@ -236,12 +234,12 @@ static void *_push_array(Memory_Arena *memory, Uint64 num, Uint64 size_individua
             Assert(0);
         }
 
-        Log("%s Memory_Arena :: Allocated %zd bytes at %s(%d)\n", memory_name, size, file, line);
+        Log("%s Memory_Arena :: Allocated %llu bytes at %s(%d)\n", memory_name, size, file, line);
     }
 
     if (memory->cursor+size > memory->data+memory->size) {
         char message[256] = {0};
-        sprintf(message, "Out of Memory!\nAllowed memory: %zd bytes, Attempted allocation to %zd bytes.\n%s:%d",
+        sprintf(message, "Out of Memory!\nAllowed memory: %llu bytes, Attempted allocation to %llu bytes.\n%s:%d",
                 memory->size,
                 size+(memory->cursor-memory->data),
                 file, line);

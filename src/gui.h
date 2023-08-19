@@ -70,7 +70,7 @@ static void gui_message_stack_push(const char *str);
 static void gui_init(void);
 static void gui_tick(void);
 static void profile_array(Cell *desired, char out[64][CELL_TYPE_COUNT], int *count);
-static void gui_draw_profile();
+static void gui_draw_profile(int target);
 static void gui_draw(int target);
 static void gui_popup_draw(int target);
 static bool is_cell_stone(int type);

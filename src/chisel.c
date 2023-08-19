@@ -705,6 +705,7 @@ static void chisel_tick(Chisel *chisel) {
 
             for (int i = 0; i < 3; i++) {
                 gs->chisels[i].angle = chisel->angle;
+                gs->chisels[i].draw_angle = chisel->draw_angle;
             }
 
             if (!(gs->input.mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) && !gs->input.keys[SDL_SCANCODE_LSHIFT]) {
@@ -782,7 +783,7 @@ static void chisel_draw(int target, Chisel *chisel) {
         chisel->draw_angle += 180;
 
         chisel->draw_angle = lerp_degrees(chisel->draw_angle, chisel->angle, 0.6);
-        if (abs(chisel->draw_angle-chisel->angle) < 2) {
+        if (fabs(chisel->draw_angle-chisel->angle) < 2) {
             chisel->draw_angle = chisel->angle;
         }
 

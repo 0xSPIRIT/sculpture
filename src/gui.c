@@ -498,12 +498,18 @@ static void profile_array(Cell *desired,
 
 static bool can_goto_next_level(void) {
     int level = gs->level_current+1;
+    
+    if (compare_cells(gs->grid, gs->levels[gs->level_current].initial_grid)) {
+        return false;
+    }
 
+#if 0
     if (level == 1 &&
         !compare_cells_to_int(gs->grid, gs->overlay.grid, COMPARE_LEEWAY))
     {
         return false;
     }
+#endif
 
     if (level >= 8 &&
         !compare_cells_to_int_weak(gs->grid, gs->overlay.grid, 64))

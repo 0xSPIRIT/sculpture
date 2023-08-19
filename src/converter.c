@@ -436,12 +436,15 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
     }
 
     switch (fuel->type) {
+        default: { } break;
+        
         case CELL_NONE: {
             if (number_inputs == 1) {
                 switch (input->type) {
                     case CELL_WOOD_LOG: result = CELL_WOOD_PLANK; break;
                     case CELL_STEAM:    result = CELL_WATER;      break;
                     case CELL_WATER:    result = CELL_ICE;        break;
+                    default: {} break;
                 }
             }
             break;
@@ -462,6 +465,7 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
                     case CELL_STONE: result = CELL_MARBLE;      break;
                     case CELL_ICE:         result = CELL_WATER;       break;
                     case CELL_WATER:       result = CELL_STEAM;       break;
+                    default: {} break;
                 }
             }
             break;
@@ -472,6 +476,7 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
                     case CELL_DIRT:        result = CELL_STONE; break;
                     case CELL_ICE:         result = CELL_STEAM;       break;
                     case CELL_STONE:       result = CELL_MARBLE;      break;
+                    default: {} break;
                 }
             } else if (number_inputs == 2) {
                 Converter_Checker checker = converter_checker(input1, input2);
@@ -501,6 +506,7 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
                         result = CELL_MARBLE;
                         break;
                     }
+                    default: {} break;
                 }
             } else if (number_inputs == 2) {
                 Converter_Checker checker = converter_checker(input1, input2);
@@ -632,6 +638,7 @@ static void converter_tick(Converter *converter) {
             converter->y = (f32) (gs->gui.popup_y);
             break;
         }
+        default: {} break;
     }
 
     converter->go_button->x = (int) (converter->x + converter->arrow.x - Scale(128));
@@ -666,6 +673,7 @@ static void converter_tick(Converter *converter) {
                     }
                     break;
                 }
+                default: {} break;
             }
         }
     }

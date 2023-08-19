@@ -114,7 +114,7 @@ static void dust_grid_run(int target) {
                 dust->vx *= 0.75 + randf(0.25)-0.125;
             }
 
-            if (abs(dust->y-gs->gh-1) < 2 && abs(dust->vy) < 1) {
+            if (fabs(dust->y-gs->gh-1) < 2 && fabs(dust->vy) < 1) {
                 dust->y = gs->gh-1;
                 dust->vy = 0;
                 dust->vx *= 0.25;

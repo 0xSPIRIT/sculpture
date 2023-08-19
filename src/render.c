@@ -789,9 +789,9 @@ RENDERAPI void RenderUnlockTexture(Texture *texture) {
     SDL_UnlockTexture(texture->handle);
 }
 
-// Method 1 --> ~2.648ms
-// Method 2 --> ~3.119ms
-// Method 3 --> ~2.057ms
+// Method 1 --> 2.648ms
+// Method 2 --> 3.119ms
+// Method 3 --> 2.057ms
 
 // Method 3
 RENDERAPI void RenderFillCircle(int target, int x, int y, int r) {

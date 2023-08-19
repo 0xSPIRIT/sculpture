@@ -119,18 +119,18 @@ static void hammer_draw(int final_target, Hammer *hammer) {
             center.y -= hammer->tex->height - 4;
             angle *= -1;
         }
-
+        
         RenderTextureExRelativeF(RENDER_TARGET_HAMMER,
-                                hammer->tex,
-                                null,
-                                &dst,
-                                angle,
-                                &center,
-                                flip);
+                                 hammer->tex,
+                                 null,
+                                 &dst,
+                                 angle,
+                                 &center,
+                                 flip);
     }
-
+    
     // Now we render the target.
-
+    
     RenderColor(0, 0, 0, 0);
     RenderClear(RENDER_TARGET_HAMMER2);
 

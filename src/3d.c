@@ -250,7 +250,7 @@ static void object_draw(Object3D *obj) {
     int pitch;
     if (RenderLockTexture(&RenderTarget(RENDER_TARGET_3D)->texture,
                           null,
-                          &pixels,
+                          (void**)&pixels,
                           &pitch) != 0) {
         Log("%s\n", SDL_GetError());
         Assert(0);

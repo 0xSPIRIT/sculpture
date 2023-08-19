@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\assets.c", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\overlay.c", "d:\\dev\\sculpture\\src\\gui.c", "Disassembly", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\assets.c", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\overlay.c", "Disassembly", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
 
 [MainWindow]
 X = 0
@@ -25,6 +25,14 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
+TabLabel = "grid.c"
+TabWidth = 71.42857
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\grid.c"
+CursorPos = 4833
+VertPos = 3740.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "assets.c"
 TabWidth = 72.85714
 Type = "SourceViewPanel"
@@ -51,7 +59,8 @@ TabLabel = "gui.c"
 TabWidth = 57.06767
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\gui.c"
-CursorPos = 17711
+CursorPos = 15906
+VertPos = 10604.0
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 724.0
@@ -76,7 +85,7 @@ TabLabel = "Watch"
 TabWidth = 86.8421
 Type = "WatchPanel"
 Columns = [{Width = 231.0}, {Width = 682.0}, {Width = 227.0}]
-Items = ["(bool*)(0x200'126BAAB1)", "i", "gui->tool_buttons", ""]
+Items = ["a[i]", "b,4096", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"

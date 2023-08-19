@@ -184,7 +184,18 @@ static int compare_cells_to_int_count(Cell *a, int *b) {
 
 static bool compare_cells(Cell *a, Cell *b) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
-        if (a[i].type != b[i].type) return false;
+        if (a[i].type != b[i].type)
+            return false;
+    }
+    return true;
+}
+
+static bool compare_cells_leeway(Cell *a, Cell *b, int leeway) {
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        if (a[i].type != b[i].type) {
+            leeway--;
+            if (leeway < 0) return false;
+        }
     }
     return true;
 }
@@ -259,11 +270,11 @@ static void swap(int x1, int y1, int x2, int y2) {
 
 static f32 damp(int i) {
     srand(i);
-    return 0.5f + ((f32)rand())/RAND_MAX * 0.4f;
+    return 0.5f + ((f32)rand())/(f32)RAND_MAX * 0.4f;
 }
 
 static f32 water_spread(void) {
-    return rand()%3 + ((f32)rand())/RAND_MAX;
+    return rand()%3 + ((f32)rand())/(f32)RAND_MAX;
 }
 
 static void grid_init(int w, int h) {
@@ -314,7 +325,7 @@ static void grid_draw_glow(int target) {
     int w = gs->gw;
     int h = gs->gh;
 
-    if (RenderLockTexture(&RenderTarget(RENDER_TARGET_GLOW)->texture, null, &pixels, &pitch) != 0) {
+    if (RenderLockTexture(&RenderTarget(RENDER_TARGET_GLOW)->texture, null, (void**)&pixels, &pitch) != 0) {
         Log("%s\n", SDL_GetError());
         Assert(0);
     }

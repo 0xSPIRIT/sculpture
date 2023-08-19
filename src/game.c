@@ -112,8 +112,8 @@ static void game_update_view(void) {
 
     gs->render.view.x = lerp64(gs->render.view.x, gs->render.to.x, 0.2);
     gs->render.view.y = lerp64(gs->render.view.y, gs->render.to.y, 0.2);
-    if (abs(gs->render.view.x - gs->render.to.x) <= 1) gs->render.view.x = gs->render.to.x;
-    if (abs(gs->render.view.y - gs->render.to.y) <= 1) gs->render.view.y = gs->render.to.y;
+    if (fabsf(gs->render.view.x - gs->render.to.x) <= 1) gs->render.view.x = gs->render.to.x;
+    if (fabsf(gs->render.view.y - gs->render.to.y) <= 1) gs->render.view.y = gs->render.to.y;
 }
 
 export void game_init(Game_State *state) {
@@ -377,9 +377,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
 }
 
 export void game_run(Game_State *state) {
-    LARGE_INTEGER frequency, time_start, time_end;
-    QueryPerformanceFrequency(&frequency);
-    QueryPerformanceCounter(&time_start);
+    StartTimer();
 
     gs = state;
 
@@ -481,10 +479,7 @@ export void game_run(Game_State *state) {
                    &src,
                    &dst);
 
-    QueryPerformanceCounter(&time_end);
-    Uint64 delta = time_end.QuadPart - time_start.QuadPart;
-    f64 d = (f64)delta / (f64)frequency.QuadPart;
-    gs->dt = d;
+    gs->dt = EndTimer();
 
     SDL_RenderPresent(gs->renderer);
 

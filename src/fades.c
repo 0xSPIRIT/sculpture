@@ -21,7 +21,7 @@ static void fade_draw(int target) {
     gs->fade.alpha = goto64(gs->fade.alpha, gs->fade.desired_alpha, 5);
 
     //gs->fade.alpha = lerp64(gs->fade.alpha, gs->fade.desired_alpha, FADE_T);
-    if (abs(gs->fade.alpha - gs->fade.desired_alpha) < FADE_EPSILON) {
+    if (fabs(gs->fade.alpha - gs->fade.desired_alpha) < FADE_EPSILON) {
         gs->fade.alpha = gs->fade.desired_alpha;
         gs->fade.time = 0;
         gs->fade.active = false;

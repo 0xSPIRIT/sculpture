@@ -1,18 +1,17 @@
 #define StartTimer()\
-LARGE_INTEGER __start;\
-QueryPerformanceCounter(&__start);
+Uint64 __start = SDL_GetPerformanceCounter();
 
 #define EndTimer() __end_timer(__start)
 
 #define ArrayCount(x) (sizeof(x)/sizeof(*x))
 
-static inline f64 __end_timer(LARGE_INTEGER start) {
-    LARGE_INTEGER f, e;
-    QueryPerformanceCounter(&e);
-    QueryPerformanceFrequency(&f);
+static inline f64 __end_timer(Uint64 start) {
+    Uint64 f, e;
+    e = SDL_GetPerformanceCounter();
+    f = SDL_GetPerformanceFrequency();
 
-    Uint64 delta = e.QuadPart - start.QuadPart;
-    f64 result = (f64)delta / f.QuadPart;
+    Uint64 delta = e - start;
+    f64 result = (f64)delta / f;
 
     return result;
 }
@@ -354,7 +353,7 @@ static f64 lerp(f64 a, f64 b, f64 t) {
 }
 
 static f32 lerp_degrees(f32 start, f32 end, f32 amount) {
-    f32 difference = abs(end - start);
+    f32 difference = fabsf(end - start);
 
     if (difference > 180) {
         // We need to add on to one of the values.
@@ -379,7 +378,7 @@ static f32 lerp_degrees(f32 start, f32 end, f32 amount) {
 
 static f32 lerp_no_error(f32 a, f32 b, f32 t, f32 error) {
     f32 result = a + t*(b-a);
-    if (abs(result - b) <= error)
+    if (fabsf(result - b) <= error)
         return b;
     return result;
 }

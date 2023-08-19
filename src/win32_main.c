@@ -328,6 +328,8 @@ inline bool win32_SetProcessDpiAware(void) {
 
 int win32_main(void) {
     win32_SetProcessDpiAware();
+    
+    Log("%d\n", MAX_PATH);
 
 #ifndef ALASKA_RELEASE_MODE
     // Make sure we're running in the right folder.

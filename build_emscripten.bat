@@ -2,6 +2,6 @@
 
 pushd out\
 
-call emcc ../src/em_main.c ../src/game.c --preload-file ..\res -sALLOW_MEMORY_GROWTH -error-limit=0 -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_SDL_TTF=2 -sUSE_SDL_MIXER=2 -sSDL2_IMAGE_FORMATS="png" -lSDL2 -lSDL2_ttf -fdeclspec -o index.html
+call emcc ../src/em_main.c -O3 -std=c11 --preload-file ..\res -Wswitch -sALLOW_MEMORY_GROWTH -sUSE_SDL=2 -sUSE_SDL_IMAGE=2 -sUSE_SDL_TTF=2 -sUSE_SDL_MIXER=2 -sSDL2_IMAGE_FORMATS="png" -lSDL2 -lSDL2_ttf -fdeclspec -o index.html
 
 popd

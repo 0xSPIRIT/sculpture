@@ -4,7 +4,7 @@
 #define NARRATOR_ALPHA 10
 #define NARRATOR_HANG_TIME 14 // Frames
 
-#define SHOW_NARRATION ALASKA_RELEASE_MODE
+#define SHOW_NARRATION 1//ALASKA_RELEASE_MODE
 
 ////////////////////////////////////////////////////////////////
 #define NARRATION_LEVEL_1 \
@@ -42,7 +42,24 @@
 "torrentially from Max's mind.\n"\
 "And so, the rain poured.\n"
 
-#define NARRATION_LEVEL_7 \
+#define NARRATION_LEVEL_7_IMPERFECT \
+"Maybe by then he must've been ready?\n"\
+"His previous attemps hadn't gone as\r"\
+"smoothly as he would've liked-\r"\
+"The results not as close to what he'd envisioned.\n"\
+"... But, it's been too long. He must move forward-\r"\
+"To do something real.\r"\
+"Something important.\n"\
+"Max recalled sculptures that he knew fondly.\r"\
+"They swirled around his head in a moment of inspiration.\n"\
+"Too, his mind spun with other hypnotic ideas that\r"\
+"would surely never come to pass.\n"\
+"In reverie, he returned to the here and now.\n"\
+"He thought that this idea was realistic-\r"\
+"that his expectations were surely tempered.\n"\
+"With no hesitation, Max picked up his chisel.\n"\
+
+#define NARRATION_LEVEL_7_PERFECT \
 "Surely by then he must've been ready.\n"\
 "To do something real.\r"\
 "Something important.\n"\

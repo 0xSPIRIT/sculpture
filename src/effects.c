@@ -137,6 +137,7 @@ static void effect_handle_placer(Effect *effect, int x, int y, int r) {
             switch (effect->type) {
                 case EFFECT_RAIN: { reset_rain_particle(effect, p); } break;
                 case EFFECT_SNOW: { reset_snow_particle(effect, p); } break;
+                default: {} break;
             }
             get_current_placer()->contains->type = effect_pickup;
             get_current_placer()->contains->amount += 10;
@@ -182,6 +183,7 @@ static void effect_set(Effect *effect, Effect_Type type, bool high_fidelity, int
             }
             break;
         }
+        default: {} break;
     }
 }
 

@@ -171,7 +171,9 @@ typedef union Surfaces {
     };
 } Surfaces;
 
+#ifndef __EMSCRIPTEN__
 static_assert(sizeof(Surfaces) == SURFACE_COUNT*sizeof(SDL_Surface*), "a");
+#endif
 
 #define FONT_COUNT 9
 

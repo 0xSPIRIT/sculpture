@@ -63,54 +63,54 @@ void get_filename_from_type(int type, char *out);
 
 static void textures_init(Textures *textures) {
     SDL_Surface *surf = null;
-
+    
     memset(textures, 0, sizeof(Textures));
-
+    
     // Converter Item Textures || previously item_init()
     for (int i = 0; i < CELL_TYPE_COUNT; i++) {
         if (i == CELL_NONE) continue;
-
+        
         char file[64] = {0};
         get_filename_from_type(i, file);
-
+        
         surf = IMG_Load(file);
         Assert(surf);
-
+        
         GetTexture(TEXTURE_ITEMS+i) = RenderCreateTextureFromSurface(surf);
-
+        
         SDL_FreeSurface(surf);
         surf = null;
     }
-
+    
     GetTexture(TEXTURE_CONFIRM_BUTTON) = RenderLoadTexture("buttons/confirm.png");
     GetTexture(TEXTURE_CONFIRM_X_BUTTON) = RenderLoadTexture("buttons/confirm_x.png");
     GetTexture(TEXTURE_CANCEL_BUTTON)  = RenderLoadTexture("buttons/cancel.png");
-
+    
     GetTexture(TEXTURE_TAB)        = RenderLoadTexture("tab.png");
     GetTexture(TEXTURE_DELETER)    = RenderLoadTexture("deleter.png");
     GetTexture(TEXTURE_PLACER)     = RenderLoadTexture("placer.png");
     GetTexture(TEXTURE_KNIFE)      = RenderLoadTexture("knife.png");
     GetTexture(TEXTURE_POPUP)      = RenderLoadTexture("popup.png");
     GetTexture(TEXTURE_TEXT_ARROW) = RenderLoadTexture("text_arrow.png");
-
+    
     GetTexture(TEXTURE_PLANK) = RenderLoadTexture("plank.png");
-
+    
     GetTexture(TEXTURE_W_KEY) = RenderLoadTexture("buttons/W.png");
     GetTexture(TEXTURE_A_KEY) = RenderLoadTexture("buttons/A.png");
     GetTexture(TEXTURE_S_KEY) = RenderLoadTexture("buttons/S.png");
     GetTexture(TEXTURE_D_KEY) = RenderLoadTexture("buttons/D.png");
-
+    
     for (Tool_Type i = 0; i < TOOL_COUNT; i++) {
         char filename[128] = {0};
         char path[128] = {0};
-
+        
         get_file_from_tool(i, filename);
         sprintf(path, "buttons/%s", filename);
-
+        
         GetTexture(TEXTURE_TOOL_BUTTONS+i) = RenderLoadTexture(path);
         Assert(GetTexture(TEXTURE_TOOL_BUTTONS+i).handle);
     }
-
+    
     GetTexture(TEXTURE_BLOB_HAMMER)= RenderLoadTexture("hammer.png");
     GetTexture(TEXTURE_CONVERTER_ARROW) = RenderLoadTexture("arrow.png");
     GetTexture(TEXTURE_CONVERT_BUTTON) = RenderLoadTexture("buttons/convert.png");
@@ -118,25 +118,25 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_RECIPE_BOOK_BUTTON) = RenderLoadTexture("buttons/recipebook.png");
     GetTexture(TEXTURE_OK_BUTTON) = RenderLoadTexture("buttons/tutorial_ok.png");
     GetTexture(TEXTURE_CHISEL_HAMMER) = RenderLoadTexture("hammer.png");
-
+    
     GetTexture(TEXTURE_TEST) = RenderLoadTexture("test.png");
-
+    
     struct File_To_Index {
         const char *filename;
         int index;
     };
-
+    
     struct File_To_Index chisel_files[] = {
         { "chisel_small.png",           TEXTURE_CHISEL_SMALL },
         { "chisel_small_diagonal.png",  TEXTURE_CHISEL_SMALL_DIAGONAL },
-
+        
         { "chisel_medium.png",          TEXTURE_CHISEL_MEDIUM },
         { "chisel_medium_diagonal.png", TEXTURE_CHISEL_MEDIUM_DIAGONAL },
-
+        
         { "chisel_large.png",           TEXTURE_CHISEL_LARGE },
         { "chisel_large_diagonal.png",  TEXTURE_CHISEL_LARGE_DIAGONAL },
     };
-
+    
     // Loop through all chisels
     for (int i = 0; i < ArrayCount(chisel_files); i++) {
         GetTexture(chisel_files[i].index) = RenderLoadTexture(chisel_files[i].filename);
@@ -154,16 +154,22 @@ static void surfaces_init(Surfaces *surfaces) {
     surfaces->diamond_surface = RenderLoadSurface("diamond.png");
     surfaces->ice_surface = RenderLoadSurface("ice.png");
     surfaces->grass_surface = RenderLoadSurface("grass.png");
-
+    
     // Hack
     surfaces->background = SDL_CreateRGBSurfaceWithFormat(0,
                                                           64*2,
                                                           64*2,
                                                           32,
                                                           ALASKA_PIXELFORMAT);
-
+    
     SDL_FreeSurface(gs->pixel_format_surf);
     gs->pixel_format_surf = null;
+}
+
+static void surfaces_deinit(Surfaces *surfaces) {
+    for (int i = 0; i < SURFACE_COUNT; i++) {
+        SDL_FreeSurface(surfaces->surfaces[i]);
+    }
 }
 
 //~ Fonts

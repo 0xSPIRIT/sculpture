@@ -1,17 +1,10 @@
 #ifdef ALASKA_RELEASE_MODE
   #define SHOW_TUTORIAL 1
 #else
-  #define SHOW_TUTORIAL 0
+  #define SHOW_TUTORIAL 1
 #endif
 
 #define MAX_TUTORIAL_LINES 10
-
-#define TUTORIAL_CHISEL_STRING  \
-    "Tutorial\n" \
-    "--------\n\n" \
-    "Use the chisels to create your sculpture!\n"\
-    "Click the checkmark when you're satisfied\n"\
-    "with a level.\n"
 
 #define TUTORIAL_OVERLAY_STRING \
     "Tutorial\n" \
@@ -19,22 +12,17 @@
     "Click the overlay button to show what Max\n"\
     "wants to create.\n\n" \
     "With the POINTER tool selected, you can\n"\
-    "display the material of the cell by\n" \
+    "display the desired material of any cell by\n" \
     "hovering your cursor over the overlay.\n"
 
-#define TUTORIAL_COMPLETE_LEVEL \
+#define TUTORIAL_CHISEL_STRING  \
     "Tutorial\n" \
     "--------\n\n" \
-    "For this first level, you must complete it\n"\
-    "perfectly in order to continue.\n\n"\
-    "However, most subsequent levels can be completed\n"\
-    "without restrictions, except your own discretion.\n"\
-
-#define TUTORIAL_COMPLETE_LEVEL_2 \
-    "Tutorial\n" \
-    "--------\n\n" \
-    "For this level, you must complete it\n"\
-    "perfectly in order to continue.\n"\
+    "Use the chisels to create your sculpture!\n\n"\
+    "Hold SHIFT and move your mouse to rotate\n"\
+    "chisel.\n\n" \
+    "Click the checkmark when you're satisfied\n"\
+    "with a level.\n"
 
 #define TUTORIAL_UNDO_STRING \
     "Tutorial\n" \
@@ -42,10 +30,16 @@
     "Z - Undo\n" \
     "R - Restart Level\n"
 
+#define TUTORIAL_COMPLETE_LEVEL \
+    "Tutorial\n" \
+    "--------\n\n" \
+    "Most levels can be completed without\n"\
+    "restrictions on completeness, except your\n"\
+    "own discretion.\n"\
+
 #define TUTORIAL_CHISEL_ROTATE_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Hold SHIFT and move the cursor to rotate the chisel.\n"
 
 #define TUTORIAL_PRESSURE_STRING \
     "Tutorial\n" \

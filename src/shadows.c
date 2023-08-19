@@ -3,7 +3,7 @@ static void shadows_draw(int target) {
     Uint32 *pixels;
     int pitch;
 
-    bool ok = (RenderLockTexture(texture, null, &pixels, &pitch) == 0);
+    bool ok = (RenderLockTexture(texture, null, (void**)&pixels, &pitch) == 0);
     Assert(ok);
 
     memset(pixels, 0, pitch*gs->gh);
