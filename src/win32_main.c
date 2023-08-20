@@ -487,6 +487,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
                    LPSTR     lpCmdLine,
                    int       nShowCmd)
 {
+    Log("Size: %d\n", (int)sizeof(Game_State));
     (void)hInstance;
     (void)hPrevInstance;
     (void)lpCmdLine;

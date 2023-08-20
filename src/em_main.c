@@ -15,9 +15,6 @@
 
 #include <emscripten.h>
 
-#include <dirent.h>
-#include <errno.h>
-
 typedef struct GameLoopData {
     Memory_Arena persistent_memory, transient_memory;
     Game_State *game_state;
@@ -82,7 +79,7 @@ static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *tra
     persistent_memory->size = Megabytes(512);
     transient_memory->size = Megabytes(8);
 
-    persistent_memory->data = malloc(persistent_memory->size + transient_memory->size);
+    persistent_memory->data = calloc(persistent_memory->size + transient_memory->size, 1);
     if (!persistent_memory->data) fail(8);
     persistent_memory->cursor = persistent_memory->data;
 
@@ -158,16 +155,6 @@ static void em_mainloop(void *arg) {
 
 int main(int argc, char **argv) {
     GameLoopData data;
-
-    DIR *d;
-    struct dirent *dir;
-    d = opendir(".");
-    if (d) {
-        while ((dir = readdir(d)) != null) {
-            printf("%s\n", dir->d_name);
-        }
-        closedir(d);
-    }
 
     make_memory_arena(&data.persistent_memory, &data.transient_memory);
     data.game_state = PushSize(&data.persistent_memory, sizeof(Game_State));

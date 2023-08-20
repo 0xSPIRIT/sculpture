@@ -90,6 +90,9 @@
 typedef struct Tutorial_Rect {
     bool active;
 
+    f64 x, y; // 0 to 1
+    SDL_Rect rect;
+
     Font *font;
     //TTF_Font *font;
     //SDL_Texture *textures[MAX_TUTORIAL_LINES];
@@ -97,15 +100,12 @@ typedef struct Tutorial_Rect {
 
     int margin;
 
+    Button *ok_button;
+    
     char str[8*64];
     char lines[MAX_TUTORIAL_LINES][64];
 
     int line_count;
-
-    f64 x, y; // 0 to 1
-    SDL_Rect rect;
-
-    Button *ok_button;
 
     struct Tutorial_Rect *next;
 } Tutorial_Rect;
