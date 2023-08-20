@@ -1,15 +1,18 @@
 // This is called every frame and sets the current music according to certain conditions.
 void audio_set_music_accordingly(void) {
+#if AUDIO_PLAY_MUSIC == 0
+    audio_set_music(MUSIC_NONE);
+#else
     int level_number = gs->level_current+1;
-
+    
     if (gs->audio_handler.music_end) {
         audio_set_music(MUSIC_NONE);
         return;
     }
-
+    
     if (level_number <= 3) {
         audio_set_music(MUSIC_FARCE);
-    } else if (level_number == 11 && gs->obj.active) {
+    } else if (gs->obj.active) {
         audio_set_music(MUSIC_EXPLITIVE);
     } else {
         audio_set_music(MUSIC_NONE);
@@ -20,6 +23,7 @@ void audio_set_music_accordingly(void) {
             gs->audio_handler.lower_music = false;
         }
     }
+#endif
 }
 
 // Called every frame.

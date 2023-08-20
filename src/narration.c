@@ -26,17 +26,24 @@ static void narrator_draw_text_blended(int i,
                     false);
 }
 
-static const char* get_narration(int level) {
+static const char *get_level_7_narration(int levels_completed_perfectly) {
+    if (levels_completed_perfectly >= 6) {
+        return NARRATION_LEVEL_7_PERFECT;
+    } else {
+        return NARRATION_LEVEL_7_IMPERFECT;
+    }
+}
+
+static const char *get_narration(int level) {
     switch (level+1) {
         case 1:  return NARRATION_LEVEL_1;
         case 3:  return NARRATION_LEVEL_3;
         case 4:  return NARRATION_LEVEL_4;
         case 5:  return NARRATION_LEVEL_5;
-        case 7:  return NARRATION_LEVEL_7_IMPERFECT;
+        case 7:  return get_level_7_narration(gs->levels_completed_perfectly);
         case 8:  return NARRATION_LEVEL_8;
         case 10: return NARRATION_LEVEL_10;
         case 11: return NARRATION_LEVEL_11;
-
         case 12: return NARRATION_END;
     }
     return null;

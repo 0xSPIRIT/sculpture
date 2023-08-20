@@ -36,14 +36,19 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
 
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
     if (!ok) fail(1);
-
-    state->S = 12;//calculate_scale(false, &state->desktop_w, &state->desktop_h);
-
-    state->game_width = (int)(64*state->S);
-    state->game_height = (int)(64*state->S + GUI_H);
-
-    state->real_width = state->game_width;
-    state->real_height = state->game_height;
+    
+    {
+        SDL_DisplayMode dm;
+        
+        if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
+            printf("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+        }
+        
+        state->desktop_w = dm.w;
+        state->desktop_h = dm.h;
+        
+        printf("Desktop width: %d, Desktop height: %d\n", dm.w, dm.h);
+    }
 
     ok = (Mix_Init(MIX_INIT_OGG) != 0);
     if (!ok) fail(2);
@@ -69,6 +74,8 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
 
     state->renderer = SDL_CreateRenderer(state->window, -1, flags);
     if (!state->renderer) fail(7);
+    
+    state->render = RenderInit(state->renderer);
 
     if (state->fullscreen) {
         SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
@@ -80,6 +87,11 @@ static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *tra
     transient_memory->size = Megabytes(8);
 
     persistent_memory->data = calloc(persistent_memory->size + transient_memory->size, 1);
+    if (!persistent_memory->data) {
+        fail(100);
+    }
+    printf("Base Memory: %p\n", persistent_memory->data);
+    
     if (!persistent_memory->data) fail(8);
     persistent_memory->cursor = persistent_memory->data;
 
@@ -88,9 +100,6 @@ static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *tra
     transient_memory->cursor = transient_memory->data;
 }
 
-static f64 calculate_scale(bool fullscreen) {
-    return 7;
-}
 
 static bool prefix(const char *pre, const char *str) {
     return strncmp(pre, str, strlen(pre)) == 0;
@@ -98,12 +107,11 @@ static bool prefix(const char *pre, const char *str) {
 
 static void game_init_emscripten(Game_State *state) {
     srand((unsigned int) time(0));
+    
+    state->S = 9;
 
-    if (state->S == 0)
-        state->S = calculate_scale(false);
-
-    state->game_width = 128*state->S;
-    state->game_height = 128*state->S + GUI_H;
+    state->game_width = 64*state->S;
+    state->game_height = 64*state->S + GUI_H;
 
     state->real_width = state->game_width;
     state->real_height = state->game_height;
@@ -130,14 +138,17 @@ static void game_deinit(Game_State *state) {
     surfaces_deinit(&state->surfaces);
     fonts_deinit(&state->fonts);
     audio_deinit(&state->audio);
+    
+    SDL_DestroyRenderer(state->renderer);
+    SDL_DestroyWindow(state->window);
 
     SDL_Quit();
+    TTF_Quit();
+    IMG_Quit();
 }
 
 static void em_mainloop(void *arg) {
     GameLoopData *data = (GameLoopData*) arg;
-
-    input_tick(data->game_state);
 
     SDL_Event event;
 
@@ -147,8 +158,11 @@ static void em_mainloop(void *arg) {
             emscripten_cancel_main_loop();
         }
     }
+    
+    input_tick(data->game_state);
+
     game_run(data->game_state);
-    // Zero out the transient memory for next frame!
+    
     memset(data->transient_memory.data, 0, data->transient_memory.size);
     data->transient_memory.cursor = data->transient_memory.data;
 }
@@ -160,7 +174,7 @@ int main(int argc, char **argv) {
     data.game_state = PushSize(&data.persistent_memory, sizeof(Game_State));
     gs = data.game_state;
 
-    gs->S = 5;
+    gs->S = 7;
     gs->fullscreen = false;
 
     gs->persistent_memory = &data.persistent_memory;

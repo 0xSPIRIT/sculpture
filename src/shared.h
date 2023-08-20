@@ -66,6 +66,8 @@ typedef struct Game_State {
     SDL_Window *window;
     SDL_Renderer *renderer;
     Render render;
+    
+    int levels_completed_perfectly;
 
     bool is_mouse_on_tab_icon; // Hacky...
 

@@ -90,7 +90,7 @@
 typedef struct Tutorial_Rect {
     bool active;
 
-    f64 x, y; // 0 to 1
+    f32 x, y; // 0 to 1
     SDL_Rect rect;
 
     Font *font;

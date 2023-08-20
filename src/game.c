@@ -94,7 +94,6 @@ static void game_update_view(void) {
 
     to->x = clampf(to->x, -gs->game_width*0.5, gs->game_width*0.5);
 
-    // NOTE: This is not a typo, they are supposed to be width, not height.
     if (input->keys_pressed[SDL_SCANCODE_S] || input->keys_pressed[SDL_SCANCODE_DOWN]) {
         to->y += amount;
         changed = true;
@@ -108,6 +107,7 @@ static void game_update_view(void) {
         gs->wasd_popup_alpha--;
     }
 
+    // NOTE: This is not a typo, they are supposed to be width, not height.
     to->y = clampf(to->y, -gs->game_width*0.5, gs->game_width*0.5);
 
     gs->render.view.x = lerp64(gs->render.view.x, gs->render.to.x, 0.2);
@@ -165,6 +165,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
         gs->real_width = event->window.data1;
         gs->real_height = event->window.data2;
         if (gs->real_width == 0 || gs->real_height == 0) __debugbreak();
+        printf("Resized to %d, %d\n", gs->real_width, gs->real_height);
         game_resize(gs->real_height);
     }
 
@@ -383,6 +384,9 @@ export void game_run(Game_State *state) {
 
     gs->gui.tooltip.set_this_frame = false;
 
+    audio_set_ambience_accordingly();
+    audio_set_music_accordingly();
+    
     switch (gs->gamestate) {
         case GAME_STATE_TITLESCREEN: {
             titlescreen_tick();
@@ -391,9 +395,6 @@ export void game_run(Game_State *state) {
         }
         case GAME_STATE_PLAY: {
             game_update_view();
-
-            audio_set_ambience_accordingly();
-            audio_set_music_accordingly();
 
             if (gs->obj.active) {
                 RenderColor(255, 255, 255, 255);
@@ -480,7 +481,7 @@ export void game_run(Game_State *state) {
                    &dst);
 
     gs->dt = EndTimer();
-
+    
     SDL_RenderPresent(gs->renderer);
 
     gs->is_mouse_over_any_button = false;

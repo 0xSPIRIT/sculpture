@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["Disassembly", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\tutorial.c", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\assets.c", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\overlay.c", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\shared.h", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\dev\\sculpture\\src\\assets.c", "d:\\dev\\sculpture\\src\\em_main.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\tutorial.c", "d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\overlay.c", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
 
 [MainWindow]
 X = 0
@@ -25,25 +25,41 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "Disassembly"
-TabWidth = 109.0226
-Type = "DisassemblyPanel"
+TabLabel = "shared.h"
+TabWidth = 88.7218
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\shared.h"
+CursorPos = 5724
+VertPos = 4928.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "render.c"
+TabWidth = 85.71428
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\render.c"
+CursorPos = 305
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "em_main.c"
+TabWidth = 90.90225
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\em_main.c"
+CursorPos = 1873
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "tutorial.c"
-TabWidth = 90.22556
+TabWidth = 80.37594
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\tutorial.c"
-CursorPos = 4096
-VertPos = 3014.0
+CursorPos = 1406
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "win32_main.c"
 TabWidth = 105.9398
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\win32_main.c"
-CursorPos = 9927
-VertPos = 7348.0
+CursorPos = 4354
+VertPos = 3102.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "grid.c"
@@ -57,7 +73,7 @@ TabLabel = "assets.c"
 TabWidth = 72.85714
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\assets.c"
-CursorPos = 7150
+CursorPos = 445
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "overlay.c"
@@ -103,7 +119,7 @@ TabLabel = "Watch"
 TabWidth = 86.8421
 Type = "WatchPanel"
 Columns = [{Width = 231.0}, {Width = 682.0}, {Width = 227.0}]
-Items = ["str", "tooltip_text", "b", ""]
+Items = ["gs->render", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"
@@ -144,6 +160,16 @@ Active = true
 TabLabel = "Breakpoints"
 TabWidth = 116.9173
 Type = "BreakpointPanel"
+
+[[Breakpoints]]
+File = "d:\\dev\\sculpture\\src\\assets.c"
+Line = 16
+Column = 0
+
+[[Breakpoints]]
+File = "d:\\dev\\sculpture\\src\\win32_main.c"
+Line = 161
+Column = 4
 
 [[BookmarkFolders]]
 Title = ""

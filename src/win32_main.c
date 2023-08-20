@@ -51,6 +51,10 @@
 
 #define ALASKA_START_FULLSCREEN 0
 
+#ifdef __EMSCRIPTEN__
+#undef printf
+#endif
+
 // Some function pointers for the hot-loading.
 
 typedef void (*GameInitProc)(Game_State*);

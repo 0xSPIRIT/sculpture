@@ -9,7 +9,11 @@ static void end_of_level_popup_confirm_run(int target) {
 
     if (wait_for_fade(FADE_LEVEL_FINISH)) {
         reset_fade();
-        goto_level(++gs->level_current);
+        if (compare_cells_leeway(gs->grid, gs->levels[gs->level_current].desired_grid, 10)) {
+            gs->levels_completed_perfectly++;
+        }
+        
+        goto_level(gs->level_current+1);
         return;
     }
 

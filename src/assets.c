@@ -16,7 +16,7 @@
 static void render_targets_init(void) {
     int width = gs->desktop_w;
     int height = gs->desktop_h;
-
+    
     for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
         switch (i) {
             case RENDER_TARGET_MASTER: {

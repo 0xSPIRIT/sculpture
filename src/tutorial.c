@@ -37,6 +37,9 @@ static void calculate_tutorial_rect_size(Tutorial_Rect *tut) {
 Tutorial_Rect* tutorial_rect(const char *str, Tutorial_Rect *next) {
     Tutorial_Rect *tut = PushSize(gs->persistent_memory, sizeof(Tutorial_Rect));
     
+    tut->x = -1;
+    tut->y = -1;
+    
     tut->font = gs->fonts.font;
     tut->active = gs->show_tutorials;
     tut->next = next;
@@ -62,9 +65,6 @@ Tutorial_Rect* tutorial_rect(const char *str, Tutorial_Rect *next) {
         tut->lines[tut->line_count][i++] = *str;
         ++str;
     }
-    
-    tut->x = -1;
-    tut->y = -1;
     
     calculate_tutorial_rect_size(tut);
     
