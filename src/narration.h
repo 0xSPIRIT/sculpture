@@ -105,8 +105,8 @@
 #define NARRATION_LEVEL_11 \
 "Max collapsed into his chair, debilitated,\r"\
 "the floorboards creaking in response.\n"\
-"Little emotion shone through his demeanor\r"\
-"as he carefully placed his finished piece next the others.\n"\
+"Little emotion shone through him as he\r"\
+"carefully placed his finished piece next the others.\n"\
 "With his seemingly perfected craftsmanship,\r"\
 "without a moment's rest, nor hesitation,\r"\
 "he continued on.\n"\

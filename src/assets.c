@@ -184,7 +184,7 @@ static void fonts_init(Fonts *fonts) {
     fonts->font_title_2       = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[6]));
     fonts->font_titlescreen   = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[7]));
     fonts->font_converter_gui = RenderLoadFont("consola.ttf", Scale(font_sizes[8]));
-
+    
     for (size_t i = 0; i < FONT_COUNT; i++) {
         TTF_SetFontHinting(fonts->fonts[i]->handle, TTF_HINTING_LIGHT_SUBPIXEL);
     }
@@ -206,14 +206,14 @@ static void audio_setup_initial_channel_volumes(void) {
 
 static Sound load_sound(const char *file, f32 volume) {
     Sound result = {0};
-
+    
     result.sound = Mix_LoadWAV(file);
     Assert(result.sound);
-
+    
     result.volume = Volume(volume);
-
+    
     Mix_VolumeChunk(result.sound, result.volume);
-
+    
     return result;
 }
 
@@ -224,52 +224,52 @@ static void free_sound(Sound *sound) {
 
 static void audio_init(Audio *audio) {
     audio->music_titlescreen = Mix_LoadMUS(RES_DIR "audio/titlescreen.ogg");
-
+    
     audio->ambience1     = load_sound(RES_DIR "audio/ambience1.ogg", 0.32);
     audio->ambience_rain = load_sound(RES_DIR "audio/rain.ogg",      0.16);
     audio->music0        = load_sound(RES_DIR "audio/music0.ogg",    0.55);
     //audio->music1        = load_sound(RES_DIR "audio/music1.ogg",    0.50);
     audio->music2        = load_sound(RES_DIR "audio/music2.ogg",    0.50);
-
+    
     audio->pip = load_sound(RES_DIR "audio/pip.ogg", 1);
-
+    
     for (int i = 0; i < 6; i++) {
         char name[64];
         sprintf(name, RES_DIR "audio/chisel_%d.wav", i+1);
         audio->medium_chisel[i] = load_sound(name, 1);
     }
     audio->small_chisel = load_sound(RES_DIR "audio/small_chisel.wav", 1);
-
+    
     for (int i = 0; i < ArrayCount(audio->ice_chisel); i++) {
         char name[64];
         sprintf(name, RES_DIR "audio/ice_chisel_%d.wav", i+1);
         audio->ice_chisel[i] = load_sound(name, 1);
     }
-
+    
     audio->sprinkle = load_sound(RES_DIR "audio/sprinkle 3.wav", 1);
     audio->macabre = load_sound(RES_DIR "audio/macabre.ogg", 1);
-
+    
     audio->accept = load_sound(RES_DIR "audio/accept.ogg", 1);
-
+    
     audio_setup_initial_channel_volumes();
 }
 
 static void audio_deinit(Audio *audio) {
     Mix_FreeMusic(audio->music_titlescreen);
-
+    
     free_sound(&audio->ambience1);
     free_sound(&audio->ambience_rain);
     free_sound(&audio->music0);
     //free_sound(&audio->music1);
     free_sound(&audio->music2);
-
+    
     for (int i = 0; i < 6; i++)
         free_sound(&audio->medium_chisel[i]);
     for (int i = 0; i < ArrayCount(audio->ice_chisel); i++)
         free_sound(&audio->ice_chisel[i]);
     free_sound(&audio->small_chisel);
     free_sound(&audio->pip);
-
+    
     free_sound(&audio->sprinkle);
     free_sound(&audio->macabre);
 }
