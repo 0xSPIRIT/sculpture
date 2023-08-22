@@ -121,6 +121,8 @@ static void textures_init(Textures *textures) {
     
     GetTexture(TEXTURE_TEST) = RenderLoadTexture("test.png");
     
+    GetTexture(TEXTURE_BG) = RenderLoadTexture("bg.png");
+    
     struct File_To_Index {
         const char *filename;
         int index;
@@ -157,8 +159,8 @@ static void surfaces_init(Surfaces *surfaces) {
     
     // Hack
     surfaces->background = SDL_CreateRGBSurfaceWithFormat(0,
-                                                          64*2,
-                                                          64*2,
+                                                          128,
+                                                          128,
                                                           32,
                                                           ALASKA_PIXELFORMAT);
     

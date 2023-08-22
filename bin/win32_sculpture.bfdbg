@@ -1,10 +1,10 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\confirm_popup.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\confirm_popup.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
 
 [MainWindow]
-X = 0
+X = -9
 Y = 45
 Width = 1801
 Height = 894
@@ -24,29 +24,34 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
+Active = true
+TabLabel = "render.c"
+TabWidth = 75.86466
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\render.c"
+CursorPos = 1451
+VertPos = 704.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "level.c"
-TabWidth = 74.43609
+TabWidth = 64.58646
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\level.c"
 CursorPos = 812
-VertPos = 462.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-Active = true
 TabLabel = "grid.c"
-TabWidth = 71.42857
+TabWidth = 61.57895
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\grid.c"
 CursorPos = 5098
-VertPos = 3916.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "confirm_popup.c"
-TabWidth = 135.3383
+TabWidth = 125.4887
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\confirm_popup.c"
 CursorPos = 336
-VertPos = 88.0
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 647.0

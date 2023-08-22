@@ -42,7 +42,7 @@ static void chisel_play_sound(Cell_Type material, int size) {
     switch (material) {
         case CELL_ICE: {
             switch (size) {
-                case CHISEL_SMALL:  {
+                case CHISEL_SMALL: {
                     int indices[] = {5, 6};
                     play_sound(channel, gs->audio.ice_chisel[indices[rand()%2]], 0);
                 } break;
@@ -90,6 +90,11 @@ static int chisel_get_distance_from_facing_cell(int i, f64 angle) {
 
         distance++;
     }
+}
+
+static void chisel_tick_web_mode(Chisel *chisel) {
+    (void)chisel;
+    return;
 }
 
 static bool chisel_is_facing_cell(int i, f64 angle, int lookahead) {

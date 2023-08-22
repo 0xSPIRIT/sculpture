@@ -1,6 +1,12 @@
-#define USE_PRESSURE false
-#define HIGHLIGHT_MAX 64
+#define USE_PRESSURE    false
+#define HIGHLIGHT_MAX   64
 #define CHISEL_FLASHING false
+
+#ifdef __EMSCRIPTEN__
+  #define CHISEL_WEB_MODE true
+#else
+  #define CHISEL_WEB_MODE false
+#endif
 
 typedef enum ChiselSize {
     CHISEL_SMALL = 0,

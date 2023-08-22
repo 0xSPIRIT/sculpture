@@ -18,35 +18,7 @@ static void input_tick_mouse_pressed(Input *in) {
     in->mouse_previous = in->mouse;
 }
 
-// This is pretty bad
-static void input_tick_simulated(Game_State *state) {
-    Input *in = &state->input;
-
-    in->s_pmx = in->s_mx;
-    in->s_pmy = in->s_my;
-    in->mouse = (Uint32) SDL_GetMouseState(&in->s_mx, &in->s_my);
-
-    int dx = in->s_mx - in->s_pmx;
-    int dy = in->s_my - in->s_pmy;
-
-    in->real_mx += dx;
-    in->real_my += dy;
-
-    in->mx = (in->real_mx+state->render.view.x)/state->S;
-    in->my = (in->real_my+state->render.view.y)/state->S;
-
-    // Hardcode
-    if (gs->gw == 128) {
-        in->mx += 32;
-    }
-
-    in->my -= GUI_H/state->S;
-
-    input_tick_mouse_pressed(in);
-    input_tick_keys_pressed(in);
-}
-
-static void input_tick_normal(Game_State *state) {
+static void input_tick(Game_State *state) {
     Input *in = &state->input;
 
     in->pmx = in->mx;
@@ -68,12 +40,4 @@ static void input_tick_normal(Game_State *state) {
 
     input_tick_mouse_pressed(in);
     input_tick_keys_pressed(in);
-}
-
-static void input_tick(Game_State *state) {
-#if MOUSE_SIMULATED
-    input_tick_simulated(state);
-#else
-    input_tick_normal(state);
-#endif
 }

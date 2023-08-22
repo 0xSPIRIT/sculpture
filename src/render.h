@@ -1,6 +1,5 @@
 // A wrapper for calls to SDL's draw functions.
-// We use this for things like global offsets,
-// and to manage render targets better.
+// We use this to manage render targets better.
 
 #define RENDERAPI static inline
 #define MAX_TEXT_LENGTH 512

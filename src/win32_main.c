@@ -132,7 +132,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
     int window_flags = 0;
 
     window_flags |= SDL_WINDOW_RESIZABLE;
-    //window_flags |= SDL_WINDOW_ALWAYS_ON_TOP;
+    window_flags |= SDL_WINDOW_ALWAYS_ON_TOP;
 
     state->window = SDL_CreateWindow(window_title, x, y, state->real_width, state->real_height, window_flags);
     if (!state->window) fail(3);
