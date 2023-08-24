@@ -1,14 +1,14 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\confirm_popup.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\titlescreen.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\audio.h", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
 
 [MainWindow]
-X = -9
-Y = 45
+X = 25
+Y = 100
 Width = 1801
 Height = 894
-ShowKind = "Maximized"
+ShowKind = "Normal"
 
 [MainDockingFrame]
 Type = "DockingFrame"
@@ -25,36 +25,44 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "render.c"
-TabWidth = 75.86466
+TabLabel = "titlescreen.c"
+TabWidth = 107.5188
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\render.c"
-CursorPos = 1451
-VertPos = 704.0
+FilePath = "d:\\dev\\sculpture\\src\\titlescreen.c"
+CursorPos = 601
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "level.c"
-TabWidth = 64.58646
+TabWidth = 74.43609
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\level.c"
-CursorPos = 812
+CursorPos = 8652
+VertPos = 6380.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "grid.c"
-TabWidth = 61.57895
+TabLabel = "background.c"
+TabWidth = 117.2932
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\grid.c"
-CursorPos = 5098
+FilePath = "d:\\dev\\sculpture\\src\\background.c"
+CursorPos = 487
+VertPos = 3030.043
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "confirm_popup.c"
-TabWidth = 125.4887
+TabLabel = "audio.h"
+TabWidth = 72.85714
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\confirm_popup.c"
-CursorPos = 336
+FilePath = "d:\\dev\\sculpture\\src\\audio.h"
+CursorPos = 246
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "audio.c"
+TabWidth = 71.35339
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\audio.c"
+CursorPos = 539
 
 [[MainDockingFrame.DockedWidgets]]
-RequestedWidth = 647.0
+RequestedWidth = 645.0
 RequestedHeight = 152.0
 Type = "DockingFrame"
 SplitType = 2
@@ -76,7 +84,7 @@ TabLabel = "Watch"
 TabWidth = 86.8421
 Type = "WatchPanel"
 Columns = [{Width = 231.0}, {Width = 682.0}, {Width = 227.0}]
-Items = ["gs.levels_completed_perfectly", ""]
+Items = ["bg.star", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"
@@ -103,6 +111,7 @@ TabWidth = 95.11278
 Type = "ThreadPanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+Active = true
 TabLabel = "Call Stack"
 TabWidth = 104.8872
 Type = "CallStackPanel"
@@ -113,7 +122,6 @@ TabWidth = 111.6541
 Type = "ImmediatePanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
-Active = true
 TabLabel = "Breakpoints"
 TabWidth = 116.9173
 Type = "BreakpointPanel"

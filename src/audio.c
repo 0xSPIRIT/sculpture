@@ -46,6 +46,7 @@ void audio_set_ambience_accordingly(void) {
 }
 
 void play_sound(int channel, Sound sound, int loops) {
+    printf("Playing sound %p", sound.sound);
     Mix_PlayChannel(channel, sound.sound, loops);
 }
 

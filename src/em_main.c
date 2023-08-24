@@ -31,6 +31,17 @@ static void fail(int code) {
     #endif
 }
 
+// Separate because audio is initted upon player clicking
+static void game_init_sdl_audio(Game_State *state) {
+    bool ok = true;
+    
+    ok = (Mix_Init(MIX_INIT_OGG) != 0);
+    if (!ok) fail(2);
+    
+    ok = Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0;
+    if (!ok) fail(6);
+}
+
 static void game_init_sdl_em(Game_State *state, const char *window_title, int w, int h) {
     bool ok = true;
 
@@ -50,9 +61,6 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
         printf("Desktop width: %d, Desktop height: %d\n", dm.w, dm.h);
     }
 
-    ok = (Mix_Init(MIX_INIT_OGG) != 0);
-    if (!ok) fail(2);
-
     state->window = SDL_CreateWindow(window_title,
                                      SDL_WINDOWPOS_CENTERED,
                                      SDL_WINDOWPOS_CENTERED,
@@ -66,9 +74,6 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
 
     ok = (TTF_Init() == 0);
     if (!ok) fail(5);
-
-    ok = Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0;
-    if (!ok) fail(6);
 
     int flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 

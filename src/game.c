@@ -2,6 +2,7 @@
 
 // Include all files to compile in one translation unit for
 // compilation speed's sake. (Unity Build)
+
 #include "util.c"
 #include "render.c"
 #include "fades.c"
@@ -160,6 +161,13 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
         save_game();
         is_running = false;
     }
+    
+    #ifdef __EMSCRIPTEN__
+    if (event->type == SDL_MOUSEBUTTONDOWN) {
+        if (!state->web_clicked) game_init_sdl_audio(state);
+        state->web_clicked = true;
+    }
+    #endif
 
     if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) {
         gs->real_width = event->window.data1;

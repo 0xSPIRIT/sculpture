@@ -262,6 +262,13 @@ static void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel) {
     *target_pixel = pixel;
 }
 
+static Uint32 *get_pointer_to_pixel(SDL_Surface *surface, int x, int y) {
+    Uint32 *target_pixel = (Uint32 *) ((Uint8 *) surface->pixels
+                                       + y * surface->pitch
+                                       + x * surface->format->BytesPerPixel);
+    return target_pixel;
+}
+
 static SDL_Color get_pixel(SDL_Surface *surf, int x, int y) {
     if (x >= surf->w) x %= surf->w;
     if (y >= surf->h) y %= surf->h;

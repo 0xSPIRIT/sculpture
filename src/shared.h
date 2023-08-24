@@ -58,6 +58,8 @@ typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
 
     f64 dt; // Time taken for previous frame.
+    
+    bool web_clicked;
 
     SDL_Color border_color;
 
