@@ -1,4 +1,4 @@
-static Uint8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
+static u8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     // Type              R    G    B
     CELL_NONE,          255,   0,   0,
     CELL_DIRT,          255,   0,   0,
@@ -56,13 +56,13 @@ static Overlay_Changes overlay_load_changes(const char *name_generic, int num) {
 
         for (int y = 0; y < surf->h; y++) {
             for (int x = 0; x < surf->w; x++) {
-                Uint8 r=0, g=0, b=0;
+                u8 r=0, g=0, b=0;
 
                 if (surf->format->BytesPerPixel == 1) {
-                    Uint8 pixel = ((Uint8*)surf->pixels)[x + y * w];
+                    u8 pixel = ((u8*)surf->pixels)[x + y * w];
                     SDL_GetRGB(pixel, surf->format, &r, &g, &b);
                 } else if (surf->format->BytesPerPixel == 4) {
-                    Uint32 pixel = ((Uint32*)surf->pixels)[x + y * w];
+                    u32 pixel = ((u32*)surf->pixels)[x + y * w];
                     SDL_GetRGB(pixel, surf->format, &r, &g, &b);
                 } else {
                     Assert(0);
@@ -417,7 +417,7 @@ static void overlay_draw_grid(int target, int *grid, f32 alpha_coeff) {
         for (int x = 0; x < gs->gw; x++) {
             if (!grid[x+y*gs->gw]) continue;
 
-            Uint8 a = alpha;
+            u8 a = alpha;
 
             int t = grid[x+y*gs->gw];
 

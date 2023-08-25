@@ -343,7 +343,7 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
                 f32 coeff = 0.4f;
                 if (effect->bounds.w > gs->gw) coeff = 0.6f;
 
-                Uint8 col = (Uint8) (255 * coeff*length/max);
+                u8 col = (u8) (255 * coeff*length/max);
 
                 if (draw_points) {
                     RenderColor(255, 255, 255, col);
@@ -393,7 +393,7 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
                     normalized /= 2;
                     normalized += 0.5;
 
-                    Uint8 alpha = normalized * 255;
+                    u8 alpha = normalized * 255;
                     RenderColor(255, 255, 255, alpha);
                 }
 

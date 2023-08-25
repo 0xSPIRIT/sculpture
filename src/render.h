@@ -104,7 +104,7 @@ RENDERAPI void RenderTargetToTarget             (int target_dst, int target_src,
 RENDERAPI void RenderTargetToTargetRelative     (int target_dst, int target_src, SDL_Rect *src, SDL_Rect *dst);
 RENDERAPI void RenderTargetToTargetRelativeEx   (int target_dst, int target_src, SDL_Rect *src, SDL_Rect *dst, f64 angle, SDL_Point *center, SDL_RendererFlip flip);
 
-RENDERAPI void RenderColor                      (Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+RENDERAPI void RenderColor                      (u8 r, u8 g, u8 b, u8 a);
 RENDERAPI void RenderColorStruct                (SDL_Color rgba);
 RENDERAPI void RenderLine                       (int target, int x1, int y1, int x2, int y2);
 RENDERAPI void RenderLineRelative               (int target, int x1, int y1, int x2, int y2);
@@ -130,9 +130,9 @@ RENDERAPI void RenderText                       (int target, Render_Text_Data *t
 RENDERAPI void RenderTextQuick                  (int target_enum, const char *identifier, Font *font, const char *str, SDL_Color color, int x, int y, int *w, int *h, bool force_redraw);
 RENDERAPI void RenderCleanupTextCache           (Render_Text_Data_Cache *cache);
 RENDERAPI void RenderSetFontSize                (Font *font, int size);
-RENDERAPI void RenderReadPixels                 (int target, Uint8 *pixels, int pitch);
-RENDERAPI void RenderTextureColorMod            (Texture *texture, Uint8 r, Uint8 g, Uint8 b);
-RENDERAPI void RenderTextureAlphaMod            (Texture *texture, Uint8 a);
+RENDERAPI void RenderReadPixels                 (int target, u8 *pixels, int pitch);
+RENDERAPI void RenderTextureColorMod            (Texture *texture, u8 r, u8 g, u8 b);
+RENDERAPI void RenderTextureAlphaMod            (Texture *texture, u8 a);
 RENDERAPI int  RenderLockTexture                (Texture *texture, SDL_Rect *rect, void **pixels, int *pitch);
 RENDERAPI void RenderUnlockTexture              (Texture *texture);
 

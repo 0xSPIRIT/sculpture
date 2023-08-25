@@ -287,7 +287,7 @@ static void chisel_move_mouse_until_cell(Chisel *chisel, int x, int y, f64 deg_a
     move_mouse_to_grid_position((int)round(xx), (int)round(yy));
 }
 
-static void flood_fill(Uint8 *grid, int x, int y, Uint8 value, int count) {
+static void flood_fill(u8 *grid, int x, int y, u8 value, int count) {
     if (count == 0) return;
     if (!is_in_bounds(x, y)) return;
     if (gs->grid[x+y*gs->gw].type == CELL_NONE) return;
@@ -321,14 +321,14 @@ static bool special_case_for_diamond(int x, int y) {
 }
 
 // Sets a mask of the cells in the grid which are in front of the chisel.
-static void generate_chisel_mask(Uint8 *mask, f64 chisel_angle_deg, int chisel_x, int chisel_y) {
+static void generate_chisel_mask(u8 *mask, f64 chisel_angle_deg, int chisel_x, int chisel_y) {
     f64 chisel_angle = Radians(chisel_angle_deg);
     // dx and dy represent the direction of the chisel
     // as a unit vector.
     f64 dx = round(cos(chisel_angle));
     f64 dy = round(sin(chisel_angle));
 
-    memset(mask, 0, gs->gw*gs->gh*sizeof(Uint8));
+    memset(mask, 0, gs->gw*gs->gh*sizeof(u8));
 
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
@@ -396,9 +396,9 @@ static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, 
 
     // We want to only destroy the flood-filled object.
 
-    Uint8 *grid = PushArray(gs->transient_memory,
+    u8 *grid = PushArray(gs->transient_memory,
                             gs->gw * gs->gh,
-                            sizeof(Uint8));
+                            sizeof(u8));
 
     flood_fill(grid, x, y, 1, (int)(M_PI*size*size*2));
 

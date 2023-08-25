@@ -273,7 +273,7 @@ RENDERAPI void RenderDestroyTarget(Render_Target *target) {
 
 //~ Actual Rendering Code
 
-RENDERAPI void RenderColor(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
+RENDERAPI void RenderColor(u8 r, u8 g, u8 b, u8 a) {
     SDL_SetRenderDrawColor(gs->render.sdl, r, g, b, a);
 }
 
@@ -760,20 +760,20 @@ RENDERAPI void RenderText(int target_enum, Render_Text_Data *text_data) {
     RenderTexture(target_enum, &text_data->texture, null, &dst);
 }
 
-RENDERAPI void RenderReadPixels(int target, Uint8 *pixels, int pitch) {
+RENDERAPI void RenderReadPixels(int target, u8 *pixels, int pitch) {
     RenderMaybeSwitchToTarget(target);
     SDL_RenderReadPixels(gs->render.sdl, null, ALASKA_PIXELFORMAT, pixels, pitch);
 }
 
 RENDERAPI void RenderTextureColorMod(Texture *texture,
-                                     Uint8 r,
-                                     Uint8 g,
-                                     Uint8 b)
+                                     u8 r,
+                                     u8 g,
+                                     u8 b)
 {
     SDL_SetTextureColorMod(texture->handle, r, g, b);
 }
 
-RENDERAPI void RenderTextureAlphaMod(Texture *texture, Uint8 a) {
+RENDERAPI void RenderTextureAlphaMod(Texture *texture, u8 a) {
     SDL_SetTextureAlphaMod(texture->handle, a);
 }
 

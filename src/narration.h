@@ -46,33 +46,19 @@
 "torrentially from Max's mind.\n"\
 "And so, the rain poured.\n"
 
-#define NARRATION_LEVEL_7_IMPERFECT \
-"Maybe by then he must've been ready?\n"\
-"His previous attemps hadn't gone as\r"\
-"smoothly as he would've liked-\r"\
-"The results not as close to what he'd envisioned.\n"\
+#define NARRATION_LEVEL_7 \
+"Surely by then he must've been ready...?\n"\
+"He understood his previous sculptures only served as\r"\
+"stepping stones to something greater.\n"\
 "... But, it's been too long. He must move forward-\r"\
 "To do something real.\r"\
-"Something important.\n"\
-"Max recalled sculptures that he knew fondly.\r"\
+"Something noteworthy.\n"\
+"Immediately, Max recalled sculptures that he admired.\r"\
 "They swirled around his head in a moment of inspiration.\n"\
 "Too, his mind spun with other hypnotic ideas that\r"\
 "would surely never come to pass.\n"\
 "In reverie, he returned to the here and now.\n"\
-"He thought that this idea was realistic-\r"\
-"that his expectations were surely tempered.\n"\
-"With no hesitation, Max picked up his chisel.\n"\
-
-#define NARRATION_LEVEL_7_PERFECT \
-"Surely by then he must've been ready.\n"\
-"To do something real.\r"\
-"Something important.\n"\
-"Max recalled sculptures that he knew fondly.\r"\
-"They swirled around his head in a moment of inspiration.\n"\
-"Too, his mind spun with other hypnotic ideas that\r"\
-"would surely never come to pass.\n"\
-"In reverie, he returned to the here and now.\n"\
-"He thought that this idea was realistic-\r"\
+"He thought this idea was realistic-\r"\
 "that his expectations were surely tempered.\n"\
 "With no hesitation, Max picked up his chisel.\n"\
 
@@ -80,18 +66,18 @@
 "At the end he should be proud, but how could he?\n"\
 "Max turned away pointedly, his chisel clattering\r"\
 "to the hardwood floor in contempt.\n"\
-"His eyes flinched in an instinctual repulsion.\n"\
-"He'd never thought that something like this would have\r"\
+"His eyes flinched in an almost instinctual repulsion.\n"\
+"He didn't think that something like this would have\r"\
 "affected him so deeply-- but it did.\n"\
-"It's a sudden jolt back to the detached\r"\
+"It's a sudden jolt back to the detached,\r"\
 "and dispassionate.\n"\
 "He thought, with compromise after compromise,\r"\
 "this is all he could have settled for?\n"\
-"A bastardized fraction of what it could have been-- no,\r"\
-"SHOULD have been?\n"\
-"Max, in a fit of rage, clenches the single flower in hands\r"\
-"and smashes it to the floor, chucking shards of marble\r"\
-"and quartz across his workshop.\n"\
+"A bastardized fraction of what it could have been--\r"\
+"No, SHOULD have been?\n"\
+"Max, in a fit of rage, clenches the sculpture in hands\r"\
+"and smashes it to the floor, chucking shards of stone\r"\
+"all across his workshop.\n"\
 "\"I'll never make this mistake again,\"\r"\
 "he declared.\n"\
 

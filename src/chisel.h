@@ -45,7 +45,7 @@ typedef struct Chisel {
     int highlights[HIGHLIGHT_MAX]; // Stores indices of each highlight.
     int highlight_count;
 
-    Uint8 *mask;
+    u8 *mask;
 
     f64 angle, prev_angle, draw_angle;
     Chisel_Texture textures;

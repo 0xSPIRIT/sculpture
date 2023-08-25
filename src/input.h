@@ -7,15 +7,15 @@ typedef struct Input {
     int real_mx, real_my; // In real window coordinates
     int pmx, pmy;
     int real_pmx, real_pmy;
-    Uint32 mouse;
-    Uint8 *keys;
+    u32 mouse;
+    u8 *keys;
 
-    Uint8 keys_pressed[SDL_NUM_SCANCODES];
-    Uint8 keys_released[SDL_NUM_SCANCODES];
+    u8 keys_pressed[SDL_NUM_SCANCODES];
+    u8 keys_released[SDL_NUM_SCANCODES];
 
-    Uint8 mouse_pressed[MOUSE_BUTTONS];
-    Uint8 mouse_released[MOUSE_BUTTONS];
+    u8 mouse_pressed[MOUSE_BUTTONS];
+    u8 mouse_released[MOUSE_BUTTONS];
 
-    Uint8 keys_previous[SDL_NUM_SCANCODES];
-    Uint32 mouse_previous;
+    u8 keys_previous[SDL_NUM_SCANCODES];
+    u32 mouse_previous;
 } Input;

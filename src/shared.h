@@ -9,10 +9,10 @@
 
 #include "headers.h" // Used to get type size information.
 
-#define Kilobytes(x) ((Uint64)x*1024)
-#define Megabytes(x) ((Uint64)x*1024*1024)
-#define Gigabytes(x) ((Uint64)x*1024*1024*1024)
-#define Terabytes(x) ((Uint64)x*1024*1024*1024*1024)
+#define Kilobytes(x) ((u64)x*1024)
+#define Megabytes(x) ((u64)x*1024*1024)
+#define Gigabytes(x) ((u64)x*1024*1024*1024)
+#define Terabytes(x) ((u64)x*1024*1024*1024*1024)
 
 #ifdef __EMSCRIPTEN__
 #define __debugbreak() (exit(1))
@@ -40,9 +40,9 @@
 //   [PushArray(gs->transient_memory, ...)]
 //
 typedef struct Memory_Arena {
-    Uint8 *data;
-    Uint8 *cursor;
-    Uint64 size;
+    u8 *data;
+    u8 *cursor;
+    u64 size;
 } Memory_Arena;
 
 typedef enum {
@@ -220,8 +220,8 @@ static void _assert(const char *func, const char *file, const int line) {
 }
 
 // Gives pointer to zeroed memory.
-static void *_push_array(Memory_Arena *memory, Uint64 num, Uint64 size_individual, const char *file, int line) {
-    Uint64 size;
+static void *_push_array(Memory_Arena *memory, u64 num, u64 size_individual, const char *file, int line) {
+    u64 size;
     void *output = null;
 
     size = num * size_individual;

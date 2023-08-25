@@ -1,16 +1,16 @@
 #define StartTimer()\
-Uint64 __start = SDL_GetPerformanceCounter();
+u64 __start = SDL_GetPerformanceCounter();
 
 #define EndTimer() __end_timer(__start)
 
 #define ArrayCount(x) (sizeof(x)/sizeof(*x))
 
-static inline f64 __end_timer(Uint64 start) {
-    Uint64 f, e;
+static inline f64 __end_timer(u64 start) {
+    u64 f, e;
     e = SDL_GetPerformanceCounter();
     f = SDL_GetPerformanceFrequency();
 
-    Uint64 delta = e - start;
+    u64 delta = e - start;
     f64 result = (f64)delta / f;
 
     return result;
@@ -254,20 +254,28 @@ void get_file_from_tool(int type, char *out) {
     }
 }
 
+static inline void memset_u32(u32 *buffer, u32 value, u64 count) {
+    for (u64 i = 0; i < count; i++) {
+        buffer[i] = value;
+    }
+}
+
 // Stolen from stackoverflow somewhere.
-static void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel) {
-    Uint32 *target_pixel = (Uint32 *) ((Uint8 *) surface->pixels
+static inline void set_pixel(SDL_Surface *surface, int x, int y, u32 pixel) {
+    u32 *target_pixel = (u32 *) ((u8 *) surface->pixels
                                        + y * surface->pitch
                                        + x * surface->format->BytesPerPixel);
     *target_pixel = pixel;
 }
 
-static Uint32 *get_pointer_to_pixel(SDL_Surface *surface, int x, int y) {
-    Uint32 *target_pixel = (Uint32 *) ((Uint8 *) surface->pixels
+#if 0
+static inline u32 *get_pointer_to_pixel(SDL_Surface *surface, int x, int y) {
+    u32 *target_pixel = (u32 *) ((u8 *) surface->pixels
                                        + y * surface->pitch
                                        + x * surface->format->BytesPerPixel);
     return target_pixel;
 }
+#endif
 
 static SDL_Color get_pixel(SDL_Surface *surf, int x, int y) {
     if (x >= surf->w) x %= surf->w;
@@ -275,25 +283,34 @@ static SDL_Color get_pixel(SDL_Surface *surf, int x, int y) {
     int bpp = surf->format->BytesPerPixel;
     Assert(bpp == 4);
 
-    Uint32 *pixels = (Uint32*)surf->pixels;
+    u32 *pixels = (u32*)surf->pixels;
     SDL_Color color;
 
-    Uint32 pixel = pixels[x+y*surf->w];
+    u32 pixel = pixels[x+y*surf->w];
 
     SDL_GetRGBA(pixel, surf->format, &color.r, &color.g, &color.b, &color.a);
 
     return color;
 }
 
-static Uint32 get_pixel_int(SDL_Surface *surf, int x, int y) {
+static u32 get_pixel_int(SDL_Surface *surf, int x, int y) {
     if (x >= surf->w) x %= surf->w;
     if (y >= surf->h) y %= surf->h;
     int bpp = surf->format->BytesPerPixel;
     Assert(bpp == 4);
-    Uint32 *pixels = (Uint32*)surf->pixels;
+    u32 *pixels = (u32*)surf->pixels;
     return pixels[x+y*surf->w];
 }
 
+static u32 rand2_seed = 42;
+
+static void rand2_reset_seed() {
+    rand2_seed = 42;
+}
+static f32 rand2() {
+    rand2_seed = (1664525 * rand2_seed + 1013904223) % 4294967296;
+    return (f32)rand2_seed / (f32)4294967296;
+}
 
 static int my_rand(int seed) {
     const int a = 1103515245;
@@ -308,7 +325,7 @@ static f32 my_rand_f32(int seed) {
 }
 
 static f64 randf(f64 size) {
-    return size * ((f64)(rand()%RAND_MAX))/(f64)RAND_MAX;
+    return size * ((f64)rand()/(f64)RAND_MAX);
 }
 
 static int randR(int i) {
@@ -455,7 +472,7 @@ static vec2 lerp_vec2(vec2 a, vec2 b, f64 t) {
 }
 #endif
 
-static void fill_circle_in_buffer(Uint32 *buffer, Uint32 value, int x, int y, int w, int h, int size) {
+static void fill_circle_in_buffer(u32 *buffer, u32 value, int x, int y, int w, int h, int size) {
     for (int yy = -size; yy <= size; yy++) {
         for (int xx = -size; xx <= size; xx++) {
             if (xx*xx + yy*yy > size*size) continue;

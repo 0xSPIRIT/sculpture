@@ -417,7 +417,7 @@ export void game_run(Game_State *state) {
                     RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_height
                 };
 
-                Uint8 alpha = 255 - 255 * min(240,gs->obj.t) / 240.0;
+                u8 alpha = 255 - 255 * min(240,gs->obj.t) / 240.0;
                 RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture, alpha);
                 RenderMaybeSwitchToTarget(RENDER_TARGET_MASTER);
                 SDL_RenderCopy(gs->render.sdl,

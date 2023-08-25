@@ -1,8 +1,8 @@
 #define MAX_UNDO 16384
 
 typedef struct {
-    Uint8 type;
-    Uint8 object;
+    u8 type;
+    u8 object;
 } Stored_Cell;
 
 #define UNDO_GRID_LAYERS 1

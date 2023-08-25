@@ -9,7 +9,7 @@ typedef struct Conversions {
     int override_indices[32];
 
     int definition;
-    Uint8 definition_alpha;
+    u8 definition_alpha;
 
     bool holding_scroll_bar;
     int max_height;

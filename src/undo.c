@@ -83,8 +83,8 @@ static void save_state_to_next(void) {
             Stored_Cell *stored_cell = &state->grid_layers[i][j];
             Cell *cell = &gs->grid_layers[i][j];
 
-            stored_cell->type = (Uint8)cell->type;
-            stored_cell->object = (Uint8)cell->object;
+            stored_cell->type = (u8)cell->type;
+            stored_cell->object = (u8)cell->object;
         }
     }
 

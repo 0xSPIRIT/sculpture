@@ -19,7 +19,7 @@ static void credits_run(int target) {
             if (c->timer < f)
                 c->timer++;
 
-            Uint8 co = 255 * (c->timer/f);
+            u8 co = 255 * (c->timer/f);
             SDL_Color col = {
                 255-co, 255-co, 255-co, 255
             };

@@ -1,18 +1,15 @@
 TODO
 
-  x Having different text if you completed all levels perfectly
-    up to level 7, compared to if you didn't.
+  - Graphics :: make it have a rustic feel.
+    - GUI
+    - Chisels (Improve)
 
-  - Music!!!!!! Focus on the music! Don't procrastinate it!
+  - Background art work -- procedurally generated?
+
+  - Music
      - Ambient: piano, pads/synths, motifs?
 
   - Move the Note: in the material converter section of the recipe book
     to be item counts instead.
-
-  - Make the rain be used in another level? Feels underused
-
-  - Graphics :: make it have a rustic feel.
-    - GUI
-    - Chisels (Improve)
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs

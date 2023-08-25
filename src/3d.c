@@ -1,8 +1,8 @@
 // Simple 3D Software Renderer
 
-static inline void draw_triangle(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p) {
+static inline void draw_triangle(int w, int h, SDL_Surface *surf, u32 *pixels, Vertex *p) {
     const vec2 t[3] = {p[0].p, p[1].p, p[2].p};
-    const Uint32 *spixels = (Uint32*)surf->pixels;
+    const u32 *spixels = (u32*)surf->pixels;
 
     int sw = surf->w;
     int sh = surf->h;
@@ -46,7 +46,7 @@ static inline void draw_triangle(int w, int h, SDL_Surface *surf, Uint32 *pixels
 }
 
 // Draw a surface given 4 points.
-static inline void draw_image_skew(int w, int h, SDL_Surface *surf, Uint32 *pixels, Vertex *p) {
+static inline void draw_image_skew(int w, int h, SDL_Surface *surf, u32 *pixels, Vertex *p) {
     // We must use the vertex array as a set of
     // two triangles, in order to use classical
     // interpolation techniques for texture
@@ -80,7 +80,7 @@ static void object_activate(Object3D *obj) {
         64, 64
     };
 
-    void *pixels = PushArray(gs->transient_memory, gs->gh*gs->gh, 4); // sizeof(Uint32)
+    void *pixels = PushArray(gs->transient_memory, gs->gh*gs->gh, 4); // sizeof(u32)
     SDL_RenderReadPixels(gs->renderer, &rect, ALASKA_PIXELFORMAT, pixels, gs->gh*4);
 
     gs->surfaces.a = SDL_CreateRGBSurfaceWithFormat(0,
@@ -246,7 +246,7 @@ static void object_draw(Object3D *obj) {
     final_points[3].tex.y = 1;
 
 
-    Uint32 *pixels;
+    u32 *pixels;
     int pitch;
     if (RenderLockTexture(&RenderTarget(RENDER_TARGET_3D)->texture,
                           null,

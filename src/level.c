@@ -380,10 +380,6 @@ static void level_tick_play(Level *level) {
         return;
     }
     
-    if (gs->input.keys_pressed[SDL_SCANCODE_G]) {
-        debug_print(gs->level_current);
-    }
-
     simulation_tick();
 
     if (!gs->paused || gs->step_one) {
@@ -582,7 +578,7 @@ static void level_draw_outro(int target, Level *level) {
     RenderColor(0, 0, 0, 0);
     RenderClear(outro);
 
-    const Uint8 alpha = 255;
+    const u8 alpha = 255;
 
     SDL_Rect rect = {gs->S*size/8, GUI_H + gs->S*size/2 - (gs->S*3*size/4)/2, gs->S*3*size/4, gs->S*3*size/4};
     RenderColor(0, 0, 0, alpha);
@@ -772,13 +768,13 @@ static void level_get_cells_from_image(const char *path,
 
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
-            Uint8 r=0, g=0, b=0;
+            u8 r=0, g=0, b=0;
 
             if (surface->format->BytesPerPixel == 1) {
-                Uint8 pixel = ((Uint8*)surface->pixels)[x + y * w];
+                u8 pixel = ((u8*)surface->pixels)[x + y * w];
                 SDL_GetRGB(pixel, surface->format, &r, &g, &b);
             } else if (surface->format->BytesPerPixel == 4) {
-                Uint32 pixel = ((Uint32*)surface->pixels)[x + y * w];
+                u32 pixel = ((u32*)surface->pixels)[x + y * w];
                 SDL_GetRGB(pixel, surface->format, &r, &g, &b);
             } else {
                 Assert(0);
@@ -926,7 +922,7 @@ static SDL_Color type_to_rgb(int type) {
     return (SDL_Color){type_to_rgb_table[4*type+1], type_to_rgb_table[4*type+2], type_to_rgb_table[4*type+3], 255};
 }
 
-static int rgb_to_type(Uint8 r, Uint8 g, Uint8 b) {
+static int rgb_to_type(u8 r, u8 g, u8 b) {
     for (int i = 0; i < CELL_TYPE_COUNT; i++) {
         SDL_Color col = type_to_rgb(i);
         if (col.r == r && col.g == g && col.b == b) {
@@ -944,7 +940,7 @@ static void level_output_to_png(const char *output_file) {
             int type = gs->grid[x+y*gs->gw].type;
 
             SDL_Color color = type_to_rgb(type);
-            Uint32 pixel = SDL_MapRGB(surf->format, color.r, color.g, color.b);
+            u32 pixel = SDL_MapRGB(surf->format, color.r, color.g, color.b);
             set_pixel(surf, x, y, pixel);
         }
     }

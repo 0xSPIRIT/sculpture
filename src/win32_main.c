@@ -446,7 +446,7 @@ int win32_main(void) {
 
         QueryPerformanceCounter(&time_elapsed);
 
-        Uint64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
+        u64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
         f64 d = (f64)delta / (f64)frequency.QuadPart; // ~16.67 ms due to SDL_RenderPresent.
 
         // NOTE: d != gs->dt.
@@ -464,8 +464,8 @@ int win32_main(void) {
         }
 
 #ifndef ALASKA_RELEASE_MODE
-        Uint64 size_current = persistent_memory.cursor - persistent_memory.data;
-        Uint64 size_max = persistent_memory.size;
+        u64 size_current = persistent_memory.cursor - persistent_memory.data;
+        u64 size_max = persistent_memory.size;
         f32 percentage = (f32)size_current / (f32)size_max;
         percentage *= 100.f;
 

@@ -19,7 +19,7 @@ typedef enum {
 
 typedef struct Message {
     char str[100];
-    Uint8 alpha;
+    u8 alpha;
 } Message;
 
 typedef struct GUI {

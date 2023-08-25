@@ -116,7 +116,7 @@ static void converter_draw(int target, Converter *converter) {
     // Flashing the arrow itself.
     if (converter->state == CONVERTER_ON) {
         const int period = 500; // Milliseconds.
-        Uint8 a = (SDL_GetTicks()/period) % 2 == 0;
+        u8 a = (SDL_GetTicks()/period) % 2 == 0;
         a = a ? 255 : 190;
 
         RenderTextureColorMod(converter->arrow.texture, a, a, a);

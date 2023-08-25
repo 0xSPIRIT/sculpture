@@ -1,11 +1,11 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\titlescreen.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\audio.h", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
 
 [MainWindow]
-X = 25
-Y = 100
+X = 29
+Y = 112
 Width = 1801
 Height = 894
 ShowKind = "Normal"
@@ -25,41 +25,11 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "titlescreen.c"
-TabWidth = 107.5188
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\titlescreen.c"
-CursorPos = 601
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "level.c"
-TabWidth = 74.43609
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\level.c"
-CursorPos = 8652
-VertPos = 6380.0
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "background.c"
-TabWidth = 117.2932
+TabWidth = 107.4436
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\background.c"
-CursorPos = 487
-VertPos = 3030.043
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "audio.h"
-TabWidth = 72.85714
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\audio.h"
-CursorPos = 246
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "audio.c"
-TabWidth = 71.35339
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\audio.c"
-CursorPos = 539
+CursorPos = 1
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 645.0
@@ -84,7 +54,7 @@ TabLabel = "Watch"
 TabWidth = 86.8421
 Type = "WatchPanel"
 Columns = [{Width = 231.0}, {Width = 682.0}, {Width = 227.0}]
-Items = ["bg.star", ""]
+Items = ["x0", "y0", "x1", "y1", "x1-x0", "y1-y0", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"

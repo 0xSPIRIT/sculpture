@@ -156,6 +156,8 @@ void converter_gui_draw_text(int target, const char *str, int item_x, int item_y
 }
 
 // Horrible code. Avert your eyes.
+// I think this is the worst code I've ever written.
+// Why are these functions and not constants?
 
 static inline int _gui_conversions_get_jump_dy(void) {
     return Scale(250);

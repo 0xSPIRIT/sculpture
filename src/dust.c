@@ -122,7 +122,7 @@ static void dust_grid_run(int target) {
         }
 
         // Draw:
-        Uint8 alpha = 200;
+        u8 alpha = 200;
 
         SDL_Color c = pixel_from_index_grid(gs->grid,
                                             dust->type,

@@ -36,13 +36,13 @@ static void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
         }
     }
 
-    Uint8 sin_value = (Uint8) (170 + 10 * sin(SDL_GetTicks()/1000.0));
+    u8 sin_value = (u8) (170 + 10 * sin(SDL_GetTicks()/1000.0));
 
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         Save_State *state = null;
         Cell *grid = null;
 
-        Uint8 type = 0;
+        u8 type = 0;
 
         if (tl->sticky) {
             grid = gs->grid;
@@ -60,7 +60,7 @@ static void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
         c.a = 255;
         if (gs->gw == 128) {
             if (x < 32 || x > 32+64) {
-                Uint8 v = (Uint8) (((int)(c.r+c.g+c.b))/3);
+                u8 v = (u8) (((int)(c.r+c.g+c.b))/3);
                 c.r = c.g = c.b = v;
                 c.a = sin_value;
             }

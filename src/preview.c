@@ -75,7 +75,7 @@ static void preview_record(Preview *p) {
 
     for (int i = 0; i < w*h; i++) {
         int index = 32 + (i%w) + (i/w)*gs->gw;
-        state->grid[i] = (Uint8)gs->grid[index].type;
+        state->grid[i] = (u8)gs->grid[index].type;
     }
 
     switch (gs->current_tool) {

@@ -192,7 +192,7 @@ static void tooltip_draw(int output_target, Tooltip *tooltip) {
         gs->game_width,
         gs->game_height
     };
-    RenderTextureAlphaMod(&RenderTarget(target)->texture, (Uint8)tooltip->alpha);
+    RenderTextureAlphaMod(&RenderTarget(target)->texture, (u8)tooltip->alpha);
     RenderTargetToTarget(output_target,
                          target,
                          &src,

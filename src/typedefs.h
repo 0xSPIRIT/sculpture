@@ -17,6 +17,13 @@
 typedef float  f32;
 typedef double f64;
 
+// Just my little convention-- no need to #include <stdint.h> since we use
+// SDL everywhere anyways.
+typedef Uint8  u8;
+typedef Uint16 u16;
+typedef Uint32 u32;
+typedef Uint64 u64;
+
 #ifndef ALASKA_RELEASE_MODE
   #define export    __declspec(dllexport)
 #else

@@ -299,7 +299,7 @@ static void grid_init(int w, int h) {
     gs->gas_grid = gs->grid_layers[1];
 }
 
-static void grid_glow_set(Uint32 *pixels, int x, int y, Uint8 alpha) {
+static void grid_glow_set(u32 *pixels, int x, int y, u8 alpha) {
     int i = x+y*gs->gw;
 
     SDL_Color c;
@@ -307,19 +307,19 @@ static void grid_glow_set(Uint32 *pixels, int x, int y, Uint8 alpha) {
     c.g = 255;
     c.b = 255;
 
-    Uint32 old_pixel = pixels[i];
-    Uint8 a = old_pixel >> 24;
+    u32 old_pixel = pixels[i];
+    u8 a = old_pixel >> 24;
 
     c.a = alpha;
     c.a += a;
     if (c.a > 255) c.a = 255;
 
-    Uint32 pixel = (Uint32)c.a << 24 | (Uint32)c.b << 16 | (Uint32)c.g << 8 | c.r;
+    u32 pixel = (u32)c.a << 24 | (u32)c.b << 16 | (u32)c.g << 8 | c.r;
     pixels[i] = pixel;
 }
 
 static void grid_draw_glow(int target) {
-    Uint32 *pixels;
+    u32 *pixels;
     int pitch;
 
     int w = gs->gw;
@@ -815,7 +815,7 @@ static void simulation_tick(void) {
     grid_array_tick(gs->gas_grid, 1, 1);
 }
 
-static void grid_array_draw(int target, Cell *array, Uint8 alpha) {
+static void grid_array_draw(int target, Cell *array, u8 alpha) {
     for (int i = 0; i < gs->gw*gs->gh; i++)
         array[i].updated = 0;
 
@@ -874,10 +874,10 @@ static void grid_draw(int target) {
                 f32 b = (f32) (col.r + col.g + col.b);
                 b /= 3.;
                 b = (f32) clamp((int)b, 0, 255);
-                RenderColor((Uint8) (b/2),
-                            (Uint8) (b/4),
-                            (Uint8) (b),
-                            (Uint8) (alpha));
+                RenderColor((u8) (b/2),
+                            (u8) (b/4),
+                            (u8) (b),
+                            (u8) (alpha));
                 RenderPointRelative(target, x, y);
             }
         }
@@ -914,7 +914,7 @@ static void calculate_pressure(Cell *grid) {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         int neighbours = number_neighbours(grid, i%gs->gw, i/gs->gw, radius);
         int total = (2*radius+1)*(2*radius+1)-1; // +1 including middle row/col
-        grid[i].pressure = (Uint8) (255 * (f64)neighbours/total);
+        grid[i].pressure = (u8) (255 * (f64)neighbours/total);
     }
 }
 #endif
