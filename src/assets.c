@@ -1,4 +1,4 @@
-//
+///
 // In this file, we load / unload every single asset from file,
 // as well as every single global texture or surface created
 // which persists across frames.
@@ -121,9 +121,10 @@ static void textures_init(Textures *textures) {
     
     GetTexture(TEXTURE_TEST) = RenderLoadTexture("test.png");
     
-    GetTexture(TEXTURE_BG_MOUNTAINS) = RenderLoadTexture("bg_mountain.png");
-    GetTexture(TEXTURE_BG_STARS) = RenderLoadTexture("bg_stars.png");
-    GetTexture(TEXTURE_BG_SUNSET) = RenderLoadTexture("bg_sunset.png");
+    GetTexture(TEXTURE_BG_0) = RenderLoadTexture("bg_0.png");
+    GetTexture(TEXTURE_BG_1) = RenderLoadTexture("bg_1.png");
+    GetTexture(TEXTURE_BG_2) = RenderLoadTexture("bg_2.png");
+    GetTexture(TEXTURE_BG_3) = RenderLoadTexture("bg_3.png");
     
     struct File_To_Index {
         const char *filename;

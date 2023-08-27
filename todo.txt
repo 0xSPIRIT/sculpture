@@ -4,8 +4,6 @@ TODO
     - GUI
     - Chisels (Improve)
 
-  - Background art work -- procedurally generated?
-
   - Music
      - Ambient: piano, pads/synths, motifs?
 

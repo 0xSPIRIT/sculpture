@@ -5,7 +5,7 @@
 #define NARRATOR_HANG_TIME 14 // Frames
 
 #ifdef ALASKA_RELEASE_MODE
-  #define SHOW_NARRATION 1
+  #define SHOW_NARRATION 0
 #else
   #define SHOW_NARRATION 0
 #endif

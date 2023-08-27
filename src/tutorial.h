@@ -1,5 +1,5 @@
 #ifdef ALASKA_RELEASE_MODE
-  #define SHOW_TUTORIAL 1
+  #define SHOW_TUTORIAL 0
 #else
   #define SHOW_TUTORIAL 0
 #endif

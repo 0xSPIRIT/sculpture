@@ -7,15 +7,19 @@ static Background background_init(void) {
 static void background_draw_starry_night(int target_enum, Background *bg) {
     int w = bg->surface->w, h = bg->surface->h;
     
-    int background = TEXTURE_BG_MOUNTAINS;
+    int background = TEXTURE_BG_0;
     
     int level = gs->level_current+1;
     
     if (level >= 8) {
-        background = TEXTURE_BG_SUNSET;
+        background = TEXTURE_BG_3;
+    } else if (level >= 5) {
+        background = TEXTURE_BG_2;
     } else if (level >= 3) {
-        background = TEXTURE_BG_STARS;
+        background = TEXTURE_BG_1;
     }
+    
+    if (level == 11) return;
     
     Assert(w == 128);
     Assert(h == 96);

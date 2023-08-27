@@ -4,8 +4,8 @@ LastPlatform = "Win64"
 RecentFilesList = ["d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
 
 [MainWindow]
-X = 29
-Y = 112
+X = 111
+Y = 134
 Width = 1801
 Height = 894
 ShowKind = "Normal"
@@ -29,7 +29,7 @@ TabLabel = "background.c"
 TabWidth = 107.4436
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\background.c"
-CursorPos = 1
+CursorPos = 432
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 645.0

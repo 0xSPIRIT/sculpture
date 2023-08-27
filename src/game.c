@@ -392,9 +392,6 @@ export void game_run(Game_State *state) {
 
     gs->gui.tooltip.set_this_frame = false;
 
-    audio_set_ambience_accordingly();
-    audio_set_music_accordingly();
-    
     switch (gs->gamestate) {
         case GAME_STATE_TITLESCREEN: {
             titlescreen_tick();
@@ -404,6 +401,9 @@ export void game_run(Game_State *state) {
         case GAME_STATE_PLAY: {
             game_update_view();
 
+            audio_set_ambience_accordingly();
+            audio_set_music_accordingly();
+            
             if (gs->obj.active) {
                 RenderColor(255, 255, 255, 255);
                 RenderClear(RENDER_TARGET_MASTER);
