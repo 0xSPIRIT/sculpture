@@ -8,10 +8,33 @@
 
 #define MessageBox(fmt, ...) do{char msg[512]={0}; sprintf(msg, "alert('" fmt "')", __VA_ARGS__); emscripten_run_script(msg); }while(0);
 
-#include <math.h>
 
 #include <emscripten.h>
 #include <emscripten/html5.h>
+
+EM_JS(void, canvas_set_size, (int desired_width, int desired_height, double device_pixel_ratio), {
+          var canvas = document.getElementById('canvas');
+          
+          var new_w = desired_width / device_pixel_ratio;
+          var new_h = desired_height / device_pixel_ratio;
+          
+          //alert("Desired Width: " + desired_width + ", Desired Height:" + desired_height);
+          
+          canvas.style.width = new_w + "px"; // 460.8 @ scale=9
+          canvas.style.height = new_h + "px"; // 518.4 @ scale=9
+          //canvas.width = new_w;
+          //canvas.height = new_h;
+      });
+
+EM_JS(int, canvas_get_width, (), {
+          var canvas = document.getElementById('canvas');
+          return parseInt(canvas.style.width);
+      });
+
+EM_JS(int, canvas_get_height, (), {
+          var canvas = document.getElementById('canvas');
+          return parseInt(canvas.style.height);
+      });
 
 #include "game.c"
 #include "assets.c"
@@ -61,16 +84,15 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
                                      SDL_WINDOWPOS_CENTERED,
                                      w,
                                      h,
-                                     SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+                                     0);
     if (!state->window) fail("Failed to create window");
     
-    MessageBox("Width: %d, Height: %d", w, h);
-    MessageBox("1.25x: Width: %d, Height: %d", (int)((f32)w*1.25), (int)((f32)h*1.25));
+    state->device_pixel_ratio = device_pixel_ratio;
     
-    emscripten_set_canvas_element_size("canvas", w, h);
+    //canvas_set_size(state->real_width, state->real_height, device_pixel_ratio);
     
     game_init_sdl_audio(state);
-
+    
     ok = (IMG_Init(IMG_INIT_PNG) != 0);
     if (!ok) fail("Failed to init SDL image");
 
@@ -83,10 +105,6 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
     if (!state->renderer) fail("Failed to create the renderer");
     
     state->render = RenderInit(state->renderer);
-
-    if (state->fullscreen) {
-        SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-    }
     
     input_set_locked(true);
 }
@@ -116,9 +134,9 @@ static void game_init_emscripten(Game_State *state) {
     srand((unsigned int) time(0));
     
     state->S = 9;
+    // 768 x 864
 
-    //f64 device_pixel_ratio = emscripten_get_device_pixel_ratio();
-    f64 device_pixel_ratio = 1;
+    f64 device_pixel_ratio = emscripten_get_device_pixel_ratio();
     
     state->game_width = 64*state->S;
     state->game_height = 64*state->S + GUI_H;

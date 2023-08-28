@@ -139,7 +139,7 @@ static bool is_in_view(int x, int y) {
 
 // Moves the mouse to the middle of the grid cell, not the top-left.
 static void move_mouse_to_grid_position(f32 x, f32 y) {
-    int new_x = (int)(x*gs->S + gs->S/2 - gs->render.view.x + (gs->real_width/2 - gs->game_width/2));
+    int new_x = (int)(x*gs->S + gs->S/2 - gs->render.view.x);
     int new_y = GUI_H + (int)(y*gs->S + gs->S/2 - gs->render.view.y + (gs->real_height/2 - gs->game_height/2));
     
     // Hardcode
@@ -148,6 +148,7 @@ static void move_mouse_to_grid_position(f32 x, f32 y) {
 #if SIMULATE_MOUSE
     input_set_mouse_position(&gs->input, new_x, new_y);
 #else
+    new_x += (gs->real_width/2 - gs->game_width/2);
     SDL_WarpMouseInWindow(gs->window, new_x, new_y);
 #endif
 }

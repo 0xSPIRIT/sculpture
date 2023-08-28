@@ -46,7 +46,7 @@ static void game_resize(int h) {
     gs->game_height = gs->S*64.0 + GUI_H;
 
     gs->gui.popup_y *= gs->gh*gs->S;
-
+    
     gs->render.view.x = gs->render.to.x = 0;
     gs->render.view.y = gs->render.to.y = 0;
     gs->render.view.w = gs->game_width;
@@ -167,7 +167,6 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
         gs->real_width = event->window.data1;
         gs->real_height = event->window.data2;
         if (gs->real_width == 0 || gs->real_height == 0) __debugbreak();
-        printf("Resized to %d, %d\n", gs->real_width, gs->real_height);
         game_resize(gs->real_height);
     }
     
@@ -208,11 +207,8 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
 
     if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_F11 && !gs->obj.active) {
         if (!gs->fullscreen) {
-            SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+            SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP); // SDL_WINDOW_FULLSCREEN
             gs->fullscreen = true;
-            #ifdef __EMSCRIPTEN__
-            //emscripten_request_pointerlock("canvas", 1);
-            #endif
         } else {
             SDL_SetWindowFullscreen(gs->window, 0);
             gs->fullscreen = false;

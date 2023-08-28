@@ -36,8 +36,10 @@ static void input_set_mouse_position(Input *in, int real_x, int real_y) {
     in->real_my = real_y;
     
     // This is the problem area, you get a -ve real_mx.
+#if !SIMULATE_MOUSE
     in->real_mx -= gs->real_width/2 - gs->game_width/2;
     in->real_my -= gs->real_height/2 - gs->game_height/2;
+#endif
     
     if (in->real_mx < 0) { in->real_mx = 0; }
     if (in->real_my < 0) { in->real_my = 0; }

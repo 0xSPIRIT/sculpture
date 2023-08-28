@@ -2,7 +2,7 @@
 #ifdef __EMSCRIPTEN__
   #define SIMULATE_MOUSE 1
 #else
-  #define SIMULATE_MOUSE 1
+  #define SIMULATE_MOUSE 0
 #endif
 
 typedef struct Input {

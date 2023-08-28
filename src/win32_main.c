@@ -106,7 +106,7 @@ static f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
 
 static void game_init_sdl(Game_State *state, const char *window_title, bool use_software_renderer) {
     bool ok = true;
-
+    
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
     if (!ok) fail(1);
 
