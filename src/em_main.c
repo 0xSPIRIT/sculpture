@@ -6,29 +6,26 @@
 #define min(a, b) ((a < b) ? (a) : (b))
 #define max(a, b) ((a > b) ? (a) : (b))
 
+#define MessageBox(fmt, ...) do{char msg[512]={0}; sprintf(msg, "alert('" fmt "')", __VA_ARGS__); emscripten_run_script(msg); }while(0);
+
 #include <math.h>
 
-#include "game.c"
-
-#include "assets.c"
-#include "input.c"
-
 #include <emscripten.h>
+#include <emscripten/html5.h>
+
+#include "game.c"
+#include "assets.c"
 
 typedef struct GameLoopData {
     Memory_Arena persistent_memory, transient_memory;
     Game_State *game_state;
 } GameLoopData;
 
-static void fail(int code) {
+static void fail(const char *msg) {
     char message[256];
-    sprintf(message, "An error occurred when initializing. Code: %d", code);
-    puts(message);
-#ifndef ALASKA_RELEASE_MODE
-    __debugbreak();
-#else
+    sprintf(message, "alert('An error occurred when initializing. Error message:\n%s')", msg);
+    emscripten_run_script(message);
     exit(1);
-    #endif
 }
 
 // Separate because audio is initted upon player clicking
@@ -36,55 +33,62 @@ static void game_init_sdl_audio(Game_State *state) {
     bool ok = true;
     
     ok = (Mix_Init(MIX_INIT_OGG) != 0);
-    if (!ok) fail(2);
+    if (!ok) fail("Failed to init SDL mixer");
     
     ok = Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0;
-    if (!ok) fail(6);
+    if (!ok) fail("Failed to open audio device");
 }
 
-static void game_init_sdl_em(Game_State *state, const char *window_title, int w, int h) {
+static void game_init_sdl_em(Game_State *state, const char *window_title, int w, int h, f64 device_pixel_ratio) {
     bool ok = true;
 
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
-    if (!ok) fail(1);
+    if (!ok) fail("Failed to init SDL");
     
     {
         SDL_DisplayMode dm;
         
         if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
-            printf("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+            fail(SDL_GetError());
         }
         
         state->desktop_w = dm.w;
         state->desktop_h = dm.h;
-        
-        printf("Desktop width: %d, Desktop height: %d\n", dm.w, dm.h);
     }
-
+    
     state->window = SDL_CreateWindow(window_title,
                                      SDL_WINDOWPOS_CENTERED,
                                      SDL_WINDOWPOS_CENTERED,
                                      w,
                                      h,
                                      SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-    if (!state->window) fail(3);
+    if (!state->window) fail("Failed to create window");
+    
+    MessageBox("Width: %d, Height: %d", w, h);
+    MessageBox("1.25x: Width: %d, Height: %d", (int)((f32)w*1.25), (int)((f32)h*1.25));
+    
+    emscripten_set_canvas_element_size("canvas", w, h);
+    
+    game_init_sdl_audio(state);
 
     ok = (IMG_Init(IMG_INIT_PNG) != 0);
-    if (!ok) fail(4);
+    if (!ok) fail("Failed to init SDL image");
 
     ok = (TTF_Init() == 0);
-    if (!ok) fail(5);
+    if (!ok) fail("Failed to init SDL ttf");
 
     int flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 
     state->renderer = SDL_CreateRenderer(state->window, -1, flags);
-    if (!state->renderer) fail(7);
+    if (!state->renderer) fail("Failed to create the renderer");
     
     state->render = RenderInit(state->renderer);
 
     if (state->fullscreen) {
         SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
+    
+    input_set_locked(true);
 }
 
 static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_memory) {
@@ -93,11 +97,9 @@ static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *tra
 
     persistent_memory->data = calloc(persistent_memory->size + transient_memory->size, 1);
     if (!persistent_memory->data) {
-        fail(100);
+        fail("Failed to allocate memory for the game!\nTry closing other applications/tabs then try again.");
     }
-    printf("Base Memory: %p\n", persistent_memory->data);
     
-    if (!persistent_memory->data) fail(8);
     persistent_memory->cursor = persistent_memory->data;
 
     // Set the transient memory as an offset into persistent memory.
@@ -115,16 +117,20 @@ static void game_init_emscripten(Game_State *state) {
     
     state->S = 9;
 
+    //f64 device_pixel_ratio = emscripten_get_device_pixel_ratio();
+    f64 device_pixel_ratio = 1;
+    
     state->game_width = 64*state->S;
     state->game_height = 64*state->S + GUI_H;
-
+    
     state->real_width = state->game_width;
     state->real_height = state->game_height;
-
+    
     game_init_sdl_em(state,
                      "Alaska",
                      state->game_width,
-                     state->game_height);
+                     state->game_height,
+                     device_pixel_ratio);
 
     // Load all assets... except for render targets.
     // We can't create render targets until levels
@@ -179,7 +185,6 @@ int main(int argc, char **argv) {
     data.game_state = PushSize(&data.persistent_memory, sizeof(Game_State));
     gs = data.game_state;
 
-    gs->S = 7;
     gs->fullscreen = false;
 
     gs->persistent_memory = &data.persistent_memory;

@@ -33,15 +33,15 @@
 #include <windows.h>
 
 #ifndef ALASKA_RELEASE_MODE // Debug mode
-#include "shared.h"
-#include "render.c"
-#include "util.c"
+    #include "shared.h"
+    #include "render.c"
+    #include "input.c"
+    #include "util.c"
 #else                       // Release mode
-#include "game.c"
+    #include "game.c"
 #endif
 
 #include "assets.c"
-#include "input.c"
 
 // Defines
 
@@ -168,6 +168,10 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
     if (state->fullscreen) {
         SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
+    
+#if SIMULATE_MOUSE
+    input_set_locked(true);
+#endif
 }
 
 static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *transient_memory) {
@@ -332,8 +336,6 @@ inline bool win32_SetProcessDpiAware(void) {
 
 int win32_main(void) {
     win32_SetProcessDpiAware();
-    
-    Log("%d\n", MAX_PATH);
 
 #ifndef ALASKA_RELEASE_MODE
     // Make sure we're running in the right folder.
@@ -418,8 +420,6 @@ int win32_main(void) {
         }
 #endif
 
-        input_tick(gs);
-
         SDL_Event event;
 
         gs->resized = false;
@@ -433,6 +433,8 @@ int win32_main(void) {
                 running = false;
             }
         }
+
+        input_tick(gs);
 
 #ifndef ALASKA_RELEASE_MODE
         game_code.game_run(gs);

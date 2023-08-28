@@ -1,11 +1,11 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\converter.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
 
 [MainWindow]
-X = 111
-Y = 134
+X = 58
+Y = 37
 Width = 1801
 Height = 894
 ShowKind = "Normal"
@@ -25,11 +25,19 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
+TabLabel = "converter.c"
+TabWidth = 92.40601
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\converter.c"
+CursorPos = 22304
+VertPos = 14850.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "background.c"
 TabWidth = 107.4436
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\background.c"
-CursorPos = 432
+CursorPos = 361
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 645.0

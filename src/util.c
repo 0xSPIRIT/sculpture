@@ -141,13 +141,12 @@ static bool is_in_view(int x, int y) {
 static void move_mouse_to_grid_position(f32 x, f32 y) {
     int new_x = (int)(x*gs->S + gs->S/2 - gs->render.view.x + (gs->real_width/2 - gs->game_width/2));
     int new_y = GUI_H + (int)(y*gs->S + gs->S/2 - gs->render.view.y + (gs->real_height/2 - gs->game_height/2));
-
+    
     // Hardcode
     if (gs->gw == 128) new_x -= gs->game_width/2;
-
-#if MOUSE_SIMULATED
-    gs->input.real_mx = new_x;
-    gs->input.real_my = new_y;
+    
+#if SIMULATE_MOUSE
+    input_set_mouse_position(&gs->input, new_x, new_y);
 #else
     SDL_WarpMouseInWindow(gs->window, new_x, new_y);
 #endif

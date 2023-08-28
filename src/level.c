@@ -873,7 +873,7 @@ static void level_draw_outro_or_play(Level *level) {
     }
 
     draw_objects(target);
-
+    
     RenderColor(0,0,0,255);
     RenderClear(RENDER_TARGET_MASTER);
 

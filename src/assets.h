@@ -101,6 +101,8 @@ enum {
 
     TEXTURE_TEST,
     
+    TEXTURE_CURSOR,
+    
     TEXTURE_BG_0,
     TEXTURE_BG_1,
     TEXTURE_BG_2,

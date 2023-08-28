@@ -2,17 +2,11 @@
 #define HIGHLIGHT_MAX   64
 #define CHISEL_FLASHING false
 
-#ifdef __EMSCRIPTEN__
-  #define CHISEL_WEB_MODE true
-#else
-  #define CHISEL_WEB_MODE false
-#endif
-
-typedef enum ChiselSize {
+typedef enum Chisel_Size {
     CHISEL_SMALL = 0,
     CHISEL_MEDIUM,
     CHISEL_LARGE,
-} ChiselSize;
+} Chisel_Size;
 
 typedef enum ChiselState {
     CHISEL_STATE_IDLE = 0,
@@ -27,7 +21,7 @@ typedef struct Chisel_Texture {
 
 typedef struct Chisel {
     ChiselState state;
-    ChiselSize size;
+    Chisel_Size size;
     int x, y;
 
     int aa;
@@ -59,7 +53,7 @@ typedef struct Chisel {
 
 // Called in grid_draw.
 
-static Chisel_Texture get_chisel_texture(ChiselSize size);
+static Chisel_Texture get_chisel_texture(Chisel_Size size);
 
 static void chisel_draw_highlights(int target, int *highlights, int count, int xoff, int yoff);
 static void chisel_get_adjusted_positions(int texture_height, bool diagonal, f32 *dx, f32 *dy);

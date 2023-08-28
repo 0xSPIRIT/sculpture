@@ -100,6 +100,8 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_S_KEY) = RenderLoadTexture("buttons/S.png");
     GetTexture(TEXTURE_D_KEY) = RenderLoadTexture("buttons/D.png");
     
+    GetTexture(TEXTURE_CURSOR) = RenderLoadTexture("cursor.png");
+    
     for (Tool_Type i = 0; i < TOOL_COUNT; i++) {
         char filename[128] = {0};
         char path[128] = {0};

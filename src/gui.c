@@ -614,7 +614,7 @@ static void gui_draw(int target) {
                              &dst);
     }
 
-    gui_draw_wasd_popup(target);
+    gui_draw_wasd_popup(target);    
 }
 
 static void gui_popup_draw(int target) {

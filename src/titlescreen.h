@@ -1,6 +1,7 @@
 typedef struct {
     int text_width;
     bool stop;
+    bool clicked_yet;
     Effect effect;
     Preview preview;
 } Titlescreen;

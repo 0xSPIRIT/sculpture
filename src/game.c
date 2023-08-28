@@ -3,6 +3,7 @@
 // Include all files to compile in one translation unit for
 // compilation speed's sake. (Unity Build)
 
+#include "input.c"
 #include "util.c"
 #include "render.c"
 #include "fades.c"
@@ -162,13 +163,6 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
         is_running = false;
     }
     
-    #ifdef __EMSCRIPTEN__
-    if (event->type == SDL_MOUSEBUTTONDOWN) {
-        if (!state->web_clicked) game_init_sdl_audio(state);
-        state->web_clicked = true;
-    }
-    #endif
-
     if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) {
         gs->real_width = event->window.data1;
         gs->real_height = event->window.data2;
@@ -176,6 +170,12 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
         printf("Resized to %d, %d\n", gs->real_width, gs->real_height);
         game_resize(gs->real_height);
     }
+    
+#if SIMULATE_MOUSE
+    if (event->type == SDL_MOUSEMOTION) {
+        input_tick_mouse(gs, event);
+    }
+#endif
 
     if (event->type == SDL_MOUSEWHEEL) {
         if (gs->conversions.active) {
@@ -210,6 +210,9 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
         if (!gs->fullscreen) {
             SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
             gs->fullscreen = true;
+            #ifdef __EMSCRIPTEN__
+            //emscripten_request_pointerlock("canvas", 1);
+            #endif
         } else {
             SDL_SetWindowFullscreen(gs->window, 0);
             gs->fullscreen = false;
@@ -453,6 +456,16 @@ export void game_run(Game_State *state) {
         }
     }
 
+    if (gs->input.locked) {
+        Texture *t = &GetTexture(TEXTURE_CURSOR);
+        RenderTexture(RENDER_TARGET_MASTER, t, null, &(SDL_Rect){gs->input.real_mx, gs->input.real_my, t->width, t->height});
+    }
+    
+#ifdef __EMSCRIPTEN__
+    if (SDL_GetMouseFocus() == null) {
+        draw_focus(RENDER_TARGET_MASTER);
+    }
+#endif
 
     SDL_Color border_color_desired = {0};
 

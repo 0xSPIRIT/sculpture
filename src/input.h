@@ -1,8 +1,14 @@
 #define MOUSE_BUTTONS 16
+#ifdef __EMSCRIPTEN__
+  #define SIMULATE_MOUSE 1
+#else
+  #define SIMULATE_MOUSE 1
+#endif
 
 typedef struct Input {
-    int s_mx, s_my, s_pmx, s_pmy; // Used when MOUSE_SIMULATED == true
-
+    bool initted;
+    bool locked;
+    
     int mx, my; // Scaled to the pixel-art grid.
     int real_mx, real_my; // In real window coordinates
     int pmx, pmy;

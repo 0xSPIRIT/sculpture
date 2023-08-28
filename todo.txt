@@ -1,5 +1,7 @@
 TODO
 
+  x A web mouse.
+
   - Graphics :: make it have a rustic feel.
     - GUI
     - Chisels (Improve)

@@ -1,4 +1,4 @@
-static Chisel chisel_init(ChiselSize size) {
+static Chisel chisel_init(Chisel_Size size) {
     Chisel chisel = {0};
 
     chisel.size = size;
@@ -12,7 +12,7 @@ static Chisel chisel_init(ChiselSize size) {
     return chisel;
 }
 
-static Chisel_Texture get_chisel_texture(ChiselSize size) {
+static Chisel_Texture get_chisel_texture(Chisel_Size size) {
     Chisel_Texture result = {0};
 
     switch (size) {
@@ -690,11 +690,8 @@ static void chisel_tick(Chisel *chisel) {
         case CHISEL_STATE_ROTATING: {
             int x = chisel->x;
             int y = chisel->y;
-
-            // Disgusting hardcode to move the chisel's position to the grid position.
-            if (gs->gw == 128) {
-                x -= 32;
-            }
+            
+            x -= 32;
 
             chisel->prev_angle = chisel->angle;
 
