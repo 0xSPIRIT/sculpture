@@ -5,6 +5,7 @@
 
 #include "input.c"
 #include "util.c"
+#include "lighting.c"
 #include "render.c"
 #include "fades.c"
 #include "overlay.c"
@@ -51,11 +52,7 @@ static void game_resize(int h) {
     gs->render.view.y = gs->render.to.y = 0;
     gs->render.view.w = gs->game_width;
     gs->render.view.h = gs->game_height-GUI_H;
-
-    // Horrible. This should just be a part of gs->render.view.x and y
-    gs->real_top_left.x = gs->game_width/4;
-    gs->real_top_left.y = gs->game_height/4;
-
+    
     for (int i = 0; i < FONT_COUNT; i++) {
         RenderSetFontSize(gs->fonts.fonts[i], Scale(font_sizes[i]));
     }
@@ -129,9 +126,6 @@ export void game_init(Game_State *state) {
     gs->render.view.y = 0;
     gs->render.view.w = gs->game_width;
     gs->render.view.h = gs->game_height-GUI_H;
-
-    gs->real_top_left.x = gs->game_width/4;
-    gs->real_top_left.y = gs->game_height/4;
 
     gs->show_tutorials = true;
 
@@ -207,14 +201,29 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
 
     if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_F11 && !gs->obj.active) {
         if (!gs->fullscreen) {
-            SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP); // SDL_WINDOW_FULLSCREEN
+#ifdef __EMSCRIPTEN__
+            SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN);
+#else
+            SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+#endif
             gs->fullscreen = true;
         } else {
             SDL_SetWindowFullscreen(gs->window, 0);
             gs->fullscreen = false;
         }
     }
+    
+    if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_t) {
+        printf("Real Size: %d, %d\n", gs->real_width, gs->real_height);
+        printf("Game Size: %d, %d\n", gs->game_width, gs->game_height);
+    }
 
+    if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_l) {
+        gs->real_width = 768;
+        gs->real_height = 864;
+        SDL_SetWindowSize(gs->window, gs->real_width, gs->real_height);
+    }
+    
     int selected_tool = 0;
     if (event->type == SDL_KEYDOWN && gs->gamestate == GAME_STATE_PLAY && !gs->text_field.active) {
         switch (event->key.keysym.sym) {
@@ -491,7 +500,11 @@ export void game_run(Game_State *state) {
         gs->game_width,
         gs->game_height
     };
-
+    
+#ifdef __EMSCRIPTEN__
+    dst.x = dst.y = 0;
+#endif
+    
     SDL_RenderCopy(gs->render.sdl,
                    RenderTarget(RENDER_TARGET_MASTER)->texture.handle,
                    &src,

@@ -18,12 +18,10 @@ EM_JS(void, canvas_set_size, (int desired_width, int desired_height, double devi
           var new_w = desired_width / device_pixel_ratio;
           var new_h = desired_height / device_pixel_ratio;
           
-          //alert("Desired Width: " + desired_width + ", Desired Height:" + desired_height);
-          
           canvas.style.width = new_w + "px"; // 460.8 @ scale=9
           canvas.style.height = new_h + "px"; // 518.4 @ scale=9
-          //canvas.width = new_w;
-          //canvas.height = new_h;
+          canvas.width = new_w;
+          canvas.height = new_h;
       });
 
 EM_JS(int, canvas_get_width, (), {
@@ -35,6 +33,8 @@ EM_JS(int, canvas_get_height, (), {
           var canvas = document.getElementById('canvas');
           return parseInt(canvas.style.height);
       });
+
+#include "headers.h"
 
 #include "game.c"
 #include "assets.c"
@@ -89,7 +89,7 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
     
     state->device_pixel_ratio = device_pixel_ratio;
     
-    //canvas_set_size(state->real_width, state->real_height, device_pixel_ratio);
+    canvas_set_size(state->real_width, state->real_height, device_pixel_ratio);
     
     game_init_sdl_audio(state);
     
@@ -133,7 +133,7 @@ static bool prefix(const char *pre, const char *str) {
 static void game_init_emscripten(Game_State *state) {
     srand((unsigned int) time(0));
     
-    state->S = 9;
+    state->S = 12;
     // 768 x 864
 
     f64 device_pixel_ratio = emscripten_get_device_pixel_ratio();

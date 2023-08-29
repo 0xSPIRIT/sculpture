@@ -618,7 +618,7 @@ static void chisel_draw_highlights(int target,
                     RenderColor(255, 0, 0, 60);
                 }
             } else {
-                RenderColor(0, 0, 0, 80);
+                RenderColor(0, 0, 0, 60);
             }
         } else {
             RenderColor(0, 0, 0, 60);
@@ -818,7 +818,7 @@ static void chisel_draw(int target, Chisel *chisel) {
                              &center,
                              SDL_FLIP_NONE);
 
-    RenderColor(127, 127, 127, 255);
+    RenderColor(158, 158, 158, 255);
     RenderPointRelative(target, (int)chisel->draw_x, (int)chisel->draw_y);
 
     if (chisel->state == CHISEL_STATE_IDLE)

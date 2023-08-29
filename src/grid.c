@@ -825,6 +825,7 @@ static void grid_array_draw(int target, Cell *array, u8 alpha) {
             if (!type) continue;
 
             SDL_Color col = pixel_from_index(array[x+y*gs->gw].type, x+y*gs->gw);
+            apply_vignette(&col, x, y);
 
             const int DRAW_PRESSURE = 0;
             if (DRAW_PRESSURE && type) {

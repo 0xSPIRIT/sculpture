@@ -325,7 +325,7 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
                 particle_tick(effect, i);
 
                 if (!effect->high_fidelity) {
-                    if (particle->x < 32 + gs->render.view.x/gs->S) continue;
+                    if (particle->x < 32 + (gs->render.view.x-30)/gs->S) continue;
                     if (particle->x > 32 + 64 + gs->render.view.x/gs->S) continue;
                 }
 

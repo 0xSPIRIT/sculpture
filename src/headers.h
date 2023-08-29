@@ -1,3 +1,5 @@
+#pragma once
+
 #define SDL_MAIN_HANDLED
 
 #include <SDL2/SDL.h>
@@ -18,6 +20,7 @@
 
 #include "typedefs.h"
 #include "audio.h"
+#include "lighting.h"
 #include "render.h"
 #include "colors.h"
 #include "fades.h"

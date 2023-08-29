@@ -76,8 +76,6 @@ typedef struct Game_State {
 
     bool is_mouse_on_tab_icon; // Hacky...
 
-    SDL_Point real_top_left; // Probably should be in Render.
-
     int wasd_popup_alpha; // 0 - 255
     bool wasd_popup_active;
 
