@@ -2,7 +2,6 @@ TODO
 
   - Graphics :: make it have a rustic feel.
     - GUI
-    - Chisels (Improve)
 
   - Music
     - Redo the ending music. Make it more like a solemn acceptance.

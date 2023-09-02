@@ -4,6 +4,8 @@ static Chisel chisel_init(Chisel_Size size) {
     chisel.size = size;
     chisel.textures = get_chisel_texture(size);
     chisel.texture = chisel.textures.straight;
+    
+    chisel.stored_mx = chisel.stored_my = -1;
 
     chisel.lookahead = 5;
 
@@ -690,28 +692,37 @@ static void chisel_tick(Chisel *chisel) {
         case CHISEL_STATE_ROTATING: {
             int x = chisel->x;
             int y = chisel->y;
-            
             x -= 32;
-
-            chisel->prev_angle = chisel->angle;
-
-            f64 rmx = (f64)(gs->input.real_mx + gs->render.view.x) / (f64)gs->S;
-            f64 rmy = (f64)(gs->input.real_my-GUI_H + gs->render.view.y) / (f64)gs->S;
-
-            chisel->angle = 180 + 360 * atan2f(rmy - y, rmx - x) / (f32)(2*M_PI);
-
-            f32 step = 45.0;
-            chisel->angle /= step;
-            chisel->angle = round(chisel->angle) * step;
-            chisel->angle -= 180;
-
-            for (int i = 0; i < 3; i++) {
-                gs->chisels[i].angle = chisel->angle;
-                gs->chisels[i].draw_angle = chisel->draw_angle;
+            
+            if (chisel->stored_mx == -1) {
+                chisel->stored_mx = gs->input.mx;
+                chisel->stored_my = gs->input.my;
+            }
+            
+            // Only rotate if the mouse has moved
+            if (gs->input.mx != chisel->stored_mx || gs->input.my != chisel->stored_my) {
+                chisel->prev_angle = chisel->angle;
+                
+                f64 rmx = (f64)(gs->input.real_mx + gs->render.view.x) / (f64)gs->S;
+                f64 rmy = (f64)(gs->input.real_my-GUI_H + gs->render.view.y) / (f64)gs->S;
+                
+                chisel->angle = 180 + 360 * atan2f(rmy - y, rmx - x) / (f32)(2*M_PI);
+                
+                f32 step = 45.0;
+                chisel->angle /= step;
+                chisel->angle = round(chisel->angle) * step;
+                chisel->angle -= 180;
+                
+                for (int i = 0; i < 3; i++) {
+                    gs->chisels[i].angle = chisel->angle;
+                    gs->chisels[i].draw_angle = chisel->draw_angle;
+                }
             }
 
             if (!(gs->input.mouse & SDL_BUTTON(SDL_BUTTON_RIGHT)) && !gs->input.keys[SDL_SCANCODE_LSHIFT]) {
                 chisel->state = CHISEL_STATE_IDLE;
+                chisel->stored_mx = -1;
+                chisel->stored_my = -1;
                 move_mouse_to_grid_position(chisel->x, chisel->y);
             }
 

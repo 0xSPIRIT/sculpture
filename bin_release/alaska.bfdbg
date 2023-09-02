@@ -1,11 +1,11 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\audio\\SDL_audio.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\thread\\windows\\SDL_systhread.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm"]
 
 [MainWindow]
-X = 93
-Y = 65
+X = 0
+Y = 19
 Width = 1801
 Height = 894
 ShowKind = "Normal"
@@ -24,14 +24,55 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-Active = true
-TabLabel = "memset.asm"
-TabWidth = 112.9771
+TabLabel = "render.c"
+TabWidth = 86.25954
 Type = "SourceViewPanel"
-FilePath = "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm"
+FilePath = "d:\\dev\\sculpture\\src\\render.c"
+CursorPos = 8918
+VertPos = 5754.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "game.c"
+TabWidth = 81.67939
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\game.c"
+CursorPos = 14086
+VertPos = 8400.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_systhread.c"
+TabWidth = 131.2977
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\thread\\windows\\SDL_systhread.c"
+CursorPos = 6207
+VertPos = 3192.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_audio.c"
+TabWidth = 109.1603
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\audio\\SDL_audio.c"
+CursorPos = 8696
+VertPos = 5901.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_dynapi_procs.h"
+TabWidth = 153.4351
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"
+CursorPos = 7235
+VertPos = 2310.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+Active = true
+TabLabel = "audio.c"
+TabWidth = 81.67939
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\audio.c"
+CursorPos = 444
 
 [[MainDockingFrame.DockedWidgets]]
-RequestedWidth = 1054.0
+RequestedWidth = 790.0
 RequestedHeight = 152.0
 Type = "DockingFrame"
 SplitType = 2
@@ -53,6 +94,7 @@ TabLabel = "Watch"
 TabWidth = 87.40459
 Type = "WatchPanel"
 Columns = [{Width = 229.0}, {Width = 676.0}, {Width = 225.0}]
+Items = [""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"

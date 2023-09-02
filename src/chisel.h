@@ -24,6 +24,8 @@ typedef struct Chisel {
     Chisel_Size size;
     int x, y;
     
+    int stored_mx, stored_my;
+    
     int light_index;
     
     f64 draw_x, draw_y;

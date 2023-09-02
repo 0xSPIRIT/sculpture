@@ -26,10 +26,10 @@ Type = "TabbedView"
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
 TabLabel = "SDL_windowsevents.c"
-TabWidth = 163.3588
+TabWidth = 153.6641
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\windows\\SDL_windowsevents.c"
-CursorPos = 64598
+CursorPos = 64284
 VertPos = 35406.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
@@ -38,7 +38,6 @@ TabWidth = 99.46565
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\stdlib\\SDL_string.c"
 CursorPos = 8913
-VertPos = 6111.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_stdlib.c"
@@ -107,7 +106,6 @@ TabWidth = 71.98474
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\game.c"
 CursorPos = 16747
-VertPos = 10101.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "input.c"

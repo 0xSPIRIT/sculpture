@@ -1,6 +1,6 @@
 // This is called every frame and sets the current music according to certain conditions.
 void audio_set_music_accordingly(void) {
-#if AUDIO_PLAY_MUSIC == 0
+#if !AUDIO_PLAY_MUSIC
     audio_set_music(MUSIC_NONE);
 #else
     int level_number = gs->level_current+1;
