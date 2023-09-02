@@ -106,19 +106,34 @@ static bool can_add_item_to_inventory(enum Cell_Type type) {
     return false;
 }
 
+// TODO: If there's an existing spot for `type`, add it to that slot
+//       instead of the first available one.
 static bool add_item_to_inventory_slot(enum Cell_Type type, int amount) {
+    int index = -1;
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
         Slot *slot = &gs->inventory.slots[i];
-        if (slot->item.type == 0 ||
-            slot->item.type == type)
-        {
-            slot->item.type = type;
-            slot->item.amount += amount;
-            return true;
+        if (slot->item.type == type) {
+            index = i;
+            break;
         }
     }
-
-    return false;
+    
+    if (index == -1) {
+        for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
+            Slot *slot = &gs->inventory.slots[i];
+            if (slot->item.type == 0) {
+                index = i;
+                break;
+            }
+        }
+    }
+    
+    if (index == -1) return false;
+    
+    Slot *slot = &gs->inventory.slots[index];
+    slot->item.type = type;
+    slot->item.amount += amount;
+    return true;
 }
 
 static void inventory_init(void) {
@@ -184,15 +199,9 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
     RenderFillRect(target, bounds);
 
     if (slot->inventory_index != -1 && slot->inventory_index == gs->current_placer) {
-        RenderColor(255,
-                    255,
-                    0,
-                    255);
+        RenderColorStruct(ColorFromInt(SLOT_OUTLINE_SELECTED_COLOR));
     } else {
-        RenderColor(Red(SLOT_OUTLINE_COLOR),
-                    Green(SLOT_OUTLINE_COLOR),
-                    Blue(SLOT_OUTLINE_COLOR),
-                    255);
+        RenderColorStruct(ColorFromInt(SLOT_OUTLINE_COLOR));
     }
 
     bounds.x--;

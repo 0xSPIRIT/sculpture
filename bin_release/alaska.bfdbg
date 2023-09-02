@@ -1,0 +1,148 @@
+FileVersion = 1
+LastConfig = "Debug"
+LastPlatform = "Win64"
+RecentFilesList = ["d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm"]
+
+[MainWindow]
+X = 93
+Y = 65
+Width = 1801
+Height = 894
+ShowKind = "Normal"
+
+[MainDockingFrame]
+Type = "DockingFrame"
+SplitType = 1
+
+[[MainDockingFrame.DockedWidgets]]
+IsFillWidget = true
+Permanent = true
+RequestedWidth = 150.0
+RequestedHeight = 150.0
+SizePriority = 1.0
+DefaultDocumentsTabbedView = true
+Type = "TabbedView"
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+Active = true
+TabLabel = "memset.asm"
+TabWidth = 112.9771
+Type = "SourceViewPanel"
+FilePath = "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm"
+
+[[MainDockingFrame.DockedWidgets]]
+RequestedWidth = 1054.0
+RequestedHeight = 152.0
+Type = "DockingFrame"
+SplitType = 2
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets]]
+RequestedWidth = 679.0
+RequestedHeight = 152.0
+SizePriority = 0.5652725
+Type = "TabbedView"
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+Active = true
+TabLabel = "Output"
+TabWidth = 91.98473
+Type = "OutputPanel"
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+TabLabel = "Watch"
+TabWidth = 87.40459
+Type = "WatchPanel"
+Columns = [{Width = 229.0}, {Width = 676.0}, {Width = 225.0}]
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+TabLabel = "Auto"
+TabWidth = 78.24428
+Type = "AutoWatchPanel"
+Columns = [{Width = 225.0}, {Width = 268.0}, {Width = 225.0}]
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+TabLabel = "Memory"
+TabWidth = 98.09161
+Type = "MemoryPanel"
+AutoResize = "Auto_Mul8"
+RequestedWidth = 198.0
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets]]
+RequestedWidth = 448.68
+RequestedHeight = 152.0
+SizePriority = 0.4347275
+Type = "TabbedView"
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+TabLabel = "Threads"
+TabWidth = 95.80153
+Type = "ThreadPanel"
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+Active = true
+TabLabel = "Call Stack"
+TabWidth = 105.7252
+Type = "CallStackPanel"
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+TabLabel = "Immediate"
+TabWidth = 112.5954
+Type = "ImmediatePanel"
+
+[[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+TabLabel = "Breakpoints"
+TabWidth = 117.9389
+Type = "BreakpointPanel"
+
+[[BookmarkFolders]]
+Title = ""
+
+[DebugSession]
+FileVersion = 1
+Dependencies = {}
+
+[DebugSession.Project]
+Name = "Debug Session"
+TargetType = "CustomBuild"
+StartupObject = "Program"
+DefaultNamespace = ""
+
+[DebugSession.Configs.Debug.Win32]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Debug.Win64]
+TargetName = "d:\\dev\\sculpture\\bin_release\\alaska.exe"
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Release.Win32]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Release.Win64]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Paranoid.Win32]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Paranoid.Win64]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Test.Win32]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""
+
+[DebugSession.Configs.Test.Win64]
+TargetName = ""
+BuildCommandsOnRun = "Never"
+DebugWorkingDirectory = ""

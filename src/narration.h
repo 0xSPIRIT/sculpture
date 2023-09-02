@@ -7,7 +7,7 @@
 #ifdef ALASKA_RELEASE_MODE
   #define SHOW_NARRATION 1
 #else
-  #define SHOW_NARRATION 0
+  #define SHOW_NARRATION 1
 #endif
 
 ////////////////////////////////////////////////////////////////
@@ -32,7 +32,10 @@
 "endless complex details.\n"\
 "... No.\n"\
 "Only once he sharpened his skills would he\r"\
-"dare create something real.\r"\
+"dare create something actually real-\n"\
+"Max thought to himself:\r"\
+"\"These sculptures are simply nothing other than\r"\
+"fodder for my future projects.\"\n"\
 "For a moment, his flame flickered.\n"\
 
 #define NARRATION_LEVEL_5 \
@@ -53,7 +56,7 @@
 "... But, it's been too long. He must move forward-\r"\
 "To do something real.\r"\
 "Something noteworthy.\n"\
-"Immediately, Max recalled sculptures that he admired.\r"\
+"Max recalled sculptures that he admired.\r"\
 "They swirled around his head in a moment of inspiration.\n"\
 "Too, his mind spun with other hypnotic ideas that\r"\
 "would surely never come to pass.\n"\
@@ -125,7 +128,6 @@ typedef struct Narrator {
 
     char lines[MAX_LINES][256];
     int line_curr, line_count;
-    size_t curr_len;
 
     int delay;
     bool update; // Should we update the narrations text surface? narrator_next_line

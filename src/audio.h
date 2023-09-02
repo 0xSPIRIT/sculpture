@@ -3,8 +3,8 @@
 #define AUDIO_MUSIC_VOLUME        Volume(1.00)
 #define AUDIO_TITLESCREEN_VOLUME  Volume(1.00)
 
-#define AUDIO_PLAY_AMBIANCE 1
-#define AUDIO_PLAY_MUSIC 0
+#define AUDIO_PLAY_AMBIANCE true
+#define AUDIO_PLAY_MUSIC    true
 
 #define Volume(x) ((int) ((f64)(x) * MIX_MAX_VOLUME))
 

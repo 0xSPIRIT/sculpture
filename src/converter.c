@@ -99,7 +99,8 @@ static void converter_draw(int target, Converter *converter) {
                 255);
     RenderLine(target,
                converter->x+converter->w,
-               converter->y+GUI_H, converter->x+converter->w,
+               converter->y+GUI_H,
+               converter->x+converter->w,
                converter->y+GUI_H+converter->h);
 
     for (int i = 0; i < converter->slot_count; i++) {

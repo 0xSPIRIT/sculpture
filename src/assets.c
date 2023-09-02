@@ -28,7 +28,7 @@ static void render_targets_init(void) {
                 continue;
             }
             case RENDER_TARGET_CONVERSION_PANEL: case RENDER_TARGET_OUTRO:
-            case RENDER_TARGET_GUI_TOOLBAR: case RENDER_TARGET_CHISEL: case RENDER_TARGET_GUI_CONVERSIONS:
+            case RENDER_TARGET_GUI_TOOLBAR: case RENDER_TARGET_GUI_CONVERSIONS:
             case RENDER_TARGET_TOOLTIP: {
                 gs->render.render_targets[i] = RenderMakeTarget(width, height, VIEW_STATE_UNDEFINED, false);
                 continue;

@@ -31,7 +31,6 @@
 #include "timelapse.c"
 #include "narration.c"
 #include "3d.c"
-#include "shadows.c"
 #include "level.c"
 #include "titlescreen.c"
 #include "background.c"
@@ -40,12 +39,12 @@
 
 static void game_resize(int h) {
     gs->gui.popup_y /= gs->gh*gs->S;
-
+    
     gs->S = h / 72.0;
-
+    
     gs->game_width = gs->S*64.0;
     gs->game_height = gs->S*64.0 + GUI_H;
-
+    
     gs->gui.popup_y *= gs->gh*gs->S;
     
     gs->render.view.x = gs->render.to.x = 0;
@@ -56,9 +55,9 @@ static void game_resize(int h) {
     for (int i = 0; i < FONT_COUNT; i++) {
         RenderSetFontSize(gs->fonts.fonts[i], Scale(font_sizes[i]));
     }
-
+    
     gs->resized = true;
-
+    
     SDL_DestroyTexture(RenderTarget(RENDER_TARGET_3D)->texture.handle);
     RenderTarget(RENDER_TARGET_3D)->texture.handle = SDL_CreateTexture(gs->renderer,
                                                                        ALASKA_PIXELFORMAT,
@@ -67,21 +66,21 @@ static void game_resize(int h) {
                                                                        SCALE_3D*gs->game_width);
     RenderTarget(RENDER_TARGET_3D)->texture.width = SCALE_3D * gs->game_width;
     RenderTarget(RENDER_TARGET_3D)->texture.height = SCALE_3D * gs->game_width;
-
+    
     SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_3D)->texture.handle, SDL_BLENDMODE_BLEND);
 }
 
 static void game_update_view(void) {
     if (gs->text_field.active)  return;
     if (gs->conversions.active) return;
-
+    
     Input *input = &gs->input;
     SDL_FPoint *to = &gs->render.to;
-
+    
     f64 amount = gs->game_width*0.25;
-
+    
     bool changed = false;
-
+    
     if (input->keys_pressed[SDL_SCANCODE_D] || input->keys_pressed[SDL_SCANCODE_RIGHT]) {
         to->x += amount;
         changed = true;
@@ -90,9 +89,9 @@ static void game_update_view(void) {
         to->x -= amount;
         changed = true;
     }
-
+    
     to->x = clampf(to->x, -gs->game_width*0.5, gs->game_width*0.5);
-
+    
     if (input->keys_pressed[SDL_SCANCODE_S] || input->keys_pressed[SDL_SCANCODE_DOWN]) {
         to->y += amount;
         changed = true;
@@ -101,14 +100,14 @@ static void game_update_view(void) {
         to->y -= amount;
         changed = true;
     }
-
+    
     if (changed) {
         gs->wasd_popup_alpha--;
     }
-
+    
     // NOTE: This is not a typo, they are supposed to be width, not height.
     to->y = clampf(to->y, -gs->game_width*0.5, gs->game_width*0.5);
-
+    
     gs->render.view.x = lerp64(gs->render.view.x, gs->render.to.x, 0.2);
     gs->render.view.y = lerp64(gs->render.view.y, gs->render.to.y, 0.2);
     if (fabsf(gs->render.view.x - gs->render.to.x) <= 1) gs->render.view.x = gs->render.to.x;
@@ -117,41 +116,41 @@ static void game_update_view(void) {
 
 export void game_init(Game_State *state) {
     gs = state;
-
+    
     load_game();
-
+    
     gs->border_color = (SDL_Color){0,0,0};
-
+    
     gs->render.view.x = 0;
     gs->render.view.y = 0;
     gs->render.view.w = gs->game_width;
     gs->render.view.h = gs->game_height-GUI_H;
-
+    
     gs->show_tutorials = true;
-
+    
     levels_setup();
     previews_load();
     goto_level(gs->level_current);
     titlescreen_init();
-
+    
 #if SHOW_TITLESCREEN
     gs->gamestate = GAME_STATE_TITLESCREEN;
-
+    
     Mix_VolumeMusic(AUDIO_TITLESCREEN_VOLUME);
     if (Mix_PlayMusic(gs->audio.music_titlescreen, -1))
-       SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Failure!", "Failed to play music!", null);
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Failure!", "Failed to play music!", null);
 #else
     gs->gamestate = GAME_STATE_PLAY;
 #endif
 }
 
-export bool game_tick_event(Game_State *state, SDL_Event *event) {
+export bool game_handle_event(Game_State *state, SDL_Event *event) {
     gs = state;
     gs->event = event;
-
+    
     bool is_running = true;
     Input *input = &gs->input;
-
+    
     if (event->type == SDL_QUIT) {
         save_game();
         is_running = false;
@@ -169,7 +168,7 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
         input_tick_mouse(gs, event);
     }
 #endif
-
+    
     if (event->type == SDL_MOUSEWHEEL) {
         if (gs->conversions.active) {
             gs->conversions.y_to += Scale(50) * event->wheel.y;
@@ -190,15 +189,15 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
         } else if (is_tool_chisel()) {
             gs->current_tool += event->wheel.y;
             gs->current_tool = clamp(gs->current_tool, TOOL_CHISEL_SMALL, TOOL_CHISEL_LARGE);
-
+            
             gs->chisel = &gs->chisels[gs->current_tool - TOOL_CHISEL_SMALL];
-
+            
             gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
             gs->gui.tool_buttons[gs->current_tool]->active = true;
-
+            
         }
     }
-
+    
     if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_F11 && !gs->obj.active) {
         if (!gs->fullscreen) {
 #ifdef __EMSCRIPTEN__
@@ -213,11 +212,6 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
         }
     }
     
-    if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_t) {
-        printf("Real Size: %d, %d\n", gs->real_width, gs->real_height);
-        printf("Game Size: %d, %d\n", gs->game_width, gs->game_height);
-    }
-
     if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_l) {
         gs->real_width = 768;
         gs->real_height = 864;
@@ -229,8 +223,10 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
         switch (event->key.keysym.sym) {
             case SDLK_ESCAPE: {
                 Placer *placer = get_current_placer();
-                if (gs->credits.state == CREDITS_SHOW) {
+                if (gs->credits.state == CREDITS_END) {
+#ifndef __EMSCRIPTEN__
                     is_running = false;
+#endif
                 } else if (gs->tutorial.active) {
                     tutorial_rect_close(null);
                 } else if (placer && placer->state == PLACER_PLACE_RECT_MODE && input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
@@ -258,14 +254,20 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 if (gs->input.keys[SDL_SCANCODE_LSHIFT])
                     gs->paused = !gs->paused;
 #endif
-                if (gs->credits.state == CREDITS_SHOW) is_running = false;
+#ifndef __EMSCRIPTEN__
+                if (gs->credits.state == CREDITS_END) is_running = false;
+#endif
                 break;
             }
             case SDLK_RETURN: {
-                if (gs->credits.state == CREDITS_SHOW) is_running = false;
+#ifndef __EMSCRIPTEN__
+                if (gs->credits.state == CREDITS_END) is_running = false;
+#endif
             } break;
             case SDLK_TAB: {
-                if (gs->credits.state == CREDITS_SHOW) is_running = false;
+#ifndef __EMSCRIPTEN__
+                if (gs->credits.state == CREDITS_END) is_running = false;
+#endif
             } break;
             case SDLK_n: {
                 gs->step_one = 1;
@@ -318,13 +320,13 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 c = &gs->grid[input->mx+input->my*gs->gw];
                 char name[256] = {0};
                 get_name_from_type(c->type, name);
-
+                
                 int obj = c->object;
                 if (obj == -1) obj = 0;
-
+                
                 Assert(obj != -1);
-
-
+                
+                
                 Log("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Vx: %f, Vy: %f\n",
                     input->mx,
                     input->my,
@@ -375,31 +377,31 @@ export bool game_tick_event(Game_State *state, SDL_Event *event) {
                 selected_tool = 1;
                 break;
             }
-
+            
             case SDLK_F1: case SDLK_F2: case SDLK_F3: case SDLK_F4: case SDLK_F5: {
                 gs->current_placer = event->key.keysym.sym - SDLK_F1;
                 break;
             }
         }
     }
-
+    
     text_field_tick();
-
+    
     if (selected_tool) {
         gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
         gs->gui.tool_buttons[gs->current_tool]->active = true;
     }
-
+    
     return is_running;
 }
 
 export void game_run(Game_State *state) {
     StartTimer();
-
+    
     gs = state;
-
+    
     gs->gui.tooltip.set_this_frame = false;
-
+    
     switch (gs->gamestate) {
         case GAME_STATE_TITLESCREEN: {
             titlescreen_tick();
@@ -408,24 +410,25 @@ export void game_run(Game_State *state) {
         }
         case GAME_STATE_PLAY: {
             game_update_view();
-
+            
             audio_set_ambience_accordingly();
             audio_set_music_accordingly();
             
             if (gs->obj.active) {
                 RenderColor(255, 255, 255, 255);
                 RenderClear(RENDER_TARGET_MASTER);
-
+                
                 object_draw(&gs->obj);
                 fade_draw(RENDER_TARGET_MASTER);
-
+                
                 SDL_Rect dst = {
                     0, 0,
                     RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_width,
                     RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_height
                 };
-
+                
                 u8 alpha = 255 - 255 * min(240,gs->obj.t) / 240.0;
+                
                 RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture, alpha);
                 RenderMaybeSwitchToTarget(RENDER_TARGET_MASTER);
                 SDL_RenderCopy(gs->render.sdl,
@@ -436,14 +439,14 @@ export void game_run(Game_State *state) {
                 gui_tick();
                 inventory_tick();
                 all_converters_tick();
-
+                
                 level_tick(&gs->levels[gs->level_current]);
                 level_draw(&gs->levels[gs->level_current]);
-
+                
                 text_field_draw(RENDER_TARGET_MASTER);
-
+                
                 fade_draw(RENDER_TARGET_MASTER);
-
+                
                 preview_tick();
                 if (gs->current_preview.play) {
                     preview_draw(RENDER_TARGET_MASTER,
@@ -454,13 +457,13 @@ export void game_run(Game_State *state) {
                                  false,
                                  false);
                 }
-
+                
                 if (gs->step_one) gs->step_one = false;
             }
             break;
         }
     }
-
+    
     if (gs->input.locked) {
         Texture *t = &GetTexture(TEXTURE_CURSOR);
         RenderTexture(RENDER_TARGET_MASTER, t, null, &(SDL_Rect){gs->input.real_mx, gs->input.real_my, t->width, t->height});
@@ -471,29 +474,29 @@ export void game_run(Game_State *state) {
         draw_focus(RENDER_TARGET_MASTER);
     }
 #endif
-
+    
     SDL_Color border_color_desired = {0};
-
+    
     if (gs->level_current+1 == 11) {
         border_color_desired.r = 255;
         border_color_desired.g = 255;
         border_color_desired.b = 255;
     }
-
+    
     gs->border_color.r = interpolate(gs->border_color.r, border_color_desired.r, 2);
     gs->border_color.g = interpolate(gs->border_color.g, border_color_desired.g, 2);
     gs->border_color.b = interpolate(gs->border_color.b, border_color_desired.b, 2);
-
+    
     RenderColor(gs->border_color.r, gs->border_color.g, gs->border_color.b, 255);
     RenderClear(-1);
-
+    
     RenderColor(255, 255, 255, 255);
-
+    
     SDL_Rect src = {
         0, 0,
         gs->game_width, gs->game_height
     };
-
+    
     SDL_Rect dst = {
         gs->real_width/2 - gs->game_width/2,
         gs->real_height/2 - gs->game_height/2,
@@ -509,7 +512,7 @@ export void game_run(Game_State *state) {
                    RenderTarget(RENDER_TARGET_MASTER)->texture.handle,
                    &src,
                    &dst);
-
+    
     gs->dt = EndTimer();
     
     SDL_RenderPresent(gs->renderer);

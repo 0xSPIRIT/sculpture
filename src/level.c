@@ -168,6 +168,8 @@ static void goto_level(int lvl) {
     tooltip_reset(&gs->gui.tooltip);
     narrator_init(gs->level_current);
     
+    lighting_init(&gs->lighting);
+    
     gs->background = background_init();
     
     gs->levels[lvl].popup_time_current = 0;
@@ -851,6 +853,7 @@ static void level_draw_outro_or_play(Level *level) {
 
     // The meat!
 
+    lighting_tick(&gs->lighting);
     background_draw(target, &gs->background);
     effect_draw    (target, &gs->current_effect, true);
     draw_rain_splashes(target, &gs->current_effect.rain);
@@ -871,7 +874,7 @@ static void level_draw_outro_or_play(Level *level) {
             break;
         }
     }
-
+    
     draw_objects(target);
     
     RenderColor(0,0,0,255);

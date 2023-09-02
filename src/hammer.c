@@ -146,7 +146,9 @@ static void hammer_draw(int final_target, Hammer *hammer) {
                                    180+gs->chisel->draw_angle,
                                    &center,
                                    SDL_FLIP_NONE);
-
+    
+    apply_lighting_to_target(RENDER_TARGET_HAMMER2, &gs->lighting);
+    
     RenderMaybeSwitchToTarget(final_target);
     SDL_RenderCopy(gs->render.sdl,
                    RenderTarget(RENDER_TARGET_HAMMER2)->texture.handle,

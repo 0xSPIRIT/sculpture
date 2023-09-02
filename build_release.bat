@@ -10,10 +10,10 @@ rem Compile the resources
   rc /nologo resource.rc
   popd
 
-rem set Compiler=cl.exe
+  rem set Compiler=cl.exe
 set Compiler=clang-cl.exe
 
-set Common_Compiler_Flags=/nologo /w /Z7 /O2 /fp:fast /GR- /GS- /EHa- /MT /FC /DALASKA_RELEASE_MODE /D_CRT_SECURE_NO_WARNINGS
+set Common_Compiler_Flags=/nologo /fsanitize=address /w /Z7 /O2 /fp:fast /GR- /GS- /EHa- /MT /FC /DALASKA_RELEASE_MODE /D_CRT_SECURE_NO_WARNINGS
 set Linker_Flags=user32.lib shell32.lib SDL2.lib SDL2_ttf.lib SDL2_image.lib SDL2_mixer.lib ../res/resource.res
 
 if not exist src/win32_main.c goto INVALID_DIR

@@ -547,14 +547,9 @@ static void gui_draw_profile(int target) {
         strcpy(text_data.str, "Minimum Amounts:");
         text_data.x = Scale(50);
         text_data.y = GUI_H+Scale(50);
-        text_data.foreground = (SDL_Color){
-            255,
-            255,
-            0,
-            255,
-        };
+        text_data.foreground = ColorFromInt(SLOT_OUTLINE_SELECTED_COLOR);
         text_data.background = BLACK;
-        text_data.render_type = TEXT_RENDER_LCD;
+        text_data.render_type = TEXT_RENDER_BLENDED;
 
         RenderText(target, &text_data);
 
@@ -640,7 +635,8 @@ static void gui_popup_draw(int target) {
 
     if (gs->gui.popup_y+GUI_H < gs->game_height) {
         RenderLine(target,
-                   0, GUI_H+gui->popup_y-1,
+                   0,
+                   GUI_H+gui->popup_y-1,
                    gs->game_width,
                    GUI_H+gui->popup_y-1);
     }
@@ -656,6 +652,15 @@ static void gui_popup_draw(int target) {
 
     RenderColorStruct(ColorFromInt(INVENTORY_COLOR2));
     RenderFillRect(target, bar);
+    
+#if 0
+    RenderColorStruct(ColorFromInt(CONVERTER_LINE_COLOR));
+    RenderLine(target,
+               bar.x,
+               bar.y+bar.h,
+               bar.x+gs->game_width,
+               bar.y+bar.h);
+#endif
 
     SDL_Rect tab_icon = {
         gs->gh*gs->S - 128, (int)(GUI_H + gui->popup_y) - h,

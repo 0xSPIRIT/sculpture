@@ -762,7 +762,13 @@ RENDERAPI void RenderText(int target_enum, Render_Text_Data *text_data) {
 
 RENDERAPI void RenderReadPixels(int target, u8 *pixels, int pitch) {
     RenderMaybeSwitchToTarget(target);
-    SDL_RenderReadPixels(gs->render.sdl, null, ALASKA_PIXELFORMAT, pixels, pitch);
+    if (SDL_RenderReadPixels(gs->render.sdl, null, ALASKA_PIXELFORMAT, pixels, pitch) != 0) {
+        const char *err = SDL_GetError();
+        __debugbreak();
+        (void)err;
+        int k = 0;
+        (void)k;
+    }
 }
 
 RENDERAPI void RenderTextureColorMod(Texture *texture,

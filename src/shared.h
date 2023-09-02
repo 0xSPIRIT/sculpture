@@ -56,6 +56,8 @@ typedef enum {
 // in here and we don't want to mess that up.
 typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
+    
+    bool needs_manual_fps_lock; // If the screen's refresh rate != 60, we need to manually do this.
 
     f64 dt; // Time taken for previous frame.
     f64 device_pixel_ratio; // Only used in emscripten builds.
@@ -71,6 +73,8 @@ typedef struct Game_State {
     SDL_Window *window;
     SDL_Renderer *renderer;
     Render render;
+    
+    Lighting lighting;
     
     int levels_completed_perfectly;
 

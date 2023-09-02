@@ -1,23 +1,112 @@
-void apply_vignette(SDL_Color *c, int x, int y) {
-    Light light = { gs->gw/2, gs->gh/3 };
+Light *lighting_add_light(Lighting *lighting, Light l) {
+    lighting->lights[lighting->light_count++] = l;
+    return &lighting->lights[lighting->light_count-1];
+}
+
+void lighting_init(Lighting *lighting) {
+    memset(lighting, 0, sizeof(Lighting));
+    lighting->main_light   = lighting_add_light(lighting, (Light){ gs->gw/2, gs->gh/3, 1.0, 80, true });
+    lighting->chisel_light = lighting_add_light(lighting, (Light){ 0, 0, 0.2, 38, false });
+}
+
+void lighting_tick(Lighting *lighting) {
+    {
+        Light *l = lighting->chisel_light;
+        
+        if (is_tool_chisel() && gs->chisel) {
+            l->active = true;
+            l->x = gs->chisel->x;
+            l->y = gs->chisel->y;
+        } else {
+            l->active = false;
+        }
+    }
     
-    int dx = x - light.x;
-    int dy = y - light.y;
+    {
+        Light *l = lighting->main_light;
+        (void)l;
+    }
+}
+
+f64 get_light_strength_at_position(Light light, int x, int y) {
+    f64 dx = x - light.x;
+    f64 dy = y - light.y;
     
     f64 length = sqrt(dx*dx + dy*dy);
     
-    f64 max_length = 80;
-    if (0) {
-        int _dx = gs->gw - light.x;
-        int _dy = 0 - light.y;
-        
-        max_length = sqrt(_dx*_dx + _dy*_dy);
-    }
+    f64 max_length = light.radius;
     
     f64 strength = 1 - length / max_length;
-    //strength *= max_darkness;
+    strength *= light.strength;
     
-    c->r *= strength;
-    c->g *= strength;
-    c->b *= strength;
+    if (strength < 0) strength = 0;
+    
+    return strength;
+}
+
+SDL_Color modify_color_based_on_light_strength(SDL_Color in, f64 strength) {
+    SDL_Color result;
+    
+    int r = clamp((int)((f64)in.r * strength), 0, 255);
+    int g = clamp((int)((f64)in.g * strength), 0, 255);
+    int b = clamp((int)((f64)in.b * strength), 0, 255);
+    
+    result.r = r;
+    result.g = g;
+    result.b = b;
+    result.a = in.a;
+    
+    return result;
+}
+
+// Modifies color `c` based on the position of `light` and the x, y.
+void apply_light_to_color(SDL_Color *c, Light light, int x, int y) {
+    if (!c) return;
+    
+    f64 strength = get_light_strength_at_position(light, x, y);
+    
+    *c = modify_color_based_on_light_strength(*c, strength);
+}
+
+// Applies all lights
+void apply_lighting_to_color(Lighting *lighting, SDL_Color *c, int x, int y) {
+    f64 cum_strength = 0;
+    
+    for (int i = 0; i < lighting->light_count; i++) {
+        if (lighting->lights[i].active)
+            cum_strength += get_light_strength_at_position(lighting->lights[i], x, y);
+    }
+    
+    *c = modify_color_based_on_light_strength(*c, cum_strength);
+}
+
+// Applies all lights to an entire render target.
+void apply_lighting_to_target(int target, Lighting *lighting) {
+    int w = gs->gw*2;
+    int h = gs->gh*2;
+    
+    u8 *pixels = PushArray(gs->transient_memory, 4*w*h, 1);
+    RenderReadPixels(target, pixels, w*4);
+    
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            int index = (x+y*w)*4;
+            if (pixels[index+3]) {
+                SDL_Color c = { pixels[index], pixels[index+1], pixels[index+2], pixels[index+3] };
+                
+                // These x and y values are offset,
+                // since they're based on the actual texture
+                // itself, which goes from (0, 0) to (gs->gw*2, gs->gh*2)
+                // But, the actual grid space is a section through this,
+                // of (64, 32) to (64+128, 32+64) which is the center of the screen.
+                
+                // So, we must modify the x and y values for the vignette calculation
+                
+                apply_lighting_to_color(lighting, &c, x-64, y-32);
+                
+                RenderColor(c.r, c.g, c.b, c.a);
+                RenderPoint(target, x, y);
+            }
+        }
+    }
 }

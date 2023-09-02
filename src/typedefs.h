@@ -3,7 +3,7 @@
 #ifndef ALASKA_RELEASE_MODE
   #define Log(...) do{char msg[8192]; sprintf(msg, __VA_ARGS__), OutputDebugString(msg); }while(0);
 #else
-  #define Log(...)
+  #define Log(...) ((void)0)
 #endif
 
 #define BLACK ((SDL_Color){0,0,0,255})
@@ -17,12 +17,12 @@
 typedef float  f32;
 typedef double f64;
 
-// Just my little convention-- no need to #include <stdint.h> since we use
-// SDL everywhere anyways.
+// Just my little convention
 typedef Uint8  u8;
 typedef Uint16 u16;
 typedef Uint32 u32;
 typedef Uint64 u64;
+typedef Sint64 i64;
 
 #ifndef ALASKA_RELEASE_MODE
   #define export    __declspec(dllexport)

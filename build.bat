@@ -1,6 +1,9 @@
 @echo off
 
-set Compiler_Flags=/nologo /W4 /wd4244 /wd4201 /Z7 /GS- /GR- /EHa- /Odi /MTd /fp:fast /FC /Fo:obj\ /D_CRT_SECURE_NO_WARNINGS
+rem set Compiler=clang-cl.exe
+set Compiler=cl.exe
+
+set Compiler_Flags=/nologo /wd4244 /wd4201 /Z7 /GS- /MT /GR- /EHa- /Odi /fp:fast /FC /D_CRT_SECURE_NO_WARNINGS
 set Lib_Files=SDL2.lib SDL2_ttf.lib SDL2_image.lib SDL2_mixer.lib
 
 if not exist src/win32_main.c goto INVALID_DIR
@@ -19,7 +22,7 @@ echo BUILDLOCK > lock.tmp
 
   REM Build the game layer (.dll that links into SDL layer)
   REM We also set the PDB to a unique filename so visual studio doesn't lock our PDB.
-cl.exe %Compiler_Flags% ..\src\game.c %Lib_Files% /link /incremental:no /PDB:sculpture_%random%.pdb /DLL /NOIMPLIB /NOEXP /out:sculpture.dll
+%Compiler% %Compiler_Flags% ..\src\game.c %Lib_Files% /link /incremental:no /PDB:sculpture_%random%.pdb /DLL /NOIMPLIB /NOEXP /out:sculpture.dll
 
 del lock.tmp
 
@@ -30,7 +33,7 @@ set err=%errorlevel%
 (>>win32_sculpture.exe call;) 2>nul || goto end
 
   REM Build the SDL layer (.exe)
-cl.exe %Compiler_Flags% ..\src\win32_main.c %Lib_Files% SDL2main.lib /link /SUBSYSTEM:windows /NOIMPLIB /NOEXP /incremental:no /out:win32_sculpture.exe
+%Compiler% %Compiler_Flags% ..\src\win32_main.c %Lib_Files% /link /SUBSYSTEM:console /NOIMPLIB /NOEXP /incremental:no /out:win32_sculpture.exe
 
 if NOT %errorlevel%==0 (set err=%errorlevel%)
 

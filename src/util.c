@@ -234,7 +234,7 @@ static void get_name_from_tool(int type, char *out) {
         case TOOL_OVERLAY:       strcpy(out, "Overlay (4)"); break;
         case TOOL_PLACER:        strcpy(out, "Placer (6)"); break;
         case TOOL_GRABBER:       strcpy(out, "Pointer (5)"); break;
-        case TOOL_DESTROY:       strcpy(out, "Destroy Level"); break;
+        case TOOL_DESTROY:       strcpy(out, "Destroy Level & Take Materials"); break;
         case TOOL_FINISH_LEVEL:  strcpy(out, "Finish Level"); break;
     }
 }

@@ -190,7 +190,9 @@ static void narrator_run(int target, SDL_Color col) {
     Font *font = gs->fonts.font_times;
 
     for (int i = 0; i < n->current_line_count; i++) {
-        char *s = PushArray(gs->transient_memory, n->curr_len, sizeof(char));
+        u64 length = strlen(n->current_lines[i]);
+        
+        char *s = PushArray(gs->transient_memory, length+1, sizeof(char));
         strcpy(s, n->current_lines[i]);
 
         int w, h;
@@ -202,7 +204,7 @@ static void narrator_run(int target, SDL_Color col) {
 
         int xoff = 0;
 
-        if (*s == '"') c = COLOR_MAX_DIALOGUE;
+        if (s[0] == '"' || s[length-1] == '"') c = COLOR_MAX_DIALOGUE;
 
         int surf_h;
         narrator_draw_text_blended(i,

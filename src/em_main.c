@@ -182,7 +182,7 @@ static void em_mainloop(void *arg) {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
-        bool should_continue = game_tick_event(data->game_state, &event);
+        bool should_continue = game_handle_event(data->game_state, &event);
         if (!should_continue) {
             emscripten_cancel_main_loop();
         }
@@ -213,6 +213,7 @@ int main(int argc, char **argv) {
 
     render_targets_init();
 
+    // TODO: How do I make this ensure 60fps?
     emscripten_set_main_loop_arg(em_mainloop, &data, 0, 1);
 
     free(data.persistent_memory.data);

@@ -1,13 +1,16 @@
 TODO
 
-  x A web mouse.
-
   - Graphics :: make it have a rustic feel.
     - GUI
     - Chisels (Improve)
 
   - Music
-     - Ambient: piano, pads/synths, motifs?
+    - Redo the ending music. Make it more like a solemn acceptance.
+    - Make music that corresponds to each area (background change)
+      - Piano, electronic, ambient, slowly getting more distorted for each area.
+        Tons of empty space in the music. 7 minute long tracks?
+        Not just sprinkles like before, use actual melodies, but don't make it
+        annoying.
 
   - Move the Note: in the material converter section of the recipe book
     to be item counts instead.

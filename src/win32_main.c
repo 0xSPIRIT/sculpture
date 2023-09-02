@@ -42,6 +42,7 @@
 #endif
 
 #include "assets.c"
+#include "vsync.c"
 
 // Defines
 
@@ -66,7 +67,7 @@ typedef struct Game_Code {
     FILETIME last_write_time;
 
     GameInitProc game_init;
-    GameTickEventProc game_tick_event;
+    GameTickEventProc game_handle_event;
     GameRunProc game_run;
 } Game_Code;
 
@@ -157,8 +158,15 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
     } else {
         renderer_flags = SDL_RENDERER_ACCELERATED;
     }
-
-    renderer_flags |= SDL_RENDERER_PRESENTVSYNC;
+    
+    SDL_DisplayMode dm;
+    SDL_GetCurrentDisplayMode(0, &dm); 
+    
+    if (dm.refresh_rate == 60) {
+        renderer_flags |= SDL_RENDERER_PRESENTVSYNC;
+    } else {
+        state->needs_manual_fps_lock = true;
+    }
 
     state->renderer = SDL_CreateRenderer(state->window, -1, renderer_flags);
     if (!state->renderer) fail(7);
@@ -181,15 +189,17 @@ static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *tra
     Assert(persistent_memory->size >= sizeof(Game_State));
 
     void *base_address = 0;
-#ifndef ALASKA_RELEASE_MODE
+/*#ifndef ALASKA_RELEASE_MODE
     base_address = (void*)Terabytes(2);
-#endif
+#endif*/
 
     persistent_memory->data = VirtualAlloc(base_address,
                                            persistent_memory->size + transient_memory->size,
                                            MEM_COMMIT | MEM_RESERVE,
                                            PAGE_READWRITE);
-    if (!persistent_memory->data) fail(10);
+    if (!persistent_memory->data) {
+        fail(GetLastError());
+    }
 
     persistent_memory->cursor = persistent_memory->data;
 
@@ -225,6 +235,9 @@ static void game_deinit(Game_State *state) {
     audio_deinit(&state->audio);
 
     SDL_Quit();
+    IMG_Quit();
+    TTF_Quit();
+    Mix_Quit();
 }
 
 static FILETIME get_last_write_time(char *filename) {
@@ -263,12 +276,12 @@ static void load_game_code(Game_Code *code) {
 
     code->game_init = (GameInitProc)
         GetProcAddress(code->dll, "game_init");
-    code->game_tick_event = (GameTickEventProc)
-        GetProcAddress(code->dll, "game_tick_event");
+    code->game_handle_event = (GameTickEventProc)
+        GetProcAddress(code->dll, "game_handle_event");
     code->game_run = (GameRunProc)
         GetProcAddress(code->dll, "game_run");
 
-    if (!code->game_run || !code->game_tick_event || !code->game_run) {
+    if (!code->game_run || !code->game_handle_event || !code->game_run) {
         Error("Error finding the functions in the DLL!\n");
         exit(1);
     }
@@ -284,7 +297,7 @@ static void reload_game_code(Game_Code *code) {
         FreeLibrary(code->dll);
         code->game_init = 0;
         code->game_run = 0;
-        code->game_tick_event = 0;
+        code->game_handle_event = 0;
         code->dll = 0;
     }
 
@@ -334,9 +347,17 @@ inline bool win32_SetProcessDpiAware(void) {
     return ret;
 }
 
+void check_reloading_game_code(Game_Code *game_code) {
+    FILETIME new_dll_write_time = get_last_write_time(GAME_DLL_NAME);
+    
+    if (CompareFileTime(&new_dll_write_time, &game_code->last_write_time) != 0) {
+        reload_game_code(game_code);
+    }
+}
+
 int win32_main(void) {
     win32_SetProcessDpiAware();
-
+    
 #ifndef ALASKA_RELEASE_MODE
     // Make sure we're running in the right folder.
     {
@@ -382,15 +403,17 @@ int win32_main(void) {
 
     gs->persistent_memory = &persistent_memory;
     gs->transient_memory = &transient_memory;
-
+    
     win32_game_init(gs);
 
+    f64 freq = SDL_GetPerformanceFrequency();
+    
 #ifdef ALASKA_RELEASE_MODE
     game_init(gs);
 #else
     game_code.game_init(gs);
 #endif
-
+    
     // Only now, since the levels have been instantiated,
     // can we initialize render targets (since they depend
     // on each level's width/height)
@@ -399,25 +422,13 @@ int win32_main(void) {
 
     bool running = true;
 
-    LARGE_INTEGER time_start, time_elapsed;
-
-    LARGE_INTEGER frequency;
-    QueryPerformanceFrequency(&frequency);
-    QueryPerformanceCounter(&time_start);
-
-    f64 time_passed = 0.0;
     int fps = 0, fps_draw = 0;
 
     while (running) {
-        LARGE_INTEGER time_elapsed_for_frame;
-        QueryPerformanceCounter(&time_elapsed_for_frame);
+        u64 start_frame = SDL_GetPerformanceCounter();
 
 #ifndef ALASKA_RELEASE_MODE
-        FILETIME new_dll_write_time = get_last_write_time(GAME_DLL_NAME);
-
-        if (CompareFileTime(&new_dll_write_time, &game_code.last_write_time) != 0) {
-            reload_game_code(&game_code);
-        }
+        check_reloading_game_code(&game_code);
 #endif
 
         SDL_Event event;
@@ -425,9 +436,9 @@ int win32_main(void) {
         gs->resized = false;
         while (SDL_PollEvent(&event)) {
 #ifndef ALASKA_RELEASE_MODE
-            bool should_continue = game_code.game_tick_event(gs, &event);
+            bool should_continue = game_code.game_handle_event(gs, &event);
 #else
-            bool should_continue = game_tick_event(gs, &event);
+            bool should_continue = game_handle_event(gs, &event);
 #endif
             if (!should_continue) {
                 running = false;
@@ -441,31 +452,31 @@ int win32_main(void) {
 #else
         game_run(gs);
 #endif
-
         // Zero out the transient memory for next frame!
         memset(transient_memory.data, 0, transient_memory.size);
         transient_memory.cursor = transient_memory.data;
-
-        QueryPerformanceCounter(&time_elapsed);
-
-        u64 delta = time_elapsed.QuadPart - time_elapsed_for_frame.QuadPart;
-        f64 d = (f64)delta / (f64)frequency.QuadPart; // ~16.67 ms due to SDL_RenderPresent.
-
-        // NOTE: d != gs->dt.
-        //  d = Time taken with the vsync sleep taken into account.
-        //  gs->dt = Time taken for frame alone.
-
-        time_passed += d;
-
-        if (time_passed >= 1) {
-            fps_draw = fps;
-            time_passed = 0;
-            fps = 0;
-        } else {
-            fps++;
+        
+        if (gs->needs_manual_fps_lock) { // Manual fallback FPS locker
+            u64 d = SDL_GetPerformanceCounter() - start_frame;
+            f64 seconds = d / freq;
+            f64 desired_frame_time = 1.0/60.0;
+            
+            f64 time_to_sleep_for = (desired_frame_time - seconds);
+            if (time_to_sleep_for > 0) {
+                precise_sleep(time_to_sleep_for);
+            }
         }
 
 #ifndef ALASKA_RELEASE_MODE
+        u64 end = SDL_GetPerformanceCounter();
+        
+        u64 delta = (end - start_frame);
+        f64 d = (f64)delta / freq; // should be ~16.67 ms
+        
+        // NOTE: d != gs->dt.
+        //  d = Time taken with the vsync sleep taken into account.
+        //  gs->dt = Time taken for frame alone.
+        
         u64 size_current = persistent_memory.cursor - persistent_memory.data;
         u64 size_max = persistent_memory.size;
         f32 percentage = (f32)size_current / (f32)size_max;
@@ -474,7 +485,7 @@ int win32_main(void) {
         char title[128] = {0};
         sprintf(title,
                 "Alaska | Frametime: %.2fms | Memory Used: %.2f%%",
-                gs->dt*1000,
+                d*1000,
                 percentage);
 
         SDL_SetWindowTitle(gs->window, title);
@@ -488,6 +499,11 @@ int win32_main(void) {
     return 0;
 }
 
+#ifndef ALASKA_RELEASE_MODE
+int main(void) {
+    win32_main();
+}
+#else
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPSTR     lpCmdLine,
@@ -500,3 +516,4 @@ int WINAPI WinMain(HINSTANCE hInstance,
     (void)nShowCmd;
     win32_main();
 }
+#endif
