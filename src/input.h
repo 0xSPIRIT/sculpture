@@ -8,6 +8,7 @@
 typedef struct Input {
     bool initted;
     bool locked;
+    bool hide_mouse; // Only used when locked==true and we're drawing our own cursor.
     
     int mx, my; // Scaled to the pixel-art grid.
     int real_mx, real_my; // In real window coordinates

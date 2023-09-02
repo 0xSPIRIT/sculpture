@@ -1,11 +1,11 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "Disassembly", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\dev\\sculpture\\src\\narration.c", "d:\\dev\\sculpture\\src\\credits.c", "d:\\dev\\sculpture\\src\\lighting.c", "d:\\dev\\sculpture\\src\\input.c", "d:\\dev\\sculpture\\src\\converter.c", "d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\3d.c", "d:\\dev\\sculpture\\src\\lib\\miniaudio.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\_round.h", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\amd64\\cos.asm"]
+RecentFilesList = ["d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\windows\\SDL_windowsevents.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\stdlib\\SDL_stdlib.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\stdlib\\SDL_string.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "Disassembly", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp", "d:\\dev\\sculpture\\src\\narration.c", "d:\\dev\\sculpture\\src\\credits.c", "d:\\dev\\sculpture\\src\\lighting.c", "d:\\dev\\sculpture\\src\\input.c", "d:\\dev\\sculpture\\src\\converter.c", "d:\\dev\\sculpture\\src\\background.c"]
 
 [MainWindow]
-X = 93
-Y = 65
+X = 0
+Y = 19
 Width = 1801
 Height = 894
 ShowKind = "Normal"
@@ -25,18 +25,55 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "memset.asm"
-TabWidth = 112.9771
+TabLabel = "SDL_windowsevents.c"
+TabWidth = 163.3588
 Type = "SourceViewPanel"
-FilePath = "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\windows\\SDL_windowsevents.c"
+CursorPos = 64598
+VertPos = 35406.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_string.c"
+TabWidth = 99.46565
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\stdlib\\SDL_string.c"
+CursorPos = 8913
+VertPos = 6111.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_stdlib.c"
+TabWidth = 97.93893
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\stdlib\\SDL_stdlib.c"
+CursorPos = 10329
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_render_d3d.c"
+TabWidth = 132.2901
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c"
+CursorPos = 59237
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_render.c"
+TabWidth = 104.0458
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c"
+CursorPos = 146281
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_dynapi_procs.h"
+TabWidth = 143.7405
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"
+CursorPos = 27500
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "win32_main.c"
 TabWidth = 107.0992
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\win32_main.c"
-CursorPos = 11384
-VertPos = 8631.0
+CursorPos = 4834
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "Disassembly"
@@ -48,14 +85,14 @@ TabLabel = "narration.c"
 TabWidth = 92.59543
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\narration.c"
-CursorPos = 5066
+CursorPos = 2892
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "credits.c"
 TabWidth = 77.32825
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\credits.c"
-CursorPos = 2282
+CursorPos = 2194
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "lighting.c"
@@ -69,7 +106,8 @@ TabLabel = "game.c"
 TabWidth = 71.98474
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 12672
+CursorPos = 16747
+VertPos = 10101.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "input.c"
@@ -93,7 +131,7 @@ FilePath = "d:\\dev\\sculpture\\src\\background.c"
 CursorPos = 361
 
 [[MainDockingFrame.DockedWidgets]]
-RequestedWidth = 1054.0
+RequestedWidth = 712.0
 RequestedHeight = 152.0
 Type = "DockingFrame"
 SplitType = 2
@@ -115,7 +153,7 @@ TabLabel = "Watch"
 TabWidth = 87.40459
 Type = "WatchPanel"
 Columns = [{Width = 229.0}, {Width = 676.0}, {Width = 225.0}]
-Items = ["name", ""]
+Items = [""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"

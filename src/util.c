@@ -367,9 +367,18 @@ static inline f64 clamp64(f64 x, f64 a, f64 b) {
     return x;
 }
 
-// smoothstep(x) = 3x^2 - 2x^3
-static f64 smoothstep(f64 x) {
+// f(x) = 3x^2 - 2x^3
+static f32 smoothstep(f32 x) {
     return x * x * (3.0 - 2.0 * x);
+}
+
+// Domain: 0 <= x <= 1
+static f32 smoothstep_2(f32 x) {
+    if (x < 0) x = 0;
+    if (x > 1) x = 1;
+    
+    // f(x) = 6x^5 - 15x^4 + 10x^3
+    return (x*x*x)*(6*x*x - 15*x + 10);
 }
 
 static f64 lerp(f64 a, f64 b, f64 t) {

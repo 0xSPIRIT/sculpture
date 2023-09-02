@@ -140,8 +140,6 @@ static void object_draw(Object3D *obj) {
 
     f32 dy = 0.0002;
 
-    f32 speed = 1.5f;
-
     static f32 increasing = 0.0f;
 
     switch (obj->state) {
@@ -149,12 +147,12 @@ static void object_draw(Object3D *obj) {
             obj->t++;
 
             if (obj->hold == 0 && obj->z >= 2) {
-                obj->hold = 45;
+                obj->hold = 20;
             } else if (obj->t > 120) {
-                speed = min(1.5f, ((obj->t-120) / 360.f) * speed);
-                obj->z += speed * 0.002f;
+                const f32 speed = 0.5;
+                obj->z = 1 + smoothstep_2(speed * (obj->t-120) / 360.f);
                 if (obj->z > 2) obj->z = 2;
-                obj->y += dy;
+                //obj->y += dy;
             }
 
             if (obj->hold) {
@@ -169,9 +167,9 @@ static void object_draw(Object3D *obj) {
         }
         case OBJECT_ROTY: case OBJECT_DONE: {
             if (obj->state != OBJECT_DONE) {
-                obj->y += dy;
+                //obj->y += dy;
                 obj->t2 += 0.002f;
-                obj->yrot = smoothstep(obj->t2);
+                obj->yrot = smoothstep_2(obj->t2);
                 obj->yrot *= -M_PI/2;
             }
 

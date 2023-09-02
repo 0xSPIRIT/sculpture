@@ -70,7 +70,7 @@ static void credits_run(int target) {
             break;
         }
         case CREDITS_SHOW_3: {
-            const char *lines[] = { "Thank you for playing Alaska" };
+            const char *lines[] = { "Thank you for playing." };
             if (credits_screen(target, &c->s, lines, ArrayCount(lines))) {
                 c->state = CREDITS_END;
             }

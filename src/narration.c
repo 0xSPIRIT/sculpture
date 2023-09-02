@@ -125,7 +125,7 @@ static void narrator_tick() {
         return;
     }
 
-    if (gs->input.keys_pressed[SDL_SCANCODE_TAB] && gs->level_current+1 != 11) {
+    if (gs->input.keys_pressed[SDL_SCANCODE_TAB] && !gs->obj.active) {
         set_fade(FADE_NARRATOR, 0, 255);
     }
 

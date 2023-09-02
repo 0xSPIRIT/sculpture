@@ -137,7 +137,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
 
     state->window = SDL_CreateWindow(window_title, x, y, state->real_width, state->real_height, window_flags);
     if (!state->window) fail(3);
-
+    
     SDL_Surface *window_icon = RenderLoadSurface("icon.png");
     SDL_SetWindowIcon(state->window, window_icon);
 
@@ -179,6 +179,10 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
     
 #if SIMULATE_MOUSE
     input_set_locked(true);
+#endif
+
+#ifndef ALASKA_RELEASE_MODE
+    SDL_RaiseWindow(gs->window);
 #endif
 }
 
@@ -405,7 +409,7 @@ int win32_main(void) {
     gs->transient_memory = &transient_memory;
     
     win32_game_init(gs);
-
+    
     f64 freq = SDL_GetPerformanceFrequency();
     
 #ifdef ALASKA_RELEASE_MODE
@@ -485,7 +489,7 @@ int win32_main(void) {
         char title[128] = {0};
         sprintf(title,
                 "Alaska | Frametime: %.2fms | Memory Used: %.2f%%",
-                d*1000,
+                gs->dt*1000,
                 percentage);
 
         SDL_SetWindowTitle(gs->window, title);

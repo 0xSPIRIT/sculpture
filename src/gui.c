@@ -667,20 +667,22 @@ static void gui_popup_draw(int target) {
         w, h
     };
 
-    RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 127);
-
     if (gs->level_current >= 4-1) {
         int mx = gs->input.real_mx;
         int my = gs->input.real_my;
         gs->is_mouse_on_tab_icon = is_point_in_rect((SDL_Point){mx, my}, tab_icon);
+        
+        bool is_background_white = (gs->level_current+1 == 11);
 
         if (gs->is_mouse_on_tab_icon) {
             if (gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
                 gui_popup_toggle();
             }
             RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 200);
+            if (is_background_white) RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 255);
         } else {
             RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 100);
+            if (is_background_white) RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 255);
         }
 
         RenderTexture(target, &GetTexture(TEXTURE_TAB), null, &tab_icon);

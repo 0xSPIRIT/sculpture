@@ -55,6 +55,10 @@ static void input_set_mouse_position(Input *in, int real_x, int real_y) {
 
 static void input_tick(Game_State *state) {
     Input *in = &state->input;
+    
+    if (in->locked) {
+        in->hide_mouse = (state->obj.active);
+    }
 
     if (!in->initted) {
         in->mouse = (u32) SDL_GetMouseState(&in->real_mx, &in->real_my);

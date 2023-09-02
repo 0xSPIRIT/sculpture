@@ -464,7 +464,7 @@ export void game_run(Game_State *state) {
         }
     }
     
-    if (gs->input.locked) {
+    if (gs->input.locked && !gs->input.hide_mouse) {
         Texture *t = &GetTexture(TEXTURE_CURSOR);
         RenderTexture(RENDER_TARGET_MASTER, t, null, &(SDL_Rect){gs->input.real_mx, gs->input.real_my, t->width, t->height});
     }
