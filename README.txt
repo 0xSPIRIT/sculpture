@@ -10,8 +10,17 @@ you're at.
 
 To build, call build_release.bat from your terminal. an executable
 should be generated in bin_release\ and you should be good to go!
+Just make sure these relevent DLLs are in the same folder as the
+executable:
+- libfreetype-6.dll
+- libpng16-16.dll
+- SDL2.dll
+- SDL2_image.dll
+- SDL2_mixer.dll
+- SDL2_ttf.dll
+- zlib1.dll
 
 To build with emscripten (webassembly), ensure you have
-emscripten installed with emcc.exe in your PATH. Then, call
+emscripten installed and you call emsdk_env.bat. Then, call
 build_emscripten.bat. Output for this should be in a new folder
-called out\
+called emscripten\

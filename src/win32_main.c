@@ -1,5 +1,10 @@
 //
-// Basically, the game is split up into two compilation units.
+// Basically, the game is split up into two compilation units
+// for debug builds. In the release build, everything is 
+// in one single unit.
+//
+// For debug builds:
+//
 // This one is compiled to an .exe file that simply loads
 // a DLL, intializes SDL, loads the game's assets, and
 // calls two functions from the DLL to run the game.
@@ -15,13 +20,13 @@
 //
 // The way memory works here is we simply allocate a huge
 // block of memory at the start of the program in this file
-// using VirtualAlloc() and give the game pointers into that
-// memory block through functions defined in shared.h
+// using VirtualAlloc() and use that buffer as the base
+// for an arena allocator that is used throughout the game.
 //
 // This method also means you can't store "local persistent"
 // (static) variables inside functions nor global variables
 // because they reset every time you reload the DLL. The only
-// global variable I have is "gs", which is the GameState,
+// global variable I have is "gs", which is the Game_State,
 // for convenience, so I don't have to pass it into every
 // function. It's value gets reset every frame in case the
 // dll reloads.
@@ -505,7 +510,7 @@ int win32_main(void) {
 
 #ifndef ALASKA_RELEASE_MODE
 int main(void) {
-    win32_main();
+    return win32_main();
 }
 #else
 int WINAPI WinMain(HINSTANCE hInstance,
