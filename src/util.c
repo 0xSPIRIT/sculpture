@@ -227,6 +227,15 @@ static void get_name_from_type(int type, char *out) {
 }
 
 static void get_name_from_tool(int type, char *out) {
+    if (type == TOOL_DESTROY) {
+        if (gs->level_current+1 == 1) {
+            strcpy(out, "Destroy Level");
+        } else {
+            strcpy(out, "Destroy Level & Take Materials");
+        }
+        return;
+    }
+    
     switch (type) {
         case TOOL_CHISEL_SMALL:  strcpy(out, "Small Chisel (1)"); break;
         case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel (2)"); break;
@@ -234,7 +243,7 @@ static void get_name_from_tool(int type, char *out) {
         case TOOL_OVERLAY:       strcpy(out, "Overlay (4)"); break;
         case TOOL_PLACER:        strcpy(out, "Placer (6)"); break;
         case TOOL_GRABBER:       strcpy(out, "Pointer (5)"); break;
-        case TOOL_DESTROY:       strcpy(out, "Destroy Level & Take Materials"); break;
+        //case TOOL_DESTROY:       strcpy(out, "Destroy Level & Take Materials"); break;
         case TOOL_FINISH_LEVEL:  strcpy(out, "Finish Level"); break;
     }
 }

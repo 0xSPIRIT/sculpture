@@ -373,6 +373,8 @@ static void gui_init(void) {
             SDL_SetTextureScaleMode(gui->tool_buttons[i]->texture->handle, 1); // filering
             if (gs->tool_previews[i].length)
                 gui->tool_buttons[i]->preview = &gs->tool_previews[i];
+        } else {
+            strcpy(gui->tool_buttons[i]->tooltip_text, name);
         }
 
         gui->tool_buttons[i]->x = cum;
@@ -642,8 +644,8 @@ static void gui_popup_draw(int target) {
     }
 
     int w, h;
-    w = GetTexture(TEXTURE_TAB).width;
-    h = GetTexture(TEXTURE_TAB).height;
+    w = Scale(GetTexture(TEXTURE_TAB).width);
+    h = Scale(GetTexture(TEXTURE_TAB).height);
 
     SDL_Rect bar = {
         0, popup.y,
@@ -663,7 +665,7 @@ static void gui_popup_draw(int target) {
 #endif
 
     SDL_Rect tab_icon = {
-        gs->gh*gs->S - 128, (int)(GUI_H + gui->popup_y) - h,
+        gs->gh*gs->S - Scale(128), (int)(GUI_H + gui->popup_y) - h,
         w, h
     };
 

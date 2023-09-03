@@ -9,8 +9,8 @@ static void tooltip_reset(Tooltip *tooltip) {
 
 static void tooltip_set_position_to_cursor(Tooltip *tooltip, int type) {
     Input *input = &gs->input;
-    tooltip->x = (f32)(input->real_mx+GetTexture(TEXTURE_CURSOR).height/2)/gs->S;
-    tooltip->y = (f32)(input->real_my-GUI_H)/gs->S + ((f32)GetTexture(TEXTURE_CURSOR).height/gs->S);
+    tooltip->x = (f32)(input->real_mx+Scale(GetTexture(TEXTURE_CURSOR).height))/gs->S;
+    tooltip->y = (f32)(input->real_my-GUI_H)/gs->S + ((f32)Scale(GetTexture(TEXTURE_CURSOR).height)/gs->S);
     tooltip->type = type;
 }
 

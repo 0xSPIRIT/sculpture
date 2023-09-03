@@ -53,8 +53,6 @@ typedef struct Chisel {
     int num_times_chiseled;
 } Chisel;
 
-// Called in grid_draw.
-
 static Chisel_Texture get_chisel_texture(Chisel_Size size);
 
 static void chisel_draw_highlights(int target, int *highlights, int count, int xoff, int yoff);

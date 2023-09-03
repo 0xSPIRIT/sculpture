@@ -27,15 +27,15 @@
 
 #define NARRATION_LEVEL_4 \
 "Wondrous minutes went by with Max daydreaming\r"\
-"fantastical possibilities, with one the most alluring.\n"\
+"fantastical possibilities, with one most alluring.\n"\
 "He could fully picture it: a symbolic piece with\r"\
 "endless complex details.\n"\
 "... No.\n"\
 "Only once he sharpened his skills would he\r"\
-"dare create something actually real-\n"\
-"Max thought to himself:\r"\
-"\"These sculptures are simply nothing other than\r"\
-"fodder for my future projects.\"\n"\
+"dare create something actually real.\n"\
+"Max thought to himself,\r"\
+"\"These sculptures are nothing other than\r"\
+"fodder for future projects.\"\n"\
 "For a moment, his flame flickered.\n"\
 
 #define NARRATION_LEVEL_5 \
@@ -45,18 +45,18 @@
 "combining into a soup of likes and dislikes-\n"\
 "Flowing streams, interlaced with notions of\r"\
 "greatness, waiting to be.\n"\
-"By then, the liquid that had formed precipitated\r"\
+"Now, the liquid that had formed precipitated\r"\
 "torrentially from Max's mind.\n"\
-"And so, the rain poured.\n"
 
 #define NARRATION_LEVEL_7 \
 "Surely by then he must've been ready...?\n"\
 "He understood his previous sculptures only served as\r"\
-"stepping stones to something greater.\n"\
-"... But, it's been too long. He must move forward-\r"\
+"stepping stones to something greater,\r"\
+"but it's been too long.\n"\
+"He must move forward-\r"\
 "To do something real.\r"\
 "Something noteworthy.\n"\
-"Max recalled sculptures that he admired.\r"\
+"Max fantasized sculptures that he admired-\r"\
 "They swirled around his head in a moment of inspiration.\n"\
 "Too, his mind spun with other hypnotic ideas that\r"\
 "would surely never come to pass.\n"\
@@ -101,12 +101,11 @@
 "Little emotion shone through him as he\r"\
 "carefully placed his finished piece next the others.\n"\
 "With his seemingly perfected craftsmanship,\r"\
-"without a moment's rest, nor hesitation,\r"\
+"without a moment's rest nor hesitation,\r"\
 "he continued on.\n"\
 "He'd sculpt an intricate, sophisticated piece, yes.\r"\
 "In fact, very similar to some of his favorites.\n"\
-"His new expertise should clean this one nicely;\r"\
-"he's earned a break.\n"\
+"His new expertise should clean this one up nicely.\n"\
 
 #define NARRATION_END \
 "Fixed in place, Max stares out his window.\n"\
