@@ -183,7 +183,7 @@ static void tooltip_draw(int output_target, Tooltip *tooltip) {
                         false);
     }
 
-    if (gs->current_tool == TOOL_PLACER && !gs->gui.popup && !gs->conversions.active)
+    if (gs->current_tool == TOOL_PLACER && !gs->gui.popup && !gs->recipes.active)
         tooltip_set_alpha(tooltip);
 
     SDL_Rect src = {

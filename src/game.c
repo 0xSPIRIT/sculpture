@@ -15,7 +15,7 @@
 #include "credits.c"
 #include "undo.c"
 #include "hammer.c"
-#include "converter_gui.c"
+#include "recipes.c"
 #include "chisel.c"
 #include "preview.c"
 #include "tooltip.c"
@@ -72,7 +72,7 @@ static void game_resize(int h) {
 
 static void game_update_view(void) {
     if (gs->text_field.active)  return;
-    if (gs->conversions.active) return;
+    if (gs->recipes.active) return;
     
     Input *input = &gs->input;
     SDL_FPoint *to = &gs->render.to;
@@ -170,11 +170,11 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
 #endif
     
     if (event->type == SDL_MOUSEWHEEL) {
-        if (gs->conversions.active) {
-            gs->conversions.y_to += Scale(50) * event->wheel.y;
-            gs->conversions.y_to = clamp(gs->conversions.y_to,
-                                         -gs->conversions.max_height,
-                                         0);
+        if (gs->recipes.active) {
+            gs->recipes.y_to += Scale(50) * event->wheel.y;
+            gs->recipes.y_to = clamp(gs->recipes.y_to,
+                                     -gs->recipes.max_height,
+                                     0);
         } else if (gs->current_tool == TOOL_PLACER) {
             Placer *placer = &gs->placers[gs->current_placer];
             if (input->keys[SDL_SCANCODE_LCTRL] && gs->creative_mode) {

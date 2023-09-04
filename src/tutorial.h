@@ -52,7 +52,7 @@
 #define TUTORIAL_PLACER_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Use the PLACER to take up the sand and place it into\n" \
+    "Use the PLACER to pick up the sand and place it into\n" \
     "your INVENTORY [TAB].\n\n" \
     "To place material, scroll the mouse for resizing,\n" \
     "then click.\n\n"\
@@ -60,7 +60,7 @@
 #define TUTORIAL_PLACER_HARD \
     "Tutorial\n" \
     "--------\n\n" \
-    "A placer can't take up stone material.\n"
+    "A placer can't pick up stone material.\n"
 
 #define TUTORIAL_PLACER_F_KEYS \
     "Tutorial\n" \

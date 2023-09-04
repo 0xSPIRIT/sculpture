@@ -272,7 +272,7 @@ static void overlay_swap_tick(void) {
         }
     }
     if (overlay->changes.was_grid_none && overlay->temp) {
-        if (gs->overlay.show && !gs->gui.popup && !gs->conversions.active) { overlay->changes.temp += 0.02f; }
+        if (gs->overlay.show && !gs->gui.popup && !gs->recipes.active) { overlay->changes.temp += 0.02f; }
     }
 
     const int c = 15;

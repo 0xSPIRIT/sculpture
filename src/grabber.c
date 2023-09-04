@@ -15,7 +15,7 @@ static void grabber_tick(void) {
 
     if (!is_in_bounds((int)grabber->x, (int)grabber->y)) return;
     if (gs->is_mouse_over_any_button) return;
-    if (gs->conversions.active) return;
+    if (gs->recipes.active) return;
 
     if (grabber->object_holding != -1) {
         int dx = (int) (grabber->x-px);

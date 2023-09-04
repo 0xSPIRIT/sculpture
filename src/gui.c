@@ -409,7 +409,7 @@ static void gui_tick(void) {
 
     tool_button_set_disabled(gs->level_current);
 
-    if (!gs->conversions.active && gs->gui.popup && gs->input.keys[SDL_SCANCODE_ESCAPE]) {
+    if (!gs->recipes.active && gs->gui.popup && gs->input.keys[SDL_SCANCODE_ESCAPE]) {
         gui_popup_toggle();
     }
 
@@ -524,7 +524,7 @@ static bool can_goto_next_level(void) {
 static void gui_draw_profile(int target) {
     Assert(target == RENDER_TARGET_MASTER);
 
-    if (gs->conversions.active) return;
+    if (gs->recipes.active) return;
 
     Level *level = &gs->levels[gs->level_current];
     int count = 0;
@@ -692,8 +692,8 @@ static void gui_popup_draw(int target) {
 
     all_converters_draw(target);
     inventory_draw(target);
-    converter_gui_draw(target);
-    converter_gui_draw_button(target);
+    recipes_draw(target);
+    recipes_draw_button(target);
 }
 
 static bool is_cell_stone(int type) {

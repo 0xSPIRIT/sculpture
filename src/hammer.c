@@ -31,7 +31,7 @@ static void hammer_tick(Hammer *hammer) {
     if (gs->input.real_my > GUI_H &&
         !gs->tutorial.active &&
         !gs->gui.popup &&
-        !gs->conversions.active &&
+        !gs->recipes.active &&
         chisel_click_repeatedly(gs->chisel) &&
         gs->chisel->highlight_count > 0 &&
         (hammer->state == HAMMER_STATE_IDLE ||

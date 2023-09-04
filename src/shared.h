@@ -83,7 +83,7 @@ typedef struct Game_State {
     int wasd_popup_alpha; // 0 - 255
     bool wasd_popup_active;
 
-    Conversions conversions;
+    Recipes recipes;
 
     // All stored surfaces and textures.
     Textures textures;

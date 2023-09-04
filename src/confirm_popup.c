@@ -61,7 +61,7 @@ static void end_of_level_popup_confirm_run(int target) {
 
         SDL_Color color = (SDL_Color){180, 180, 180, 180};
         if (gs->level_current+1 > 7)
-            color = COLOR_MAX_DIALOGUE;
+            color = ColorFromInt(COLOR_MAX_DIALOGUE);
 
         RenderTextQuick(target,
                         "Not good enough",

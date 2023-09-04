@@ -4,8 +4,8 @@
 void precise_sleep(f64 seconds) {
     if (seconds < 0) return;
     
-    static f64 estimate = 5e-3;
-    static f64 mean = 5e-3;
+    static f64 estimate = 0.005;
+    static f64 mean = 0.005;
     static f64 m2 = 0;
     static i64 count = 1;
     

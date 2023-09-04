@@ -372,7 +372,7 @@ static void placer_tick(Placer *placer) {
     placer->y = gs->input.my;
 
     if (gs->is_mouse_on_tab_icon) return; // Hacky!!!!! ew
-    if (gs->conversions.active) return; // There should really be a focus variable
+    if (gs->recipes.active) return; // There should really be a focus variable
 
     if (gs->creative_mode) {
         placer->contains->amount = gs->gw*gs->gh;

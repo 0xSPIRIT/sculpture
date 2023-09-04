@@ -89,7 +89,7 @@ static void fail(int code) {
 
 static f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     SDL_DisplayMode dm;
-
+   
     if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
         SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
         __debugbreak();

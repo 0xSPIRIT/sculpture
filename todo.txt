@@ -1,5 +1,7 @@
 TODO
 
+  x Bug with the red flavor text not showing up!
+
   - Graphics :: make it have a rustic feel.
     - GUI
 

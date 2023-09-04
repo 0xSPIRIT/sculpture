@@ -1,14 +1,14 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\windows\\SDL_windowsevents.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\stdlib\\SDL_stdlib.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\stdlib\\SDL_string.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "Disassembly", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp", "d:\\dev\\sculpture\\src\\narration.c", "d:\\dev\\sculpture\\src\\credits.c", "d:\\dev\\sculpture\\src\\lighting.c", "d:\\dev\\sculpture\\src\\input.c", "d:\\dev\\sculpture\\src\\converter.c", "d:\\dev\\sculpture\\src\\background.c"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\confirm_popup.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
 
 [MainWindow]
-X = 0
+X = 94
 Y = 19
 Width = 1801
 Height = 894
-ShowKind = "Normal"
+ShowKind = "Maximized"
 
 [MainDockingFrame]
 Type = "DockingFrame"
@@ -25,111 +25,29 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "SDL_windowsevents.c"
-TabWidth = 153.6641
+TabLabel = "level.c"
+TabWidth = 74.80917
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\windows\\SDL_windowsevents.c"
-CursorPos = 64284
-VertPos = 35406.0
+FilePath = "d:\\dev\\sculpture\\src\\level.c"
+CursorPos = 12128
+VertPos = 8463.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "SDL_string.c"
-TabWidth = 99.46565
+TabLabel = "sqrtf.c"
+TabWidth = 74.04581
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\stdlib\\SDL_string.c"
-CursorPos = 8913
+FilePath = "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "SDL_stdlib.c"
-TabWidth = 97.93893
+TabLabel = "confirm_popup.c"
+TabWidth = 136.6412
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\stdlib\\SDL_stdlib.c"
-CursorPos = 10329
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "SDL_render_d3d.c"
-TabWidth = 132.2901
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c"
-CursorPos = 59237
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "SDL_render.c"
-TabWidth = 104.0458
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c"
-CursorPos = 146281
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "SDL_dynapi_procs.h"
-TabWidth = 143.7405
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"
-CursorPos = 27500
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "win32_main.c"
-TabWidth = 107.0992
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\win32_main.c"
-CursorPos = 4834
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "Disassembly"
-TabWidth = 120.229
-Type = "DisassemblyPanel"
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "narration.c"
-TabWidth = 92.59543
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\narration.c"
-CursorPos = 2892
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "credits.c"
-TabWidth = 77.32825
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\credits.c"
-CursorPos = 2194
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "lighting.c"
-TabWidth = 83.43512
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\lighting.c"
-CursorPos = 1438
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "game.c"
-TabWidth = 71.98474
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 16747
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "input.c"
-TabWidth = 69.69466
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\input.c"
-CursorPos = 1347
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "converter.c"
-TabWidth = 93.35879
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\converter.c"
-CursorPos = 3414
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "background.c"
-TabWidth = 108.626
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\background.c"
-CursorPos = 361
+FilePath = "d:\\dev\\sculpture\\src\\confirm_popup.c"
+CursorPos = 3531
+VertPos = 1911.0
 
 [[MainDockingFrame.DockedWidgets]]
-RequestedWidth = 712.0
+RequestedWidth = 519.0
 RequestedHeight = 152.0
 Type = "DockingFrame"
 SplitType = 2
@@ -192,6 +110,14 @@ Type = "ImmediatePanel"
 TabLabel = "Breakpoints"
 TabWidth = 117.9389
 Type = "BreakpointPanel"
+
+[[Breakpoints]]
+Symbol = "recipe_draw_note"
+
+[[Breakpoints]]
+File = "d:\\dev\\sculpture\\src\\confirm_popup.c"
+Line = 41
+Column = 8
 
 [[BookmarkFolders]]
 Title = ""

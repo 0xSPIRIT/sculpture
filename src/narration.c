@@ -204,7 +204,7 @@ static void narrator_run(int target, SDL_Color col) {
 
         int xoff = 0;
 
-        if (s[0] == '"' || s[length-1] == '"') c = COLOR_MAX_DIALOGUE;
+        if (s[0] == '"' || s[length-1] == '"') c = ColorFromInt(COLOR_MAX_DIALOGUE);
 
         int surf_h;
         narrator_draw_text_blended(i,

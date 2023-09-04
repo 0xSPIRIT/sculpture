@@ -75,7 +75,7 @@ static void dust_grid_run(int target) {
             }
 
             if (dust->timer == dust->timer_max) {
-                if (can_conversions_gui_be_active()) {
+                if (can_recipes_be_active()) {
                     dust->going_into_inventory = true;
                     dust->timer2 = 0;
                 } else {

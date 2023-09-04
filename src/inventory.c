@@ -294,7 +294,7 @@ static bool can_place_item_in_slot(int type, enum Slot_Type slot) {
 static void item_tick(Item *item, Slot *slot, int x, int y, int w, int h) {
     Input *input = &gs->input;
 
-    if (gs->conversions.active) return;
+    if (gs->recipes.active) return;
 
     if (item == &gs->item_holding) {
         if (input->real_my < gs->gui.popup_y &&
@@ -431,7 +431,7 @@ static void slot_tick(Slot *slot) {
 // Look in gui.c for the ticking of converter slots.
 static void inventory_tick() {
     if (!gs->gui.popup) return;
-    if (gs->conversions.active) return;
+    if (gs->recipes.active) return;
 
     if (gs->level_current == 6-1 && !gs->did_fuel_converter_tutorial) {
         gs->tutorial = *tutorial_rect(TUTORIAL_FUEL_CONVERTER_STRING, null);

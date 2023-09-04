@@ -22,7 +22,7 @@ echo BUILDLOCK > lock.tmp
 
   REM Build the game layer (.dll that links into SDL layer)
   REM We also set the PDB to a unique filename so visual studio doesn't lock our PDB.
-%Compiler% %Compiler_Flags% ..\src\game.c %Lib_Files% /link /incremental:no /PDB:sculpture_%random%.pdb /DLL /NOIMPLIB /NOEXP /out:sculpture.dll
+%Compiler% %Compiler_Flags% ..\src\game.c %Lib_Files% /LD /link /incremental:no /PDB:sculpture_%random%.pdb /DLL /NOIMPLIB /NOEXP /out:sculpture.dll
 
 del lock.tmp
 
@@ -33,7 +33,7 @@ set err=%errorlevel%
 (>>win32_sculpture.exe call;) 2>nul || goto end
 
   REM Build the SDL layer (.exe)
-%Compiler% %Compiler_Flags% ..\src\win32_main.c %Lib_Files% /link /SUBSYSTEM:console /NOIMPLIB /NOEXP /incremental:no /out:win32_sculpture.exe
+%Compiler% %Compiler_Flags% ..\src\win32_main.c %Lib_Files% /link /SUBSYSTEM:console /NOIMPLIB /NOEXP /out:win32_sculpture.exe
 
 if NOT %errorlevel%==0 (set err=%errorlevel%)
 
