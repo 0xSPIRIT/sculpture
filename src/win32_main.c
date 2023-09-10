@@ -431,8 +431,6 @@ int win32_main(void) {
 
     bool running = true;
 
-    int fps = 0, fps_draw = 0;
-
     while (running) {
         u64 start_frame = SDL_GetPerformanceCounter();
 
@@ -481,6 +479,7 @@ int win32_main(void) {
         
         u64 delta = (end - start_frame);
         f64 d = (f64)delta / freq; // should be ~16.67 ms
+        (void)d;
         
         // NOTE: d != gs->dt.
         //  d = Time taken with the vsync sleep taken into account.

@@ -315,6 +315,9 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 undo();
                 break;
             }
+            case SDLK_t: {
+                grid_set_to_desired();
+            } break;
             case SDLK_q: {
                 Cell *c;
                 c = &gs->grid[input->mx+input->my*gs->gw];

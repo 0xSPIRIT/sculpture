@@ -152,15 +152,15 @@ static void textures_init(Textures *textures) {
 
 static void surfaces_init(Surfaces *surfaces) {
     surfaces->a = null;
-    surfaces->renderer_3d = SDL_CreateRGBSurfaceWithFormat(0, gs->desktop_w, gs->desktop_h, 32, ALASKA_PIXELFORMAT);
-    surfaces->bark_surface = RenderLoadSurface("bark.png");
-    surfaces->glass_surface = RenderLoadSurface("glass.png");
+    surfaces->renderer_3d        = SDL_CreateRGBSurfaceWithFormat(0, gs->desktop_w, gs->desktop_h, 32, ALASKA_PIXELFORMAT);
+    surfaces->bark_surface       = RenderLoadSurface("bark.png");
+    surfaces->glass_surface      = RenderLoadSurface("glass.png");
     surfaces->wood_plank_surface = RenderLoadSurface("plank.png");
-    surfaces->marble_surface = RenderLoadSurface("marble.png");
-    surfaces->granite_surface = RenderLoadSurface("granite.png");
-    surfaces->diamond_surface = RenderLoadSurface("diamond.png");
-    surfaces->ice_surface = RenderLoadSurface("ice.png");
-    surfaces->grass_surface = RenderLoadSurface("grass.png");
+    surfaces->marble_surface     = RenderLoadSurface("marble.png");
+    surfaces->granite_surface    = RenderLoadSurface("granite.png");
+    surfaces->diamond_surface    = RenderLoadSurface("diamond.png");
+    surfaces->ice_surface        = RenderLoadSurface("ice.png");
+    surfaces->grass_surface      = RenderLoadSurface("grass.png");
     
     // Hack
     surfaces->background = SDL_CreateRGBSurfaceWithFormat(0,

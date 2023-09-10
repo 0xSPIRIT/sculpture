@@ -29,6 +29,15 @@ static int is_cell_gas(int type) {
         type == CELL_STEAM;
 }
 
+void grid_set_to_desired() {
+    for (int i = 0; i < gs->gw*gs->gh; i++) {
+        Cell *c = &gs->grid[i];
+        
+        c->type = gs->overlay.grid[i];
+        c->is_initial = false;
+        c->object = 0;
+    }
+}
 
 static bool any_neighbours_free(Cell *array, int x, int y) {
     for (int xx = -1; xx <= 1; xx++) {
@@ -467,9 +476,6 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
 
         case CELL_GRANITE: {
             color = get_pixel(gs->surfaces.granite_surface, i%gs->gw, i/gs->gw);
-            color.r *= 0.79;
-            color.g *= 0.79;
-            color.b *= 0.79;
             break;
         }
 

@@ -60,16 +60,16 @@ typedef enum Cell_Type {
 } Cell_Type;
 
 typedef struct Cell {
-    u8 type;           // The type of this cell. (Cell_Type)
-    u16 id;            // Unique ID for each cell.
-    int object;           // Object index the cell belongs. -1 for none
-    int temp;             // Temporary variable for algorithms
-    u8 is_initial;     // Is this from the initial state?
-    u8 updated;        // Updated for the frame yet?
-    int rand;             // Random value per cell
-    f32 vx, vy;           // Velocity
-    f32 vx_acc, vy_acc;   // When vel < 1, we need to keep track of that
-    int px, py;           // Previous positions
+    u8 type;             // The type of this cell. (Cell_Type)
+    u16 id;              // Unique ID for each cell.
+    int object;          // Object index the cell belongs. -1 for none
+    int temp;            // Temporary variable for algorithms
+    u8 is_initial;       // Is this from the initial state?
+    u8 updated;          // Updated for the frame yet?
+    int rand;            // Random value per cell
+    f32 vx, vy;          // Velocity
+    f32 vx_acc, vy_acc;  // When vel < 1, we need to keep track of that
+    int px, py;          // Previous positions
 } Cell;
 
 typedef struct Line {

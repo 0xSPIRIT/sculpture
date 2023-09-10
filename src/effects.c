@@ -95,7 +95,7 @@ static void effect_reset_snow(Effect *effect, bool high_fidelity) {
         particle->y = (f32) (bounds.y+(rand()%(bounds.h-bounds.y)));
 
         if (high_fidelity) {
-            f32 r1 = randf(1.0);
+            f32 r1 = randf(0.75);
             f32 r2 = randf(1.0);
             particle->vx = EFFECT_SCALE * (0.3f + 0.5*r1*r1*r1*r1);
             particle->vy = EFFECT_SCALE * (0.3f + r2*r2*r2*r2);

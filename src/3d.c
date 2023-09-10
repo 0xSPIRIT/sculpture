@@ -25,11 +25,11 @@ static inline void draw_triangle(int w, int h, SDL_Surface *surf, u32 *pixels, V
 
             if (w2 < 0) continue; // If any weight < 0, the point is not in the triangle
 
-            const vec2 a = {p[0].tex.x*w0, p[0].tex.y*w0};
-            const vec2 b = {p[1].tex.x*w1, p[1].tex.y*w1};
-            const vec2 c = {p[2].tex.x*w2, p[2].tex.y*w2};
+            vec2 a = {p[0].tex.x*w0, p[0].tex.y*w0};
+            vec2 b = {p[1].tex.x*w1, p[1].tex.y*w1};
+            vec2 c = {p[2].tex.x*w2, p[2].tex.y*w2};
 
-            const vec2 tex_coord = (vec2){
+            vec2 tex_coord = (vec2){
                 a.x+b.x+c.x,
                 a.y+b.y+c.y
             };
@@ -135,10 +135,6 @@ static void object_draw(Object3D *obj) {
     op[1] = (vec3){+1, -1, obj->z};
     op[2] = (vec3){-1, +1, obj->z};
     op[3] = (vec3){+1, +1, obj->z};
-
-    f32 dy = 0.0002;
-
-    static f32 increasing = 0.0f;
 
     switch (obj->state) {
         case OBJECT_ZOOM: {

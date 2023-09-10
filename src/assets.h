@@ -75,8 +75,7 @@ typedef struct Audio {
 } Audio;
 
 
-
-
+// Horrible. I'm very sorry for doing this to your eyes
 enum {
     TEXTURE_LEVEL_BACKGROUNDS,
     TEXTURE_LEVEL_BACKGROUNDS_END = TEXTURE_LEVEL_BACKGROUNDS+LEVEL_COUNT,
@@ -167,7 +166,7 @@ typedef union Surfaces {
         *triangle_blob_surface;
 
         SDL_Surface *item_nums[ITEM_COUNT];
-
+    
         // Any temp surfaces you might need to draw text or w/e goes here!
         SDL_Surface *slot_names[TOTAL_SLOT_COUNT];
         SDL_Surface *converter_names[CONVERTER_COUNT];

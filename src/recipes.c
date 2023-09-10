@@ -329,7 +329,6 @@ void recipes_draw_button(int target) {
 }
 
 void recipe_draw_note(int target) {
-    int dx = _recipes_get_material_dx();
     int dy = Scale(45) + gs->recipes.y;
     
     RenderText(target,
@@ -478,7 +477,7 @@ void recipes_draw(int final_target) {
                     null,
                     false);
 
-    recipe_draw_note(target);
+    //recipe_draw_note(target);
 
     for (int i = 3; i < c->conversions_count; i++) {
         Recipe_Item item = c->conversions[i];

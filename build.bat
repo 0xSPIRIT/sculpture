@@ -3,7 +3,7 @@
 rem set Compiler=clang-cl.exe
 set Compiler=cl.exe
 
-set Compiler_Flags=/nologo /wd4244 /wd4201 /Z7 /GS- /MT /GR- /EHa- /Odi /fp:fast /FC /D_CRT_SECURE_NO_WARNINGS
+set Compiler_Flags=/nologo /W4 /wd4201 /wd4244 /Z7 /GS- /MT /GR- /EHa- /Odi /fp:fast /FC /D_CRT_SECURE_NO_WARNINGS
 set Lib_Files=SDL2.lib SDL2_ttf.lib SDL2_image.lib SDL2_mixer.lib
 
 if not exist src/win32_main.c goto INVALID_DIR
@@ -33,7 +33,7 @@ set err=%errorlevel%
 (>>win32_sculpture.exe call;) 2>nul || goto end
 
   REM Build the SDL layer (.exe)
-%Compiler% %Compiler_Flags% ..\src\win32_main.c %Lib_Files% /link /SUBSYSTEM:console /NOIMPLIB /NOEXP /out:win32_sculpture.exe
+%Compiler% %Compiler_Flags% ..\src\win32_main.c %Lib_Files% /link /incremental:no /SUBSYSTEM:console /NOIMPLIB /NOEXP /out:win32_sculpture.exe
 
 if NOT %errorlevel%==0 (set err=%errorlevel%)
 

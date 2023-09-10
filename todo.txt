@@ -4,7 +4,6 @@ TODO
     - GUI
 
   - Playtest levels 7-10
-  x Check if level 7 works better with chisel-based change instead of time...
 
   - Music
     - Redo the ending music. Make it more like a solemn acceptance.
@@ -18,3 +17,11 @@ TODO
     to be item counts instead.
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
+
+Things to Remember When Doing a Release Build
+  - Remove the resource.rc from the data directory
+  - Remove Ctrl+G functionality, or gate it into a debug mode
+  - Remove the T key
+  - Turn on music
+  - Turn on tutorials
+  - Turn on narration
