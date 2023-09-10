@@ -5,12 +5,14 @@ void audio_set_music_accordingly(void) {
 #else
     int level_number = gs->level_current+1;
     
+    gs->audio_handler.music_end = false;
+    
     if (gs->audio_handler.music_end) {
         audio_set_music(MUSIC_NONE);
         return;
     }
     
-    if (level_number <= 3) {
+    if (level_number <= 3 || level_number == 7) {
         audio_set_music(MUSIC_FARCE);
     } else if (gs->obj.active) {
         audio_set_music(MUSIC_EXPLITIVE);

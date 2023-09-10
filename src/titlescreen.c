@@ -110,14 +110,32 @@ static void titlescreen_draw(int target) {
         RenderTextQuick(target,
                         "another",
                         gs->fonts.font_times,
-                        "F11 - Fullscreen",
+                        text,
                         WHITE,
-                        gs->game_width-w-8,
-                        gs->game_height-h-8,
+                        gs->game_width-w-Scale(8),
+                        gs->game_height-h-Scale(8),
                         null,
                         null,
                         false);
     }
+    
+    if (gs->level_current > 0) {
+        char text[64];
+        sprintf(text, "Continue: Level %d", gs->level_current+1);
+        
+        Render_Text_Data data = {0};
+        
+        strcpy(data.identifier, "continuestr");
+        data.font = gs->fonts.font_title_2;
+        strcpy(data.str, text);
+        data.x = gs->game_width/2;
+        data.y = gs->game_height/2 + Scale(50);
+        data.foreground = (SDL_Color){255, 0, 0, 200};
+        data.alignment = ALIGNMENT_CENTER;
+        
+        RenderText(target, &data);
+    }
+    
     
 #ifdef __EMSCRIPTEN__
     if (!gs->titlescreen.clicked_yet) {

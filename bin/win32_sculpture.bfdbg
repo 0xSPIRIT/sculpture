@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\confirm_popup.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\confirm_popup.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h", "d:\\dev\\sculpture\\src\\recipes.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
 
 [MainWindow]
 X = 94
@@ -24,30 +24,63 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-Active = true
+TabLabel = "SDL_render_d3d.c"
+TabWidth = 141.9847
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c"
+CursorPos = 48335
+VertPos = 28287.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "game.c"
+TabWidth = 81.67939
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\game.c"
+CursorPos = 9555
+VertPos = 5523.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_dynapi_procs.h"
+TabWidth = 153.4351
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"
+CursorPos = 7235
+VertPos = 2205.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "audio.c"
+TabWidth = 81.67939
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\audio.c"
+CursorPos = 440
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "recipes.c"
+TabWidth = 89.31298
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\recipes.c"
+CursorPos = 4356
+VertPos = 6384.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "level.c"
-TabWidth = 74.80917
+TabWidth = 65.11451
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\level.c"
-CursorPos = 12128
+CursorPos = 4916
 VertPos = 8463.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "sqrtf.c"
-TabWidth = 74.04581
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c"
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
+Active = true
 TabLabel = "confirm_popup.c"
-TabWidth = 136.6412
+TabWidth = 126.9466
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\confirm_popup.c"
-CursorPos = 3531
-VertPos = 1911.0
+CursorPos = 1561
+VertPos = 588.0
 
 [[MainDockingFrame.DockedWidgets]]
-RequestedWidth = 519.0
+RequestedWidth = 809.0
 RequestedHeight = 152.0
 Type = "DockingFrame"
 SplitType = 2
@@ -110,14 +143,6 @@ Type = "ImmediatePanel"
 TabLabel = "Breakpoints"
 TabWidth = 117.9389
 Type = "BreakpointPanel"
-
-[[Breakpoints]]
-Symbol = "recipe_draw_note"
-
-[[Breakpoints]]
-File = "d:\\dev\\sculpture\\src\\confirm_popup.c"
-Line = 41
-Column = 8
 
 [[BookmarkFolders]]
 Title = ""

@@ -38,39 +38,33 @@ static bool was_mouse_in_slot(Slot *slot) {
                             });
 }
 
+static void set_slot(int index, Cell_Type type, int amount) {
+    Slot *slots = gs->inventory.slots;
+    slots[index].item.type = type;
+    slots[index].item.amount = amount;
+}
+
 static void auto_set_inventory_slots(void) {
     int level = gs->level_current+1;
 
-    Slot *slots = gs->inventory.slots;
-
     switch (level) {
         case 6: {
-            slots[0].item.type = CELL_STONE;
-            slots[0].item.amount = 1000;
-            slots[1].item.type = CELL_SAND;
-            slots[1].item.amount = 1000;
+            set_slot(0, CELL_STONE, 1000);
+            set_slot(1, CELL_SAND,  1000);
         } break;
         case 7: {
-            slots[0].item.type = CELL_GLASS;
-            slots[0].item.amount = 350;
-            slots[1].item.type = CELL_SANDSTONE;
-            slots[1].item.amount = 350;
-            slots[2].item.type = CELL_UNREFINED_COAL;
-            slots[2].item.amount = 600;
+            set_slot(0, CELL_GLASS,          350);
+            set_slot(1, CELL_SANDSTONE,      350);
+            set_slot(2, CELL_UNREFINED_COAL, 600);
         } break;
         case 8: {
-            slots[0].item.type = CELL_STONE;
-            slots[0].item.amount = 1500;
-            slots[1].item.type = CELL_SAND;
-            slots[1].item.amount = 2000;
+            set_slot(0, CELL_STONE, 1500);
+            set_slot(1, CELL_SAND,  2000);
         } break;
         case 9: {
-            slots[0].item.type = CELL_MARBLE;
-            slots[0].item.amount = 1300;
-            slots[1].item.type = CELL_SAND;
-            slots[1].item.amount = 1300;
-            slots[2].item.type = CELL_DIRT;
-            slots[2].item.amount = 1300;
+            set_slot(0, CELL_MARBLE, 1300);
+            set_slot(1, CELL_SAND,   1300);
+            set_slot(2, CELL_DIRT,   1300);
         } break;
     }
 }

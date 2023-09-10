@@ -4,11 +4,11 @@ LastPlatform = "Win64"
 RecentFilesList = ["d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\audio\\SDL_audio.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\thread\\windows\\SDL_systhread.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm"]
 
 [MainWindow]
-X = 0
+X = 94
 Y = 19
 Width = 1801
 Height = 894
-ShowKind = "Normal"
+ShowKind = "Maximized"
 
 [MainDockingFrame]
 Type = "DockingFrame"
@@ -25,7 +25,7 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "render.c"
-TabWidth = 86.25954
+TabWidth = 76.56489
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\render.c"
 CursorPos = 8918
@@ -33,40 +33,36 @@ VertPos = 5754.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "game.c"
-TabWidth = 81.67939
+TabWidth = 71.98474
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\game.c"
 CursorPos = 14086
-VertPos = 8400.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_systhread.c"
-TabWidth = 131.2977
+TabWidth = 121.6031
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\thread\\windows\\SDL_systhread.c"
 CursorPos = 6207
-VertPos = 3192.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_audio.c"
-TabWidth = 109.1603
+TabWidth = 99.46565
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\audio\\SDL_audio.c"
 CursorPos = 8696
-VertPos = 5901.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_dynapi_procs.h"
-TabWidth = 153.4351
+TabWidth = 143.7405
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"
 CursorPos = 7235
-VertPos = 2310.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
 TabLabel = "audio.c"
-TabWidth = 81.67939
+TabWidth = 71.98474
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\audio.c"
 CursorPos = 444

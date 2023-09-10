@@ -35,7 +35,7 @@ static void end_of_level_popup_confirm_run(int target) {
 
     popup_confirm_base_tick_and_draw(&run_data, target, popup);
 
-    if (!next_level || confirm_popup_show_red_text(gs->level_current+1)) {
+    if (gs->level_current+1 == 7 || !next_level || confirm_popup_show_red_text(gs->level_current+1)) {
         char comment[128]={0};
 
         if (gs->level_current+1 > 7) {
@@ -44,6 +44,8 @@ static void end_of_level_popup_confirm_run(int target) {
             } else {
                 strcpy(comment, "But this isn't how I wanted it.");
             }
+        } else if (gs->level_current+1 == 7) {
+            strcpy(comment, "...");
         }
 
         int w, h;
@@ -60,7 +62,7 @@ static void end_of_level_popup_confirm_run(int target) {
         norm_dist = 1 - norm_dist;
 
         SDL_Color color = (SDL_Color){180, 180, 180, 180};
-        if (gs->level_current+1 > 7)
+        if (gs->level_current+1 >= 7)
             color = ColorFromInt(COLOR_MAX_DIALOGUE);
 
         RenderTextQuick(target,

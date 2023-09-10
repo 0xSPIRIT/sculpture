@@ -73,11 +73,42 @@ int get_item_from_any(int type, int timer, int override_index) {
 
 void converter_gui_init(void) {
     Recipes* c = &gs->recipes;
+    
+    const Recipe_Item conversions[] = {
+        // Converter,  Fuel, Input 1, Input 2, Output, Alternate button
+        (Recipe_Item){CONVERTER_FUEL,     0,                   CELL_ANY_CONVERT_TO_COAL, 0,                 CELL_UNREFINED_COAL, false},
+        (Recipe_Item){CONVERTER_FUEL,     0,                   CELL_UNREFINED_COAL,      CELL_GLASS,        CELL_REFINED_COAL,   false},
+        (Recipe_Item){CONVERTER_FUEL,     0,                   CELL_ANY_STONE,           CELL_REFINED_COAL, CELL_LAVA,           false},
+        
+        (Recipe_Item){CONVERTER_MATERIAL, CELL_ANY_FUEL,       CELL_STONE,            0,           CELL_MARBLE,    false},
+        (Recipe_Item){CONVERTER_MATERIAL, CELL_UNREFINED_COAL, CELL_STONE,            CELL_SAND,   CELL_SANDSTONE, false},
+        (Recipe_Item){CONVERTER_MATERIAL, CELL_REFINED_COAL,   CELL_SANDSTONE,        CELL_MARBLE, CELL_QUARTZ,    false},
+        (Recipe_Item){CONVERTER_MATERIAL, CELL_UNREFINED_COAL, CELL_SAND,             0,           CELL_GLASS,     false},
+        
+        (Recipe_Item){CONVERTER_MATERIAL, CELL_ANY_NONE_OR_UNREFINED_COAL, CELL_ANY_STEAM_OR_ICE, 0, CELL_WATER, true},
+        (Recipe_Item){CONVERTER_MATERIAL, 0,                               CELL_WATER,            0, CELL_ICE,   false},
+        
+        (Recipe_Item){CONVERTER_MATERIAL, CELL_ANY_COAL,       CELL_DIRT,             0,         CELL_STONE,     false},
+        (Recipe_Item){CONVERTER_MATERIAL, CELL_ANY_COAL,       CELL_ANY_WATER_OR_ICE, 0,         CELL_STEAM,     true},
+        
+        (Recipe_Item){CONVERTER_MATERIAL, CELL_LAVA, CELL_ANY_COAL, 0,            CELL_BASALT,  false},
+        (Recipe_Item){CONVERTER_MATERIAL, CELL_LAVA, CELL_QUARTZ,   CELL_MARBLE,  CELL_GRANITE, false},
+        (Recipe_Item){CONVERTER_MATERIAL, CELL_LAVA, CELL_BASALT,   CELL_GRANITE, CELL_DIAMOND, false},
+    };
+    
+    Recipe_Item *ptr = c->conversions;
+    if (!ptr) {
+        ptr = PushSize(gs->persistent_memory, sizeof(conversions));
+    }
     memset(c, 0, sizeof(Recipes));
-
-    for (int i = 0; i < CONVERSIONS_GUI_COUNT; i++) {
-        int button_index = i*6+5;
-        if (conversions[button_index])
+    
+    c->conversions = ptr;
+    
+    memcpy(c->conversions, conversions, sizeof(conversions));
+    c->conversions_count = ArrayCount(conversions);
+    
+    for (int i = 0; i < c->conversions_count; i++) {
+        if (conversions[i].alternate_button)
             c->override_indices[i] = 1;
     }
 }
@@ -132,9 +163,9 @@ void converter_draw_arrow(int target, int xx, int yy) {
     RenderArrow(target, (SDL_Point){xx, yy}, (SDL_Point){xx, yy+length}, head_size);
 }
 
-void recipes_draw_text(int target, const char *str, int item_x, int item_y, int item_w, int idx) {
+void recipes_draw_text(int target, const char *str, int item_x, int item_y, int item_w) {
     char ident[32] = {0};
-    sprintf(ident, "%d", idx);
+    strncpy(ident, str, 32);
 
     int w, h;
     TTF_SizeText(gs->fonts.font->handle, str, &w, &h);
@@ -368,26 +399,19 @@ void recipes_draw(int final_target) {
                     false);
 
     for (int i = 0; i < 3; i++) {
-        int converter = conversions[i*6];
-        Assert(converter == CONVERTER_FUEL);
-
-        int input1_index = i*6+2;
-        int input2_index = i*6+3;
-        int output_index = i*6+4;
-
-        Cell_Type input1 = conversions[input1_index];
-        Cell_Type input2 = conversions[input2_index];
-        Cell_Type output = conversions[output_index];
+        Recipe_Item item = c->conversions[i];
+        
+        Assert(item.converter == CONVERTER_FUEL);
 
         {
             int x = dx;
             int y = dy + cum;
 
-            recipe_pair_add(pairs, &pair_count, output, x - pad, y-gs->recipes.y - pad);
+            recipe_pair_add(pairs, &pair_count, item.output, x - pad, y-gs->recipes.y - pad);
 
-            recipes_draw_text(target, "Input 1", x, y, size, input1_index);
+            recipes_draw_text(target, "Input 1", x, y, size);
             bool mouse_in = converter_gui_item_draw(target,
-                                                    input1,
+                                                    item.input1,
                                                     c->override_indices[i],
                                                     x,
                                                     y,
@@ -400,9 +424,9 @@ void recipes_draw(int final_target) {
             int x = dx + _recipes_get_input_dx();
             int y = dy + cum;
 
-            recipes_draw_text(target, "Input 2", x, y, size, input2_index);
+            recipes_draw_text(target, "Input 2", x, y, size);
             bool mouse_in = converter_gui_item_draw(target,
-                                                    input2,
+                                                    item.input2,
                                                     c->override_indices[i],
                                                     x,
                                                     y,
@@ -425,9 +449,9 @@ void recipes_draw(int final_target) {
                 converter_draw_arrow(target, xx, yy);
             }
 
-            recipes_draw_text(target, "Output", x, y, size, output_index);
+            recipes_draw_text(target, "Output", x, y, size);
             bool mouse_in = converter_gui_item_draw(target,
-                                                    output,
+                                                    item.output,
                                                     c->override_indices[i],
                                                     x,
                                                     y,
@@ -456,31 +480,18 @@ void recipes_draw(int final_target) {
 
     recipe_draw_note(target);
 
-    for (int i = 3; i < CONVERSIONS_GUI_COUNT; i++) {
-        int idx = i*6;
-        int converter = conversions[idx];
-        Assert(converter == CONVERTER_MATERIAL);
-
-        int fuel_index = idx+1;
-        int input1_index = idx+2;
-        int input2_index = idx+3;
-        int output_index = idx+4;
-        int button_index = idx+5;
-
-        Cell_Type fuel = conversions[fuel_index];
-        Cell_Type input1 = conversions[input1_index];
-        Cell_Type input2 = conversions[input2_index];
-        Cell_Type output = conversions[output_index];
-
-        bool has_button = conversions[button_index];
+    for (int i = 3; i < c->conversions_count; i++) {
+        Recipe_Item item = c->conversions[i];
+        
+        Assert(item.converter == CONVERTER_MATERIAL);
 
         {
             int x = dx + _recipes_get_fuel_dx_material();
             int y = dy + cum + _recipes_get_fuel_dy();
 
-            recipes_draw_text(target, "Fuel", x, y, size, fuel_index);
+            recipes_draw_text(target, "Fuel", x, y, size);
             bool mouse_in = converter_gui_item_draw(target,
-                                                    fuel,
+                                                    item.fuel,
                                                     c->override_indices[i],
                                                     x,
                                                     y,
@@ -493,11 +504,11 @@ void recipes_draw(int final_target) {
             int x = dx;
             int y = dy + cum;
 
-            recipe_pair_add(pairs, &pair_count, output, x - pad, y - gs->recipes.y - pad);
+            recipe_pair_add(pairs, &pair_count, item.output, x - pad, y - gs->recipes.y - pad);
 
-            recipes_draw_text(target, "Input 1", x, y, size, input1_index);
+            recipes_draw_text(target, "Input 1", x, y, size);
             bool mouse_in = converter_gui_item_draw(target,
-                                                    input1,
+                                                    item.input1,
                                                     c->override_indices[i],
                                                     x,
                                                     y,
@@ -510,9 +521,9 @@ void recipes_draw(int final_target) {
             int x = dx + _recipes_get_input_dx();
             int y = dy + cum;
 
-            recipes_draw_text(target, "Input 2", x, y, size, input2_index);
+            recipes_draw_text(target, "Input 2", x, y, size);
             bool mouse_in = converter_gui_item_draw(target,
-                                                    input2,
+                                                    item.input2,
                                                     c->override_indices[i],
                                                     x,
                                                     y,
@@ -535,9 +546,9 @@ void recipes_draw(int final_target) {
                 converter_draw_arrow(target, xx, yy);
             }
 
-            recipes_draw_text(target, "Output", x, y, size, output_index);
+            recipes_draw_text(target, "Output", x, y, size);
             bool mouse_in = converter_gui_item_draw(target,
-                                                    output,
+                                                    item.output,
                                                     c->override_indices[i],
                                                     x,
                                                     y,
@@ -546,7 +557,7 @@ void recipes_draw(int final_target) {
             if (mouse_in) mouse_in_none = false;
         }
 
-        if (has_button) {
+        if (item.alternate_button) {
             Button b = {0};
             b.texture = &GetTexture(TEXTURE_ALTERNATE_BUTTON);
             b.x = dx + _recipes_get_fuel_dx_material();

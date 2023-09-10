@@ -25,9 +25,9 @@ static inline void draw_triangle(int w, int h, SDL_Surface *surf, u32 *pixels, V
 
             if (w2 < 0) continue; // If any weight < 0, the point is not in the triangle
 
-            const vec2 a = (vec2){p[0].tex.x*w0, p[0].tex.y*w0};
-            const vec2 b = (vec2){p[1].tex.x*w1, p[1].tex.y*w1};
-            const vec2 c = (vec2){p[2].tex.x*w2, p[2].tex.y*w2};
+            const vec2 a = {p[0].tex.x*w0, p[0].tex.y*w0};
+            const vec2 b = {p[1].tex.x*w1, p[1].tex.y*w1};
+            const vec2 c = {p[2].tex.x*w2, p[2].tex.y*w2};
 
             const vec2 tex_coord = (vec2){
                 a.x+b.x+c.x,
@@ -61,8 +61,6 @@ static void object_activate(Object3D *obj) {
     gs->obj.z = 1;
     gs->obj.yrot = 0;
     gs->obj.active = true;
-
-    Mix_HaltMusic();
 
     SDL_Texture *prev = SDL_GetRenderTarget(gs->render.sdl);
 

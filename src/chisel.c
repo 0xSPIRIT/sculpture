@@ -655,6 +655,7 @@ static void chisel_tick(Chisel *chisel) {
     if (gs->recipes.active) return; // There should really be a focus variable
 
     chisel->did_chisel_this_frame = false;
+    
     if (chisel->click_delay > 0) chisel->click_delay--;
     if (!(gs->input.mouse & SDL_BUTTON_LEFT))
         chisel->click_delay = -1;

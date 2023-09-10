@@ -1,9 +1,10 @@
 TODO
 
-  x Bug with the red flavor text not showing up!
-
   - Graphics :: make it have a rustic feel.
     - GUI
+
+  - Playtest levels 7-10
+  x Check if level 7 works better with chisel-based change instead of time...
 
   - Music
     - Redo the ending music. Make it more like a solemn acceptance.
@@ -11,7 +12,7 @@ TODO
       - Piano, electronic, ambient, slowly getting more distorted for each area.
         Tons of empty space in the music. 7 minute long tracks?
         Not just sprinkles like before, use actual melodies, but don't make it
-        annoying.
+        annoying. Melodic tracks can exist without being annoying!
 
   - Move the Note: in the material converter section of the recipe book
     to be item counts instead.

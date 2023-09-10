@@ -18,7 +18,6 @@
 
 //                               RRGGBBAA
 #define CONVERSION_PANEL_COLOR 0x000000c8
-#define ColorFromIntRGBA(x) (SDL_Color){(x>>24)&0xFF,(x>>16)&0xFF,(x>>8)*0xFF, x&0xFF}
 
 // When you want to change colors on the fly,
 // uncomment the #define and comment the #undef.

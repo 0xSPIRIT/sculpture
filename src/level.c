@@ -159,8 +159,6 @@ static void goto_level(int lvl) {
     gs->render.view.x = gs->render.to.x = 0;
     gs->render.view.y = gs->render.to.y = 0;
     
-    gs->audio_handler.music_end = false;
-    
     gs->levels[lvl].first_frame_compare = false;
     
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);

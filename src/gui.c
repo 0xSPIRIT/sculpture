@@ -513,7 +513,7 @@ static bool can_goto_next_level(void) {
     }
 #endif
 
-    if (level >= 8 &&
+    if (level >= 7 &&
         !compare_cells_to_int_weak(gs->grid, gs->overlay.grid, 64))
     {
         return false;

@@ -272,7 +272,13 @@ static void overlay_swap_tick(void) {
         }
     }
     if (overlay->changes.was_grid_none && overlay->temp) {
-        if (gs->overlay.show && !gs->gui.popup && !gs->recipes.active) { overlay->changes.temp += 0.02f; }
+        if ((gs->chisel->did_chisel_this_frame || gs->placers[gs->current_placer].did_place_this_frame) && 
+            gs->overlay.show && 
+            !gs->gui.popup && 
+            !gs->recipes.active)
+        {
+            overlay->changes.temp += 1.0f;
+        }
     }
 
     const int c = 15;
