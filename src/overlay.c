@@ -6,8 +6,6 @@ static u8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     CELL_WATER,          14, 182,  30,
     CELL_ICE,            80,  94, 250,
     CELL_STEAM,          94,  86, 142,
-    CELL_WOOD_LOG,       13,   9, 249,
-    CELL_WOOD_PLANK,    150,   6, 118,
     CELL_STONE,         255, 255, 255,
     CELL_MARBLE,          0,   0, 255,
     CELL_SANDSTONE,       0, 255, 255,
@@ -133,7 +131,7 @@ static void overlay_init(void) {
     switch (gs->level_current+1) {
         case 7: {
             overlay->changes =
-                overlay_load_changes(RES_DIR "lvl/changes/lvl7/%d.png", 5);
+                overlay_load_changes(DATA_DIR "lvl/changes/lvl7/%d.png", 5);
             break;
         }
     }

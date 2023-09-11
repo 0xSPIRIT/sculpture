@@ -43,7 +43,7 @@ RENDERAPI SDL_Surface *RenderLoadSurface(const char *fp) {
     }
 
     char filepath[8192] = {0};
-    strcat(filepath, RES_DIR);
+    strcat(filepath, DATA_DIR);
     strcat(filepath, fp);
     SDL_Surface *surf = IMG_Load(filepath);
     if (!surf) puts(SDL_GetError());
@@ -96,7 +96,7 @@ RENDERAPI void RenderDestroyTexture(Texture *tex) {
 RENDERAPI Font *RenderLoadFont(const char *fp, int size) {
     Font *font = PushSize(gs->persistent_memory, sizeof(Font));
     char filename[MAX_PATH] = {0};
-    strcat(filename, RES_DIR);
+    strcat(filename, DATA_DIR);
     strcat(filename, fp);
     font->handle = TTF_OpenFont(filename, size);
     Assert(font->handle);

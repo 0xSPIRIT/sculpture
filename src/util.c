@@ -156,36 +156,33 @@ static void move_mouse_to_grid_position(f32 x, f32 y) {
 void get_filename_from_type(int type, char *out) {
     switch (type) {
         case CELL_NONE:        strcpy(out, "nothing"); break;
-        case CELL_DIRT:        strcpy(out, RES_DIR "items/dirt.png"); break;
-        case CELL_SAND:        strcpy(out, RES_DIR "items/sand.png"); break;
+        case CELL_DIRT:        strcpy(out, DATA_DIR "items/dirt.png"); break;
+        case CELL_SAND:        strcpy(out, DATA_DIR "items/sand.png"); break;
 
-        case CELL_WATER:       strcpy(out, RES_DIR "items/water.png"); break;
-        case CELL_ICE:         strcpy(out, RES_DIR "items/ice.png"); break;
-        case CELL_STEAM:       strcpy(out, RES_DIR "items/steam.png"); break;
+        case CELL_WATER:       strcpy(out, DATA_DIR "items/water.png"); break;
+        case CELL_ICE:         strcpy(out, DATA_DIR "items/ice.png"); break;
+        case CELL_STEAM:       strcpy(out, DATA_DIR "items/steam.png"); break;
 
-        case CELL_WOOD_LOG:    strcpy(out, RES_DIR "items/wood_log.png"); break;
-        case CELL_WOOD_PLANK:  strcpy(out, RES_DIR "items/wood_plank.png"); break;
+        case CELL_STONE:       strcpy(out, DATA_DIR "items/cobblestone.png"); break;
+        case CELL_MARBLE:      strcpy(out, DATA_DIR "items/marble.png"); break;
+        case CELL_SANDSTONE:   strcpy(out, DATA_DIR "items/sandstone.png"); break;
 
-        case CELL_STONE: strcpy(out, RES_DIR "items/cobblestone.png"); break;
-        case CELL_MARBLE:      strcpy(out, RES_DIR "items/marble.png"); break;
-        case CELL_SANDSTONE:   strcpy(out, RES_DIR "items/sandstone.png"); break;
+        case CELL_CEMENT:      strcpy(out, DATA_DIR "items/cement.png"); break;
+        case CELL_CONCRETE:    strcpy(out, DATA_DIR "items/concrete.png"); break;
 
-        case CELL_CEMENT:      strcpy(out, RES_DIR "items/cement.png"); break;
-        case CELL_CONCRETE:    strcpy(out, RES_DIR "items/concrete.png"); break;
+        case CELL_QUARTZ:      strcpy(out, DATA_DIR "items/quartz.png"); break;
+        case CELL_GLASS:       strcpy(out, DATA_DIR "items/glass.png"); break;
 
-        case CELL_QUARTZ:      strcpy(out, RES_DIR "items/quartz.png"); break;
-        case CELL_GLASS:       strcpy(out, RES_DIR "items/glass.png"); break;
+        case CELL_GRANITE:     strcpy(out, DATA_DIR "items/granite.png"); break;
+        case CELL_BASALT:      strcpy(out, DATA_DIR "items/basalt.png"); break;
+        case CELL_DIAMOND:     strcpy(out, DATA_DIR "items/diamond.png"); break;
 
-        case CELL_GRANITE:     strcpy(out, RES_DIR "items/granite.png"); break;
-        case CELL_BASALT:      strcpy(out, RES_DIR "items/basalt.png"); break;
-        case CELL_DIAMOND:     strcpy(out, RES_DIR "items/diamond.png"); break;
+        case CELL_UNREFINED_COAL: strcpy(out, DATA_DIR "items/unref_coal.png"); break;
+        case CELL_REFINED_COAL:   strcpy(out, DATA_DIR "items/ref_coal.png"); break;
+        case CELL_LAVA:           strcpy(out, DATA_DIR "items/lava.png"); break;
 
-        case CELL_UNREFINED_COAL: strcpy(out, RES_DIR "items/unref_coal.png"); break;
-        case CELL_REFINED_COAL:   strcpy(out, RES_DIR "items/ref_coal.png"); break;
-        case CELL_LAVA:           strcpy(out, RES_DIR "items/lava.png"); break;
-
-        case CELL_SMOKE:       strcpy(out, RES_DIR "items/smoke.png"); break;
-        case CELL_DUST:        strcpy(out, RES_DIR "items/dust.png"); break;
+        case CELL_SMOKE:       strcpy(out, DATA_DIR "items/smoke.png"); break;
+        case CELL_DUST:        strcpy(out, DATA_DIR "items/dust.png"); break;
     }
 }
 
@@ -200,10 +197,7 @@ static void get_name_from_type(int type, char *out) {
         case CELL_ICE:         strcpy(out, "Ice"); break;
         case CELL_STEAM:       strcpy(out, "Steam"); break;
 
-        case CELL_WOOD_LOG:    strcpy(out, "Wood Log"); break;
-        case CELL_WOOD_PLANK:  strcpy(out, "Wood Plank"); break;
-
-        case CELL_STONE: strcpy(out, "Stone"); break;
+        case CELL_STONE:       strcpy(out, "Stone"); break;
         case CELL_MARBLE:      strcpy(out, "Marble"); break;
         case CELL_SANDSTONE:   strcpy(out, "Sandstone"); break;
 

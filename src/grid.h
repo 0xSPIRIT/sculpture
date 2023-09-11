@@ -32,9 +32,6 @@ typedef enum Cell_Type {
     CELL_ICE,
     CELL_STEAM,
 
-    CELL_WOOD_LOG,
-    CELL_WOOD_PLANK,
-
     CELL_STONE,
     CELL_MARBLE,
     CELL_SANDSTONE,

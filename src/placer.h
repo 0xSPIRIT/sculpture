@@ -23,8 +23,8 @@ typedef struct Placer {
     f64 place_aspect;
 
     int x, y, px, py;
-    int w, h;
-    Texture *texture;
+    //int w, h;
+    //Texture *texture;
 
     int radius;
 

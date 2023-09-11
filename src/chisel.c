@@ -381,7 +381,7 @@ static int find_nearest_successful_hit(int x, int y, int radius) {
 
 // dx and dy represent any offset you want in the circle placement.
 static void chisel_destroy_circle(Chisel *chisel, int x, int y, int dx, int dy, int size) {
-#if USE_PRESSURE
+#if 0
     if (!is_pressure_low_enough(gs->grid[x+y*gs->gw])) {
         if (should_display_pressure_tutorial()) {
             gs->tutorial = *tutorial_rect(TUTORIAL_PRESSURE_STRING,

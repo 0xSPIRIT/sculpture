@@ -89,9 +89,6 @@ static u8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
     CELL_ICE,           188, 255, 255,
     CELL_STEAM,         225, 225, 225,
 
-    CELL_WOOD_LOG,      128,  80,   0,
-    CELL_WOOD_PLANK,    200,  80,   0,
-
     CELL_STONE,         128, 128, 128,
     CELL_MARBLE,        255, 255, 255,
     CELL_SANDSTONE,     255, 128,   0,

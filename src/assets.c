@@ -87,11 +87,6 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_CANCEL_BUTTON)  = RenderLoadTexture("buttons/cancel.png");
     
     GetTexture(TEXTURE_TAB)        = RenderLoadTexture("tab.png");
-    GetTexture(TEXTURE_DELETER)    = RenderLoadTexture("deleter.png");
-    GetTexture(TEXTURE_PLACER)     = RenderLoadTexture("placer.png");
-    GetTexture(TEXTURE_KNIFE)      = RenderLoadTexture("knife.png");
-    GetTexture(TEXTURE_POPUP)      = RenderLoadTexture("popup.png");
-    GetTexture(TEXTURE_TEXT_ARROW) = RenderLoadTexture("text_arrow.png");
     
     GetTexture(TEXTURE_PLANK) = RenderLoadTexture("plank.png");
     
@@ -113,15 +108,12 @@ static void textures_init(Textures *textures) {
         Assert(GetTexture(TEXTURE_TOOL_BUTTONS+i).handle);
     }
     
-    GetTexture(TEXTURE_BLOB_HAMMER)= RenderLoadTexture("hammer.png");
     GetTexture(TEXTURE_CONVERTER_ARROW) = RenderLoadTexture("arrow.png");
     GetTexture(TEXTURE_CONVERT_BUTTON) = RenderLoadTexture("buttons/convert.png");
     GetTexture(TEXTURE_ALTERNATE_BUTTON) = RenderLoadTexture("buttons/alternate.png");
     GetTexture(TEXTURE_RECIPE_BOOK_BUTTON) = RenderLoadTexture("buttons/recipebook.png");
     GetTexture(TEXTURE_OK_BUTTON) = RenderLoadTexture("buttons/tutorial_ok.png");
     GetTexture(TEXTURE_CHISEL_HAMMER) = RenderLoadTexture("hammer.png");
-    
-    GetTexture(TEXTURE_TEST) = RenderLoadTexture("test.png");
     
     GetTexture(TEXTURE_BG_0) = RenderLoadTexture("bg_0.png");
     GetTexture(TEXTURE_BG_1) = RenderLoadTexture("bg_1.png");
@@ -153,16 +145,14 @@ static void textures_init(Textures *textures) {
 static void surfaces_init(Surfaces *surfaces) {
     surfaces->a = null;
     surfaces->renderer_3d        = SDL_CreateRGBSurfaceWithFormat(0, gs->desktop_w, gs->desktop_h, 32, ALASKA_PIXELFORMAT);
-    surfaces->bark_surface       = RenderLoadSurface("bark.png");
     surfaces->glass_surface      = RenderLoadSurface("glass.png");
     surfaces->wood_plank_surface = RenderLoadSurface("plank.png");
     surfaces->marble_surface     = RenderLoadSurface("marble.png");
     surfaces->granite_surface    = RenderLoadSurface("granite.png");
     surfaces->diamond_surface    = RenderLoadSurface("diamond.png");
     surfaces->ice_surface        = RenderLoadSurface("ice.png");
-    surfaces->grass_surface      = RenderLoadSurface("grass.png");
     
-    // Hack
+    // Hardcoded
     surfaces->background = SDL_CreateRGBSurfaceWithFormat(0,
                                                           128,
                                                           96,
@@ -230,33 +220,33 @@ static void free_sound(Sound *sound) {
 }
 
 static void audio_init(Audio *audio) {
-    audio->music_titlescreen = Mix_LoadMUS(RES_DIR "audio/titlescreen.ogg");
+    audio->music_titlescreen = Mix_LoadMUS(DATA_DIR "audio/titlescreen.ogg");
     
-    audio->ambience1     = load_sound(RES_DIR "audio/ambience1.ogg", 0.32);
-    audio->ambience_rain = load_sound(RES_DIR "audio/rain.ogg",      0.16);
-    audio->music0        = load_sound(RES_DIR "audio/music0.ogg",    0.55);
-    //audio->music1        = load_sound(RES_DIR "audio/music1.ogg",    0.50);
-    audio->music2        = load_sound(RES_DIR "audio/music2.ogg",    0.50);
+    audio->ambience1     = load_sound(DATA_DIR "audio/ambience1.ogg", 0.32);
+    audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg",      0.16);
+    audio->music0        = load_sound(DATA_DIR "audio/music0.ogg",    0.55);
+    //audio->music1        = load_sound(DATA_DIR "audio/music1.ogg",    0.50);
+    audio->music2        = load_sound(DATA_DIR "audio/music2.ogg",    0.50);
     
-    audio->pip = load_sound(RES_DIR "audio/pip.ogg", 1);
+    audio->pip = load_sound(DATA_DIR "audio/pip.ogg", 1);
     
     for (int i = 0; i < 6; i++) {
         char name[64];
-        sprintf(name, RES_DIR "audio/chisel_%d.wav", i+1);
+        sprintf(name, DATA_DIR "audio/chisel_%d.wav", i+1);
         audio->medium_chisel[i] = load_sound(name, 1);
     }
-    audio->small_chisel = load_sound(RES_DIR "audio/small_chisel.wav", 1);
+    audio->small_chisel = load_sound(DATA_DIR "audio/small_chisel.wav", 1);
     
     for (int i = 0; i < ArrayCount(audio->ice_chisel); i++) {
         char name[64];
-        sprintf(name, RES_DIR "audio/ice_chisel_%d.wav", i+1);
+        sprintf(name, DATA_DIR "audio/ice_chisel_%d.wav", i+1);
         audio->ice_chisel[i] = load_sound(name, 1);
     }
     
-    audio->sprinkle = load_sound(RES_DIR "audio/sprinkle 3.wav", 1);
-    audio->macabre = load_sound(RES_DIR "audio/macabre.ogg", 1);
+    audio->sprinkle = load_sound(DATA_DIR "audio/sprinkle 3.wav", 1);
+    audio->macabre = load_sound(DATA_DIR "audio/macabre.ogg", 1);
     
-    audio->accept = load_sound(RES_DIR "audio/accept.ogg", 1);
+    audio->accept = load_sound(DATA_DIR "audio/accept.ogg", 1);
     
     audio_setup_initial_channel_volumes();
 }

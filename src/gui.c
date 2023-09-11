@@ -342,7 +342,6 @@ static void gui_init(void) {
     gui->popup_inventory_y_vel = 0;
     gui->popup_inventory_y = 0;
     gui->popup = 0;
-    gui->popup_texture = &GetTexture(TEXTURE_POPUP);
 
     gs->gui.eol_popup_confirm = popup_confirm_init("Are you satisfied with this result?",
                                                    BUTTON_EOL_POPUP_CONFIRM,

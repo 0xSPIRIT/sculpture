@@ -442,7 +442,6 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
         case CELL_NONE: {
             if (number_inputs == 1) {
                 switch (input->type) {
-                    case CELL_WOOD_LOG: result = CELL_WOOD_PLANK; break;
                     case CELL_STEAM:    result = CELL_WATER;      break;
                     case CELL_WATER:    result = CELL_ICE;        break;
                     default: {} break;

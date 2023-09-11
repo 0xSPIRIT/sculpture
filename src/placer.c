@@ -12,9 +12,9 @@ static void placer_init(int num) {
     placer->x = gs->gw/2;
     placer->y = gs->gh/2;
 
-    placer->texture = &GetTexture(TEXTURE_PLACER);
-    placer->w = placer->texture->width;
-    placer->h = placer->texture->height;
+    //placer->texture = &GetTexture(TEXTURE_PLACER);
+    //placer->w = placer->texture->width;
+    //placer->h = placer->texture->height;
 
     placer->object_index = -1;
     placer->did_click = 0;
@@ -543,6 +543,7 @@ static void placer_draw(int target, Placer *placer, bool full_size) {
         }
     }
 
+#if 0
     SDL_Rect dst = {
         placer->x - placer->w/2, placer->y - placer->h,
         placer->w, placer->h
@@ -574,6 +575,7 @@ static void placer_draw(int target, Placer *placer, bool full_size) {
                   placer->texture,
                   null,
                   &dst);
+#endif
 
     if (placer->state == PLACER_PLACE_RECT_MODE && placer->rect.x != -1) {
         // Make sure the area is enough before you start drawing the rectangle.
@@ -593,16 +595,4 @@ static void placer_draw(int target, Placer *placer, bool full_size) {
     RenderColor(255, 255, 255, 64);
 
     RenderColor(255, 255, 255, 255);
-}
-
-static bool is_mouse_in_placer(Placer *placer) {
-    Input *input = &gs->input;
-
-    SDL_Point mouse = {input->mx, input->my};
-    SDL_Rect rectangle = {
-        placer->x - placer->w/2,
-        placer->y - placer->h,
-        placer->w, placer->h
-    };
-    return is_point_in_rect(mouse, rectangle);
 }

@@ -1,7 +1,7 @@
 #ifdef ALASKA_RELEASE_MODE
-#define RES_DIR "data/"
+#define DATA_DIR "data/"
 #else
-#define RES_DIR "../data/"
+#define DATA_DIR "../data/"
 #endif
 
 #define ALASKA_PIXELFORMAT SDL_PIXELFORMAT_ABGR8888
@@ -82,11 +82,7 @@ enum {
     TEXTURE_TEXT,
     TEXTURE_TEXT_END = TEXTURE_TEXT + TEXT_INDEX_COUNT,
     TEXTURE_TAB,
-    TEXTURE_DELETER,
-    TEXTURE_PLACER,
-    TEXTURE_KNIFE,
-    TEXTURE_POPUP,
-    TEXTURE_BLOB_HAMMER,
+    TEXTURE_PLANK,
     TEXTURE_CONVERTER_ARROW,
 
     TEXTURE_CHISEL_SMALL,
@@ -98,8 +94,6 @@ enum {
     TEXTURE_CHISEL_LARGE,
     TEXTURE_CHISEL_LARGE_DIAGONAL,
 
-    TEXTURE_TEST,
-    
     TEXTURE_CURSOR,
     
     TEXTURE_BG_0,
@@ -108,7 +102,6 @@ enum {
     TEXTURE_BG_3,
 
     TEXTURE_CHISEL_HAMMER,
-    TEXTURE_PLANK,
     TEXTURE_W_KEY,
     TEXTURE_A_KEY,
     TEXTURE_S_KEY,
@@ -130,7 +123,6 @@ enum {
     TEXTURE_NARRATOR,
     TEXTURE_NARRATOR_LINE,
     TEXTURE_NARRATOR_LINE_END=TEXTURE_NARRATOR_LINE + 10,
-    TEXTURE_TEXT_ARROW,
     TEXTURE_CONFIRM_BUTTON,
     TEXTURE_CONFIRM_X_BUTTON,
     TEXTURE_CANCEL_BUTTON,
@@ -155,15 +147,12 @@ typedef union Surfaces {
         SDL_Surface *renderer_3d,
         *background,
         *a,
-        *bark_surface,
         *glass_surface,
         *wood_plank_surface,
         *marble_surface,
         *granite_surface,
         *diamond_surface,
-        *ice_surface,
-        *grass_surface,
-        *triangle_blob_surface;
+        *ice_surface;
 
         SDL_Surface *item_nums[ITEM_COUNT];
     

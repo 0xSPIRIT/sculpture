@@ -1,4 +1,4 @@
-#define USE_PRESSURE    false
+#define USE_PRESSURE    false // deprecated
 #define HIGHLIGHT_MAX   64
 #define CHISEL_FLASHING false
 

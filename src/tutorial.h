@@ -41,14 +41,6 @@
     "Tutorial\n" \
     "--------\n\n" \
 
-#define TUTORIAL_PRESSURE_STRING \
-    "Tutorial\n" \
-    "--------\n\n" \
-    "Sometimes a chisel is unable to destroy a cell when\n" \
-    "it's too far inside the sculpture. In these cases\n" \
-    "you can use the DELETER to clear up material before\n" \
-    "using the chisel again.\n"
-
 #define TUTORIAL_PLACER_STRING \
     "Tutorial\n" \
     "--------\n\n" \

@@ -3,6 +3,8 @@ TODO
   - Graphics :: make it have a rustic feel.
     - GUI
 
+  x Remove unused textures from the data folder
+
   - Playtest levels 7-10
 
   - Music
@@ -21,6 +23,7 @@ TODO
 Things to Remember When Doing a Release Build
   - Remove the resource.rc from the data directory
   - Remove Ctrl+G functionality, or gate it into a debug mode
+  - Re-record the previews
   - Remove the T key
   - Turn on music
   - Turn on tutorials

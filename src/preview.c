@@ -7,7 +7,7 @@ static void preview_start_recording(Preview *p, const char *name) {
 
 static void preview_finish_recording(Preview *p) {
     char filename[64] = {0};
-    sprintf(filename, RES_DIR "previews/%s", p->name);
+    sprintf(filename, DATA_DIR "previews/%s", p->name);
 
     FILE *fp = fopen(filename, "wb");
     Assert(fp);
@@ -51,13 +51,13 @@ static void preview_load(Preview *p, const char *file) {
 
 static void previews_load(void) {
     preview_load(&gs->tool_previews[TOOL_CHISEL_SMALL],
-                 RES_DIR "previews/small_chisel.bin");
+                 DATA_DIR "previews/small_chisel.bin");
     preview_load(&gs->tool_previews[TOOL_CHISEL_MEDIUM],
-                 RES_DIR "previews/medium_chisel.bin");
+                 DATA_DIR "previews/medium_chisel.bin");
     preview_load(&gs->tool_previews[TOOL_CHISEL_LARGE],
-                 RES_DIR "previews/large_chisel.bin");
+                 DATA_DIR "previews/large_chisel.bin");
     preview_load(&gs->tool_previews[TOOL_PLACER],
-                 RES_DIR "previews/placer.bin");
+                 DATA_DIR "previews/placer.bin");
 }
 
 static void preview_record(Preview *p) {
@@ -239,7 +239,7 @@ static void preview_start_current(const char *name) {
 
 static void preview_load_current(const char *name) {
     char file[64];
-    sprintf(file, RES_DIR "previews/%s", name);
+    sprintf(file, DATA_DIR "previews/%s", name);
     preview_load(&gs->current_preview, file);
 }
 

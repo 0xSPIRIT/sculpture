@@ -1,9 +1,7 @@
 static int is_cell_hard(int type) {
     return
         type == CELL_ICE         ||
-        type == CELL_WOOD_LOG    ||
-        type == CELL_WOOD_PLANK  ||
-        type == CELL_STONE ||
+        type == CELL_STONE       ||
         type == CELL_MARBLE      ||
         type == CELL_SANDSTONE   ||
 
@@ -411,16 +409,6 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             color = get_pixel(gs->surfaces.ice_surface, i%gs->gw, i/gs->gw);
             color.r *= 0.80;
             color.g *= 0.80;
-            break;
-        }
-
-        case CELL_WOOD_LOG: {
-            color = get_pixel(gs->surfaces.bark_surface, i%gs->gw, i/gs->gh);
-            break;
-        }
-
-        case CELL_WOOD_PLANK: {
-            color = get_pixel(gs->surfaces.wood_plank_surface, i%gs->gw, i/gs->gw);
             break;
         }
 

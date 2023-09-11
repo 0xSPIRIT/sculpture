@@ -26,7 +26,7 @@ typedef struct GUI {
     bool popup; // shouldn't this be called popup_active? Bad name!!
     f32 popup_y, popup_y_vel, popup_h; // For the bottom part
     f32 popup_inventory_y, popup_inventory_y_vel, popup_inventory_h;
-    Texture *popup_texture;
+    Texture *popup_texture; // unused
     Tooltip tooltip;
 
     f64 stored_game_scale; // So we can know to resize if the scale changed.

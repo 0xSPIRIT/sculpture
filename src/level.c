@@ -106,48 +106,48 @@ static int level_add(const char *name, const char *desired_image, const char *in
 
 static void levels_setup(void) {
     level_add("Marrow",
-              RES_DIR "lvl/desired/level 1.png",
-              RES_DIR "lvl/initial/level 1.png",
+              DATA_DIR "lvl/desired/level 1.png",
+              DATA_DIR "lvl/initial/level 1.png",
               EFFECT_SNOW);
     level_add("Alaska",
-              RES_DIR "lvl/desired/level 2.png",
-              RES_DIR "lvl/initial/level 2.png",
+              DATA_DIR "lvl/desired/level 2.png",
+              DATA_DIR "lvl/initial/level 2.png",
               EFFECT_SNOW);
     level_add("Form",
-              RES_DIR "lvl/desired/level 3.png",
-              RES_DIR "lvl/initial/level 3.png",
+              DATA_DIR "lvl/desired/level 3.png",
+              DATA_DIR "lvl/initial/level 3.png",
               EFFECT_SNOW);
     level_add("Transformation",
-              RES_DIR "lvl/desired/level 4.png",
-              RES_DIR "lvl/initial/level 4.png",
+              DATA_DIR "lvl/desired/level 4.png",
+              DATA_DIR "lvl/initial/level 4.png",
               EFFECT_NONE);
     level_add("Reformation",
-              RES_DIR "lvl/desired/level 5.png",
-              RES_DIR "lvl/initial/level 5.png",
+              DATA_DIR "lvl/desired/level 5.png",
+              DATA_DIR "lvl/initial/level 5.png",
               EFFECT_RAIN);
     level_add("Monster",
-              RES_DIR "lvl/desired/level 6.png",
-              RES_DIR "lvl/initial/level 6.png",
+              DATA_DIR "lvl/desired/level 6.png",
+              DATA_DIR "lvl/initial/level 6.png",
               EFFECT_NONE);
     level_add("Monster (II)",
-              RES_DIR "lvl/desired/level 7.png",
-              RES_DIR "lvl/initial/level 7.png",
+              DATA_DIR "lvl/desired/level 7.png",
+              DATA_DIR "lvl/initial/level 7.png",
               EFFECT_NONE);
     level_add("Metamorphosis",
-              RES_DIR "lvl/desired/level 8.png",
-              RES_DIR "lvl/initial/level 8.png",
+              DATA_DIR "lvl/desired/level 8.png",
+              DATA_DIR "lvl/initial/level 8.png",
               EFFECT_NONE);
     level_add("Yearning",
-              RES_DIR "lvl/desired/level 9.png",
-              RES_DIR "lvl/initial/level 9.png",
+              DATA_DIR "lvl/desired/level 9.png",
+              DATA_DIR "lvl/initial/level 9.png",
               EFFECT_SNOW);
     level_add("Showpiece",
-              RES_DIR "lvl/desired/level 10.png",
-              RES_DIR "lvl/initial/level 10.png",
+              DATA_DIR "lvl/desired/level 10.png",
+              DATA_DIR "lvl/initial/level 10.png",
               EFFECT_NONE);
     level_add("Glass Body",
-              RES_DIR "lvl/desired/level 11.png",
-              RES_DIR "lvl/initial/level 11.png",
+              DATA_DIR "lvl/desired/level 11.png",
+              DATA_DIR "lvl/initial/level 11.png",
               EFFECT_RAIN);
 }
 
