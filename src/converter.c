@@ -133,7 +133,7 @@ static void converter_draw(int target, Converter *converter) {
                   null,
                   &arrow_dst);
 */
-    
+
     // Flashing the arrow itself.
     if (converter->state == CONVERTER_ON) {
         const int period = 500; // Milliseconds.

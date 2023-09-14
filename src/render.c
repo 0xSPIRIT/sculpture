@@ -358,20 +358,20 @@ RENDERAPI void RenderPointRelative(int target_enum, int x, int y) {
 RENDERAPI void RenderFullArrow(int target, int center_x, int center_y, int size) {
     int w = size;
     int h = size * 3;
-    
+
     {
         int x = center_x - w/2;
         int y = center_y - h/2;
-        
+
         RenderFillRect(target, (SDL_Rect){ x, y, w, h });
     }
-    
+
     int x = center_x;
     int y = center_y-h/2;
-    
+
     SDL_Color c;
     SDL_GetRenderDrawColor(gs->renderer, &c.r, &c.g, &c.b, &c.a);
-    
+
     const SDL_Vertex vertices[] = {
         { .position = (SDL_FPoint){ x-w*1, y+h },  .color = c },
         { .position = (SDL_FPoint){ x+w*1, y+h },  .color = c },
