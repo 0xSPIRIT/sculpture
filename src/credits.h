@@ -22,10 +22,10 @@ typedef struct Credits_Screen {
 
 typedef struct Credits {
     bool initted;
-    
+
     int state;
     int timers[TIMERS_COUNT];
     bool fade_out;
-    
+
     Credits_Screen s;
 } Credits;

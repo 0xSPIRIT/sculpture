@@ -73,40 +73,40 @@ int get_item_from_any(int type, int timer, int override_index) {
 
 void converter_gui_init(void) {
     Recipes* c = &gs->recipes;
-    
+
     const Recipe_Item conversions[] = {
         // Converter,  Fuel, Input 1, Input 2, Output, Alternate button
         (Recipe_Item){CONVERTER_FUEL,     0,                   CELL_ANY_CONVERT_TO_COAL, 0,                 CELL_UNREFINED_COAL, false},
         (Recipe_Item){CONVERTER_FUEL,     0,                   CELL_UNREFINED_COAL,      CELL_GLASS,        CELL_REFINED_COAL,   false},
         (Recipe_Item){CONVERTER_FUEL,     0,                   CELL_ANY_STONE,           CELL_REFINED_COAL, CELL_LAVA,           false},
-        
+
         (Recipe_Item){CONVERTER_MATERIAL, CELL_ANY_FUEL,       CELL_STONE,            0,           CELL_MARBLE,    false},
         (Recipe_Item){CONVERTER_MATERIAL, CELL_UNREFINED_COAL, CELL_STONE,            CELL_SAND,   CELL_SANDSTONE, false},
         (Recipe_Item){CONVERTER_MATERIAL, CELL_REFINED_COAL,   CELL_SANDSTONE,        CELL_MARBLE, CELL_QUARTZ,    false},
         (Recipe_Item){CONVERTER_MATERIAL, CELL_UNREFINED_COAL, CELL_SAND,             0,           CELL_GLASS,     false},
-        
+
         (Recipe_Item){CONVERTER_MATERIAL, CELL_ANY_NONE_OR_UNREFINED_COAL, CELL_ANY_STEAM_OR_ICE, 0, CELL_WATER, true},
         (Recipe_Item){CONVERTER_MATERIAL, 0,                               CELL_WATER,            0, CELL_ICE,   false},
-        
+
         (Recipe_Item){CONVERTER_MATERIAL, CELL_ANY_COAL,       CELL_DIRT,             0,         CELL_STONE,     false},
         (Recipe_Item){CONVERTER_MATERIAL, CELL_ANY_COAL,       CELL_ANY_WATER_OR_ICE, 0,         CELL_STEAM,     true},
-        
+
         (Recipe_Item){CONVERTER_MATERIAL, CELL_LAVA, CELL_ANY_COAL, 0,            CELL_BASALT,  false},
         (Recipe_Item){CONVERTER_MATERIAL, CELL_LAVA, CELL_QUARTZ,   CELL_MARBLE,  CELL_GRANITE, false},
         (Recipe_Item){CONVERTER_MATERIAL, CELL_LAVA, CELL_BASALT,   CELL_GRANITE, CELL_DIAMOND, false},
     };
-    
+
     Recipe_Item *ptr = c->conversions;
     if (!ptr) {
         ptr = PushSize(gs->persistent_memory, sizeof(conversions));
     }
     memset(c, 0, sizeof(Recipes));
-    
+
     c->conversions = ptr;
-    
+
     memcpy(c->conversions, conversions, sizeof(conversions));
     c->conversions_count = ArrayCount(conversions);
-    
+
     for (int i = 0; i < c->conversions_count; i++) {
         if (conversions[i].alternate_button)
             c->override_indices[i] = 1;
@@ -330,7 +330,7 @@ void recipes_draw_button(int target) {
 
 void recipe_draw_note(int target) {
     int dy = Scale(45) + gs->recipes.y;
-    
+
     RenderText(target,
                &(Render_Text_Data){
                    .identifier = "2matc",
@@ -399,7 +399,7 @@ void recipes_draw(int final_target) {
 
     for (int i = 0; i < 3; i++) {
         Recipe_Item item = c->conversions[i];
-        
+
         Assert(item.converter == CONVERTER_FUEL);
 
         {
@@ -481,7 +481,7 @@ void recipes_draw(int final_target) {
 
     for (int i = 3; i < c->conversions_count; i++) {
         Recipe_Item item = c->conversions[i];
-        
+
         Assert(item.converter == CONVERTER_MATERIAL);
 
         {

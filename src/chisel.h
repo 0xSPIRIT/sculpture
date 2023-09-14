@@ -23,11 +23,11 @@ typedef struct Chisel {
     ChiselState state;
     Chisel_Size size;
     int x, y;
-    
+
     int stored_mx, stored_my;
-    
+
     int light_index;
-    
+
     f64 draw_x, draw_y;
 
     int temp_idx;

@@ -10,6 +10,6 @@ typedef struct {
 typedef struct {
     Light lights[MAX_LIGHTS];
     int light_count;
-    
+
     Light *main_light, *chisel_light;
 } Lighting;

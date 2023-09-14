@@ -1,5 +1,5 @@
 #define GUI_POPUP_H (0.4375*gs->game_height) // game_height/2
-#define GUI_H (gs->game_width/8)
+#define GUI_H (gs->game_width/8.0)
 
 #define MAX_MESSAGE_STACK 256
 
@@ -43,7 +43,7 @@ typedef struct GUI {
 
 typedef struct Button {
     Button_Type type;
-    int x, y, w, h;
+    f64 x, y, w, h;
     int index;
     Texture *texture;
     char tooltip_text[128];

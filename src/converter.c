@@ -438,7 +438,7 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
 
     switch (fuel->type) {
         default: { } break;
-        
+
         case CELL_NONE: {
             if (number_inputs == 1) {
                 switch (input->type) {

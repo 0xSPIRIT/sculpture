@@ -30,7 +30,7 @@ static int is_cell_gas(int type) {
 void grid_set_to_desired() {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         Cell *c = &gs->grid[i];
-        
+
         c->type = gs->overlay.grid[i];
         c->is_initial = false;
         c->object = 0;

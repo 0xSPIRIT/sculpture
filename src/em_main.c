@@ -14,10 +14,10 @@
 
 EM_JS(void, canvas_set_size, (int desired_width, int desired_height, double device_pixel_ratio), {
           var canvas = document.getElementById('canvas');
-          
+
           var new_w = desired_width / device_pixel_ratio;
           var new_h = desired_height / device_pixel_ratio;
-          
+
           canvas.style.width = new_w + "px"; // 460.8 @ scale=9
           canvas.style.height = new_h + "px"; // 518.4 @ scale=9
           canvas.width = new_w;
@@ -54,10 +54,10 @@ static void fail(const char *msg) {
 // Separate because audio is initted upon player clicking
 static void game_init_sdl_audio(Game_State *state) {
     bool ok = true;
-    
+
     ok = (Mix_Init(MIX_INIT_OGG) != 0);
     if (!ok) fail("Failed to init SDL mixer");
-    
+
     ok = Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0;
     if (!ok) fail("Failed to open audio device");
 }
@@ -67,18 +67,18 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
 
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
     if (!ok) fail("Failed to init SDL");
-    
+
     {
         SDL_DisplayMode dm;
-        
+
         if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
             fail(SDL_GetError());
         }
-        
+
         state->desktop_w = dm.w;
         state->desktop_h = dm.h;
     }
-    
+
     state->window = SDL_CreateWindow(window_title,
                                      SDL_WINDOWPOS_CENTERED,
                                      SDL_WINDOWPOS_CENTERED,
@@ -86,13 +86,13 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
                                      h,
                                      0);
     if (!state->window) fail("Failed to create window");
-    
+
     state->device_pixel_ratio = device_pixel_ratio;
-    
+
     canvas_set_size(state->real_width, state->real_height, device_pixel_ratio);
-    
+
     game_init_sdl_audio(state);
-    
+
     ok = (IMG_Init(IMG_INIT_PNG) != 0);
     if (!ok) fail("Failed to init SDL image");
 
@@ -103,9 +103,9 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
 
     state->renderer = SDL_CreateRenderer(state->window, -1, flags);
     if (!state->renderer) fail("Failed to create the renderer");
-    
+
     state->render = RenderInit(state->renderer);
-    
+
     input_set_locked(true);
 }
 
@@ -117,7 +117,7 @@ static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *tra
     if (!persistent_memory->data) {
         fail("Failed to allocate memory for the game!\nTry closing other applications/tabs then try again.");
     }
-    
+
     persistent_memory->cursor = persistent_memory->data;
 
     // Set the transient memory as an offset into persistent memory.
@@ -132,18 +132,18 @@ static bool prefix(const char *pre, const char *str) {
 
 static void game_init_emscripten(Game_State *state) {
     srand((unsigned int) time(0));
-    
+
     state->S = 12;
     // 768 x 864
 
     f64 device_pixel_ratio = emscripten_get_device_pixel_ratio();
-    
+
     state->game_width = 64*state->S;
     state->game_height = 64*state->S + GUI_H;
-    
+
     state->real_width = state->game_width;
     state->real_height = state->game_height;
-    
+
     game_init_sdl_em(state,
                      "Alaska",
                      state->game_width,
@@ -167,7 +167,7 @@ static void game_deinit(Game_State *state) {
     surfaces_deinit(&state->surfaces);
     fonts_deinit(&state->fonts);
     audio_deinit(&state->audio);
-    
+
     SDL_DestroyRenderer(state->renderer);
     SDL_DestroyWindow(state->window);
 
@@ -187,11 +187,11 @@ static void em_mainloop(void *arg) {
             emscripten_cancel_main_loop();
         }
     }
-    
+
     input_tick(data->game_state);
 
     game_run(data->game_state);
-    
+
     memset(data->transient_memory.data, 0, data->transient_memory.size);
     data->transient_memory.cursor = data->transient_memory.data;
 }

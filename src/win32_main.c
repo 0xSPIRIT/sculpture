@@ -1,6 +1,6 @@
 //
 // Basically, the game is split up into two compilation units
-// for debug builds. In the release build, everything is 
+// for debug builds. In the release build, everything is
 // in one single unit.
 //
 // For debug builds:
@@ -89,7 +89,7 @@ static void fail(int code) {
 
 static f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     SDL_DisplayMode dm;
-   
+
     if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
         SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
         __debugbreak();
@@ -112,7 +112,7 @@ static f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
 
 static void game_init_sdl(Game_State *state, const char *window_title, bool use_software_renderer) {
     bool ok = true;
-    
+
     ok = (SDL_Init(SDL_INIT_VIDEO) == 0);
     if (!ok) fail(1);
 
@@ -142,7 +142,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
 
     state->window = SDL_CreateWindow(window_title, x, y, state->real_width, state->real_height, window_flags);
     if (!state->window) fail(3);
-    
+
     SDL_Surface *window_icon = RenderLoadSurface("icon.png");
     SDL_SetWindowIcon(state->window, window_icon);
 
@@ -163,10 +163,10 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
     } else {
         renderer_flags = SDL_RENDERER_ACCELERATED;
     }
-    
+
     SDL_DisplayMode dm;
-    SDL_GetCurrentDisplayMode(0, &dm); 
-    
+    SDL_GetCurrentDisplayMode(0, &dm);
+
     if (dm.refresh_rate == 60) {
         renderer_flags |= SDL_RENDERER_PRESENTVSYNC;
     } else {
@@ -181,7 +181,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
     if (state->fullscreen) {
         SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
-    
+
 #if SIMULATE_MOUSE
     input_set_locked(true);
 #endif
@@ -358,7 +358,7 @@ inline bool win32_SetProcessDpiAware(void) {
 
 void check_reloading_game_code(Game_Code *game_code) {
     FILETIME new_dll_write_time = get_last_write_time(GAME_DLL_NAME);
-    
+
     if (CompareFileTime(&new_dll_write_time, &game_code->last_write_time) != 0) {
         reload_game_code(game_code);
     }
@@ -366,7 +366,7 @@ void check_reloading_game_code(Game_Code *game_code) {
 
 int win32_main(void) {
     win32_SetProcessDpiAware();
-    
+
 #ifndef ALASKA_RELEASE_MODE
     // Make sure we're running in the right folder.
     {
@@ -412,17 +412,17 @@ int win32_main(void) {
 
     gs->persistent_memory = &persistent_memory;
     gs->transient_memory = &transient_memory;
-    
+
     win32_game_init(gs);
-    
+
     f64 freq = SDL_GetPerformanceFrequency();
-    
+
 #ifdef ALASKA_RELEASE_MODE
     game_init(gs);
 #else
     game_code.game_init(gs);
 #endif
-    
+
     // Only now, since the levels have been instantiated,
     // can we initialize render targets (since they depend
     // on each level's width/height)
@@ -462,12 +462,12 @@ int win32_main(void) {
         // Zero out the transient memory for next frame!
         memset(transient_memory.data, 0, transient_memory.size);
         transient_memory.cursor = transient_memory.data;
-        
+
         if (gs->needs_manual_fps_lock) { // Manual fallback FPS locker
             u64 d = SDL_GetPerformanceCounter() - start_frame;
             f64 seconds = d / freq;
             f64 desired_frame_time = 1.0/60.0;
-            
+
             f64 time_to_sleep_for = (desired_frame_time - seconds);
             if (time_to_sleep_for > 0) {
                 precise_sleep(time_to_sleep_for);
@@ -476,15 +476,15 @@ int win32_main(void) {
 
 #ifndef ALASKA_RELEASE_MODE
         u64 end = SDL_GetPerformanceCounter();
-        
+
         u64 delta = (end - start_frame);
         f64 d = (f64)delta / freq; // should be ~16.67 ms
         (void)d;
-        
+
         // NOTE: d != gs->dt.
         //  d = Time taken with the vsync sleep taken into account.
         //  gs->dt = Time taken for frame alone.
-        
+
         u64 size_current = persistent_memory.cursor - persistent_memory.data;
         u64 size_max = persistent_memory.size;
         f32 percentage = (f32)size_current / (f32)size_max;

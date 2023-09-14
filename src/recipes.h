@@ -12,7 +12,7 @@ typedef struct Recipes {
     f64 y, y_to;
 
     Button button;
-    
+
     Recipe_Item *conversions;
     int conversions_count;
 

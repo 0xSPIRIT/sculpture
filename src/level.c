@@ -1,12 +1,12 @@
 static void debug_print(int level) {
     Level *lvl = &gs->levels[level];
     int w = 128, h = 64;
-    
+
     Assert(gs->gw == w);
     Assert(gs->gh == h);
     Assert(lvl->w == w);
     Assert(lvl->h == h);
-    
+
     Log("Initial Grid:\n");
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
@@ -19,7 +19,7 @@ static void debug_print(int level) {
         }
         Log("\n");
     }
-    
+
     Log("Current Grid:\n");
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
@@ -32,7 +32,7 @@ static void debug_print(int level) {
         }
         Log("\n");
     }
-    
+
     Log("\n");
 }
 
@@ -53,27 +53,27 @@ static void level_setup_initial_grid(void) {
 
 static void play_level_end_sound(int level) {
     Sound *sound = null;
-    
+
     if (level+1 != 7) {
         sound = &gs->audio.sprinkle;
     } else {
         sound = &gs->audio.macabre;
     }
-    
+
     audio_lower_music_for_a_bit();
     play_sound(AUDIO_CHANNEL_GUI, *sound, 0);
 }
 
 static int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
     Level *level = &gs->levels[gs->level_count++];
-    
+
     level->index = gs->level_count-1;
     strcpy(level->name, name);
     level->popup_time_current = 0;
     level->popup_time_max = POPUP_TIME;
     level->state = LEVEL_STATE_NARRATION;
     level->effect_type = effect_type;
-    
+
     int w, h;
     level_get_cells_from_image(desired_image,
                                &level->desired_grid,
@@ -88,19 +88,19 @@ static int level_add(const char *name, const char *desired_image, const char *in
                                &w,
                                &h);
     level->default_source_cell_count = level->source_cell_count;
-    
+
     memcpy(&level->default_source_cell,
            &level->source_cell,
            sizeof(Source_Cell)*SOURCE_CELL_MAX);
-    
+
     Assert(w > 0);
     Assert(h > 0);
-    
+
     if (w != level->w || h != level->h) {
         Error("%s and %s aren't the same size. Initial W: %d, Desired W: %d.\n", initial_image, desired_image, w, level->w);
         Assert(0);
     }
-    
+
     return level->index;
 }
 
@@ -153,57 +153,57 @@ static void levels_setup(void) {
 
 static void goto_level(int lvl) {
     gs->level_current = lvl;
-    
+
     converter_gui_init();
-    
+
     gs->render.view.x = gs->render.to.x = 0;
     gs->render.view.y = gs->render.to.y = 0;
-    
+
     gs->levels[lvl].first_frame_compare = false;
-    
+
     grid_init(gs->levels[lvl].w, gs->levels[lvl].h);
-    
+
     tooltip_reset(&gs->gui.tooltip);
     narrator_init(gs->level_current);
-    
+
     lighting_init(&gs->lighting);
-    
+
     gs->background = background_init();
-    
+
     gs->levels[lvl].popup_time_current = 0;
-    
+
     memcpy(&gs->levels[lvl].source_cell,
            &gs->levels[lvl].default_source_cell,
            sizeof(Source_Cell)*SOURCE_CELL_MAX);
     gs->levels[lvl].source_cell_count = gs->levels[lvl].default_source_cell_count;
-    
+
     gs->current_tool = TOOL_GRABBER;
-    
+
     gs->item_holding = (Item){0};
     gs->current_placer = 0;
-    
+
     dust_init();
-    
+
     gs->chisels[0] = chisel_init(CHISEL_SMALL);
     gs->chisels[1] = chisel_init(CHISEL_MEDIUM);
     gs->chisels[2] = chisel_init(CHISEL_LARGE);
-    
+
     gs->chisel = &gs->chisels[0];
-    
+
     gs->hammer = hammer_init();
-    
+
     for (int i = 0; i < PLACER_COUNT; i++)
         placer_init(i);
     gs->has_any_placed = false;
-    
+
     inventory_init();
     grabber_init();
     gui_init();
     all_converters_init();
     overlay_init();
-    
+
     setup_item_indices();
-    
+
 #if SHOW_NARRATION
     if (gs->narrator.line_count) {
         level_set_state(lvl, LEVEL_STATE_NARRATION);
@@ -227,7 +227,7 @@ static void goto_level(int lvl) {
 #else
     level_set_state(lvl, LEVEL_STATE_PLAY);
 #endif
-    
+
     level_setup_initial_grid();
 
     if (!gs->undo_initialized) {
@@ -379,7 +379,7 @@ static void level_tick_play(Level *level) {
         gs->input.keys[SDL_SCANCODE_F] = 0;
         return;
     }
-    
+
     simulation_tick();
 
     if (!gs->paused || gs->step_one) {
@@ -872,9 +872,9 @@ static void level_draw_outro_or_play(Level *level) {
             break;
         }
     }
-    
+
     draw_objects(target);
-    
+
     RenderColor(0,0,0,255);
     RenderClear(RENDER_TARGET_MASTER);
 

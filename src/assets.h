@@ -95,7 +95,7 @@ enum {
     TEXTURE_CHISEL_LARGE_DIAGONAL,
 
     TEXTURE_CURSOR,
-    
+
     TEXTURE_BG_0,
     TEXTURE_BG_1,
     TEXTURE_BG_2,
@@ -155,7 +155,7 @@ typedef union Surfaces {
         *ice_surface;
 
         SDL_Surface *item_nums[ITEM_COUNT];
-    
+
         // Any temp surfaces you might need to draw text or w/e goes here!
         SDL_Surface *slot_names[TOTAL_SLOT_COUNT];
         SDL_Surface *converter_names[CONVERTER_COUNT];

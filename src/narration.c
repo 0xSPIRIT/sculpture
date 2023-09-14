@@ -191,7 +191,7 @@ static void narrator_run(int target, SDL_Color col) {
 
     for (int i = 0; i < n->current_line_count; i++) {
         u64 length = strlen(n->current_lines[i]);
-        
+
         char *s = PushArray(gs->transient_memory, length+1, sizeof(char));
         strcpy(s, n->current_lines[i]);
 

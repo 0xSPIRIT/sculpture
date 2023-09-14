@@ -6,26 +6,26 @@ static Background background_init(void) {
 
 static void background_draw_starry_night(int target_enum, Background *bg) {
     int w = bg->surface->w, h = bg->surface->h;
-    
+
     int background = TEXTURE_BG_0;
-    
+
     int level = gs->level_current+1;
-    
+
     if (level >= 5) {
         background = TEXTURE_BG_2;
     } else if (level >= 3) {
         background = TEXTURE_BG_1;
     }
-    
+
     if (level == 11) return;
     if (background == 0) return;
-    
+
     Assert(w == 128);
     Assert(h == 96);
     Assert(bg->surface->format->BytesPerPixel == 4);
-    
+
     memset_u32((u32*)bg->surface->pixels, 0xff100000, w*h);
-    
+
     Texture texture = RenderCreateTextureFromSurface(bg->surface);
     RenderTexture(target_enum, &texture, null, &(SDL_Rect){ 64, 0, w, h });
     RenderTexture(target_enum, &GetTexture(background), null, &(SDL_Rect){ 64, 0, w, h });

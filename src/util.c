@@ -141,10 +141,10 @@ static bool is_in_view(int x, int y) {
 static void move_mouse_to_grid_position(f32 x, f32 y) {
     int new_x = (int)(x*gs->S + gs->S/2 - gs->render.view.x);
     int new_y = GUI_H + (int)(y*gs->S + gs->S/2 - gs->render.view.y + (gs->real_height/2 - gs->game_height/2));
-    
+
     // Hardcode
     if (gs->gw == 128) new_x -= gs->game_width/2;
-    
+
 #if SIMULATE_MOUSE
     input_set_mouse_position(&gs->input, new_x, new_y);
 #else
@@ -229,7 +229,7 @@ static void get_name_from_tool(int type, char *out) {
         }
         return;
     }
-    
+
     switch (type) {
         case TOOL_CHISEL_SMALL:  strcpy(out, "Small Chisel (1)"); break;
         case TOOL_CHISEL_MEDIUM: strcpy(out, "Medium Chisel (2)"); break;
@@ -379,7 +379,7 @@ static f32 smoothstep(f32 x) {
 static f32 smoothstep_2(f32 x) {
     if (x < 0) x = 0;
     if (x > 1) x = 1;
-    
+
     // f(x) = 6x^5 - 15x^4 + 10x^3
     return (x*x*x)*(6*x*x - 15*x + 10);
 }

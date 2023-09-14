@@ -110,7 +110,7 @@ static vec2* project(vec3 *input, int count) {
 
 static void object_draw(Object3D *obj) {
     if (!obj->active) return;
-    
+
     if (obj->state == OBJECT_DONE) {
         if (obj->timer == -1) {
             narrator_tick();

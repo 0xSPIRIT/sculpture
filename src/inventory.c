@@ -111,7 +111,7 @@ static bool add_item_to_inventory_slot(enum Cell_Type type, int amount) {
             break;
         }
     }
-    
+
     if (index == -1) {
         for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
             Slot *slot = &gs->inventory.slots[i];
@@ -121,9 +121,9 @@ static bool add_item_to_inventory_slot(enum Cell_Type type, int amount) {
             }
         }
     }
-    
+
     if (index == -1) return false;
-    
+
     Slot *slot = &gs->inventory.slots[index];
     slot->item.type = type;
     slot->item.amount += amount;

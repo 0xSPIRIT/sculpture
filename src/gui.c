@@ -288,7 +288,7 @@ static void button_draw_prefer_color(int target, Button *b, SDL_Color color) {
     }
 
     SDL_Rect dst = {
-        b->x, b->y, b->w, b->h
+        round(b->x), round(b->y), round(b->w), round(b->h)
     };
 
     if (b->disabled) {
@@ -499,7 +499,7 @@ static void profile_array(Cell *desired,
 
 static bool can_goto_next_level(void) {
     int level = gs->level_current+1;
-    
+
     if (compare_cells(gs->grid, gs->levels[gs->level_current].initial_grid)) {
         return false;
     }
@@ -579,8 +579,6 @@ static void gui_draw(int target) {
 
     GUI *gui = &gs->gui;
 
-    // Draw the toolbar buttons.
-
     RenderColor(0, 0, 0, 0);
     RenderClear(RENDER_TARGET_GUI_TOOLBAR);
 
@@ -610,7 +608,7 @@ static void gui_draw(int target) {
                              &dst);
     }
 
-    gui_draw_wasd_popup(target);    
+    gui_draw_wasd_popup(target);
 }
 
 static void gui_popup_draw(int target) {
@@ -653,7 +651,7 @@ static void gui_popup_draw(int target) {
 
     RenderColorStruct(ColorFromInt(INVENTORY_COLOR2));
     RenderFillRect(target, bar);
-    
+
 #if 0
     RenderColorStruct(ColorFromInt(CONVERTER_LINE_COLOR));
     RenderLine(target,
@@ -672,7 +670,7 @@ static void gui_popup_draw(int target) {
         int mx = gs->input.real_mx;
         int my = gs->input.real_my;
         gs->is_mouse_on_tab_icon = is_point_in_rect((SDL_Point){mx, my}, tab_icon);
-        
+
         bool is_background_white = (gs->level_current+1 == 11);
 
         if (gs->is_mouse_on_tab_icon) {

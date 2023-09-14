@@ -93,7 +93,7 @@ typedef struct Tutorial_Rect {
     int margin;
 
     Button *ok_button;
-    
+
     char str[8*64];
     char lines[MAX_TUTORIAL_LINES][64];
 

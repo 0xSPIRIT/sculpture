@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\util.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\win32_main.c", "d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\util.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
 
 [MainWindow]
 X = 94
@@ -24,6 +24,16 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
+Active = true
+TabLabel = "win32_main.c"
+TabWidth = 116.7939
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\win32_main.c"
+CursorPos = 10520
+VertPos = 7728.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "util.c"
 TabWidth = 57.48092
 TabIsPinned = false
@@ -33,7 +43,6 @@ CursorPos = 10576
 VertPos = 6699.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-Active = true
 TabLabel = "grid.c"
 TabWidth = 62.06107
 TabIsPinned = false
@@ -55,19 +64,19 @@ SizePriority = 0.5652725
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
-Active = true
 TabLabel = "Output"
 TabWidth = 91.98473
 TabIsPinned = false
 Type = "OutputPanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+Active = true
 TabLabel = "Watch"
 TabWidth = 87.40459
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 229.0}, {Width = 676.0}, {Width = 225.0}]
-Items = ["color", "gs.grid[i].id", ""]
+Items = [""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"
