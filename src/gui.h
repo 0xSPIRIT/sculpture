@@ -56,8 +56,7 @@ typedef struct Button {
 } Button;
 
 typedef struct Arrow {
-    Texture *texture;
-    int x, y, w, h;
+    int x, y;
 } Arrow;
 
 static Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*));

@@ -79,7 +79,6 @@ static void converter_set_state(Converter *converter, enum Converter_State state
     converter->state = state;
     if (state == CONVERTER_OFF) {
         converter->state = CONVERTER_OFF;
-        RenderTextureColorMod(converter->arrow.texture, 255, 255, 255);
     }
 }
 
@@ -107,6 +106,7 @@ static void converter_draw(int target, Converter *converter) {
         slot_draw(target, &converter->slots[i], converter->x, converter->y);
     }
 
+/*
     SDL_Rect arrow_dst = {
         (int) (converter->x + converter->arrow.x - Scale(converter->arrow.w) / 2.0),
         (int) (converter->y + converter->arrow.y + Scale(converter->arrow.h) / 2.0),
@@ -132,6 +132,23 @@ static void converter_draw(int target, Converter *converter) {
                   converter->arrow.texture,
                   null,
                   &arrow_dst);
+*/
+    
+    // Flashing the arrow itself.
+    if (converter->state == CONVERTER_ON) {
+        const int period = 500; // Milliseconds.
+        u8 a = (SDL_GetTicks()/period) % 2 == 0;
+        a = a ? 180 : 90;
+
+        RenderColor(a, a, a, 255);
+    } else {
+        RenderColor(255, 255, 255, 255);
+    }
+
+    RenderFullArrow(target,
+                    converter->x + converter->arrow.x,
+                    converter->y + converter->arrow.y + Scale(60),
+                    Scale(22));
 
     char identifier[64] = {0};
     sprintf(identifier, "%p", converter);
@@ -237,11 +254,6 @@ static void converter_setup_position(Converter *converter) {
         converter->slots[i].converter = converter;
         converter->slots[i].inventory_index = -1;
     }
-
-    converter->arrow.texture = &GetTexture(TEXTURE_CONVERTER_ARROW);
-
-    converter->arrow.w = converter->arrow.texture->width;
-    converter->arrow.h = converter->arrow.texture->height;
 
     converter->arrow.x = (int) (converter->w/2);
     converter->arrow.y = (int) (converter->h/2 + 24);

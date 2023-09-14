@@ -108,7 +108,6 @@ static void textures_init(Textures *textures) {
         Assert(GetTexture(TEXTURE_TOOL_BUTTONS+i).handle);
     }
 
-    GetTexture(TEXTURE_CONVERTER_ARROW) = RenderLoadTexture("arrow.png");
     GetTexture(TEXTURE_CONVERT_BUTTON) = RenderLoadTexture("buttons/convert.png");
     GetTexture(TEXTURE_ALTERNATE_BUTTON) = RenderLoadTexture("buttons/alternate.png");
     GetTexture(TEXTURE_RECIPE_BOOK_BUTTON) = RenderLoadTexture("buttons/recipebook.png");

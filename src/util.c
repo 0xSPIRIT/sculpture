@@ -3,8 +3,6 @@ u64 __start = SDL_GetPerformanceCounter();
 
 #define EndTimer() __end_timer(__start)
 
-#define ArrayCount(x) (sizeof(x)/sizeof(*x))
-
 static inline f64 __end_timer(u64 start) {
     u64 f, e;
     e = SDL_GetPerformanceCounter();

@@ -1,5 +1,7 @@
 #define Error(...) do{fprintf(stderr, __VA_ARGS__), fflush(stderr);}while(0);
 
+#define ArrayCount(x) (sizeof(x)/sizeof(*x))
+
 #ifndef ALASKA_RELEASE_MODE
   #define Log(...) do{char msg[8192]; sprintf(msg, __VA_ARGS__), OutputDebugString(msg); }while(0);
 #else
