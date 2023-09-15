@@ -310,12 +310,6 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
     if (effect->type == EFFECT_NONE)
         return;
 
-#ifndef ALASKA_RELEASE_MODE
-    if (gs->input.keys_pressed[SDL_SCANCODE_T]) {
-        effect_reset_snow(effect, false);
-    }
-#endif
-
     switch (effect->type) {
         case EFFECT_SNOW: {
             for (int i = 0; i < effect->particle_count; i++) {

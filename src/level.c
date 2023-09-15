@@ -1,24 +1,8 @@
-static void debug_print(int level) {
-    Level *lvl = &gs->levels[level];
+void debug_print(void) {
     int w = 128, h = 64;
 
     Assert(gs->gw == w);
     Assert(gs->gh == h);
-    Assert(lvl->w == w);
-    Assert(lvl->h == h);
-
-    Log("Initial Grid:\n");
-    for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            int type = lvl->desired_grid[x+y*w].type;
-            if (type) {
-                Log("[]");
-            } else {
-                Log("  ");
-            }
-        }
-        Log("\n");
-    }
 
     Log("Current Grid:\n");
     for (int y = 0; y < h; y++) {

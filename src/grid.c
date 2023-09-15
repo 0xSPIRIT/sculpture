@@ -33,7 +33,10 @@ void grid_set_to_desired() {
 
         c->type = gs->overlay.grid[i];
         c->is_initial = false;
-        c->object = 0;
+        if (c->type)
+            c->object = 0;
+        else
+            c->object = -1;
     }
 }
 
@@ -347,7 +350,10 @@ static void grid_draw_glow(int target) {
             for (int x = -r; x <= r; x++) {
                 if (x*x + y*y > r*r) continue;
                 if (!is_in_bounds(i%w+x, i/w+y)) continue;
-                grid_glow_set(pixels, i%w + x, i/w + y, 2);
+
+                int alpha = 1;
+                if (gs->grid[i].type == CELL_DIAMOND) alpha = 2;
+                grid_glow_set(pixels, i%w + x, i/w + y, alpha);
             }
         }
     }
@@ -406,9 +412,7 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
             break;
         }
         case CELL_ICE: {
-            color = get_pixel(gs->surfaces.ice_surface, i%gs->gw, i/gs->gw);
-            color.r *= 0.80;
-            color.g *= 0.80;
+            color = ice(i);
             break;
         }
 
@@ -422,8 +426,7 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
 
         case CELL_MARBLE: {
             //color = (SDL_Color){245+randR(i)%10, 245+randG(i)%10, 245+randB(i)%10, 255};
-            int id = grid[i].id*2;
-            color = get_pixel(gs->surfaces.marble_surface, id%gs->gw, id/gs->gw);
+            color = marble(i);
             break;
         }
 
@@ -457,13 +460,12 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
         }
 
         case CELL_GLASS: {
-            color = get_pixel(gs->surfaces.glass_surface, i%gs->gw, i/gs->gw);
-            color.a = 255;
+            color = glass(i);
             break;
         }
 
         case CELL_GRANITE: {
-            color = get_pixel(gs->surfaces.granite_surface, i%gs->gw, i/gs->gw);
+            color = granite(i);
             break;
         }
 

@@ -11,6 +11,7 @@
 #include "overlay.c"
 #include "converter.c"
 #include "dust.c"
+#include "materials.c"
 #include "grid.c"
 #include "credits.c"
 #include "undo.c"
