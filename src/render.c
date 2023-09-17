@@ -307,9 +307,20 @@ RENDERAPI void RenderLineRelative(int target_enum, int x1, int y1, int x2, int y
     SDL_RenderDrawLine(gs->render.sdl, x1, y1, x2, y2);
 }
 
+RENDERAPI void RenderLinePoints(int target, SDL_Point a, SDL_Point b) {
+    RenderLine(target, a.x, a.y, b.x, b.y);
+}
+
 RENDERAPI void RenderLine(int target_enum, int x1, int y1, int x2, int y2) {
     RenderMaybeSwitchToTarget(target_enum);
     SDL_RenderDrawLine(gs->render.sdl, x1, y1, x2, y2);
+}
+
+RENDERAPI void RenderPointRelative(int target_enum, int x, int y) {
+    Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
+    x += target->top_left.x;
+    y += target->top_left.y;
+    SDL_RenderDrawPoint(gs->render.sdl, x, y);
 }
 
 RENDERAPI void RenderArrowRelative(int target_enum, SDL_Point from, SDL_Point to, int head_size) {
@@ -348,14 +359,7 @@ RENDERAPI void RenderArrow(int target_enum, SDL_Point from, SDL_Point to, int he
     RenderLine(target_enum, to.x, to.y, to.x - arrow_y, to.y + arrow_x); // Rotate by 90 degrees
 }
 
-RENDERAPI void RenderPointRelative(int target_enum, int x, int y) {
-    Render_Target *target = RenderMaybeSwitchToTarget(target_enum);
-    x += target->top_left.x;
-    y += target->top_left.y;
-    SDL_RenderDrawPoint(gs->render.sdl, x, y);
-}
-
-RENDERAPI void RenderFullArrow(int target, int center_x, int center_y, int size) {
+RENDERAPI void RenderFullArrow(int target, int center_x, int center_y, f64 size) {
     int w = size;
     int h = size * 3;
 
@@ -373,11 +377,40 @@ RENDERAPI void RenderFullArrow(int target, int center_x, int center_y, int size)
     SDL_GetRenderDrawColor(gs->renderer, &c.r, &c.g, &c.b, &c.a);
 
     const SDL_Vertex vertices[] = {
-        { .position = (SDL_FPoint){ x-w*1, y+h },  .color = c },
-        { .position = (SDL_FPoint){ x+w*1, y+h },  .color = c },
-        { .position = (SDL_FPoint){ x, y+h+size }, .color = c  },
+        { .position = (SDL_FPoint){ x-w, y+h },    .color = c },
+        { .position = (SDL_FPoint){ x+w, y+h },    .color = c },
+        { .position = (SDL_FPoint){ x, y+h+size }, .color = c },
     };
     SDL_RenderGeometry(gs->renderer, null, vertices, ArrayCount(vertices), null, 0);
+}
+
+RENDERAPI void RenderFullArrowOutline(int target, int center_x, int center_y, f64 size) {
+    int w = size;
+    int h = size*3;
+    
+    int x = center_x - w/2;
+    int y = center_y - h/2;
+    
+    SDL_Point tl = { x, y };
+    SDL_Point tr = { x+w, y };
+    SDL_Point bl = { x, y+h };
+    SDL_Point br = { x+w, y+h };
+    
+    // rectangle
+    RenderLinePoints(target, tl, tr);
+    RenderLinePoints(target, tl, bl);
+    RenderLinePoints(target, tr, br);
+    
+    x = center_x;
+    y = center_y-h/2;
+    SDL_Point a = { x-w, y+h };
+    SDL_Point b = { x+w, y+h };
+    SDL_Point c = { x, y+h+size };
+    
+    RenderLinePoints(target, bl, a);
+    RenderLinePoints(target, br, b);
+    RenderLinePoints(target, a, c);
+    RenderLinePoints(target, b, c);
 }
 
 RENDERAPI void RenderPoint(int target_enum, int x, int y) {

@@ -92,16 +92,6 @@ static void converter_draw(int target, Converter *converter) {
     converter->w = (f32) (gs->game_width/2);
     converter->h = GUI_POPUP_H;
 
-    RenderColor(Red(CONVERTER_LINE_COLOR),
-                Green(CONVERTER_LINE_COLOR),
-                Blue(CONVERTER_LINE_COLOR),
-                255);
-    RenderLine(target,
-               converter->x+converter->w,
-               converter->y+GUI_H,
-               converter->x+converter->w,
-               converter->y+GUI_H+converter->h);
-
     for (int i = 0; i < converter->slot_count; i++) {
         slot_draw(target, &converter->slots[i], converter->x, converter->y);
     }
@@ -142,28 +132,42 @@ static void converter_draw(int target, Converter *converter) {
 
         RenderColor(a, a, a, 255);
     } else {
-        RenderColor(255, 255, 255, 255);
+        RenderColor(90, 90, 90, 255);
     }
 
     RenderFullArrow(target,
                     converter->x + converter->arrow.x,
                     converter->y + converter->arrow.y + Scale(60),
                     Scale(22));
+    RenderColor(0, 0, 0, 255);
+    RenderFullArrowOutline(target,
+                    converter->x + converter->arrow.x,
+                    converter->y + converter->arrow.y + Scale(60),
+                    Scale(22));
 
-    char identifier[64] = {0};
-    sprintf(identifier, "%p", converter);
-    int margin = 8;
-    RenderTextQuick(RENDER_TARGET_MASTER,
-                    identifier,
-                    gs->fonts.font_courier,
-                    converter->name,
-                    ColorFromInt(CONVERTER_NAME_COLOR),
-                    (int) (converter->x + margin),
-                    (int) (converter->y + margin + GUI_H),
-                    null,
-                    null,
-                    false);
+    int margin = Scale(8);
+    
+    {
+        Render_Text_Data data = {0};
+        
+        sprintf(data.identifier, "%p", converter);
+        data.font = gs->fonts.font_courier;
+        strcpy(data.str, converter->name);
+        data.x = converter->x + gs->game_width/4;
+        data.y = converter->y + 2*margin + GUI_H;
+        data.foreground = ColorFromInt(CONVERTER_NAME_COLOR);
+        data.alignment = ALIGNMENT_CENTER;
+        
+        RenderText(target, &data);
+    }
 
+    SDL_Rect dst = button_get_rect(converter->go_button);
+    dst.x += Scale(3);
+    dst.y += Scale(3);
+    
+    RenderColor(0, 0, 0, 255);
+    RenderFillRect(target, dst);
+    
     button_draw(target, converter->go_button);
 }
 

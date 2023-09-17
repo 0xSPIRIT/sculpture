@@ -94,6 +94,8 @@ enum {
     TEXTURE_CHISEL_LARGE_DIAGONAL,
 
     TEXTURE_CURSOR,
+    
+    TEXTURE_CONVERTER_BG,
 
     TEXTURE_BG_0,
     TEXTURE_BG_1,
@@ -165,7 +167,7 @@ typedef union Surfaces {
 } Surfaces;
 
 #ifndef _MSC_VER
-_Static_assert(sizeof(Surfaces) == SURFACE_COUNT*sizeof(SDL_Surface*), "a");
+static _Static_assert(sizeof(Surfaces) == SURFACE_COUNT*sizeof(SDL_Surface*), "a");
 #endif
 
 #define FONT_COUNT 9
@@ -186,7 +188,7 @@ typedef union Fonts {
     };
 } Fonts;
 
-static int font_sizes[FONT_COUNT] = {
+int font_sizes[FONT_COUNT] = {
     20,
     30,
     20,

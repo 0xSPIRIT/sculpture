@@ -1,4 +1,4 @@
-int get_item_from_any(int type, int timer, int override_index) {
+static int get_item_from_any(int type, int timer, int override_index) {
     Assert(type < 0);
     timer /= 2;
 
@@ -71,7 +71,7 @@ int get_item_from_any(int type, int timer, int override_index) {
     return 0;
 }
 
-void converter_gui_init(void) {
+static void converter_gui_init(void) {
     Recipes* c = &gs->recipes;
 
     const Recipe_Item conversions[] = {
@@ -113,7 +113,7 @@ void converter_gui_init(void) {
     }
 }
 
-bool converter_gui_item_draw(int target, Cell_Type item, int override_index, int x, int y, int w, int h) {
+static bool converter_gui_item_draw(int target, Cell_Type item, int override_index, int x, int y, int w, int h) {
     bool mouse_in_rect = false;
 
     SDL_Rect r = { x, y, w, h };
@@ -157,13 +157,13 @@ bool converter_gui_item_draw(int target, Cell_Type item, int override_index, int
     return mouse_in_rect;
 }
 
-void converter_draw_arrow(int target, int xx, int yy) {
+static void converter_draw_arrow(int target, int xx, int yy) {
     int head_size = Scale(15);
     int length = Scale(40);
     RenderArrow(target, (SDL_Point){xx, yy}, (SDL_Point){xx, yy+length}, head_size);
 }
 
-void recipes_draw_text(int target, const char *str, int item_x, int item_y, int item_w) {
+static void recipes_draw_text(int target, const char *str, int item_x, int item_y, int item_w) {
     char ident[32] = {0};
     strncpy(ident, str, 32);
 
@@ -229,13 +229,13 @@ typedef struct GuiConversionPair {
 } GuiConversionPair;
 
 // Add the rectangle to the array.
-void recipe_pair_add(GuiConversionPair *pairs, int *pair_count, Cell_Type output, int x, int y) {
+static void recipe_pair_add(GuiConversionPair *pairs, int *pair_count, Cell_Type output, int x, int y) {
     Assert(pairs);
     Assert(pair_count);
     pairs[(*pair_count)++] = (GuiConversionPair){ output, (SDL_Rect){x, y, Scale(238), Scale(200)} };
 }
 
-SDL_Rect recipes_get_rect(GuiConversionPair *pairs, int pair_count, Cell_Type output) {
+static SDL_Rect recipes_get_rect(GuiConversionPair *pairs, int pair_count, Cell_Type output) {
     for (int i = 0; i < pair_count; i++) {
         if (pairs[i].output == output) {
             return pairs[i].rectangle;
@@ -245,7 +245,7 @@ SDL_Rect recipes_get_rect(GuiConversionPair *pairs, int pair_count, Cell_Type ou
     return (SDL_Rect){-1, -1, -1, -1};
 }
 
-void recipes_draw_scroll_bar(int target) {
+static void recipes_draw_scroll_bar(int target) {
     Recipes*c = &gs->recipes;
 
     int w = Scale(16);
@@ -295,16 +295,16 @@ void recipes_draw_scroll_bar(int target) {
     RenderFillRect(target, scroll_bar);
 }
 
-bool can_recipes_be_active(void) {
+static bool can_recipes_be_active(void) {
     return gs->level_current+1 >= 4;
 }
 
-void gui_converter_toggle(void) {
+static void gui_converter_toggle(void) {
     gs->recipes.active = !gs->recipes.active;
     tooltip_reset(&gs->gui.tooltip);
 }
 
-void recipes_draw_button(int target) {
+static void recipes_draw_button(int target) {
     Button *b = &gs->recipes.button;
 
     if (gs->gui.popup_inventory_y <= 0) return;
@@ -328,7 +328,7 @@ void recipes_draw_button(int target) {
     }
 }
 
-void recipe_draw_note(int target) {
+static void recipe_draw_note(int target) {
     int dy = Scale(45) + gs->recipes.y;
 
     RenderText(target,
@@ -344,7 +344,7 @@ void recipe_draw_note(int target) {
                });
 }
 
-void recipes_draw(int final_target) {
+static void recipes_draw(int final_target) {
     int target = RENDER_TARGET_CONVERSION_PANEL;
 
     Recipes *c = &gs->recipes;

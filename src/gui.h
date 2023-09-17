@@ -75,3 +75,4 @@ static void gui_popup_draw(int target);
 static bool is_cell_stone(int type);
 static int get_cell_tier(int type);
 static int get_number_unique_inputs(Item *input1, Item *input2);
+static SDL_Rect button_get_rect(Button *b);

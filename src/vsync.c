@@ -1,13 +1,14 @@
 // Simulated vsync for when the screen's refresh rate is not 60.
 // (In that case, we just use SDL's vsync which is smoother)
 
-void precise_sleep(f64 seconds) {
+// I have no idea how this works apart from the general idea.
+static void precise_sleep(f64 seconds) {
     if (seconds < 0) return;
 
-    static f64 estimate = 0.005;
-    static f64 mean = 0.005;
-    static f64 m2 = 0;
-    static s64 count = 1;
+    f64 estimate = 0.005;
+    f64 mean = 0.005;
+    f64 m2 = 0;
+    s64 count = 1;
 
     f64 freq = SDL_GetPerformanceFrequency();
 

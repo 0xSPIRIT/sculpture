@@ -79,7 +79,7 @@ static int  rgb_to_type(u8 r, u8 g, u8 b);
 static void level_output_to_png(const char *output_file);
 static void level_get_cells_from_image(const char *path, Cell **out, Source_Cell *source_cells, int *out_source_cell_count, int *out_w, int *out_h);
 
-static u8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
+u8 type_to_rgb_table[CELL_TYPE_COUNT*4] = {
     // Type              R    G    B
     CELL_NONE,            0,   0,   0,
     CELL_DIRT,          200,   0,   0,

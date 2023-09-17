@@ -1,15 +1,15 @@
-Light *lighting_add_light(Lighting *lighting, Light l) {
+static Light *lighting_add_light(Lighting *lighting, Light l) {
     lighting->lights[lighting->light_count++] = l;
     return &lighting->lights[lighting->light_count-1];
 }
 
-void lighting_init(Lighting *lighting) {
+static void lighting_init(Lighting *lighting) {
     memset(lighting, 0, sizeof(Lighting));
     lighting->main_light   = lighting_add_light(lighting, (Light){ gs->gw/2, gs->gh/3, 1.0, 80, true });
     lighting->chisel_light = lighting_add_light(lighting, (Light){ 0, 0, 0.2, 38, false });
 }
 
-void lighting_tick(Lighting *lighting) {
+static void lighting_tick(Lighting *lighting) {
     {
         Light *l = lighting->chisel_light;
 
@@ -28,7 +28,7 @@ void lighting_tick(Lighting *lighting) {
     }
 }
 
-f64 get_light_strength_at_position(Light light, int x, int y) {
+static f64 get_light_strength_at_position(Light light, int x, int y) {
     f64 dx = x - light.x;
     f64 dy = y - light.y;
 
@@ -44,7 +44,7 @@ f64 get_light_strength_at_position(Light light, int x, int y) {
     return strength;
 }
 
-SDL_Color modify_color_based_on_light_strength(SDL_Color in, f64 strength) {
+static SDL_Color modify_color_based_on_light_strength(SDL_Color in, f64 strength) {
     SDL_Color result;
 
     int r = clamp((int)((f64)in.r * strength), 0, 255);
@@ -60,7 +60,7 @@ SDL_Color modify_color_based_on_light_strength(SDL_Color in, f64 strength) {
 }
 
 // Modifies color `c` based on the position of `light` and the x, y.
-void apply_light_to_color(SDL_Color *c, Light light, int x, int y) {
+static void apply_light_to_color(SDL_Color *c, Light light, int x, int y) {
     if (!c) return;
 
     f64 strength = get_light_strength_at_position(light, x, y);
@@ -69,7 +69,7 @@ void apply_light_to_color(SDL_Color *c, Light light, int x, int y) {
 }
 
 // Applies all lights
-void apply_lighting_to_color(Lighting *lighting, SDL_Color *c, int x, int y) {
+static void apply_lighting_to_color(Lighting *lighting, SDL_Color *c, int x, int y) {
     f64 cum_strength = 0;
 
     for (int i = 0; i < lighting->light_count; i++) {
@@ -81,7 +81,7 @@ void apply_lighting_to_color(Lighting *lighting, SDL_Color *c, int x, int y) {
 }
 
 // Applies all lights to an entire render target.
-void apply_lighting_to_target(int target, Lighting *lighting) {
+static void apply_lighting_to_target(int target, Lighting *lighting) {
     int w = gs->gw*2;
     int h = gs->gh*2;
 

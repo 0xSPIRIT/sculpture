@@ -1,4 +1,4 @@
-void debug_print(void) {
+static void debug_print(void) {
     int w = 128, h = 64;
 
     Assert(gs->gw == w);

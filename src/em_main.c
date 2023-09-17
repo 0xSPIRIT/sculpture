@@ -12,7 +12,7 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 
-EM_JS(void, canvas_set_size, (int desired_width, int desired_height, double device_pixel_ratio), {
+static EM_JS(void, canvas_set_size, (int desired_width, int desired_height, double device_pixel_ratio), {
           var canvas = document.getElementById('canvas');
 
           var new_w = desired_width / device_pixel_ratio;
@@ -24,12 +24,12 @@ EM_JS(void, canvas_set_size, (int desired_width, int desired_height, double devi
           canvas.height = new_h;
       });
 
-EM_JS(int, canvas_get_width, (), {
+static EM_JS(int, canvas_get_width, (), {
           var canvas = document.getElementById('canvas');
           return parseInt(canvas.style.width);
       });
 
-EM_JS(int, canvas_get_height, (), {
+static EM_JS(int, canvas_get_height, (), {
           var canvas = document.getElementById('canvas');
           return parseInt(canvas.style.height);
       });
@@ -196,7 +196,7 @@ static void em_mainloop(void *arg) {
     data->transient_memory.cursor = data->transient_memory.data;
 }
 
-int main(int argc, char **argv) {
+static int main(int argc, char **argv) {
     GameLoopData data;
 
     make_memory_arena(&data.persistent_memory, &data.transient_memory);

@@ -199,7 +199,7 @@ typedef struct Game_State {
     Save_State save_states[MAX_UNDO]; // Big array (65MB I think?)
 } Game_State;
 
-static Game_State *gs = null;
+Game_State *gs = null;
 
 static void _assert(const char *func, const char *file, const int line) {
     char message[64] = {0};

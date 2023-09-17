@@ -1,4 +1,4 @@
-static u8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
+u8 type_to_outline_color[CELL_TYPE_COUNT*4] = {
     // Type              R    G    B
     CELL_NONE,          255,   0,   0,
     CELL_DIRT,          255,   0,   0,

@@ -27,7 +27,7 @@ static int is_cell_gas(int type) {
         type == CELL_STEAM;
 }
 
-void grid_set_to_desired() {
+static void grid_set_to_desired() {
     for (int i = 0; i < gs->gw*gs->gh; i++) {
         Cell *c = &gs->grid[i];
 
@@ -892,7 +892,7 @@ static void grid_draw(int target) {
     }
 }
 
-void draw_grid_outline(int target) {
+static void draw_grid_outline(int target) {
     Assert(target == RENDER_TARGET_MASTER);
 
     RenderColor(127, 127, 127, 127);

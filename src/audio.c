@@ -1,5 +1,5 @@
 // This is called every frame and sets the current music according to certain conditions.
-void audio_set_music_accordingly(void) {
+static void audio_set_music_accordingly(void) {
 #if !AUDIO_PLAY_MUSIC
     audio_set_music(MUSIC_NONE);
 #else
@@ -29,7 +29,7 @@ void audio_set_music_accordingly(void) {
 }
 
 // Called every frame.
-void audio_set_ambience_accordingly(void) {
+static void audio_set_ambience_accordingly(void) {
     Level *level = &gs->levels[gs->level_current];
 
     if (level->state == LEVEL_STATE_INTRO || gs->obj.active) {
@@ -47,13 +47,13 @@ void audio_set_ambience_accordingly(void) {
     }
 }
 
-void play_sound(int channel, Sound sound, int loops) {
+static void play_sound(int channel, Sound sound, int loops) {
     Mix_PlayChannel(channel, sound.sound, loops);
 }
 
 // Must be called every frame.
 // Returns when it's done.
-bool audio_lower_channel_for(int channel, int frames) {
+static bool audio_lower_channel_for(int channel, int frames) {
     Audio_Handler *handler = &gs->audio_handler;
 
     if (!handler->fade_initted) {
@@ -83,18 +83,18 @@ bool audio_lower_channel_for(int channel, int frames) {
     return false;
 }
 
-void audio_lower_music_for_a_bit(void) {
+static void audio_lower_music_for_a_bit(void) {
     gs->audio_handler.lower_music = true;
 }
 
-void audio_halt_ambience(void) {
+static void audio_halt_ambience(void) {
     Mix_HaltChannel(AUDIO_CHANNEL_AMBIENCE);
     gs->audio_handler.ambience = 0;
     gs->audio_handler.ambience_volume = 0;
 }
 
 // Should be called every frame.
-void audio_set_ambience(AmbienceType ambience) {
+static void audio_set_ambience(AmbienceType ambience) {
     if (gs->audio_handler.ambience != ambience) {
         switch (ambience) {
             case AMBIENCE_NONE: {
@@ -113,7 +113,7 @@ void audio_set_ambience(AmbienceType ambience) {
     audio_set_ambience_levels();
 }
 
-void audio_set_ambience_levels(void) {
+static void audio_set_ambience_levels(void) {
     int volume = MIX_MAX_VOLUME;
 
     int level_state = gs->levels[gs->level_current].state;
@@ -125,14 +125,14 @@ void audio_set_ambience_levels(void) {
     Mix_Volume(AUDIO_CHANNEL_AMBIENCE, gs->audio_handler.ambience_volume);
 }
 
-void audio_halt_music(void) {
+static void audio_halt_music(void) {
     Mix_HaltChannel(AUDIO_CHANNEL_MUSIC);
     gs->audio_handler.music = 0;
     gs->audio_handler.music_volume = 0;
     gs->audio_handler.music_end = true;
 }
 
-void audio_set_music(MusicType music) {
+static void audio_set_music(MusicType music) {
     Audio_Handler *handler = &gs->audio_handler;
 
     if (handler->music != music) {

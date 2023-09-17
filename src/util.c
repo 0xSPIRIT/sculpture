@@ -151,7 +151,7 @@ static void move_mouse_to_grid_position(f32 x, f32 y) {
 #endif
 }
 
-void get_filename_from_type(int type, char *out) {
+static void get_filename_from_type(int type, char *out) {
     switch (type) {
         case CELL_NONE:        strcpy(out, "nothing"); break;
         case CELL_DIRT:        strcpy(out, DATA_DIR "items/dirt.png"); break;
@@ -240,7 +240,7 @@ static void get_name_from_tool(int type, char *out) {
     }
 }
 
-void get_file_from_tool(int type, char *out) {
+static void get_file_from_tool(int type, char *out) {
     switch (type) {
         case TOOL_CHISEL_SMALL:  strcpy(out, "chisel_small.png"); break;
         case TOOL_CHISEL_MEDIUM: strcpy(out, "chisel_medium.png"); break;
@@ -303,7 +303,7 @@ static u32 get_pixel_int(SDL_Surface *surf, int x, int y) {
     return pixels[x+y*surf->w];
 }
 
-static u32 rand2_seed = 42;
+u32 rand2_seed = 42;
 
 static void rand2_reset_seed() {
     rand2_seed = 42;

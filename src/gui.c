@@ -1,4 +1,4 @@
-Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
+static Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
     Button *b = PushSize(gs->persistent_memory, sizeof(Button));
     b->type = type;
     b->texture = texture;
@@ -14,7 +14,7 @@ Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_
     return b;
 }
 
-void tool_button_set_disabled(int level) {
+static void tool_button_set_disabled(int level) {
     Button **tools = gs->gui.tool_buttons;
 
     bool is_exactly = compare_cells_to_int(gs->grid, gs->overlay.grid, 0);
@@ -274,6 +274,14 @@ static bool button_tick(Button *b, void *data) {
     return result;
 }
 
+static SDL_Rect button_get_rect(Button *b) {
+    SDL_Rect dst = {
+        round(b->x), round(b->y), round(b->w), round(b->h)
+    };
+    
+    return dst;
+} 
+
 static void button_draw_prefer_color(int target, Button *b, SDL_Color color) {
     if (!b->texture) return;
 
@@ -287,9 +295,7 @@ static void button_draw_prefer_color(int target, Button *b, SDL_Color color) {
         b->x = b->index * b->w;
     }
 
-    SDL_Rect dst = {
-        round(b->x), round(b->y), round(b->w), round(b->h)
-    };
+    SDL_Rect dst = button_get_rect(b);
 
     if (b->disabled) {
         RenderTextureColorMod(b->texture, 90, 90, 90);
@@ -621,11 +627,11 @@ static void gui_popup_draw(int target) {
         gs->gw*gs->S, (int)GUI_POPUP_H
     };
 
-    RenderColor(Red(INVENTORY_COLOR),
-                Green(INVENTORY_COLOR),
-                Blue(INVENTORY_COLOR),
-                255);
-    RenderFillRect(target, popup);
+    Texture *t = &GetTexture(TEXTURE_CONVERTER_BG);
+    
+    f64 ratio = (f64)t->height/t->width;
+    f64 width = Scale(768);
+    RenderTexture(target, t, null, &(SDL_Rect){0, GUI_H+gui->popup_y, width, width*ratio});
 
     RenderColor(Red(CONVERTER_LINE_COLOR),
                 Green(CONVERTER_LINE_COLOR),
@@ -649,7 +655,8 @@ static void gui_popup_draw(int target) {
         gs->gh*gs->S, Scale(36)
     };
 
-    RenderColorStruct(ColorFromInt(INVENTORY_COLOR2));
+    SDL_Color c = {0, 0, 0, 75};
+    RenderColorStruct(c);
     RenderFillRect(target, bar);
 
 #if 0

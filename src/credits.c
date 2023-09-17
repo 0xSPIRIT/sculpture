@@ -1,4 +1,4 @@
-bool credits_screen(int target, Credits_Screen *screen, const char *lines[], int line_count);
+static bool credits_screen(int target, Credits_Screen *screen, const char *lines[], int line_count);
 
 static void credits_init_timers(Credits *c) {
     for (int i = 0; i < TIMERS_COUNT; i++) {
@@ -89,7 +89,7 @@ static void credits_run(int target) {
 // This should be called every frame.
 //
 // Returns when that screen is done
-bool credits_screen(int target, Credits_Screen *screen, const char *lines[], int line_count) {
+static bool credits_screen(int target, Credits_Screen *screen, const char *lines[], int line_count) {
     // times in frames
     f64 time = 360;
     f64 hang_time = 60; // The hang-time after the text fades out.

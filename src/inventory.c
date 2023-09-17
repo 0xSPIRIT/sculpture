@@ -483,16 +483,16 @@ static void inventory_draw(int target) {
 
     const f32 y = -GUI_H + gui->popup_inventory_y;
 
-    const SDL_Rect rect = {
+    SDL_Rect rect = {
         0, y,
         gs->S*gs->gh, GUI_H
     };
 
-    RenderColor(Red(INVENTORY_COLOR),
-                Green(INVENTORY_COLOR),
-                Blue(INVENTORY_COLOR),
-                255);
-    RenderFillRect(target, rect);
+    Texture *t = &GetTexture(TEXTURE_CONVERTER_BG);
+    
+    f64 ratio = (f64)t->height/t->width;
+    f64 width = Scale(768);
+    RenderTexture(target, t, null, &(SDL_Rect){0, y+rect.h+0-width*ratio, width, width*ratio});
 
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {
         slot_draw(target, &gs->inventory.slots[i], 0, y);
@@ -506,6 +506,7 @@ static void inventory_draw(int target) {
               ITEM_SIZE,
               ITEM_SIZE);
 
+#if 0
     RenderColor(Red(CONVERTER_LINE_COLOR),
                 Green(CONVERTER_LINE_COLOR),
                 Blue(CONVERTER_LINE_COLOR),
@@ -515,4 +516,5 @@ static void inventory_draw(int target) {
                y+GUI_H,
                gs->game_width,
                y+GUI_H);
+#endif
 }

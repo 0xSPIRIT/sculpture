@@ -58,12 +58,7 @@ static void render_targets_init(void) {
     }
 }
 
-void get_file_from_tool(int type, char *out);
-void get_filename_from_type(int type, char *out);
-
 static void textures_init(Textures *textures) {
-    SDL_Surface *surf = null;
-
     memset(textures, 0, sizeof(Textures));
 
     // Converter Item Textures || previously item_init()
@@ -73,20 +68,19 @@ static void textures_init(Textures *textures) {
         char file[64] = {0};
         get_filename_from_type(i, file);
 
-        surf = IMG_Load(file);
+        SDL_Surface *surf = IMG_Load(file);
         Assert(surf);
 
         GetTexture(TEXTURE_ITEMS+i) = RenderCreateTextureFromSurface(surf);
 
         SDL_FreeSurface(surf);
-        surf = null;
     }
 
     GetTexture(TEXTURE_CONFIRM_BUTTON) = RenderLoadTexture("buttons/confirm.png");
     GetTexture(TEXTURE_CONFIRM_X_BUTTON) = RenderLoadTexture("buttons/confirm_x.png");
     GetTexture(TEXTURE_CANCEL_BUTTON)  = RenderLoadTexture("buttons/cancel.png");
 
-    GetTexture(TEXTURE_TAB)        = RenderLoadTexture("tab.png");
+    GetTexture(TEXTURE_TAB)   = RenderLoadTexture("tab.png");
 
     GetTexture(TEXTURE_PLANK) = RenderLoadTexture("plank.png");
 
@@ -96,6 +90,8 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_D_KEY) = RenderLoadTexture("buttons/D.png");
 
     GetTexture(TEXTURE_CURSOR) = RenderLoadTexture("cursor.png");
+    
+    GetTexture(TEXTURE_CONVERTER_BG) = RenderLoadTexture("cbg.png");
 
     for (Tool_Type i = 0; i < TOOL_COUNT; i++) {
         char filename[128] = {0};

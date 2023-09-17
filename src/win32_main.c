@@ -328,7 +328,7 @@ typedef enum PROCESS_DPI_AWARENESS
 typedef BOOL (WINAPI * SETPROCESSDPIAWARE_T)(void);
 typedef HRESULT (WINAPI * SETPROCESSDPIAWARENESS_T)(PROCESS_DPI_AWARENESS);
 
-inline bool win32_SetProcessDpiAware(void) {
+static inline bool win32_SetProcessDpiAware(void) {
     HMODULE shcore = LoadLibraryA("Shcore.dll");
     SETPROCESSDPIAWARENESS_T SetProcessDpiAwareness = NULL;
     if (shcore) {
@@ -356,7 +356,7 @@ inline bool win32_SetProcessDpiAware(void) {
     return ret;
 }
 
-void check_reloading_game_code(Game_Code *game_code) {
+static void check_reloading_game_code(Game_Code *game_code) {
     FILETIME new_dll_write_time = get_last_write_time(GAME_DLL_NAME);
 
     if (CompareFileTime(&new_dll_write_time, &game_code->last_write_time) != 0) {
@@ -364,7 +364,7 @@ void check_reloading_game_code(Game_Code *game_code) {
     }
 }
 
-int win32_main(void) {
+static int win32_main(void) {
     win32_SetProcessDpiAware();
 
 #ifndef ALASKA_RELEASE_MODE
@@ -507,21 +507,14 @@ int win32_main(void) {
     return 0;
 }
 
-#ifndef ALASKA_RELEASE_MODE
-int main(void) {
-    return win32_main();
-}
-#else
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPSTR     lpCmdLine,
                    int       nShowCmd)
 {
-    Log("Size: %d\n", (int)sizeof(Game_State));
     (void)hInstance;
     (void)hPrevInstance;
     (void)lpCmdLine;
     (void)nShowCmd;
-    win32_main();
+    return win32_main();
 }
-#endif

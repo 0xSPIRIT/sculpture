@@ -28,6 +28,6 @@ static void end_of_level_popup_confirm_confirm(void*);
 static void end_of_level_popup_confirm_cancel(void*);
 
 // Restart level hooks
-void restart_popup_confirm_run(int target);
-void restart_popup_confirm_confirm(void *unused);
-void restart_popup_confirm_cancel(void *unused);
+static void restart_popup_confirm_run(int target);
+static void restart_popup_confirm_confirm(void *unused);
+static void restart_popup_confirm_cancel(void *unused);

@@ -1,7 +1,7 @@
 // A wrapper for calls to SDL's draw functions.
 // We use this to manage render targets better.
 
-#define RENDERAPI static inline
+#define RENDERAPI inline
 #define MAX_TEXT_LENGTH 512
 #define RenderTarget(which) (gs->render.render_targets+which)
 
@@ -108,10 +108,13 @@ RENDERAPI void RenderColor                      (u8 r, u8 g, u8 b, u8 a);
 RENDERAPI void RenderColorStruct                (SDL_Color rgba);
 RENDERAPI void RenderLine                       (int target, int x1, int y1, int x2, int y2);
 RENDERAPI void RenderLineRelative               (int target, int x1, int y1, int x2, int y2);
-RENDERAPI void RenderArrow                      (int target_enum, SDL_Point from, SDL_Point to, int head_size);
-RENDERAPI void RenderArrowRelative              (int target_enum, SDL_Point from, SDL_Point to, int head_size);
+RENDERAPI void RenderLinePoints                 (int target, SDL_Point a, SDL_Point b);
 RENDERAPI void RenderPoint                      (int target_enum, int x, int y);
 RENDERAPI void RenderPointRelative              (int target, int x1, int y1);
+RENDERAPI void RenderArrowRelative              (int target_enum, SDL_Point from, SDL_Point to, int head_size);
+RENDERAPI void RenderArrow                      (int target_enum, SDL_Point from, SDL_Point to, int head_size);
+RENDERAPI void RenderFullArrow                  (int target, int center_x, int center_y, f64 size);
+RENDERAPI void RenderFullArrowOutline           (int target, int center_x, int center_y, f64 size);
 RENDERAPI void RenderDrawRect                   (int target, SDL_Rect rect);
 RENDERAPI void RenderFillRect                   (int target, SDL_Rect rect);
 RENDERAPI void RenderDrawRectRelative           (int target, SDL_Rect rect);

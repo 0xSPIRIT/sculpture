@@ -49,16 +49,16 @@ typedef struct {
     int volume; // out of 128 (MIX_MAX_VOLUME)
 } Sound;
 
-void play_sound(int channel, Sound sound, int loops);
+static void play_sound(int channel, Sound sound, int loops);
 
-void audio_lower_music_for_a_bit(void);
-bool audio_lower_channel_for(int channel, int frames);
+static void audio_lower_music_for_a_bit(void);
+static bool audio_lower_channel_for(int channel, int frames);
 
-void audio_halt_ambience(void);
-void audio_set_ambience_accordingly(void);
-void audio_set_ambience_levels(void);
-void audio_set_ambience(AmbienceType ambience);
+static void audio_halt_ambience(void);
+static void audio_set_ambience_accordingly(void);
+static void audio_set_ambience_levels(void);
+static void audio_set_ambience(AmbienceType ambience);
 
-void audio_halt_music(void);
-void audio_set_music_accordingly(void);
-void audio_set_music(MusicType music);
+static void audio_halt_music(void);
+static void audio_set_music_accordingly(void);
+static void audio_set_music(MusicType music);

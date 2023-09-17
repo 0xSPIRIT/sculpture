@@ -37,5 +37,5 @@ enum {
     CELL_ANY_WATER_OR_ICE = -7,
 };
 
-bool can_recipes_be_active(void);
-void recipe_draw(int target);
+static bool can_recipes_be_active(void);
+static void recipe_draw(int target);

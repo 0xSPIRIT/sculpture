@@ -1,14 +1,14 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\util.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\converter.c", "d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\util.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
 
 [MainWindow]
-X = 119
-Y = 19
+X = 116
+Y = 78
 Width = 1801
 Height = 894
-ShowKind = "ShowMaximized"
+ShowKind = "ShowNormal"
 
 [MainDockingFrame]
 Type = "DockingFrame"
@@ -25,13 +25,54 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
+TabLabel = "converter.c"
+TabWidth = 103.0534
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\converter.c"
+CursorPos = 5411
+VertPos = 14406.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "render.c"
+TabWidth = 76.56489
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\render.c"
+CursorPos = 12502
+VertPos = 5880.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "level.c"
+TabWidth = 65.11451
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\level.c"
+CursorPos = 32
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "effects.c"
+TabWidth = 76.56489
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\effects.c"
+CursorPos = 9494
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "game.c"
+TabWidth = 71.98474
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\game.c"
+CursorPos = 285
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "gui.c"
-TabWidth = 67.17558
+TabWidth = 57.48092
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\gui.c"
-CursorPos = 9068
-VertPos = 6636.0
+CursorPos = 9198
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "win32_main.c"
@@ -39,8 +80,7 @@ TabWidth = 107.0992
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\win32_main.c"
-CursorPos = 13569
-VertPos = 10269.0
+CursorPos = 10021
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "util.c"
@@ -48,7 +88,7 @@ TabWidth = 57.48092
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\util.c"
-CursorPos = 10576
+CursorPos = 9852
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "grid.c"
@@ -56,7 +96,7 @@ TabWidth = 62.06107
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\grid.c"
-CursorPos = 642
+CursorPos = 26712
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 809.0
@@ -83,7 +123,7 @@ TabWidth = 87.40459
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 229.0}, {Width = 676.0}, {Width = 225.0}]
-Items = ["gui.tool_buttons", "b", "gs.game_width", ""]
+Items = ["gs.current_effect.particles,500", "rain", "px", "py", "p2x", "p2y", "target.top_left", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"
@@ -113,6 +153,7 @@ TabIsPinned = false
 Type = "ThreadPanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+Active = true
 TabLabel = "Call Stack"
 TabWidth = 105.7252
 TabIsPinned = false
@@ -125,7 +166,6 @@ TabIsPinned = false
 Type = "ImmediatePanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
-Active = true
 TabLabel = "Breakpoints"
 TabWidth = 117.9389
 TabIsPinned = false

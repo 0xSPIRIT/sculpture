@@ -111,7 +111,7 @@ static void end_of_level_popup_confirm_cancel(void *unused) {
 
 //~ Reset level confirmation
 
-void restart_popup_confirm_run(int target) {
+static void restart_popup_confirm_run(int target) {
     Popup_Confirm *popup = &gs->gui.restart_popup_confirm;
     if (!popup->active) return;
 
@@ -119,14 +119,14 @@ void restart_popup_confirm_run(int target) {
     popup_confirm_base_tick_and_draw(&run_data, target, popup);
 }
 
-void restart_popup_confirm_confirm(void *unused) {
+static void restart_popup_confirm_confirm(void *unused) {
     (void)unused;
     Popup_Confirm *popup = &gs->gui.restart_popup_confirm;
     popup->active = false;
     goto_level(gs->level_current);
 }
 
-void restart_popup_confirm_cancel(void *unused) {
+static void restart_popup_confirm_cancel(void *unused) {
     (void)unused;
     Popup_Confirm *popup = &gs->gui.restart_popup_confirm;
     popup->active = false;

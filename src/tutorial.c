@@ -34,7 +34,7 @@ static void calculate_tutorial_rect_size(Tutorial_Rect *tut) {
     tut->ok_button->y = tut->rect.y + tut->rect.h - tut->ok_button->h - tut->margin;
 }
 
-Tutorial_Rect* tutorial_rect(const char *str, Tutorial_Rect *next) {
+static Tutorial_Rect* tutorial_rect(const char *str, Tutorial_Rect *next) {
     Tutorial_Rect *tut = PushSize(gs->persistent_memory, sizeof(Tutorial_Rect));
 
     tut->x = -1;
