@@ -191,25 +191,34 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
                 Blue(SLOT_COLOR),
                 255);
     RenderFillRect(target, bounds);
+    
+    bool thick_outline = false;
 
     if (slot->inventory_index != -1 && slot->inventory_index == gs->current_placer) {
         RenderColorStruct(ColorFromInt(SLOT_OUTLINE_SELECTED_COLOR));
+        thick_outline = true;
     } else {
         RenderColorStruct(ColorFromInt(SLOT_OUTLINE_COLOR));
     }
-
+    
+    SDL_Rect stored_bounds = bounds;
+    
     bounds.x--;
     bounds.y--;
     bounds.w += 2;
     bounds.h += 2;
-
+    
     RenderDrawRect(target, bounds);
-
-    bounds.x++;
-    bounds.y++;
-    bounds.w -= 2;
-    bounds.h -= 2;
-
+    if (thick_outline) {
+        bounds.x--;
+        bounds.y--;
+        bounds.w += 2;
+        bounds.h += 2;
+        RenderDrawRect(target, bounds);
+    }
+    
+    bounds = stored_bounds;
+    
     // Drawing the slot's name and F key
     if (*slot->name) {
         { // Slot name

@@ -275,7 +275,7 @@ static void overlay_swap_tick(void) {
             !gs->gui.popup &&
             !gs->recipes.active)
         {
-            overlay->changes.temp += 1.0f;
+            overlay->changes.temp += 0.5f;
         }
     }
 
@@ -398,7 +398,6 @@ static bool int_array_any_neighbours_not_same(int *array, int x, int y) {
     return false;
 }
 
-// @Yellow
 static void overlay_draw_missed_pixels(int target, int *grid) {
     RenderColor(0, 200, 0, 255 * 0.5*(sin(SDL_GetTicks()/500.0)+1));
     for (int y = 0; y < gs->gh; y++) {

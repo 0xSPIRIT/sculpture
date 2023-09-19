@@ -41,7 +41,7 @@
 #define NARRATION_LEVEL_5 \
 "When he was younger, Max\r"\
 "frequently admired popular artwork.\n"\
-"Over the years, dozens molded into his head,\r"\
+"Over the years, dozens etched into his head,\r"\
 "combining into a soup of likes and dislikes-\n"\
 "Flowing streams, interlaced with notions of\r"\
 "greatness, waiting to be.\n"\

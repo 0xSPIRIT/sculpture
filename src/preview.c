@@ -5,6 +5,14 @@ static void preview_start_recording(Preview *p, const char *name) {
     p->recording = true;
 }
 
+static void preview_get_64x64_overlay(int *overlay, int *out) {
+    for (int y = 0; y < 64; y++) {
+        for (int x = 32; x <= 32+64; x++) {
+            out[x-32 + y*64] = overlay[x+y*gs->gw];
+        }
+    }
+}
+
 static void preview_finish_recording(Preview *p) {
     char filename[64] = {0};
     sprintf(filename, DATA_DIR "previews/%s", p->name);
@@ -13,7 +21,10 @@ static void preview_finish_recording(Preview *p) {
     Assert(fp);
 
     fprintf(fp, "%d\n", p->length);
-    fwrite((const void*)gs->overlay.grid,
+    
+    int overlay[64*64];
+    preview_get_64x64_overlay(gs->overlay.grid, overlay);
+    fwrite((const void*)overlay,
            sizeof(int),
            PREVIEW_GRID_SIZE,
            fp);
@@ -31,8 +42,9 @@ static void preview_finish_recording(Preview *p) {
 
 static void preview_load(Preview *p, const char *file) {
     FILE *fp = fopen(file, "rb");
-    Assert(fp);
 
+    if (!fp) return;
+    
     memset(p, 0, sizeof(Preview));
     p->recording = false;
 

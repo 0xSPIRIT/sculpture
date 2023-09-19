@@ -1,16 +1,20 @@
 static Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
     Button *b = PushSize(gs->persistent_memory, sizeof(Button));
+    
     b->type = type;
     b->texture = texture;
     b->disabled = false;
 
     b->index=-1;
 
-    b->w = b->texture->width;
-    b->h = b->texture->height;
-
+    if (b->texture) {
+        b->w = b->texture->width;
+        b->h = b->texture->height;
+    }
+    
     strcpy(b->tooltip_text, tooltip_text);
     b->on_pressed = on_pressed;
+    
     return b;
 }
 
@@ -251,8 +255,10 @@ static bool button_tick(Button *b, void *data) {
 
         gs->is_mouse_over_any_button = true;
 
-        if (strlen(b->tooltip_text))
+        if (b->tooltip_text[0]) {
+            memset(gui->tooltip.str, 0, MAX_TOOLTIP_LINE_LEN*MAX_TOOLTIP_LEN);
             strcpy(gui->tooltip.str[0], b->tooltip_text);
+        }
 
         if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
             Mix_HaltChannel(AUDIO_CHANNEL_GUI);

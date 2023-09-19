@@ -12,8 +12,8 @@
     "Click the overlay button to show what Max\n"\
     "wants to create.\n\n" \
     "With the POINTER tool selected, you can\n"\
-    "display the desired material of any cell by\n" \
-    "hovering your cursor over the overlay.\n"
+    "display the desired material at any point\n" \
+    "by hovering your cursor over the overlay.\n"
 
 #define TUTORIAL_CHISEL_STRING  \
     "Tutorial\n" \

@@ -4,7 +4,7 @@
 
 #define SLOT_COLOR 0x202020
 #define SLOT_OUTLINE_COLOR 0xAAAAAA
-#define SLOT_OUTLINE_SELECTED_COLOR 0xffe65a
+#define SLOT_OUTLINE_SELECTED_COLOR 0xFFFFFF
 #define SLOT_TEXT_COLOR SLOT_OUTLINE_COLOR
 
 #define CONVERTER_NAME_COLOR SLOT_OUTLINE_COLOR
@@ -24,4 +24,4 @@
 // That makes it so that text updates every
 // frame, which is really slow.
 
-#define MODIFYING_COLORS
+//#define MODIFYING_COLORS

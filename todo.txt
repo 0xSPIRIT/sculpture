@@ -1,7 +1,5 @@
 TODO
 
-  - Improve colors / Add texture to the converter UI
-
   - Re-record the previews since the indices in the previews
     are out of date after we removed some material types!
 

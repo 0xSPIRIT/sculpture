@@ -317,7 +317,9 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_t: {
+#ifndef ALASKA_RELEASE_MODE
                 grid_set_to_desired();
+#endif
             } break;
             case SDLK_q: {
                 Cell *c;

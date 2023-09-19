@@ -14,6 +14,17 @@ static inline f64 __end_timer(u64 start) {
     return result;
 }
 
+static inline SDL_Color rgb(u8 r, u8 g, u8 b) {
+    SDL_Color result;
+    
+    result.r = r;
+    result.g = g;
+    result.b = b;
+    result.a = 255;
+    
+    return result;
+}
+
 static int sign(int a) {
     return (a > 0) ? 1 : ((a == 0) ? 0 : -1);
 }

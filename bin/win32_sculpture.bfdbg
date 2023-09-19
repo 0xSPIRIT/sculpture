@@ -1,10 +1,10 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\converter.c", "d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\util.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\preview.c", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\converter.c", "d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\util.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
 
 [MainWindow]
-X = 116
+X = 0
 Y = 78
 Width = 1801
 Height = 894
@@ -24,14 +24,29 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "popup.c"
+TabWidth = 77.32825
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\popup.c"
+CursorPos = 810
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
+TabLabel = "preview.c"
+TabWidth = 82.67176
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\preview.c"
+CursorPos = 3657
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "converter.c"
-TabWidth = 103.0534
+TabWidth = 93.35879
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\converter.c"
 CursorPos = 5411
-VertPos = 14406.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "render.c"
@@ -40,7 +55,6 @@ TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\render.c"
 CursorPos = 12502
-VertPos = 5880.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "level.c"
@@ -123,7 +137,7 @@ TabWidth = 87.40459
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 229.0}, {Width = 676.0}, {Width = 225.0}]
-Items = ["gs.current_effect.particles,500", "rain", "px", "py", "p2x", "p2y", "target.top_left", ""]
+Items = ["p", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"
