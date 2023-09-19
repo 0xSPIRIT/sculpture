@@ -1,10 +1,5 @@
 TODO
 
-  - Re-record the previews since the indices in the previews
-    are out of date after we removed some material types!
-
-  x Remove unused textures from the data folder
-
   - Playtest levels 7-10
     x 7
     - 8

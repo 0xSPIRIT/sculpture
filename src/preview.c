@@ -217,7 +217,7 @@ static SDL_Rect preview_draw(int final_target, Preview *p, int dx, int dy, int s
                                      &center,
                                      SDL_FLIP_NONE);
 
-            RenderColor(127, 127, 127, 255);
+            RenderColor(158, 158, 158, 255);
             RenderPoint(target, x, y);
 
             break;
@@ -264,7 +264,6 @@ static void preview_tick() {
             gs->current_preview.play = false;
         } else if (gs->current_preview.recording) {
             preview_finish_recording(&gs->current_preview);
-            SDL_SetWindowTitle(gs->window, "Alaska");
         } else {
             set_text_field("Save Preview File As:", "", preview_start_current);
         }
