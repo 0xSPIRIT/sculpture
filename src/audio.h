@@ -9,6 +9,8 @@
 #define Volume(x) ((int) ((f64)(x) * MIX_MAX_VOLUME))
 
 enum {
+    AUDIO_CHANNEL_NONE,
+    AUDIO_CHANNEL_WOOSH,
     AUDIO_CHANNEL_CHISEL,
     AUDIO_CHANNEL_NARRATOR,
     AUDIO_CHANNEL_GUI,

@@ -387,26 +387,26 @@ RENDERAPI void RenderFullArrow(int target, int center_x, int center_y, f64 size)
 RENDERAPI void RenderFullArrowOutline(int target, int center_x, int center_y, f64 size) {
     int w = size;
     int h = size*3;
-    
+
     int x = center_x - w/2;
     int y = center_y - h/2;
-    
+
     SDL_Point tl = { x, y };
     SDL_Point tr = { x+w, y };
     SDL_Point bl = { x, y+h };
     SDL_Point br = { x+w, y+h };
-    
+
     // rectangle
     RenderLinePoints(target, tl, tr);
     RenderLinePoints(target, tl, bl);
     RenderLinePoints(target, tr, br);
-    
+
     x = center_x;
     y = center_y-h/2;
     SDL_Point a = { x-w, y+h };
     SDL_Point b = { x+w, y+h };
     SDL_Point c = { x, y+h+size };
-    
+
     RenderLinePoints(target, bl, a);
     RenderLinePoints(target, br, b);
     RenderLinePoints(target, a, c);
@@ -466,9 +466,7 @@ static int _find_render_text_data_in_cache(const char identifier[]) {
     return -1;
 }
 
-static bool _has_text_data_changed(Render_Text_Data text_old,
-                                   Render_Text_Data text_new)
-{
+bool _has_text_data_changed(Render_Text_Data text_old, Render_Text_Data text_new) {
     // We should only be checking if the data has changed
     // if both structures we're comparing are the same identifier.
     Assert(0 == strcmp(text_old.identifier, text_new.identifier));

@@ -7,6 +7,11 @@ static Hammer hammer_init(void) {
     return hammer;
 }
 
+static void hammer_woosh() {
+    int random_index = rand()%ArrayCount(gs->audio.woosh);
+    play_sound(AUDIO_CHANNEL_WOOSH, gs->audio.woosh[random_index], false);
+}
+
 static bool chisel_click_repeatedly(Chisel *chisel) {
     if (!(gs->input.mouse & SDL_BUTTON_LEFT))
         chisel->click_delay = -1;
@@ -41,7 +46,7 @@ static void hammer_tick(Hammer *hammer) {
         hammer->t = 0;
 
         hammer->state = HAMMER_STATE_WINDUP;
-        hammer->temp_angle = hammer->angle;
+        hammer->temp_angle = hammer->angle;        
     }
 
     const f32 speed = 2.f;
@@ -57,6 +62,7 @@ static void hammer_tick(Hammer *hammer) {
 
             if (fabs(hammer->angle - hammer->temp_angle) >= 60) {
                 hammer->state = HAMMER_STATE_ATTACK;
+                hammer_woosh();
             }
             break;
         }

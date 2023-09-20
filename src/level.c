@@ -513,7 +513,7 @@ static void level_draw_name_intro(int target, Level *level, SDL_Rect rect) {
     int y = rect.y + LEVEL_MARGIN;
 
     char identifier[64] = {0};
-    sprintf(identifier, "erhejrh %d",TEXT_OUTRO_LEVEL_NAME);
+    sprintf(identifier, "erhejrh");
 
     RenderTextQuick(target,
                     identifier,

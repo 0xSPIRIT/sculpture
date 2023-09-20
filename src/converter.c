@@ -1,6 +1,6 @@
 static Converter *converter_init(int type, bool allocated) {
     Converter *converter = null;
-    
+
     if (!allocated) {
         converter = PushSize(gs->persistent_memory, sizeof(Converter));
     } else {
@@ -9,24 +9,24 @@ static Converter *converter_init(int type, bool allocated) {
             case CONVERTER_MATERIAL: converter = gs->material_converter; break;
         }
     }
-    
+
     converter->type = type;
     converter->w = (f32) (gs->game_width/2);
     converter->h = GUI_POPUP_H;
-    
+
     converter->timer_max = 1;
     converter->timer_current = 0;
-    
+
     if (type == CONVERTER_FUEL && gs->level_current+1 <= 5) {
         converter->state = CONVERTER_INACTIVE;
     } else {
         converter->state = CONVERTER_OFF;
     }
-    
+
     switch (type) {
         case CONVERTER_MATERIAL: {
             converter->slot_count = 4;
-            
+
             if (!allocated) {
                 converter->slots = PushArray(gs->persistent_memory, converter->slot_count, sizeof(Slot));
             } else {
@@ -35,22 +35,22 @@ static Converter *converter_init(int type, bool allocated) {
                 memset(&converter->slots[SLOT_FUEL],   0, sizeof(Slot));
                 memset(&converter->slots[SLOT_OUTPUT], 0, sizeof(Slot));
             }
-            
+
             // NOTE: Converter slot positions are in global space,
             //       but the converter itself isn't. Yes, it's
             //       unnecessarily confusing.
-            
+
             converter_setup_position(converter);
-            
+
             strcpy(converter->name, "Material Converter");
-            
+
             auto_set_material_converter_slots(converter);
             break;
         }
-        
+
         case CONVERTER_FUEL: {
             converter->slot_count = 3;
-            
+
             if (!allocated) {
                 converter->slots = PushArray(gs->persistent_memory, converter->slot_count, sizeof(Slot));
             } else {
@@ -58,14 +58,14 @@ static Converter *converter_init(int type, bool allocated) {
                 memset(&converter->slots[SLOT_INPUT2], 0, sizeof(Slot));
                 memset(&converter->slots[SLOT_OUTPUT], 0, sizeof(Slot));
             }
-            
+
             converter_setup_position(converter);
-            
+
             strcpy(converter->name, "Fuel Converter");
             break;
         }
     }
-    
+
     return converter;
 }
 
@@ -84,16 +84,16 @@ static void converter_set_state(Converter *converter, enum Converter_State state
 
 static void converter_draw_go_button(int target, Button *b) {
     SDL_Rect rect = button_get_rect(b);
-    
+
     int mx = gs->input.real_mx;// / gs->S;
     int my = gs->input.real_my;// / gs->S;
-    
+
     SDL_Color fill_color, outline_color, text_color;
-    
+
     fill_color = rgb(64, 64, 64);
     outline_color = rgb(200, 200, 200);
     text_color = rgb(255, 255, 255);
-    
+
     if (b->disabled) {
         fill_color    = rgb(50, 50, 50);
         outline_color = rgb(128, 128, 128);
@@ -105,15 +105,15 @@ static void converter_draw_go_button(int target, Button *b) {
         fill_color = rgb(64, 64, 64);
         outline_color = rgb(128, 128, 128);
     }
-    
+
     RenderColorStruct(fill_color);
     RenderFillRect(target, rect);
-    
+
     RenderColorStruct(outline_color);
     RenderDrawRect(target, rect);
-    
+
     Render_Text_Data data = {0};
-    
+
     strcpy(data.identifier, "gobutton");
     data.font = gs->fonts.font_times;
     strcpy(data.str, "GO");
@@ -122,35 +122,35 @@ static void converter_draw_go_button(int target, Button *b) {
     data.foreground = text_color;
     data.alignment = ALIGNMENT_CENTER;
     data.render_type = TEXT_RENDER_BLENDED;
-    
+
     RenderText(target, &data);
 }
 
 static void converter_draw(int target, Converter *converter) {
     if (converter->state == CONVERTER_INACTIVE)
         return;
-    
+
     if (converter->y >= gs->game_height-GUI_H)
         return;
-    
+
     converter->w = (f32) (gs->game_width/2);
     converter->h = GUI_POPUP_H;
-    
+
     for (int i = 0; i < converter->slot_count; i++) {
         slot_draw(target, &converter->slots[i], converter->x, converter->y);
     }
-    
+
     // Flashing the arrow itself.
     if (converter->state == CONVERTER_ON) {
         const int period = 500; // Milliseconds.
         u8 a = (SDL_GetTicks()/period) % 2 == 0;
         a = a ? 180 : 90;
-        
+
         RenderColor(a, a, a, 255);
     } else {
         RenderColor(90, 90, 90, 255);
     }
-    
+
     RenderFullArrow(target,
                     converter->x + converter->arrow.x,
                     converter->y + converter->arrow.y + Scale(60),
@@ -160,12 +160,12 @@ static void converter_draw(int target, Converter *converter) {
                            converter->x + converter->arrow.x,
                            converter->y + converter->arrow.y + Scale(60),
                            Scale(22));
-    
+
     int margin = Scale(8);
-    
+
     {
         Render_Text_Data data = {0};
-        
+
         sprintf(data.identifier, "%p", converter);
         data.font = gs->fonts.font_courier;
         strcpy(data.str, converter->name);
@@ -173,10 +173,10 @@ static void converter_draw(int target, Converter *converter) {
         data.y = converter->y + 2*margin + GUI_H;
         data.foreground = ColorFromInt(CONVERTER_NAME_COLOR);
         data.alignment = ALIGNMENT_CENTER;
-        
+
         RenderText(target, &data);
     }
-    
+
     converter_draw_go_button(target, converter->go_button);
 }
 
@@ -195,28 +195,28 @@ static bool converter_is_layout_valid(Converter *converter) {
             break;
         }
     }
-    
+
     if (is_empty) return false;
-    
+
     return true;
 }
 
 static void converter_begin_converting(void *converter_ptr) {
     Converter *converter = (Converter *) converter_ptr;
-    
+
     if (!converter_is_layout_valid(converter))
         return;
-    
+
     if (converter->state == CONVERTER_OFF) {
         save_state_to_next();
     }
-    
+
     converter_set_state(converter, converter->state == CONVERTER_ON ? CONVERTER_OFF : CONVERTER_ON);
 }
 
 static void auto_set_material_converter_slots(Converter *converter) {
     int level = gs->level_current+1;
-    
+
     switch (level) {
         case 4: {
             converter->slots[SLOT_FUEL].item = (Item)
@@ -243,21 +243,21 @@ static void converter_setup_position(Converter *converter) {
     converter->slots[SLOT_INPUT1].x = converter->w/3.f;
     converter->slots[SLOT_INPUT1].y = GUI_H + converter->h/4.f;
     strcpy(converter->slots[SLOT_INPUT1].name, "Input 1");
-    
+
     converter->slots[SLOT_INPUT2].x = 2.f*converter->w/3.f;
     converter->slots[SLOT_INPUT2].y = GUI_H + converter->h/4.f;
     strcpy(converter->slots[SLOT_INPUT2].name, "Input 2");
-    
+
     if (converter->type == CONVERTER_MATERIAL) {
         converter->slots[SLOT_FUEL].x = 3.f*converter->w/4.f;
         converter->slots[SLOT_FUEL].y = GUI_H + converter->h/2.f;
         strcpy(converter->slots[SLOT_FUEL].name, "Fuel");
     }
-    
+
     converter->slots[SLOT_OUTPUT].x = converter->w/2.f;
     converter->slots[SLOT_OUTPUT].y = GUI_H + 4.f*converter->h/5.f;
     strcpy(converter->slots[SLOT_OUTPUT].name, "Output");
-    
+
     // Indices line up with Slot_Type enum
     // even though slot_count is variable.
     for (int i = 0; i < converter->slot_count; i++) {
@@ -267,11 +267,11 @@ static void converter_setup_position(Converter *converter) {
         converter->slots[i].converter = converter;
         converter->slots[i].inventory_index = -1;
     }
-    
+
     converter->arrow.x = (int) (converter->w/2);
     converter->arrow.y = (int) (converter->h/2 + 24);
     converter->speed = 8;
-    
+
     // Both X and Y-coordinates are updated in converter_tick.
     if (converter->go_button == null) {
         converter->go_button = button_allocate(BUTTON_CONVERTER,

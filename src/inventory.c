@@ -191,7 +191,7 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
                 Blue(SLOT_COLOR),
                 255);
     RenderFillRect(target, bounds);
-    
+
     bool thick_outline = false;
 
     if (slot->inventory_index != -1 && slot->inventory_index == gs->current_placer) {
@@ -200,14 +200,14 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
     } else {
         RenderColorStruct(ColorFromInt(SLOT_OUTLINE_COLOR));
     }
-    
+
     SDL_Rect stored_bounds = bounds;
-    
+
     bounds.x--;
     bounds.y--;
     bounds.w += 2;
     bounds.h += 2;
-    
+
     RenderDrawRect(target, bounds);
     if (thick_outline) {
         bounds.x--;
@@ -216,9 +216,9 @@ static void slot_draw(int target, Slot *slot, f32 rx, f32 ry) {
         bounds.h += 2;
         RenderDrawRect(target, bounds);
     }
-    
+
     bounds = stored_bounds;
-    
+
     // Drawing the slot's name and F key
     if (*slot->name) {
         { // Slot name
@@ -498,7 +498,7 @@ static void inventory_draw(int target) {
     };
 
     Texture *t = &GetTexture(TEXTURE_CONVERTER_BG);
-    
+
     f64 ratio = (f64)t->height/t->width;
     f64 width = Scale(768);
     RenderTexture(target, t, null, &(SDL_Rect){0, y+rect.h+0-width*ratio, width, width*ratio});

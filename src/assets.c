@@ -90,7 +90,7 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_D_KEY) = RenderLoadTexture("buttons/D.png");
 
     GetTexture(TEXTURE_CURSOR) = RenderLoadTexture("cursor.png");
-    
+
     GetTexture(TEXTURE_CONVERTER_BG) = RenderLoadTexture("cbg.png");
 
     for (Tool_Type i = 0; i < TOOL_COUNT; i++) {
@@ -220,8 +220,9 @@ static void audio_init(Audio *audio) {
     audio->ambience1     = load_sound(DATA_DIR "audio/ambience1.ogg", 0.32);
     audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg",      0.16);
     audio->music0        = load_sound(DATA_DIR "audio/music0.ogg",    0.55);
-    //audio->music1        = load_sound(DATA_DIR "audio/music1.ogg",    0.50);
     audio->music2        = load_sound(DATA_DIR "audio/music2.ogg",    0.50);
+
+    audio->place = load_sound(DATA_DIR "audio/place.ogg", 0.75);
 
     audio->pip = load_sound(DATA_DIR "audio/pip.ogg", 1);
 
@@ -238,6 +239,24 @@ static void audio_init(Audio *audio) {
         audio->ice_chisel[i] = load_sound(name, 1);
     }
 
+    for (int i = 0; i < ArrayCount(audio->glass_chisel); i++) {
+        char name[64];
+        sprintf(name, DATA_DIR "audio/glass_chisel_%d.ogg", i+1);
+        audio->glass_chisel[i] = load_sound(name, 1);
+    }
+
+    for (int i = 0; i < ArrayCount(audio->small_glass_chisel); i++) {
+        char name[64];
+        sprintf(name, DATA_DIR "audio/glass_small_%d.ogg", i+1);
+        audio->small_glass_chisel[i] = load_sound(name, 1);
+    }
+    
+    for (int i = 0; i < ArrayCount(audio->woosh); i++) {
+        char name[64];
+        sprintf(name, DATA_DIR "audio/woosh%d.ogg", i+1);
+        audio->woosh[i] = load_sound(name, 0.125);
+    }
+    
     audio->sprinkle = load_sound(DATA_DIR "audio/sprinkle 3.wav", 1);
     audio->macabre = load_sound(DATA_DIR "audio/macabre.ogg", 1);
 
@@ -246,22 +265,18 @@ static void audio_init(Audio *audio) {
     audio_setup_initial_channel_volumes();
 }
 
+// Do we really have to do this? Aren't all resources freed upon exit?
 static void audio_deinit(Audio *audio) {
     Mix_FreeMusic(audio->music_titlescreen);
 
-    free_sound(&audio->ambience1);
-    free_sound(&audio->ambience_rain);
-    free_sound(&audio->music0);
-    //free_sound(&audio->music1);
-    free_sound(&audio->music2);
+    u8 *pointer = (u8*)audio;
+    pointer += sizeof(Mix_Music*); // Skip the first field, which is a pointer, and get to the Sounds.
 
-    for (int i = 0; i < 6; i++)
-        free_sound(&audio->medium_chisel[i]);
-    for (int i = 0; i < ArrayCount(audio->ice_chisel); i++)
-        free_sound(&audio->ice_chisel[i]);
-    free_sound(&audio->small_chisel);
-    free_sound(&audio->pip);
+    Sound *sounds = (Sound*)pointer;
 
-    free_sound(&audio->sprinkle);
-    free_sound(&audio->macabre);
+    int sound_count = (sizeof(Audio) - sizeof(Mix_Music*)) / sizeof(Sound);
+
+    for (int i = 0; i < sound_count; i++) {
+        free_sound(&sounds[i]);
+    }
 }

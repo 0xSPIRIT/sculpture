@@ -21,7 +21,7 @@ static void preview_finish_recording(Preview *p) {
     Assert(fp);
 
     fprintf(fp, "%d\n", p->length);
-    
+
     int overlay[64*64];
     preview_get_64x64_overlay(gs->overlay.grid, overlay);
     fwrite((const void*)overlay,
@@ -44,7 +44,7 @@ static void preview_load(Preview *p, const char *file) {
     FILE *fp = fopen(file, "rb");
 
     if (!fp) return;
-    
+
     memset(p, 0, sizeof(Preview));
     p->recording = false;
 

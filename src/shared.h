@@ -14,9 +14,12 @@
 #define Gigabytes(x) ((u64)x*1024*1024*1024)
 #define Terabytes(x) ((u64)x*1024*1024*1024*1024)
 
+#ifdef ALASKA_RELEASE_MODE
+  #define __debugbreak() (exit(1))
+#endif
+
 #ifdef __EMSCRIPTEN__
-#define __debugbreak() (exit(1))
-#define SDL_ShowSimpleMessageBox(a, b, c, d) (puts(b))
+  #define SDL_ShowSimpleMessageBox(a, b, c, d) (puts(b))
 #endif
 
 // Assert using an SDL MessageBox popup. Prints to the console too.
@@ -225,7 +228,7 @@ static void _assert(const char *func, const char *file, const int line) {
 }
 
 // Gives pointer to zeroed memory.
-static void *_push_array(Memory_Arena *memory, u64 num, u64 size_individual, const char *file, int line) {
+void *_push_array(Memory_Arena *memory, u64 num, u64 size_individual, const char *file, int line) {
     u64 size;
     void *output = null;
 

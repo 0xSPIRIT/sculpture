@@ -15,23 +15,6 @@
 #define NormX(x) ((f64)(x)/768.0)
 #define NormY(x) (NormX(x))
 
-// Not the best method, but it's too much work for too little gain
-// when adding a new text index. Just add another guy on here
-// and use him in the draw call.
-enum {
-    TEXT_OUTRO_LEVEL_NAME,
-    TEXT_OUTRO_INTENDED,
-    TEXT_OUTRO_RESULT,
-    TEXT_OUTRO_NEXT_LEVEL,
-    TEXT_OUTRO_PREV_LEVEL,
-    TEXT_CONVERTER_CHART_START,
-    TEXT_CONVERTER_REQUIRED_START,
-    TEXT_TITLESCREEN,
-    TEXT_NOT_GOOD_ENOUGH,
-    TEXT_CONFIRM,
-    TEXT_INDEX_COUNT = 128
-};
-
 typedef enum {
     RENDER_TARGET_MASTER, // The final full-screen resolution target. Bounds: { 0, 0, gs->game_width, gs->game_height }
     RENDER_TARGET_PIXELGRID, // The main pixel art render target Bounds: {0, 0, gs->gw*2, gs->gh*2} where the default bounds is {gs->gw/2, gs->gh/2, gs->gw*2, gs->gh*2}
@@ -53,14 +36,16 @@ typedef enum {
     RENDER_TARGET_COUNT
 } RenderTargetType;
 
+#pragma pack(push, 1)
 typedef struct Audio {
     // Music
     Mix_Music *music_titlescreen;
 
     // Chunks
-
     Sound ambience_rain;
     Sound ambience1;
+
+    Sound place;
 
     Sound music0;
     Sound music1;
@@ -71,16 +56,20 @@ typedef struct Audio {
     Sound pip;
     Sound medium_chisel[6];
     Sound ice_chisel[7];
+    
+    Sound glass_chisel[2];
+    Sound small_glass_chisel[3];
     Sound small_chisel;
+    
+    Sound woosh[4];
 } Audio;
+#pragma pack(pop)
 
-
-// Horrible. I'm very sorry for doing this to your eyes
 enum {
     TEXTURE_LEVEL_BACKGROUNDS,
     TEXTURE_LEVEL_BACKGROUNDS_END = TEXTURE_LEVEL_BACKGROUNDS+LEVEL_COUNT,
-    TEXTURE_TEXT,
-    TEXTURE_TEXT_END = TEXTURE_TEXT + TEXT_INDEX_COUNT,
+    //TEXTURE_TEXT,
+    //TEXTURE_TEXT_END = TEXTURE_TEXT + TEXT_INDEX_COUNT,
     TEXTURE_TAB,
     TEXTURE_PLANK,
 
@@ -94,7 +83,7 @@ enum {
     TEXTURE_CHISEL_LARGE_DIAGONAL,
 
     TEXTURE_CURSOR,
-    
+
     TEXTURE_CONVERTER_BG,
 
     TEXTURE_BG_0,
@@ -165,10 +154,6 @@ typedef union Surfaces {
         SDL_Surface *narrator;
     };
 } Surfaces;
-
-#ifndef _MSC_VER
-static _Static_assert(sizeof(Surfaces) == SURFACE_COUNT*sizeof(SDL_Surface*), "a");
-#endif
 
 #define FONT_COUNT 9
 

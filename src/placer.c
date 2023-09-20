@@ -298,6 +298,8 @@ static void placer_place_rect(Placer *placer) {
         return;
     }
 
+    bool played_sound = false;
+
     save_state_to_next();
 
     int object_index = -1;
@@ -344,6 +346,12 @@ static void placer_place_rect(Placer *placer) {
             }
 
             gs->has_any_placed = true;
+
+            if (!played_sound) {
+                play_sound(AUDIO_CHANNEL_CHISEL, gs->audio.place, 0);
+                played_sound = true;
+            }
+
             set(x, y, placer->contains->type, object_index);
             placer->contains->amount--;
 

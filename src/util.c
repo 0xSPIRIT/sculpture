@@ -16,12 +16,12 @@ static inline f64 __end_timer(u64 start) {
 
 static inline SDL_Color rgb(u8 r, u8 g, u8 b) {
     SDL_Color result;
-    
+
     result.r = r;
     result.g = g;
     result.b = b;
     result.a = 255;
-    
+
     return result;
 }
 

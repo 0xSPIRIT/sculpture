@@ -56,6 +56,22 @@ static void chisel_play_sound(Cell_Type material, int size) {
                 case CHISEL_LARGE:  { play_sound(channel, gs->audio.ice_chisel[0], 0); } break;
             }
         } break;
+        
+        case CELL_GLASS: {
+            switch (size) {
+                case CHISEL_SMALL: {
+                    int count = ArrayCount(gs->audio.small_glass_chisel);
+                    play_sound(channel, gs->audio.small_glass_chisel[rand()%count], 0);
+                } break;
+                case CHISEL_MEDIUM: {
+                    play_sound(channel, gs->audio.glass_chisel[1], 0);
+                } break;
+                case CHISEL_LARGE: {
+                    play_sound(channel, gs->audio.glass_chisel[0], 0);
+                } break;
+            } break;
+        } break;
+        
         default: {
             switch (size) {
                 case CHISEL_SMALL:  { play_sound(channel, gs->audio.small_chisel, 0); } break;

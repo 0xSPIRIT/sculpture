@@ -1,6 +1,6 @@
 static Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
     Button *b = PushSize(gs->persistent_memory, sizeof(Button));
-    
+
     b->type = type;
     b->texture = texture;
     b->disabled = false;
@@ -11,10 +11,10 @@ static Button *button_allocate(Button_Type type, Texture *texture, const char *t
         b->w = b->texture->width;
         b->h = b->texture->height;
     }
-    
+
     strcpy(b->tooltip_text, tooltip_text);
     b->on_pressed = on_pressed;
-    
+
     return b;
 }
 
@@ -284,9 +284,9 @@ static SDL_Rect button_get_rect(Button *b) {
     SDL_Rect dst = {
         round(b->x), round(b->y), round(b->w), round(b->h)
     };
-    
+
     return dst;
-} 
+}
 
 static void button_draw_prefer_color(int target, Button *b, SDL_Color color) {
     if (!b->texture) return;
@@ -634,7 +634,7 @@ static void gui_popup_draw(int target) {
     };
 
     Texture *t = &GetTexture(TEXTURE_CONVERTER_BG);
-    
+
     f64 ratio = (f64)t->height/t->width;
     f64 width = Scale(768);
     RenderTexture(target, t, null, &(SDL_Rect){0, GUI_H+gui->popup_y, width, width*ratio});

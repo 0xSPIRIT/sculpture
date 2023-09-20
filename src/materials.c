@@ -57,51 +57,51 @@ static inline SDL_Color ice(int idx) {
 
 static inline SDL_Color marble(int idx) {
     SDL_Color result;
-    
+
     int id = gs->grid[idx].id*2;
     result = get_pixel(gs->surfaces.marble_surface, id%gs->gw, id/gs->gw);
-    
+
     int gray = result.r + result.g + result.b;
     gray /= 3;
-    
+
     f64 t = 0.1*gs->frames;
-        
+
     int threshold = 222;
     if (gray > threshold) {
         int amplitude = 15;
         int r = amplitude+amplitude*sin(0.25*(t+id));
         int g = r;
         int b = r;
-        
+
         result.r = clamp(result.r+r, 0, 255);
         result.g = clamp(result.g+g, 0, 255);
         result.b = clamp(result.b+b, 0, 255);
     }
-    
+
     return result;
 }
 
 static inline SDL_Color granite(int idx) {
     SDL_Color result;
-    
+
     result = get_pixel(gs->surfaces.granite_surface, idx%gs->gw, idx/gs->gw);
-    
+
     int gray = result.r + result.g + result.b;
     gray /= 3;
-    
+
     f64 t = 0.2*gs->frames;
-        
+
     int threshold = 150;
     if (gray < threshold) {
         int amplitude = 15;
         int r = amplitude+amplitude*sin(0.25*(t+idx));
         int g = r;
         int b = r;
-        
+
         result.r = clamp(result.r+r, 0, 255);
         result.g = clamp(result.g+g, 0, 255);
         result.b = clamp(result.b+b, 0, 255);
     }
-    
+
     return result;
 }

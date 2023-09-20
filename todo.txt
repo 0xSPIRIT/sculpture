@@ -1,5 +1,8 @@
 TODO
 
+  x Add sound effects to when you're placing.
+  - Improve the woosh sound effects to be less obnoxious
+
   - Playtest levels 7-10
     x 7
     - 8

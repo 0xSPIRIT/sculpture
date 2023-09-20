@@ -1,7 +1,7 @@
 // A wrapper for calls to SDL's draw functions.
 // We use this to manage render targets better.
 
-#define RENDERAPI inline
+#define RENDERAPI static inline
 #define MAX_TEXT_LENGTH 512
 #define RenderTarget(which) (gs->render.render_targets+which)
 
@@ -62,7 +62,7 @@ typedef struct {
     f64 game_scale;       // OUT: The scale of the game at the time of rendering.
     Texture texture;      // OUT: The texture generated
     SDL_Surface *surface; // OUT: The surface generated
-    
+
 } Render_Text_Data;
 
 typedef struct {
