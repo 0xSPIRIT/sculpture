@@ -420,7 +420,9 @@ static void level_draw(Level *level) {
 }
 
 static void level_draw_intro(Level *level) {
-    RenderColor(0, 0, 0, 255);
+    RenderColor(0,0,0,255);
+    
+    RenderClear(RENDER_TARGET_MASTER);
     RenderClear(RENDER_TARGET_PIXELGRID);
 
     for (int y = 0; y < gs->gh; y++) {

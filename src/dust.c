@@ -128,6 +128,7 @@ static void dust_grid_run(int target) {
                                             dust->type,
                                             0);
         c = dust_strobe_color(c);
+        apply_lighting_to_color(&gs->lighting, &c, dust->x, dust->y);
 
         RenderColor(c.r, c.g, c.b, alpha);
         RenderPointRelative(target, dust->x, dust->y);

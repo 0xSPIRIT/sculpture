@@ -71,6 +71,11 @@ typedef struct {
 } Render_Text_Data_Cache;
 
 typedef struct {
+    Render_Text_Data data[128];
+    int size;
+} Render_Text_Debug;
+
+typedef struct {
     SDL_Renderer *sdl;
     View_State view_type;
 
@@ -82,6 +87,7 @@ typedef struct {
 
     Render_Text_Data_Cache text_cache; // The permanent cache, destroyed upon RenderCleanup
     Render_Text_Data_Cache temp_text_cache; // Temporary cache, destroyed at end of frame.
+    Render_Text_Debug text_debug;
     int unfreed_objects;
 } Render;
 

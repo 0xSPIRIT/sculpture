@@ -180,7 +180,7 @@ static void click_gui_tool_button(void *type_ptr) {
             return;
         }
         case TOOL_DESTROY: {
-            if (is_array_empty(gs->grid)) break;
+            if (is_array_empty(gs->grid)) return;
 
             save_state_to_next();
             for (int i = 0; i < gs->gw*gs->gh; i++) {
@@ -282,9 +282,9 @@ static bool button_tick(Button *b, void *data) {
 
 static SDL_Rect button_get_rect(Button *b) {
     SDL_Rect dst = {
-        (int)(b->x), (int)(b->y), (int)(b->w), (int)(b->h)
+        round(b->x), round(b->y), round(b->w), round(b->h)
     };
-
+    
     return dst;
 }
 
@@ -591,20 +591,21 @@ static void gui_button_draw_outline(int index) {
     Button *b = gui->tool_buttons[index];
     
     SDL_Rect rect = button_get_rect(b);
+    if (rect.h >= GUI_H) rect.h = GUI_H;
     
     if (index != TOOL_COUNT-1) {
         rect.w++;
     }
     
     RenderColor(91, 91, 91, 255);
-    RenderDrawRect(RENDER_TARGET_GUI_TOOLBAR, rect);
+    RenderDrawRect(RENDER_TARGET_GUI_TOOLBAR, rect);    
 }
 
 static void gui_draw(int target) {
     Assert(target == RENDER_TARGET_MASTER);
 
     GUI *gui = &gs->gui;
-
+    
     RenderColor(0, 0, 0, 0);
     RenderClear(RENDER_TARGET_GUI_TOOLBAR);
 
