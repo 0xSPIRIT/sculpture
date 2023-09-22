@@ -53,8 +53,7 @@
 "He understood his previous sculptures only served as\r"\
 "stepping stones to something greater,\r"\
 "but it's been too long.\n"\
-"He must move forward-\r"\
-"To do something real.\r"\
+"He must move forward to do something real.\r"\
 "Something noteworthy.\n"\
 "Max fantasized sculptures that he admired-\r"\
 "They swirled around his head in a moment of inspiration.\n"\

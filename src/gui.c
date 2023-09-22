@@ -282,7 +282,7 @@ static bool button_tick(Button *b, void *data) {
 
 static SDL_Rect button_get_rect(Button *b) {
     SDL_Rect dst = {
-        round(b->x), round(b->y), round(b->w), round(b->h)
+        (int)(b->x), (int)(b->y), (int)(b->w), (int)(b->h)
     };
 
     return dst;
@@ -586,6 +586,20 @@ static void gui_draw_profile(int target) {
     }
 }
 
+static void gui_button_draw_outline(int index) {
+    GUI *gui = &gs->gui;
+    Button *b = gui->tool_buttons[index];
+    
+    SDL_Rect rect = button_get_rect(b);
+    
+    if (index != TOOL_COUNT-1) {
+        rect.w++;
+    }
+    
+    RenderColor(91, 91, 91, 255);
+    RenderDrawRect(RENDER_TARGET_GUI_TOOLBAR, rect);
+}
+
 static void gui_draw(int target) {
     Assert(target == RENDER_TARGET_MASTER);
 
@@ -598,6 +612,7 @@ static void gui_draw(int target) {
     if (gs->gui.popup_inventory_y < GUI_H) {
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_draw(RENDER_TARGET_GUI_TOOLBAR, gui->tool_buttons[i]);
+            gui_button_draw_outline(i);            
         }
 
         SDL_Rect src = {

@@ -3,6 +3,9 @@ TODO
   x Add sound effects to when you're placing.
   - Improve the woosh sound effects to be less obnoxious
 
+  - When you click destroy materials, it switches the tool
+    even though it shouldn't.
+
   - Playtest levels 7-10
     x 7
     - 8

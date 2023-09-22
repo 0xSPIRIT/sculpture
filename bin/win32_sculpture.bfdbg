@@ -1,14 +1,14 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\preview.c", "d:\\dev\\sculpture\\src\\converter.c", "d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\util.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\assets.c", "d:\\dev\\sculpture\\src\\chisel.c", "d:\\dev\\sculpture\\src\\placer.c", "d:\\dev\\sculpture\\src\\popup.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
 
 [MainWindow]
-X = 16
+X = 94
 Y = 80
 Width = 1801
 Height = 894
-ShowKind = "ShowNormal"
+ShowKind = "ShowMaximized"
 
 [MainDockingFrame]
 Type = "DockingFrame"
@@ -25,93 +25,36 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
+TabLabel = "assets.c"
+TabWidth = 73.51146
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\assets.c"
+CursorPos = 586
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "chisel.c"
+TabWidth = 71.22138
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\chisel.c"
+CursorPos = 2061
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "placer.c"
+TabWidth = 73.51146
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\placer.c"
+CursorPos = 9890
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "popup.c"
 TabWidth = 77.32825
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\popup.c"
 CursorPos = 663
-VertPos = 210.0
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "preview.c"
-TabWidth = 82.67176
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\preview.c"
-CursorPos = 7906
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "converter.c"
-TabWidth = 93.35879
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\converter.c"
-CursorPos = 4104
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "render.c"
-TabWidth = 76.56489
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\render.c"
-CursorPos = 12502
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "level.c"
-TabWidth = 65.11451
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\level.c"
-CursorPos = 32
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "effects.c"
-TabWidth = 76.56489
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\effects.c"
-CursorPos = 9494
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "game.c"
-TabWidth = 71.98474
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 10691
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "gui.c"
-TabWidth = 57.48092
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\gui.c"
-CursorPos = 477
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "win32_main.c"
-TabWidth = 107.0992
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\win32_main.c"
-CursorPos = 10021
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "util.c"
-TabWidth = 57.48092
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\util.c"
-CursorPos = 324
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "grid.c"
-TabWidth = 62.06107
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\grid.c"
-CursorPos = 26712
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 809.0
@@ -138,7 +81,7 @@ TabWidth = 87.40459
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 229.0}, {Width = 676.0}, {Width = 225.0}]
-Items = ["p", ""]
+Items = ["sounds[i]", "audio", "&audio.small_chisel", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"

@@ -8,8 +8,10 @@ static Hammer hammer_init(void) {
 }
 
 static void hammer_woosh() {
+#if 0
     int random_index = rand()%ArrayCount(gs->audio.woosh);
     play_sound(AUDIO_CHANNEL_WOOSH, gs->audio.woosh[random_index], false);
+#endif
 }
 
 static bool chisel_click_repeatedly(Chisel *chisel) {
