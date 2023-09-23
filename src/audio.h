@@ -4,7 +4,7 @@
 #define AUDIO_TITLESCREEN_VOLUME  Volume(1.00)
 
 #define AUDIO_PLAY_AMBIANCE 1
-#define AUDIO_PLAY_MUSIC    0
+#define AUDIO_PLAY_MUSIC    1
 
 #define Volume(x) ((int) ((f64)(x) * MIX_MAX_VOLUME))
 
@@ -21,7 +21,8 @@ enum {
 typedef enum {
     AMBIENCE_NONE, // no sound
     AMBIENCE_NORMAL,
-    AMBIENCE_RAIN
+    AMBIENCE_RAIN,
+    AMBIENCE_RAIN_REVERSED
 } AmbienceType;
 
 typedef enum {

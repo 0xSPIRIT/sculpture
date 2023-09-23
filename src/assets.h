@@ -43,6 +43,7 @@ typedef struct Audio {
 
     // Chunks
     Sound ambience_rain;
+    Sound ambience_rain_reversed;
     Sound ambience1;
 
     Sound place;

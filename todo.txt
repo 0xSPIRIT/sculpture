@@ -1,16 +1,11 @@
 TODO
 
-  x Add sound effects to when you're placing.
   - Improve the woosh sound effects to be less obnoxious
 
-  x When you click destroy materials, it switches the tool
-    even though it shouldn't.
-
-  - Playtest levels 7-10
-    x 7
-    - 8
-    - 9
-    - 10
+  x Playtest levels 7-10
+    x 8
+    x 9
+    x 10
 
   - Music
     - Redo the ending music. Make it more like a solemn acceptance.
@@ -19,9 +14,6 @@ TODO
         Tons of empty space in the music. 7 minute long tracks?
         Not just sprinkles like before, use actual melodies, but don't make it
         annoying. Melodic tracks can exist without being annoying!
-
-  - Move the Note: in the material converter section of the recipe book
-    to be item counts instead.
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
 

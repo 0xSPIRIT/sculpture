@@ -219,6 +219,7 @@ static void audio_init(Audio *audio) {
 
     audio->ambience1     = load_sound(DATA_DIR "audio/ambience1.ogg", 0.32);
     audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg",      0.16);
+    audio->ambience_rain_reversed = load_sound(DATA_DIR "audio/rain_reversed.ogg", 0.16);
     audio->music0        = load_sound(DATA_DIR "audio/music0.ogg",    0.55);
     audio->music2        = load_sound(DATA_DIR "audio/music2.ogg",    0.50);
 

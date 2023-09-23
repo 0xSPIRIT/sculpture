@@ -124,7 +124,7 @@ static void levels_setup(void) {
     level_add("Yearning",
               DATA_DIR "lvl/desired/level 9.png",
               DATA_DIR "lvl/initial/level 9.png",
-              EFFECT_SNOW);
+              EFFECT_RAIN);
     level_add("Showpiece",
               DATA_DIR "lvl/desired/level 10.png",
               DATA_DIR "lvl/initial/level 10.png",
@@ -660,6 +660,15 @@ static void level_draw_outro(int target, Level *level) {
             RenderFillRect(outro, button_rect);
         }
 
+        int expand = 2;
+        button_rect.x -= Scale(expand);
+        button_rect.y -= Scale(2*expand);
+        button_rect.w += Scale(2*expand);
+        button_rect.h += Scale(2*expand);
+        
+        RenderColor(255, 255, 255, 255);
+        RenderDrawRect(outro, button_rect);
+
         Button b = {0};
         b.texture = null;
         b.on_pressed = null;
@@ -700,6 +709,15 @@ static void level_draw_outro(int target, Level *level) {
             RenderColor(0,0,0,64);
             RenderFillRect(outro, button_rect);
         }
+        
+        int expand = 2;
+        button_rect.x -= Scale(expand);
+        button_rect.y -= Scale(2*expand);
+        button_rect.w += Scale(2*expand);
+        button_rect.h += Scale(2*expand);
+        
+        RenderColor(255, 255, 255, 255);
+        RenderDrawRect(outro, button_rect);
 
         Button b = {0};
         b.texture = null;
@@ -835,7 +853,7 @@ static void level_draw_outro_or_play(Level *level) {
         RenderColor(0, 0, 0, 255);
     RenderClear(target);
 
-    // The meat!
+    // The meat
 
     lighting_tick(&gs->lighting);
     background_draw(target, &gs->background);

@@ -81,7 +81,7 @@ static void game_update_view(void) {
     f64 amount = gs->game_width*0.25;
 
     bool changed = false;
-
+    
     if (input->keys_pressed[SDL_SCANCODE_D] || input->keys_pressed[SDL_SCANCODE_RIGHT]) {
         to->x += amount;
         changed = true;

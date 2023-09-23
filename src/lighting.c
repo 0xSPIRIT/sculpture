@@ -10,21 +10,14 @@ static void lighting_init(Lighting *lighting) {
 }
 
 static void lighting_tick(Lighting *lighting) {
-    {
-        Light *l = lighting->chisel_light;
+    Light *l = lighting->chisel_light;
 
-        if (is_tool_chisel() && gs->chisel) {
-            l->active = true;
-            l->x = gs->chisel->x;
-            l->y = gs->chisel->y;
-        } else {
-            l->active = false;
-        }
-    }
-
-    {
-        Light *l = lighting->main_light;
-        (void)l;
+    if (is_tool_chisel() && gs->chisel) {
+        l->active = true;
+        l->x = gs->chisel->x;
+        l->y = gs->chisel->y;
+    } else {
+        l->active = false;
     }
 }
 
@@ -78,6 +71,17 @@ static void apply_lighting_to_color(Lighting *lighting, SDL_Color *c, int x, int
     }
 
     *c = modify_color_based_on_light_strength(*c, cum_strength);
+}
+
+static void apply_lighting_to_alpha(Lighting *lighting, u8 *alpha, int x, int y) {
+    f64 cum_strength = 0;
+    
+    for (int i = 0; i < lighting->light_count; i++) {
+        if (lighting->lights[i].active)
+            cum_strength += get_light_strength_at_position(lighting->lights[i], x, y);
+    }
+    
+    *alpha = clamp((int)((f64)(*alpha) * cum_strength), 0, 255);
 }
 
 // Applies all lights to an entire render target.

@@ -348,9 +348,10 @@ static void item_tick(Item *item, Slot *slot, int x, int y, int w, int h) {
             } else {
                 // We are not in the inventory
                 // Swap into the inventory index if there's a free spot
-                add_item_to_inventory_slot(item->type, item->amount);
-                item->type = 0;
-                item->amount = 0;
+                if (add_item_to_inventory_slot(item->type, item->amount)) {
+                    item->type = 0;
+                    item->amount = 0;
+                }
             }
         }
 

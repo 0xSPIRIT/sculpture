@@ -672,7 +672,7 @@ RENDERAPI int RenderTextDebugPush(const char *string, int x, int y) {
     text_data.alignment = ALIGNMENT_TOP_LEFT;
     text_data.render_type = TEXT_RENDER_BLENDED;
     text_data.force_update = true;
-
+    
     debug->data[debug->size++] = text_data;
     
     y += text_data.texture.height;

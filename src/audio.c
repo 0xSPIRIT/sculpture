@@ -43,7 +43,11 @@ static void audio_set_ambience_accordingly(void) {
     }
 
     if (level->effect_type == EFFECT_RAIN) {
-        audio_set_ambience(AMBIENCE_RAIN);
+        if (gs->level_current+1 == 11) {
+            audio_set_ambience(AMBIENCE_RAIN_REVERSED);
+        } else {
+            audio_set_ambience(AMBIENCE_RAIN);
+        }
     }
 }
 
@@ -105,6 +109,9 @@ static void audio_set_ambience(AmbienceType ambience) {
             } break;
             case AMBIENCE_RAIN: {
                 play_sound(AUDIO_CHANNEL_AMBIENCE, gs->audio.ambience_rain, -1);
+            } break;
+            case AMBIENCE_RAIN_REVERSED: {
+                play_sound(AUDIO_CHANNEL_AMBIENCE, gs->audio.ambience_rain_reversed, -1);
             } break;
         }
         gs->audio_handler.ambience = ambience;

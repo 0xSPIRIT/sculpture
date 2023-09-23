@@ -62,7 +62,6 @@ typedef struct {
     f64 game_scale;       // OUT: The scale of the game at the time of rendering.
     Texture texture;      // OUT: The texture generated
     SDL_Surface *surface; // OUT: The surface generated
-
 } Render_Text_Data;
 
 typedef struct {
