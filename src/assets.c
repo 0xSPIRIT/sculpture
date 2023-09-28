@@ -35,7 +35,7 @@ static void render_targets_init(void) {
             }
             case RENDER_TARGET_HAMMER: case RENDER_TARGET_HAMMER2: {
                 gs->render.render_targets[i] = RenderMakeTarget(gs->gw, gs->gh, VIEW_STATE_PIXELS, true);
-				continue;
+                continue;
             }
             case RENDER_TARGET_3D: {
                 gs->render.render_targets[i] = RenderMakeTargetEx(SCALE_3D*gs->game_width,

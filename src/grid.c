@@ -992,7 +992,7 @@ static void objects_reevaluate(void) {
     //calculate_pressure(gs->grid);
 }
 
-static int condition(int a, int end, int dir) {
+static int _condition(int a, int end, int dir) {
     if (dir == 1) {
         return a <= end;
     }
@@ -1039,8 +1039,8 @@ static int object_attempt_move(int object, int dx, int dy) {
     Cell *grid_temp = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(Cell));
     memcpy(grid_temp, gs->grid, sizeof(Cell)*gs->gw*gs->gh);
 
-    for (int y = start_y; condition(y, end_y, dir_y); y += dir_y) {
-        for (int x = start_x; condition(x, end_x, dir_x); x += dir_x) {
+    for (int y = start_y; _condition(y, end_y, dir_y); y += dir_y) {
+        for (int x = start_x; _condition(x, end_x, dir_x); x += dir_x) {
             if (gs->grid[x+y*gs->gw].object == object) {
                 int rx = x + (int)vx;
                 int ry = y + (int)vy;

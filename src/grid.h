@@ -6,8 +6,6 @@
 #define GRAV 0.5
 #define MAX_GRAV 4
 
-#define DEGTORAD (M_PI / 180.0)
-
 typedef enum {
     TOOL_CHISEL_SMALL,
     TOOL_CHISEL_MEDIUM,
@@ -54,7 +52,7 @@ typedef enum Cell_Type {
     CELL_TYPE_COUNT
 } Cell_Type;
 
-typedef struct Cell {
+typedef struct {
     u8  type;            // The type of this cell. (Cell_Type)
     u16 id;              // Unique ID for each cell.
     s16 object;          // Object index the cell belongs. -1 for none

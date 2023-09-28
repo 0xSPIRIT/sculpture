@@ -120,12 +120,16 @@ static void hammer_draw(int final_target, Hammer *hammer) {
         SDL_RendererFlip flip = SDL_FLIP_NONE;
 
         f64 angle = hammer->angle;
-
+        
         if (gs->chisel->angle < 90 && gs->chisel->angle > -90) {
             flip |= SDL_FLIP_VERTICAL;
             dst.y -= hammer->tex->height - 4;
             center.y -= hammer->tex->height - 4;
             angle *= -1;
+        }
+        
+        if (gs->chisel->angle == 90 || gs->chisel->angle == 0) {
+            dst.x--;
         }
 
         RenderTextureExRelativeF(RENDER_TARGET_HAMMER,
@@ -136,9 +140,9 @@ static void hammer_draw(int final_target, Hammer *hammer) {
                                  &center,
                                  flip);
     }
-
+    
     // Now we render the target.
-
+    
     RenderColor(0, 0, 0, 0);
     RenderClear(RENDER_TARGET_HAMMER2);
 
@@ -146,7 +150,7 @@ static void hammer_draw(int final_target, Hammer *hammer) {
         gs->chisel->draw_x,
         gs->chisel->draw_y,
     };
-
+    
     RenderTargetToTargetRelativeEx(RENDER_TARGET_HAMMER2,
                                    RENDER_TARGET_HAMMER,
                                    null,

@@ -2,18 +2,16 @@ TODO
 
   - Improve the woosh sound effects to be less obnoxious
 
-  x Playtest levels 7-10
-    x 8
-    x 9
-    x 10
+  - Make the hammer be the correct distance from the chisel.
 
   - Music
-    - Redo the ending music. Make it more like a solemn acceptance.
-    - Make music that corresponds to each area (background change)
-      - Piano, electronic, ambient, slowly getting more distorted for each area.
-        Tons of empty space in the music. 7 minute long tracks?
-        Not just sprinkles like before, use actual melodies, but don't make it
-        annoying. Melodic tracks can exist without being annoying!
+    - Title Theme: Piano + Electronic theme
+    - Music 1: Solo Piano
+        - Tons of empty space in the music? 7 minute long track? Sprinkles,
+          but have structure and melody to it as well.
+    - Music 2: Piano + Electronic
+    - Music 3: Electronic + Percussion + Piano chords
+    - Ending Theme: Solemn acceptance, piano, some electronic.
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
 

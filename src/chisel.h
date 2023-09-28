@@ -8,11 +8,11 @@ typedef enum Chisel_Size {
     CHISEL_LARGE,
 } Chisel_Size;
 
-typedef enum ChiselState {
+typedef enum Chisel_State {
     CHISEL_STATE_IDLE = 0,
     CHISEL_STATE_ROTATING,
     CHISEL_STATE_CHISELING
-} ChiselState;
+} Chisel_State;
 
 typedef struct Chisel_Texture {
     Texture *straight;
@@ -20,7 +20,7 @@ typedef struct Chisel_Texture {
 } Chisel_Texture;
 
 typedef struct Chisel {
-    ChiselState state;
+    Chisel_State state;
     Chisel_Size size;
     int x, y;
 

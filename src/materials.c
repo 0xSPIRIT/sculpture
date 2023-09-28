@@ -8,7 +8,7 @@ static inline SDL_Color glass(int idx) {
 
     int x = idx%gs->gw;
     int y = idx/gs->gw;
-
+    
     f32 amplitude = (1+sin(y+x+t/5))*10;
 
     f32 width = 0.65;
