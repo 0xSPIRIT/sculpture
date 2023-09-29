@@ -2,7 +2,7 @@ TODO
 
   - Improve the woosh sound effects to be less obnoxious
 
-  - Make the hammer be the correct distance from the chisel.
+  x Make the hammer be the correct distance from the chisel.
 
   - Music
     - Title Theme: Piano + Electronic theme

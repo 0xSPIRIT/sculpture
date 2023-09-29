@@ -69,7 +69,7 @@ static bool audio_lower_channel_for(int channel, int frames) {
 
         handler->old_volume = Mix_Volume(channel, (int)(handler->fader * MIX_MAX_VOLUME));
     }
-
+    
     if (handler->waiting) {
         if (gs->frames - handler->time >= frames) {
             Mix_Volume(channel, handler->old_volume);

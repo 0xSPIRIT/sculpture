@@ -1,30 +1,30 @@
 static void rain_splash(Rain_Splash *rain, int amount, int x, int y) {
     if (rain->splash_count + amount > MAX_SPLASH) return;
-    
+
     for (int i = 0; i < amount; i++) {
         f32 vx = randf(2.0) - 1;
         f32 vy = -randf(2.0);
-        
+
         f32 speed = 0.5;
-        
+
         vx *= speed;
         vy *= speed;
-        
+
         rain->splashes[rain->splash_count++] = (Effect_Particle){ x, y, vx, vy };
     }
 }
 
 static void draw_rain_splashes(int target, Rain_Splash *rain) {
     int sub_target = RENDER_TARGET_EFFECTS;
-    
+
     RenderColor(0,0,0,0);
     RenderClear(sub_target);
-    
+
     bool should_tick = !gs->paused || gs->step_one;
-    
+
     for (int i = rain->splash_count-1; i >= 0; i--) {
         Effect_Particle *p = &rain->splashes[i];
-        
+
         u8 col = 255;
         apply_lighting_to_alpha(&gs->lighting, &col, p->x, p->y);
         col = clamp((int)col * 2, 0, 255);
@@ -344,7 +344,7 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
                 if (draw_points) {
                     apply_lighting_to_alpha(&gs->lighting, &col, px, py);
                     RenderColor(255, 255, 255, col);
-                    
+
                     RenderPointRelative(target, px, py);
                 } else {
                     RenderColor(col, col, col, 255);
@@ -392,7 +392,7 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
                     normalized += 0.5;
 
                     u8 alpha = normalized * 255;
-                    
+
                     apply_lighting_to_alpha(&gs->lighting, &alpha, (px+p2x)/2, (py+p2y)/2);
                     alpha = clamp((int)alpha * 1.5, 0, 255);
                     RenderColor(255, 255, 255, alpha);

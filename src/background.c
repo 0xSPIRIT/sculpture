@@ -11,13 +11,12 @@ static void background_draw_starry_night(int target_enum, Background *bg) {
 
     int level = gs->level_current+1;
 
-    if (level >= 5) {
-        background = TEXTURE_BG_2;
-    } else if (level >= 3) {
+    if (level == 11) {
         background = TEXTURE_BG_1;
+    } else if (level >= 5) {
+        background = TEXTURE_BG_2;
     }
 
-    if (level == 11) return;
     if (background == 0) return;
 
     Assert(w == 128);

@@ -48,7 +48,7 @@ static void hammer_tick(Hammer *hammer) {
         hammer->t = 0;
 
         hammer->state = HAMMER_STATE_WINDUP;
-        hammer->temp_angle = hammer->angle;        
+        hammer->temp_angle = hammer->angle;
     }
 
     const f32 speed = 2.f;
@@ -92,6 +92,31 @@ static void hammer_tick(Hammer *hammer) {
     }
 }
 
+// Don't question it, it's just adjusting weird artifacts that make the hammer not line up
+// with the chisel when rotating.
+static void hammer_adjust_xy_based_on_angle(f32 *x, f32 *y, int chisel_size, int angle) {
+#if 0
+    if (gs->input.keys[SDL_SCANCODE_G])
+        Log("Chisel Angle: %d\n", angle);
+#endif
+    
+    if (angle == 90 || angle == 0) {
+        (*x)--;
+    }
+    if (chisel_size == CHISEL_MEDIUM) {
+        if (angle == 45 || angle == 135) {
+            (*x)--;
+        }
+    }
+    
+    if (chisel_size == CHISEL_LARGE) {
+        if (angle == 45 || angle == 135) {
+            (*x)--;
+            if (angle == 135) (*y) += 0.5;
+        }
+    }
+}
+
 // How the drawing works:
 //
 // Firstly, the local hammer's angle (swing animation)
@@ -120,17 +145,15 @@ static void hammer_draw(int final_target, Hammer *hammer) {
         SDL_RendererFlip flip = SDL_FLIP_NONE;
 
         f64 angle = hammer->angle;
-        
+
         if (gs->chisel->angle < 90 && gs->chisel->angle > -90) {
             flip |= SDL_FLIP_VERTICAL;
             dst.y -= hammer->tex->height - 4;
             center.y -= hammer->tex->height - 4;
             angle *= -1;
         }
-        
-        if (gs->chisel->angle == 90 || gs->chisel->angle == 0) {
-            dst.x--;
-        }
+
+        hammer_adjust_xy_based_on_angle(&dst.x, &dst.y, gs->chisel->size, gs->chisel->angle);
 
         RenderTextureExRelativeF(RENDER_TARGET_HAMMER,
                                  hammer->tex,
@@ -140,9 +163,9 @@ static void hammer_draw(int final_target, Hammer *hammer) {
                                  &center,
                                  flip);
     }
-    
+
     // Now we render the target.
-    
+
     RenderColor(0, 0, 0, 0);
     RenderClear(RENDER_TARGET_HAMMER2);
 
@@ -150,7 +173,7 @@ static void hammer_draw(int final_target, Hammer *hammer) {
         gs->chisel->draw_x,
         gs->chisel->draw_y,
     };
-    
+
     RenderTargetToTargetRelativeEx(RENDER_TARGET_HAMMER2,
                                    RENDER_TARGET_HAMMER,
                                    null,

@@ -659,11 +659,11 @@ RENDERAPI int RenderTextDebugPush(const char *string, int x, int y) {
     return 0;
 #else
     Render_Text_Debug *debug = &gs->render.text_debug;
-    
+
     if (debug->size == ArrayCount(debug->data)-1) return y;
-    
+
     Render_Text_Data text_data = {0};
-    
+
     text_data.font = gs->fonts.font_courier;
     strcpy(text_data.str, string);
     text_data.foreground = WHITE;
@@ -672,9 +672,9 @@ RENDERAPI int RenderTextDebugPush(const char *string, int x, int y) {
     text_data.alignment = ALIGNMENT_TOP_LEFT;
     text_data.render_type = TEXT_RENDER_BLENDED;
     text_data.force_update = true;
-    
+
     debug->data[debug->size++] = text_data;
-    
+
     y += text_data.texture.height;
     return y;
 #endif
@@ -686,11 +686,11 @@ RENDERAPI void RenderTextDebug() {
 #else
     Render_Text_Debug *debug = &gs->render.text_debug;
     int target = RENDER_TARGET_MASTER;
-    
+
     for (int i = 0; i < debug->size; i++) {
         RenderText(target, &debug->data[i]);
     }
-    
+
     debug->size = 0;
 #endif
 }

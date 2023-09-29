@@ -16,7 +16,7 @@
 static void render_targets_init(void) {
     int width = gs->desktop_w;
     int height = gs->desktop_h;
-    
+
     for (int i = 0; i < RENDER_TARGET_COUNT; i++) {
         switch (i) {
             case RENDER_TARGET_MASTER: {
@@ -243,9 +243,9 @@ static void audio_init(Audio *audio) {
     for (int i = 0; i < ArrayCount(audio->glass_chisel); i++) {
         char name[64];
         sprintf(name, DATA_DIR "audio/glass_chisel_%d.ogg", i+1);
-        
+
         if (i == 1) strcpy(name, DATA_DIR "audio/glass_chisel_2.wav");
-        
+
         audio->glass_chisel[i] = load_sound(name, 1);
     }
 
@@ -254,7 +254,7 @@ static void audio_init(Audio *audio) {
         sprintf(name, DATA_DIR "audio/glass_small_%d.ogg", i+1);
         audio->small_glass_chisel[i] = load_sound(name, 1);
     }
-    
+
 #if 0
     for (int i = 0; i < ArrayCount(audio->woosh); i++) {
         char name[64];
@@ -262,7 +262,7 @@ static void audio_init(Audio *audio) {
         audio->woosh[i] = load_sound(name, 0.125);
     }
 #endif
-    
+
     audio->sprinkle = load_sound(DATA_DIR "audio/sprinkle 3.wav", 1);
     audio->macabre = load_sound(DATA_DIR "audio/macabre.ogg", 1);
 

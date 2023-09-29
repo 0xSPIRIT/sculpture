@@ -81,7 +81,7 @@ static void game_update_view(void) {
     f64 amount = gs->game_width*0.25;
 
     bool changed = false;
-    
+
     if (input->keys_pressed[SDL_SCANCODE_D] || input->keys_pressed[SDL_SCANCODE_RIGHT]) {
         to->x += amount;
         changed = true;
@@ -482,7 +482,7 @@ export void game_run(Game_State *state) {
         draw_focus(RENDER_TARGET_MASTER);
     }
 #endif
-    
+
     SDL_Color border_color_desired = {0};
 
     if (gs->level_current+1 == 11) {

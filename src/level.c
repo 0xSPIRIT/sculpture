@@ -421,7 +421,7 @@ static void level_draw(Level *level) {
 
 static void level_draw_intro(Level *level) {
     RenderColor(0,0,0,255);
-    
+
     RenderClear(RENDER_TARGET_MASTER);
     RenderClear(RENDER_TARGET_PIXELGRID);
 
@@ -665,7 +665,7 @@ static void level_draw_outro(int target, Level *level) {
         button_rect.y -= Scale(2*expand);
         button_rect.w += Scale(2*expand);
         button_rect.h += Scale(2*expand);
-        
+
         RenderColor(255, 255, 255, 255);
         RenderDrawRect(outro, button_rect);
 
@@ -709,13 +709,13 @@ static void level_draw_outro(int target, Level *level) {
             RenderColor(0,0,0,64);
             RenderFillRect(outro, button_rect);
         }
-        
+
         int expand = 2;
         button_rect.x -= Scale(expand);
         button_rect.y -= Scale(2*expand);
         button_rect.w += Scale(2*expand);
         button_rect.h += Scale(2*expand);
-        
+
         RenderColor(255, 255, 255, 255);
         RenderDrawRect(outro, button_rect);
 

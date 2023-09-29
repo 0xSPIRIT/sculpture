@@ -75,12 +75,12 @@ static void apply_lighting_to_color(Lighting *lighting, SDL_Color *c, int x, int
 
 static void apply_lighting_to_alpha(Lighting *lighting, u8 *alpha, int x, int y) {
     f64 cum_strength = 0;
-    
+
     for (int i = 0; i < lighting->light_count; i++) {
         if (lighting->lights[i].active)
             cum_strength += get_light_strength_at_position(lighting->lights[i], x, y);
     }
-    
+
     *alpha = clamp((int)((f64)(*alpha) * cum_strength), 0, 255);
 }
 
