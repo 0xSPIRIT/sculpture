@@ -43,7 +43,7 @@ static void audio_set_ambience_accordingly(void) {
     }
 
     if (level->effect_type == EFFECT_RAIN) {
-        if (gs->level_current+1 == 11) {
+        if (gs->level_current+1 == 10) {
             audio_set_ambience(AMBIENCE_RAIN_REVERSED);
         } else {
             audio_set_ambience(AMBIENCE_RAIN);
@@ -69,7 +69,7 @@ static bool audio_lower_channel_for(int channel, int frames) {
 
         handler->old_volume = Mix_Volume(channel, (int)(handler->fader * MIX_MAX_VOLUME));
     }
-    
+
     if (handler->waiting) {
         if (gs->frames - handler->time >= frames) {
             Mix_Volume(channel, handler->old_volume);

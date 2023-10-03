@@ -221,7 +221,8 @@ static void audio_init(Audio *audio) {
     audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg",      0.16);
     audio->ambience_rain_reversed = load_sound(DATA_DIR "audio/rain_reversed.ogg", 0.16);
     audio->music0        = load_sound(DATA_DIR "audio/music0.ogg",    0.55);
-    audio->music2        = load_sound(DATA_DIR "audio/music2.ogg",    0.50);
+    audio->music2        = load_sound(DATA_DIR "audio/music_companionless.ogg",    0.50);
+    audio->undo          = load_sound(DATA_DIR "audio/undo.wav", 0.25);
 
     audio->place = load_sound(DATA_DIR "audio/place.ogg", 0.75);
 
@@ -263,7 +264,7 @@ static void audio_init(Audio *audio) {
     }
 #endif
 
-    audio->sprinkle = load_sound(DATA_DIR "audio/sprinkle 3.wav", 1);
+    audio->sprinkle = load_sound(DATA_DIR "audio/sprinkle.wav", 1);
     audio->macabre = load_sound(DATA_DIR "audio/macabre.ogg", 1);
 
     audio->accept = load_sound(DATA_DIR "audio/accept.ogg", 1);

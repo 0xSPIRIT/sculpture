@@ -220,7 +220,7 @@ static ParticleSplashResult particle_tick(Effect *effect, int i) {
         case EFFECT_SNOW: case EFFECT_RAIN: {
             Effect_Particle *particle = &effect->particles[i];
 
-            int reverse = (gs->level_current+1 == 11) ? -1 : 1;
+            int reverse = (gs->level_current+1 >= 10) ? -1 : 1;
 
             f32 prev_x = particle->x;
             f32 prev_y = particle->y;
@@ -245,7 +245,7 @@ static ParticleSplashResult particle_tick(Effect *effect, int i) {
             if (is_in_bounds(int_px, int_py) &&
                 sq_length > limit &&
                 hit_cell &&
-                gs->level_current+1 != 11)
+                !reverse)
            {
                 if (effect->type == EFFECT_RAIN) {
                     // Go through every pixel from (prev_x, prev_y)

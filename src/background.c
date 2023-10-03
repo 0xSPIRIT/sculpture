@@ -4,7 +4,7 @@ static Background background_init(void) {
     return background;
 }
 
-static void background_draw_starry_night(int target_enum, Background *bg) {
+static void background_draw(int target, Background *bg, int xoff, int yoff) {
     int w = bg->surface->w, h = bg->surface->h;
 
     int background = TEXTURE_BG_0;
@@ -24,13 +24,11 @@ static void background_draw_starry_night(int target_enum, Background *bg) {
     Assert(bg->surface->format->BytesPerPixel == 4);
 
     memset_u32((u32*)bg->surface->pixels, 0xff100000, w*h);
+    
+    SDL_Rect dst = { xoff, yoff, w, h };
 
     Texture texture = RenderCreateTextureFromSurface(bg->surface);
-    RenderTexture(target_enum, &texture, null, &(SDL_Rect){ 64, 0, w, h });
-    RenderTexture(target_enum, &GetTexture(background), null, &(SDL_Rect){ 64, 0, w, h });
+    RenderTexture(target, &texture, null, &dst);
+    RenderTexture(target, &GetTexture(background), null, &dst);
     RenderDestroyTexture(&texture);
-}
-
-static void background_draw(int target, Background *bg) {
-    background_draw_starry_night(target, bg);
 }

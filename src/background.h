@@ -6,4 +6,4 @@ typedef struct {
 } Background;
 
 static Background background_init(void);
-static void background_draw(int target, Background *bg);
+static void background_draw(int target, Background *bg, int xoff, int yoff);

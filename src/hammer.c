@@ -99,7 +99,7 @@ static void hammer_adjust_xy_based_on_angle(f32 *x, f32 *y, int chisel_size, int
     if (gs->input.keys[SDL_SCANCODE_G])
         Log("Chisel Angle: %d\n", angle);
 #endif
-    
+
     if (angle == 90 || angle == 0) {
         (*x)--;
     }
@@ -108,7 +108,7 @@ static void hammer_adjust_xy_based_on_angle(f32 *x, f32 *y, int chisel_size, int
             (*x)--;
         }
     }
-    
+
     if (chisel_size == CHISEL_LARGE) {
         if (angle == 45 || angle == 135) {
             (*x)--;

@@ -128,11 +128,11 @@ static void levels_setup(void) {
     level_add("Showpiece",
               DATA_DIR "lvl/desired/level 10.png",
               DATA_DIR "lvl/initial/level 10.png",
-              EFFECT_NONE);
+              EFFECT_RAIN);
     level_add("Glass Body",
               DATA_DIR "lvl/desired/level 11.png",
               DATA_DIR "lvl/initial/level 11.png",
-              EFFECT_RAIN);
+              EFFECT_NONE);
 }
 
 static void goto_level(int lvl) {
@@ -856,7 +856,7 @@ static void level_draw_outro_or_play(Level *level) {
     // The meat
 
     lighting_tick(&gs->lighting);
-    background_draw(target, &gs->background);
+    background_draw(target, &gs->background, 64, 0);
     effect_draw    (target, &gs->current_effect, true);
     draw_rain_splashes(target, &gs->current_effect.rain);
     grid_draw      (target);

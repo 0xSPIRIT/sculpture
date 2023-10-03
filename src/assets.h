@@ -52,6 +52,8 @@ typedef struct Audio {
     Sound music1;
     Sound music2;
 
+    Sound undo;
+
     Sound sprinkle, macabre;
     Sound accept;
     Sound pip;

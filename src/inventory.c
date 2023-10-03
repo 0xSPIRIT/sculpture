@@ -66,6 +66,10 @@ static void auto_set_inventory_slots(void) {
             set_slot(1, CELL_SAND,   1300);
             set_slot(2, CELL_DIRT,   1300);
         } break;
+        case 10: {
+            set_slot(0, CELL_DIRT, 1300);
+            set_slot(1, CELL_SAND, 1800);
+        } break;
     }
 }
 

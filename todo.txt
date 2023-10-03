@@ -2,16 +2,12 @@ TODO
 
   - Improve the woosh sound effects to be less obnoxious
 
-  x Make the hammer be the correct distance from the chisel.
-
   - Music
     - Title Theme: Piano + Electronic theme
-    - Music 1: Solo Piano
-        - Tons of empty space in the music? 7 minute long track? Sprinkles,
-          but have structure and melody to it as well.
-    - Music 2: Piano + Electronic
-    - Music 3: Electronic + Percussion + Piano chords
-    - Ending Theme: Solemn acceptance, piano, some electronic.
+    - Music 1: Solo Piano; joyous, impressionistic & serene but not happy-schmappy
+    - Music 2: Piano, lots of empty space, maybe other instruments as well.
+    - Music 3: Gymnopedie-esque
+    - Ending Theme: A solemn acceptance
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
 

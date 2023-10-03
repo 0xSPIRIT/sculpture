@@ -71,6 +71,7 @@ static void object_activate(Object3D *obj) {
     RenderColor(0, 0, 0, 255);
     RenderClear(target);
 
+    background_draw(target, &gs->background, 0, -32);
     grid_array_draw(target, gs->grid, 255);
 
     SDL_Rect rect = {
