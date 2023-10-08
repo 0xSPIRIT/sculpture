@@ -1,5 +1,3 @@
-#define BACKGROUND_PARTICLE_COUNT 6
-
 typedef struct {
     SDL_Surface *surface;
     f32 time;

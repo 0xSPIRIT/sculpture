@@ -2,7 +2,7 @@ TODO
 
   - Music
     - Title Theme: Piano + Electronic theme
-    - Music 1: Solo Piano; joyous, impressionistic & serene but not happy-schmappy
+    x Music 1: Solo Piano; joyous, impressionistic & serene but not happy-schmappy
     - Music 2: Piano, lots of empty space, maybe other instruments as well.
     - Music 3: Gymnopedie-esque
     - Ending Theme: A solemn acceptance
