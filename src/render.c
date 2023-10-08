@@ -27,7 +27,7 @@ RENDERAPI void RenderCleanup(Render *render) {
     }
 
     // Cleanup surfaces.
-    for (size_t i = 0; i < SURFACE_COUNT; i++) {
+    for (int i = 0; i < SURFACE_COUNT; i++) {
         if (gs->surfaces.surfaces[i])
             SDL_FreeSurface(gs->surfaces.surfaces[i]);
     }

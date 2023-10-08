@@ -267,7 +267,7 @@ static void audio_init(Audio *audio) {
     audio->sprinkle = load_sound(DATA_DIR "audio/sprinkle.wav", 1);
     audio->macabre = load_sound(DATA_DIR "audio/macabre.ogg", 1);
 
-    audio->accept = load_sound(DATA_DIR "audio/accept.ogg", 1);
+    audio->accept = load_sound(DATA_DIR "audio/accept.ogg", 0.75);
 
     audio_setup_initial_channel_volumes();
 }

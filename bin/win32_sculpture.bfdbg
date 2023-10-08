@@ -1,10 +1,10 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\background.c", "d:\\dev\\sculpture\\src\\lighting.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
 
 [MainWindow]
-X = 96
+X = 0
 Y = 42
 Width = 1801
 Height = 894
@@ -25,13 +25,21 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "level.c"
-TabWidth = 65.37415
+TabLabel = "background.c"
+TabWidth = 107.551
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\level.c"
-CursorPos = 22111
-VertPos = 18170.0
+FilePath = "d:\\dev\\sculpture\\src\\background.c"
+CursorPos = 1623
+VertPos = 604.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "lighting.c"
+TabWidth = 83.06123
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\lighting.c"
+CursorPos = 2489
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 879.0
@@ -48,28 +56,28 @@ Type = "TabbedView"
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 Active = true
 TabLabel = "Output"
-TabWidth = 90.13607
+TabWidth = 90.13605
 TabIsPinned = false
 Type = "OutputPanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Watch"
-TabWidth = 86.05443
+TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 335.0}, {Width = 760.0}, {Width = 253.0}]
-Items = ["pixel", ""]
+Items = ["a", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"
-TabWidth = 77.21089
+TabWidth = 77.21088
 TabIsPinned = false
 Type = "AutoWatchPanel"
 Columns = [{Width = 253.0}, {Width = 300.0}, {Width = 253.0}]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Memory"
-TabWidth = 98.29933
+TabWidth = 98.29932
 TabIsPinned = false
 Type = "MemoryPanel"
 AutoResize = "Auto_Mul8"
@@ -83,14 +91,14 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Threads"
-TabWidth = 95.57825
+TabWidth = 95.57823
 TabIsPinned = false
 Type = "ThreadPanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 Active = true
 TabLabel = "Call Stack"
-TabWidth = 105.1021
+TabWidth = 105.102
 TabIsPinned = false
 Type = "CallStackPanel"
 
@@ -102,7 +110,7 @@ Type = "ImmediatePanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Breakpoints"
-TabWidth = 117.347
+TabWidth = 117.3469
 TabIsPinned = false
 Type = "BreakpointPanel"
 

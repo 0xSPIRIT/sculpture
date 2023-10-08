@@ -1,7 +1,5 @@
 TODO
 
-  - Improve the woosh sound effects to be less obnoxious
-
   - Music
     - Title Theme: Piano + Electronic theme
     - Music 1: Solo Piano; joyous, impressionistic & serene but not happy-schmappy

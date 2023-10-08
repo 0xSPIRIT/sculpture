@@ -23,12 +23,40 @@ static void background_draw(int target, Background *bg, int xoff, int yoff) {
     Assert(h == 96);
     Assert(bg->surface->format->BytesPerPixel == 4);
 
-    memset_u32((u32*)bg->surface->pixels, 0xff100000, w*h);
+    // Applying the lighting to the background.
+    
+    // Start with completely transparent surface
+    memset_u32((u32*)bg->surface->pixels, 0x00000000, w*h);
+    u32 *pixels = (u32*)bg->surface->pixels;
+    
+    // Then apply the lighting pixel by pixel.
+    for (int y = 0; y < bg->surface->h; y++) {
+        for (int x = 0; x < bg->surface->w; x++) {
+            u8 a;
+            f64 cum_strength = 0;
+            Lighting *lighting = &gs->lighting;
+            
+            for (int i = 0; i < lighting->light_count; i++) {
+                if (lighting->lights[i].active)
+                    cum_strength += get_light_strength_at_position(lighting->lights[i], x, y-32);
+            }
+            
+            a = clamp((int)(cum_strength * 255), 0, 255);
+            
+            // We want the inverse of this.
+            a = 255 - a;
+            
+            // Not too dark round the edges.
+            a *= 0.75;
+            
+            pixels[x+y*bg->surface->w] |= ((u8)a << 24);
+        }
+    }
     
     SDL_Rect dst = { xoff, yoff, w, h };
 
     Texture texture = RenderCreateTextureFromSurface(bg->surface);
-    RenderTexture(target, &texture, null, &dst);
     RenderTexture(target, &GetTexture(background), null, &dst);
+    RenderTexture(target, &texture, null, &dst);
     RenderDestroyTexture(&texture);
 }
