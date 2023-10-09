@@ -215,7 +215,7 @@ static void free_sound(Sound *sound) {
 }
 
 static void audio_init(Audio *audio) {
-    audio->music_titlescreen = Mix_LoadMUS(DATA_DIR "audio/titlescreen.ogg");
+    audio->music_titlescreen = Mix_LoadMUS(DATA_DIR "audio/music_titlescreen.ogg");
 
     audio->ambience1     = load_sound(DATA_DIR "audio/ambience1.ogg", 0.32);
     audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg",      0.16);

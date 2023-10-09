@@ -130,7 +130,7 @@ static void titlescreen_draw(int target) {
         strcpy(data.str, text);
         data.x = gs->game_width/2;
         data.y = gs->game_height/2 + Scale(50);
-        data.foreground = (SDL_Color){255, 0, 0, 200};
+        data.foreground = RGBA(255, 255, 255, 180);
         data.alignment = ALIGNMENT_CENTER;
 
         RenderText(target, &data);
