@@ -242,15 +242,11 @@ static ParticleSplashResult particle_tick(Effect *effect, int i) {
                 hit_cell = (gs->grid[int_px+int_py*gs->gw].type != CELL_NONE);
             }
 
-            if (is_in_bounds(int_px, int_py) &&
-                sq_length > limit &&
-                hit_cell &&
-                !reverse)
-           {
+            if (is_in_bounds(int_px, int_py) && sq_length > limit && hit_cell && reverse == 1) {
                 if (effect->type == EFFECT_RAIN) {
                     // Go through every pixel from (prev_x, prev_y)
                     // to (particle->x, particle->y) to find the actual contact point
-
+                    
                     f32 dx = particle->x - prev_x;
                     f32 dy = particle->y - prev_y;
 

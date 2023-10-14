@@ -110,11 +110,6 @@ static int chisel_get_distance_from_facing_cell(int i, f64 angle) {
     }
 }
 
-static void chisel_tick_web_mode(Chisel *chisel) {
-    (void)chisel;
-    return;
-}
-
 static bool chisel_is_facing_cell(int i, f64 angle, int lookahead) {
     Assert(lookahead > 0);
     return chisel_get_distance_from_facing_cell(i, angle) <= lookahead;

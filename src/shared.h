@@ -68,6 +68,7 @@ typedef struct Game_State {
     bool just_resized;
 
     bool web_clicked;
+    bool pause_menu_active;
 
     SDL_Color border_color;
 

@@ -60,7 +60,7 @@
 "Too, his mind spun with other hypnotic ideas that\r"\
 "would surely never come to pass.\n"\
 "In reverie, he returned to the here and now.\n"\
-"He thought this idea was realistic-\r"\
+"He thought of an idea that must've been realistic-\r"\
 "that his expectations were surely tempered.\n"\
 "With no hesitation, Max picked up his chisel.\n"\
 

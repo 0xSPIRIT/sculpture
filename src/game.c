@@ -213,29 +213,18 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
         }
     }
 
-    if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_l) {
-        gs->real_width = 768;
-        gs->real_height = 864;
-        SDL_SetWindowSize(gs->window, gs->real_width, gs->real_height);
-    }
-
     int selected_tool = 0;
     if (event->type == SDL_KEYDOWN && gs->gamestate == GAME_STATE_PLAY && !gs->text_field.active) {
         switch (event->key.keysym.sym) {
             case SDLK_ESCAPE: {
-                Placer *placer = get_current_placer();
                 if (gs->credits.state == CREDITS_END) {
 #ifndef __EMSCRIPTEN__
                     is_running = false;
 #endif
                 } else if (gs->tutorial.active) {
                     tutorial_rect_close(null);
-                } else if (placer && placer->state == PLACER_PLACE_RECT_MODE && input->mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-                    placer->escape_rect = true;
-                    placer->rect.x = -1;
-                    placer->rect.y = -1;
-                    placer->rect.w = 0;
-                    placer->rect.h = 0;
+                } else if (!gs->gui.popup) {
+                    gs->pause_menu_active = !gs->pause_menu_active;
                 }
                 break;
             }
@@ -251,6 +240,10 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_SPACE: {
+                if (gs->pause_menu_active) {
+                    save_game();
+                    is_running = false;
+                }
 #ifndef ALASKA_RELEASE_MODE
                 if (gs->input.keys[SDL_SCANCODE_LSHIFT])
                     gs->paused = !gs->paused;
@@ -401,6 +394,22 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
     return is_running;
 }
 
+static void pause_menu_draw(int target) {
+    Render_Text_Data data = {0};
+    
+    strcpy(data.identifier, "pause");
+    data.font = gs->fonts.font_times;
+    data.foreground = WHITE;
+    data.background = BLACK;
+    data.alignment = ALIGNMENT_CENTER;
+    data.render_type = TEXT_RENDER_LCD;
+    data.x = gs->game_width/2;
+    data.y = gs->game_height/2;
+    strcpy(data.str, "Paused - Press space to exit");
+    
+    RenderText(target, &data);
+}
+
 export void game_run(Game_State *state) {
     StartTimer();
 
@@ -442,29 +451,33 @@ export void game_run(Game_State *state) {
                                null,
                                &dst);
             } else {
-                gui_tick();
-                inventory_tick();
-                all_converters_tick();
-
-                level_tick(&gs->levels[gs->level_current]);
-                level_draw(&gs->levels[gs->level_current]);
-
-                text_field_draw(RENDER_TARGET_MASTER);
-
-                fade_draw(RENDER_TARGET_MASTER);
-
-                preview_tick();
-                if (gs->current_preview.play) {
-                    preview_draw(RENDER_TARGET_MASTER,
-                                 &gs->current_preview,
-                                 0,
-                                 0,
-                                 6,
-                                 false,
-                                 false);
+                if (gs->pause_menu_active) {
+                    pause_menu_draw(RENDER_TARGET_MASTER);
+                } else {
+                    gui_tick();
+                    inventory_tick();
+                    all_converters_tick();
+                    
+                    level_tick(&gs->levels[gs->level_current]);
+                    level_draw(&gs->levels[gs->level_current]);
+                    
+                    text_field_draw(RENDER_TARGET_MASTER);
+                    
+                    fade_draw(RENDER_TARGET_MASTER);
+                    
+                    preview_tick();
+                    if (gs->current_preview.play) {
+                        preview_draw(RENDER_TARGET_MASTER,
+                                     &gs->current_preview,
+                                     0,
+                                     0,
+                                     6,
+                                     false,
+                                     false);
+                    }
+                    
+                    if (gs->step_one) gs->step_one = false;
                 }
-
-                if (gs->step_one) gs->step_one = false;
             }
             break;
         }

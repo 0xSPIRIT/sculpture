@@ -5,19 +5,19 @@ static Light *lighting_add_light(Lighting *lighting, Light l) {
 
 static void lighting_init(Lighting *lighting) {
     memset(lighting, 0, sizeof(Lighting));
-    lighting->main_light   = lighting_add_light(lighting, (Light){ gs->gw/2, gs->gh/3, 1.0, 80, true });
-    lighting->chisel_light = lighting_add_light(lighting, (Light){ 0, 0, 0.2, 38, false });
+    lighting->main_light   = lighting_add_light(lighting, (Light){ gs->gw/2, gs->gh/3, 1.0, 1.0, 80, true });
+    lighting->chisel_light = lighting_add_light(lighting, (Light){ 0, 0, 0.2, 0.2, 38, false });
 }
 
 static void lighting_tick(Lighting *lighting) {
-    Light *l = lighting->chisel_light;
-
+    Light *c = lighting->chisel_light;
+    
     if (is_tool_chisel() && gs->chisel) {
-        l->active = true;
-        l->x = gs->chisel->x;
-        l->y = gs->chisel->y;
+        c->active = true;
+        c->x = gs->chisel->x;
+        c->y = gs->chisel->y;
     } else {
-        l->active = false;
+        c->active = false;
     }
 }
 

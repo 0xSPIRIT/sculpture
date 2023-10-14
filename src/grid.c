@@ -417,9 +417,7 @@ static SDL_Color pixel_from_index_grid(Cell *grid, enum Cell_Type type, int i) {
         }
 
         case CELL_STONE: {
-            r = randR(i) % 100 < 10;
-            amt = 25;
-            color = (SDL_Color){140 + r*amt + (randR(i)%20 - 10), 140 + r*amt + (randR(i)%20 - 10), 135 + r*amt + (randR(i)%20 - 10), 255};
+            color = stone(i);
             // color = (SDL_Color){127, 255, 0, 255};
             break;
         }

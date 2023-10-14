@@ -1,11 +1,16 @@
 TODO
 
+  - Make the overlay popup with Material: appear even when tutorial boxes
+    are active.
+
+  x Add "escape" menu.
+
   - Music
-    - Title Theme: Piano + Electronic theme
-    x Music 1: Solo Piano; joyous, impressionistic & serene but not happy-schmappy
     - Music 2: Piano, lots of empty space, maybe other instruments as well.
     - Music 3: Gymnopedie-esque
     - Ending Theme: A solemn acceptance
+
+  - Re-mix some things. Export higher volume chisels perhaps.
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
 

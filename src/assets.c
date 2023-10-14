@@ -202,6 +202,7 @@ static Sound load_sound(const char *file, f32 volume) {
     result.sound = Mix_LoadWAV(file);
     Assert(result.sound);
 
+    volume = clamp64(volume, 0, 1);
     result.volume = Volume(volume);
 
     Mix_VolumeChunk(result.sound, result.volume);
@@ -216,29 +217,31 @@ static void free_sound(Sound *sound) {
 
 static void audio_init(Audio *audio) {
     audio->music_titlescreen = Mix_LoadMUS(DATA_DIR "audio/music_titlescreen.ogg");
+    
+    f64 scale = 1.5;
 
-    audio->ambience1     = load_sound(DATA_DIR "audio/ambience1.ogg", 0.32);
-    audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg",      0.16);
-    audio->ambience_rain_reversed = load_sound(DATA_DIR "audio/rain_reversed.ogg", 0.16);
-    audio->music0        = load_sound(DATA_DIR "audio/music0.ogg",    0.55);
-    audio->music2        = load_sound(DATA_DIR "audio/music_companionless.ogg",    0.50);
-    audio->undo          = load_sound(DATA_DIR "audio/undo.wav", 0.25);
+    audio->ambience1     = load_sound(DATA_DIR "audio/ambience_snow.ogg", scale*1);
+    audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg",      scale*0.16);
+    audio->ambience_rain_reversed = load_sound(DATA_DIR "audio/rain_reversed.ogg", scale*0.16);
+    audio->music0        = load_sound(DATA_DIR "audio/music0.ogg",    scale*0.55);
+    audio->music2        = load_sound(DATA_DIR "audio/music_companionless.ogg", scale*0.15);
+    audio->undo          = load_sound(DATA_DIR "audio/undo.wav", scale*0.25);
 
-    audio->place = load_sound(DATA_DIR "audio/place.ogg", 0.75);
+    audio->place = load_sound(DATA_DIR "audio/place.ogg", scale*0.75);
 
-    audio->pip = load_sound(DATA_DIR "audio/pip.ogg", 1);
+    audio->pip = load_sound(DATA_DIR "audio/pip.ogg", scale*1);
 
     for (int i = 0; i < 6; i++) {
         char name[64];
         sprintf(name, DATA_DIR "audio/chisel_%d.wav", i+1);
-        audio->medium_chisel[i] = load_sound(name, 1);
+        audio->medium_chisel[i] = load_sound(name, scale*1);
     }
-    audio->small_chisel = load_sound(DATA_DIR "audio/small_chisel.wav", 1);
+    audio->small_chisel = load_sound(DATA_DIR "audio/small_chisel.wav", scale*1);
 
     for (int i = 0; i < ArrayCount(audio->ice_chisel); i++) {
         char name[64];
         sprintf(name, DATA_DIR "audio/ice_chisel_%d.wav", i+1);
-        audio->ice_chisel[i] = load_sound(name, 1);
+        audio->ice_chisel[i] = load_sound(name, scale*1);
     }
 
     for (int i = 0; i < ArrayCount(audio->glass_chisel); i++) {
@@ -247,27 +250,19 @@ static void audio_init(Audio *audio) {
 
         if (i == 1) strcpy(name, DATA_DIR "audio/glass_chisel_2.wav");
 
-        audio->glass_chisel[i] = load_sound(name, 1);
+        audio->glass_chisel[i] = load_sound(name, scale*1);
     }
 
     for (int i = 0; i < ArrayCount(audio->small_glass_chisel); i++) {
         char name[64];
         sprintf(name, DATA_DIR "audio/glass_small_%d.ogg", i+1);
-        audio->small_glass_chisel[i] = load_sound(name, 1);
+        audio->small_glass_chisel[i] = load_sound(name, scale*1);
     }
-
-#if 0
-    for (int i = 0; i < ArrayCount(audio->woosh); i++) {
-        char name[64];
-        sprintf(name, DATA_DIR "audio/woosh%d.ogg", i+1);
-        audio->woosh[i] = load_sound(name, 0.125);
-    }
-#endif
 
     audio->sprinkle = load_sound(DATA_DIR "audio/sprinkle.wav", 1);
     audio->macabre = load_sound(DATA_DIR "audio/macabre.ogg", 1);
 
-    audio->accept = load_sound(DATA_DIR "audio/accept.ogg", 0.75);
+    audio->accept = load_sound(DATA_DIR "audio/accept.ogg", scale*0.75);
 
     audio_setup_initial_channel_volumes();
 }

@@ -105,3 +105,24 @@ static inline SDL_Color granite(int idx) {
 
     return result;
 }
+
+
+static inline SDL_Color stone(int idx) {
+    SDL_Color result;
+    
+    int r = randR(idx) % 100 < 10;
+    int amt = 25;
+    
+    result.r = 140 + r*amt + (randR(idx)%20 - 10);
+    result.g = 140 + r*amt + (randR(idx)%20 - 10);
+    result.b = 135 + r*amt + (randR(idx)%20 - 10);
+    result.a = 255;
+    
+    f64 amount = 0.015;
+    f64 coeff = 1+randf(amount)-amount;
+    result.r *= coeff;
+    result.g *= coeff;
+    result.b *= coeff;
+    
+    return result;
+}
