@@ -6,8 +6,6 @@ static void grabber_init(void) {
 static void grabber_tick(void) {
     Grabber *grabber = &gs->grabber;
 
-    if (gs->tutorial.active) return;
-
     f32 px = grabber->x, py = grabber->y;
 
     grabber->x = (f32) gs->input.mx;

@@ -1,10 +1,5 @@
 TODO
 
-  - Make the overlay popup with Material: appear even when tutorial boxes
-    are active.
-
-  x Add "escape" menu.
-
   - Music
     - Music 2: Piano, lots of empty space, maybe other instruments as well.
     - Music 3: Gymnopedie-esque

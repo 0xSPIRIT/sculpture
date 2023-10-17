@@ -104,8 +104,6 @@ static bool can_add_item_to_inventory(enum Cell_Type type) {
     return false;
 }
 
-// TODO: If there's an existing spot for `type`, add it to that slot
-//       instead of the first available one.
 static bool add_item_to_inventory_slot(enum Cell_Type type, int amount) {
     int index = -1;
     for (int i = 0; i < INVENTORY_SLOT_COUNT; i++) {

@@ -118,11 +118,5 @@ static inline SDL_Color stone(int idx) {
     result.b = 135 + r*amt + (randR(idx)%20 - 10);
     result.a = 255;
     
-    f64 amount = 0.015;
-    f64 coeff = 1+randf(amount)-amount;
-    result.r *= coeff;
-    result.g *= coeff;
-    result.b *= coeff;
-    
     return result;
 }

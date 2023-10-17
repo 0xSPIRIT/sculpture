@@ -224,7 +224,7 @@ static void audio_init(Audio *audio) {
     audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg",      scale*0.16);
     audio->ambience_rain_reversed = load_sound(DATA_DIR "audio/rain_reversed.ogg", scale*0.16);
     audio->music0        = load_sound(DATA_DIR "audio/music0.ogg",    scale*0.55);
-    audio->music2        = load_sound(DATA_DIR "audio/music_companionless.ogg", scale*0.15);
+    audio->music2        = load_sound(DATA_DIR "audio/music_companionless.ogg", scale*0.40);
     audio->undo          = load_sound(DATA_DIR "audio/undo.wav", scale*0.25);
 
     audio->place = load_sound(DATA_DIR "audio/place.ogg", scale*0.75);
