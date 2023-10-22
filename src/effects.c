@@ -92,9 +92,16 @@ static void effect_reset_snow(Effect *effect, bool high_fidelity) {
         Effect_Particle *particle = &effect->particles[i];
 
         SDL_Rect bounds = effect->bounds;
+        
+        int desired_x = -1, desired_y = -1;
+        
+        while (desired_x == -1 || gs->grid[desired_x+desired_y*gs->gw].type) {
+            desired_x = bounds.x+(rand()%(bounds.w-bounds.x));
+            desired_y = bounds.y+(rand()%(bounds.h-bounds.y));
+        }
 
-        particle->x = (f32) (bounds.x+(rand()%(bounds.w-bounds.x)));
-        particle->y = (f32) (bounds.y+(rand()%(bounds.h-bounds.y)));
+        particle->x = desired_x;
+        particle->y = desired_y;
 
         if (high_fidelity) {
             f32 r1 = randf(0.75);
