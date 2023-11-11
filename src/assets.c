@@ -217,7 +217,7 @@ static void free_sound(Sound *sound) {
 
 static void audio_init(Audio *audio) {
     audio->music_titlescreen = Mix_LoadMUS(DATA_DIR "audio/music_titlescreen.ogg");
-    
+
     f64 scale = 1.5;
 
     audio->ambience1     = load_sound(DATA_DIR "audio/ambience_snow.ogg", scale*1);
@@ -228,6 +228,7 @@ static void audio_init(Audio *audio) {
     audio->undo          = load_sound(DATA_DIR "audio/undo.wav", scale*0.25);
 
     audio->place = load_sound(DATA_DIR "audio/place.ogg", scale*0.75);
+    audio->suck  = load_sound(DATA_DIR "audio/bop.wav", scale);
 
     audio->pip = load_sound(DATA_DIR "audio/pip.ogg", scale*1);
 

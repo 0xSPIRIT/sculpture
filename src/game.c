@@ -224,7 +224,9 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 } else if (gs->tutorial.active) {
                     tutorial_rect_close(null);
                 } else if (!gs->gui.popup) {
+#ifndef __EMSCRIPTEN__
                     gs->pause_menu_active = !gs->pause_menu_active;
+#endif
                 }
                 break;
             }

@@ -56,7 +56,7 @@
 "He must move forward to do something real.\r"\
 "Something noteworthy.\n"\
 "Max fantasized sculptures that he admired-\r"\
-"They swirled around his head in a moment of inspiration.\n"\
+"They swirled around in his head in a moment of inspiration.\n"\
 "Too, his mind spun with other hypnotic ideas that\r"\
 "would surely never come to pass.\n"\
 "In reverie, he returned to the here and now.\n"\
@@ -68,16 +68,16 @@
 "At the end he should be proud, but how could he?\n"\
 "Max turned away pointedly, his chisel clattering\r"\
 "to the hardwood floor in contempt.\n"\
-"His eyes flinched in an almost instinctual repulsion.\n"\
+"His eyes flinched in an instinctual repulsion.\n"\
 "He didn't think that something like this would have\r"\
-"affected him so deeply-- but it did.\n"\
+"affected him so deeply, but it did.\n"\
 "It's a sudden jolt back to the detached,\r"\
 "and dispassionate.\n"\
 "He thought, with compromise after compromise,\r"\
 "this is all he could have settled for?\n"\
 "A bastardized fraction of what it could have been--\r"\
 "No, SHOULD have been?\n"\
-"Max, in a fit of rage, clenches the sculpture in hands\r"\
+"Max, in a fit of rage, clenched the sculpture in hands\r"\
 "and smashes it to the floor, chucking shards of stone\r"\
 "all across his workshop.\n"\
 "\"I'll never make this mistake again,\"\r"\

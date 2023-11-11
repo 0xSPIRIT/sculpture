@@ -10,12 +10,13 @@ enum {
 
 typedef struct Placer {
     int index;
-
+    
     int state;
     bool escape_rect; // A flag for if we escape out of the setting of rectangle.
-
+    
     bool did_place_this_frame;
     bool was_placing;
+    int suck_audio_state;
 
     SDL_Rect rect;
 

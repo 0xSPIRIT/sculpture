@@ -47,6 +47,7 @@ typedef struct Audio {
     Sound ambience1;
 
     Sound place;
+    Sound suck;
 
     Sound music0;
     Sound music1;
