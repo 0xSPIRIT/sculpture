@@ -128,7 +128,7 @@ export void game_init(Game_State *state) {
     gs->render.view.h = gs->game_height-GUI_H;
 
     gs->show_tutorials = true;
-
+    
     levels_setup();
     previews_load();
     goto_level(gs->level_current);
@@ -412,12 +412,63 @@ static void pause_menu_draw(int target) {
     RenderText(target, &data);
 }
 
+static void audio_setup_channel_volumes(void) {
+    if (gs->audio_channel_volumes[AUDIO_CHANNEL_CHISEL] == 0) {
+        gs->audio_channel_volumes[AUDIO_CHANNEL_CHISEL] = AUDIO_CHISEL_VOLUME;
+        gs->audio_channel_volumes[AUDIO_CHANNEL_GUI] = AUDIO_GUI_VOLUME;
+        gs->audio_channel_volumes[AUDIO_CHANNEL_MUSIC] = AUDIO_MUSIC_VOLUME;
+        gs->audio_channel_volumes[AUDIO_CHANNEL_AMBIENCE] = AUDIO_AMBIENCE_VOLUME;
+    }
+    
+#ifndef ALASKA_RELEASE_MODE
+    Input *in = &gs->input;
+
+    if (in->keys[SDL_SCANCODE_F1]) gs->channel_editing = AUDIO_CHANNEL_CHISEL;
+    if (in->keys[SDL_SCANCODE_F2]) gs->channel_editing = AUDIO_CHANNEL_GUI;
+    if (in->keys[SDL_SCANCODE_F3]) gs->channel_editing = AUDIO_CHANNEL_MUSIC;
+    if (in->keys[SDL_SCANCODE_F4]) gs->channel_editing = AUDIO_CHANNEL_AMBIENCE;
+    if (in->keys[SDL_SCANCODE_ESCAPE]) gs->channel_editing = 0;
+    
+    int *volume = &gs->audio_channel_volumes[gs->channel_editing];
+    if (in->keys[SDL_SCANCODE_EQUALS]) {
+        (*volume)++;
+        *volume = clamp(*volume, 0, MIX_MAX_VOLUME);
+    }
+    if (in->keys[SDL_SCANCODE_MINUS]) {
+        (*volume)--;
+        *volume = clamp(*volume, 0, MIX_MAX_VOLUME);
+    }
+    
+    const char *channel_name[] = {
+        "",
+        "",
+        "Chisel",
+        "Narrator",
+        "GUI",
+        "Ambience",
+        "Music",
+    };
+    
+    if (gs->channel_editing) {
+        char string[128];
+        sprintf(string, "Channel Editing: %s", channel_name[gs->channel_editing]);
+        RenderTextDebugPush(string, 64, GUI_H+64);
+        sprintf(string, "Volume: %d/%d", gs->audio_channel_volumes[gs->channel_editing], MIX_MAX_VOLUME);
+        RenderTextDebugPush(string, 64, GUI_H+64+32);
+    }
+#endif
+    
+    assign_audio_channel_volumes();
+}
+
 export void game_run(Game_State *state) {
     StartTimer();
 
     gs = state;
 
     gs->gui.tooltip.set_this_frame = false;
+    
+    audio_setup_channel_volumes();
 
     switch (gs->gamestate) {
         case GAME_STATE_TITLESCREEN: {
@@ -537,7 +588,7 @@ export void game_run(Game_State *state) {
                    &dst);
 
     gs->dt = EndTimer();
-
+    
     SDL_RenderPresent(gs->renderer);
 
     gs->is_mouse_over_any_button = false;

@@ -159,7 +159,7 @@ typedef union Surfaces {
     };
 } Surfaces;
 
-#define FONT_COUNT 9
+#define FONT_COUNT 10
 
 typedef union Fonts {
     Font *fonts[FONT_COUNT];
@@ -173,7 +173,8 @@ typedef union Fonts {
         *font_title,
         *font_title_2,
         *font_titlescreen,
-        *font_converter_gui;
+        *font_converter_gui,
+        *font_times_small;
     };
 } Fonts;
 
@@ -186,6 +187,6 @@ int font_sizes[FONT_COUNT] = {
     100,
     80,
     175,
-    24
+    24,
+    20,
 };
-

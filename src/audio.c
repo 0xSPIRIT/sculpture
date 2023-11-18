@@ -121,7 +121,7 @@ static void audio_set_ambience(AmbienceType ambience) {
 }
 
 static void audio_set_ambience_levels(void) {
-    int volume = MIX_MAX_VOLUME * 0.75;
+    int volume = AUDIO_AMBIENCE_VOLUME;
 
     int level_state = gs->levels[gs->level_current].state;
     if (gs->gui.popup || level_state == LEVEL_STATE_OUTRO) {
@@ -129,7 +129,7 @@ static void audio_set_ambience_levels(void) {
     }
 
     gs->audio_handler.ambience_volume = interpolate(gs->audio_handler.ambience_volume, volume, 5);
-    Mix_Volume(AUDIO_CHANNEL_AMBIENCE, gs->audio_handler.ambience_volume);
+    //gs->audio_channel_volumes[AUDIO_CHANNEL_AMBIENCE] = gs->audio_handler.ambience_volume;
 }
 
 static void audio_halt_music(void) {

@@ -176,6 +176,7 @@ static void fonts_init(Fonts *fonts) {
     fonts->font_title_2       = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[6]));
     fonts->font_titlescreen   = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[7]));
     fonts->font_converter_gui = RenderLoadFont("consola.ttf", Scale(font_sizes[8]));
+    fonts->font_times_small   = RenderLoadFont("EBGaramond-Medium.ttf", Scale(font_sizes[9]));
 
     for (size_t i = 0; i < FONT_COUNT; i++) {
         TTF_SetFontHinting(fonts->fonts[i]->handle, TTF_HINTING_LIGHT_SUBPIXEL);
@@ -189,12 +190,6 @@ static void fonts_deinit(Fonts *fonts) {
 }
 
 //~ Audio
-
-static void audio_setup_initial_channel_volumes(void) {
-    Mix_Volume(AUDIO_CHANNEL_CHISEL, AUDIO_CHISEL_VOLUME);
-    Mix_Volume(AUDIO_CHANNEL_GUI,    AUDIO_GUI_VOLUME);
-    Mix_Volume(AUDIO_CHANNEL_MUSIC,  AUDIO_MUSIC_VOLUME);
-}
 
 static Sound load_sound(const char *file, f32 volume) {
     Sound result = {0};
@@ -220,29 +215,31 @@ static void audio_init(Audio *audio) {
 
     f64 scale = 1.5;
 
-    audio->ambience1     = load_sound(DATA_DIR "audio/ambience_snow.ogg", scale*1);
-    audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg",      scale*0.16);
-    audio->ambience_rain_reversed = load_sound(DATA_DIR "audio/rain_reversed.ogg", scale*0.16);
-    audio->music0        = load_sound(DATA_DIR "audio/music0.ogg",    scale*0.55);
-    audio->music2        = load_sound(DATA_DIR "audio/music_companionless.ogg", scale*0.40);
+    audio->ambience1     = load_sound(DATA_DIR "audio/ambience_snow.ogg", 9.0/20.0);
+    audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg", 1);
+    audio->ambience_rain_reversed = load_sound(DATA_DIR "audio/rain_reversed.ogg", 1);
+    audio->music0        = load_sound(DATA_DIR "audio/music0.ogg",    0.75);
+    audio->music2        = load_sound(DATA_DIR "audio/music_frontier.ogg", 1);
     audio->undo          = load_sound(DATA_DIR "audio/undo.wav", scale*0.25);
 
     audio->place = load_sound(DATA_DIR "audio/place.ogg", scale*0.75);
-    audio->suck  = load_sound(DATA_DIR "audio/bop.wav", scale);
+    audio->suck  = load_sound(DATA_DIR "audio/tap.ogg", scale*2);
 
     audio->pip = load_sound(DATA_DIR "audio/pip.ogg", scale*1);
+    
+    f64 chisel_volume = 0.75;
 
     for (int i = 0; i < 6; i++) {
         char name[64];
         sprintf(name, DATA_DIR "audio/chisel_%d.wav", i+1);
-        audio->medium_chisel[i] = load_sound(name, scale*1);
+        audio->medium_chisel[i] = load_sound(name, chisel_volume);
     }
-    audio->small_chisel = load_sound(DATA_DIR "audio/small_chisel.wav", scale*1);
+    audio->small_chisel = load_sound(DATA_DIR "audio/small_chisel.wav", 1);
 
     for (int i = 0; i < ArrayCount(audio->ice_chisel); i++) {
         char name[64];
         sprintf(name, DATA_DIR "audio/ice_chisel_%d.wav", i+1);
-        audio->ice_chisel[i] = load_sound(name, scale*1);
+        audio->ice_chisel[i] = load_sound(name, chisel_volume);
     }
 
     for (int i = 0; i < ArrayCount(audio->glass_chisel); i++) {
@@ -251,7 +248,7 @@ static void audio_init(Audio *audio) {
 
         if (i == 1) strcpy(name, DATA_DIR "audio/glass_chisel_2.wav");
 
-        audio->glass_chisel[i] = load_sound(name, scale*1);
+        audio->glass_chisel[i] = load_sound(name, chisel_volume);
     }
 
     for (int i = 0; i < ArrayCount(audio->small_glass_chisel); i++) {
@@ -265,7 +262,7 @@ static void audio_init(Audio *audio) {
 
     audio->accept = load_sound(DATA_DIR "audio/accept.ogg", scale*0.75);
 
-    audio_setup_initial_channel_volumes();
+    assign_audio_channel_volumes();
 }
 
 // Do we really have to do this? Aren't all resources freed on exit?

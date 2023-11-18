@@ -5,8 +5,7 @@ TODO
     - Music 3: Gymnopedie-esque
     - Ending Theme: A solemn acceptance
 
-  - While converting, make Z stop the conversion
-    first before undoing.
+  - While converting, make Z stop the conversion first before undoing.
 
   - Re-mix some things. Export higher volume chisels perhaps.
 

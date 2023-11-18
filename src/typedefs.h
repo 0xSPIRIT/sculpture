@@ -10,6 +10,7 @@
 
 #define BLACK ((SDL_Color){0,0,0,255})
 #define WHITE ((SDL_Color){255,255,255,255})
+#define RED   ((SDL_Color){255,0,0,255})
 #define RGBA(r,g,b,a) ((SDL_Color){r,g,b,a})
 
 #define Radians(x) ((x) * (M_PI / 180.0))

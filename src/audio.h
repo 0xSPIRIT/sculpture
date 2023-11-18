@@ -1,10 +1,11 @@
-#define AUDIO_CHISEL_VOLUME       Volume(0.20)
-#define AUDIO_GUI_VOLUME          Volume(0.27)
-#define AUDIO_MUSIC_VOLUME        Volume(1.00)
+#define AUDIO_CHISEL_VOLUME       25//Volume(0.20)
+#define AUDIO_GUI_VOLUME          34//Volume(0.27)
+#define AUDIO_MUSIC_VOLUME        128//Volume(1.00)
+#define AUDIO_AMBIENCE_VOLUME     18//8//Volume(0.10)
 #define AUDIO_TITLESCREEN_VOLUME  Volume(1.00)
 
 #define AUDIO_PLAY_AMBIANCE 1
-#define AUDIO_PLAY_MUSIC    0
+#define AUDIO_PLAY_MUSIC    1
 
 #define Volume(x) ((int) ((f64)(x) * MIX_MAX_VOLUME))
 
@@ -16,6 +17,7 @@ enum {
     AUDIO_CHANNEL_GUI,
     AUDIO_CHANNEL_AMBIENCE,
     AUDIO_CHANNEL_MUSIC,
+    AUDIO_CHANNEL_COUNT
 };
 
 typedef enum {

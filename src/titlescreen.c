@@ -7,8 +7,6 @@ static void titlescreen_init(void) {
                0,
                gs->game_width,
                gs->game_height);
-
-    //preview_load(&t->preview, DATA_DIR "previews/test.bin");
 }
 
 static void titlescreen_goto_next(void) {
@@ -29,14 +27,14 @@ static void titlescreen_tick(void) {
 #endif
 
     if (can_goto &&
-        (mouse_pressed ||
+       (mouse_pressed ||
         keys[SDL_SCANCODE_RETURN] ||
         keys[SDL_SCANCODE_SPACE]  ||
-         keys[SDL_SCANCODE_TAB]))
+        keys[SDL_SCANCODE_TAB]))
     {
         gs->titlescreen.stop = true;
         if (Mix_PlayingMusic()) {
-            Mix_FadeOutMusic(1000);
+            Mix_FadeOutMusic(2500);
             Mix_HookMusicFinished(titlescreen_goto_next);
         } else {
             titlescreen_goto_next();
@@ -75,17 +73,6 @@ static void titlescreen_draw(int target) {
 
     effect_draw(RENDER_TARGET_MASTER, &gs->titlescreen.effect, false);
 
-    if (0) {
-        SDL_Rect dst = preview_draw(target, &gs->titlescreen.preview, 0, 0, gs->S, true, true);
-        Texture *t = &RenderTarget(RENDER_TARGET_PREVIEW)->texture;
-
-        RenderTextureColorMod(t, 90, 90, 90);
-
-        RenderTargetToTarget(target, RENDER_TARGET_PREVIEW, null, &dst);
-
-        RenderTextureColorMod(t, 255, 255, 255);
-    }
-
     RenderTextQuick(target,
                     "titlescreen",
                     gs->fonts.font_titlescreen,
@@ -97,6 +84,19 @@ static void titlescreen_draw(int target) {
                     null,
                     false);
 
+#ifdef __EMSCRIPTEN__
+    RenderTextQuick(target,
+                    "23123",
+                    gs->fonts.font_times_small,
+                    "Web Version - Consider desktop version for superior performance",
+                    (SDL_Color){255,0,0,255},
+                    Scale(16),
+                    gs->game_height - Scale(45),
+                    null,
+                    null,
+                    false);
+#endif
+    
     f64 a = (1+sin(3*SDL_GetTicks()/1000.0))/2;
     a *= 255;
 
@@ -139,7 +139,7 @@ static void titlescreen_draw(int target) {
 
 #ifdef __EMSCRIPTEN__
     if (!gs->titlescreen.clicked_yet) {
-        draw_focus(target);
+        //draw_focus(target);
     }
 #endif
 }

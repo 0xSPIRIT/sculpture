@@ -150,6 +150,7 @@ static void effect_handle_placer(Effect *effect, int x, int y, int r) {
             }
             get_current_placer()->contains->type = effect_pickup;
             get_current_placer()->contains->amount += 10;
+            play_sound(AUDIO_CHANNEL_GUI, gs->audio.suck, 0);
         }
     }
 }

@@ -212,7 +212,7 @@ static void undo(void) {
         }
     }
 
-    play_sound(AUDIO_CHANNEL_GUI, gs->audio.undo, 0);
+    play_sound(AUDIO_CHANNEL_CHISEL, gs->audio.undo, 0);
 
     objects_reevaluate();
 }
