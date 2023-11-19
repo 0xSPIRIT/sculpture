@@ -12,8 +12,10 @@ static void audio_set_music_accordingly(void) {
         return;
     }
 
-    if (level_number <= 3 || level_number == 7) {
+    if (level_number <= 3) {
         audio_set_music(MUSIC_FARCE);
+    } else if (level_number > 3 && level_number < 7) {
+        audio_set_music(MUSIC_PHOTOGRAPH);
     } else if (gs->obj.active) {
         audio_set_music(MUSIC_EXPLITIVE);
     } else {
@@ -128,8 +130,8 @@ static void audio_set_ambience_levels(void) {
         volume /= 2;
     }
 
-    gs->audio_handler.ambience_volume = interpolate(gs->audio_handler.ambience_volume, volume, 5);
-    //gs->audio_channel_volumes[AUDIO_CHANNEL_AMBIENCE] = gs->audio_handler.ambience_volume;
+    gs->audio_handler.ambience_volume = interpolate(gs->audio_handler.ambience_volume, volume, 1);
+    gs->audio_channel_volumes[AUDIO_CHANNEL_AMBIENCE] = gs->audio_handler.ambience_volume;
 }
 
 static void audio_halt_music(void) {
@@ -146,6 +148,9 @@ static void audio_set_music(MusicType music) {
         switch (music) {
             case MUSIC_EXPLITIVE: {
                 play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music0, -1);
+            } break;
+            case MUSIC_PHOTOGRAPH: {
+                play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music1, -1);
             } break;
             case MUSIC_FARCE: {
                 play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music2, -1);

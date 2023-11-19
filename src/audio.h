@@ -1,7 +1,7 @@
-#define AUDIO_CHISEL_VOLUME       25//Volume(0.20)
-#define AUDIO_GUI_VOLUME          34//Volume(0.27)
-#define AUDIO_MUSIC_VOLUME        128//Volume(1.00)
-#define AUDIO_AMBIENCE_VOLUME     18//8//Volume(0.10)
+#define AUDIO_CHISEL_VOLUME       ((128.0/75.0)*32)//Volume(0.20)
+#define AUDIO_GUI_VOLUME          ((128.0/75.0)*40)//Volume(0.27)
+#define AUDIO_MUSIC_VOLUME        ((128.0/75.0)*75)//Volume(1.00)
+#define AUDIO_AMBIENCE_VOLUME     ((128.0/75.0)*20)//8//Volume(0.10)
 #define AUDIO_TITLESCREEN_VOLUME  Volume(1.00)
 
 #define AUDIO_PLAY_AMBIANCE 1
@@ -31,6 +31,7 @@ typedef enum {
     MUSIC_NONE,
     MUSIC_FARCE,
     MUSIC_EXPLITIVE,
+    MUSIC_PHOTOGRAPH
 } MusicType;
 
 typedef struct {
