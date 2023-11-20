@@ -1,7 +1,6 @@
 TODO
 
   - Music
-    - Music 2: Piano, lots of empty space, maybe other instruments as well.
     - Music 3: Gymnopedie-esque
     - Ending Theme: A solemn acceptance
 

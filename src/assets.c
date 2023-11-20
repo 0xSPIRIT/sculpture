@@ -258,7 +258,7 @@ static void audio_init(Audio *audio) {
         audio->small_glass_chisel[i] = load_sound(name, scale*1);
     }
 
-    audio->sprinkle = load_sound(DATA_DIR "audio/sprinkle.wav", 1);
+    audio->sprinkle = load_sound(DATA_DIR "audio/win.ogg", 1);
     audio->macabre = load_sound(DATA_DIR "audio/macabre.ogg", 1);
 
     audio->accept = load_sound(DATA_DIR "audio/accept.ogg", scale*0.75);

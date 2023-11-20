@@ -2,7 +2,7 @@
 #define AUDIO_CHISEL_VOLUME       (55)
 #define AUDIO_GUI_VOLUME          (68)
 #define AUDIO_MUSIC_VOLUME        (128)
-#define AUDIO_AMBIENCE_VOLUME     (34)
+#define AUDIO_AMBIENCE_VOLUME     (29)
 #define AUDIO_TITLESCREEN_VOLUME  Volume(1.00)
 
 #define AUDIO_PLAY_AMBIANCE 1
@@ -44,7 +44,6 @@ typedef struct {
     bool music_end;
 
     // used for audio_lower_channel_for_ms
-    bool lower_music;
     f32 fader; // 0.0 to 1.0
     int old_volume;
     int time;
@@ -57,9 +56,6 @@ typedef struct {
 } Sound;
 
 static void play_sound(int channel, Sound sound, int loops);
-
-static void audio_lower_music_for_a_bit(void);
-static bool audio_lower_channel_for(int channel, int frames);
 
 static void audio_halt_ambience(void);
 static void audio_set_ambience_accordingly(void);
