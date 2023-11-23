@@ -46,7 +46,7 @@
 "Flowing streams, interlaced with notions of\r"\
 "greatness, waiting to be.\n"\
 "Now, the liquid that had formed precipitated\r"\
-"torrentially from Max's mind.\n"\
+"intensely from Max's mind.\n"\
 
 #define NARRATION_LEVEL_7 \
 "Surely by then he must've been ready...?\n"\

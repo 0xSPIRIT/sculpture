@@ -1,8 +1,15 @@
 TODO
 
   - Music
+    - Add some sound effects to photograph: for some reason
+      I want there to be a phone call sound in the distance.
+      Firstly, it goes hard plus it would represent Max
+      slowly becoming distant from others- it shows the start
+      of an obsession
     - Music 3: Gymnopedie-esque
     - Ending Theme: A solemn acceptance
+
+  - Add an extra long stop in between music changes
 
   - While converting, make Z stop the conversion first before undoing.
 

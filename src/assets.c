@@ -219,7 +219,7 @@ static void audio_init(Audio *audio) {
     audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg", 1);
     audio->ambience_rain_reversed = load_sound(DATA_DIR "audio/rain_reversed.ogg", 1);
     audio->music0        = load_sound(DATA_DIR "audio/music0.ogg",    0.75);
-    audio->music1        = load_sound(DATA_DIR "audio/slowed+reverb.ogg", 0.55);
+    audio->music1        = load_sound(DATA_DIR "audio/slowed+reverb.ogg", 0.45);
     audio->music2        = load_sound(DATA_DIR "audio/music_frontier.ogg", 1);
     audio->undo          = load_sound(DATA_DIR "audio/undo.wav", scale*0.25);
 
