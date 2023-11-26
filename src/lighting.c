@@ -21,15 +21,15 @@ static void lighting_tick(Lighting *lighting) {
     }
 }
 
-static f64 get_light_strength_at_position(Light light, int x, int y) {
-    f64 dx = x - light.x;
-    f64 dy = y - light.y;
+static f32 get_light_strength_at_position(Light light, int x, int y) {
+    f32 dx = x - light.x;
+    f32 dy = y - light.y;
 
-    f64 length = sqrt(dx*dx + dy*dy);
+    f32 length = sqrt(dx*dx + dy*dy);
 
-    f64 max_length = light.radius;
+    f32 max_length = light.radius;
 
-    f64 strength = 1 - length / max_length;
+    f32 strength = 1 - length / max_length;
     strength *= light.strength;
 
     if (strength < 0) strength = 0;

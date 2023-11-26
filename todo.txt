@@ -9,7 +9,8 @@ TODO
     - Music 3: Gymnopedie-esque
     - Ending Theme: A solemn acceptance
 
-  - Add an extra long stop in between music changes
+  - Profile the web build, but don't use chrome's. It seems shit.
+    Just get the times yourself from the functions.
 
   - While converting, make Z stop the conversion first before undoing.
 

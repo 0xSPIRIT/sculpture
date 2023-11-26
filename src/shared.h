@@ -59,6 +59,8 @@ typedef enum {
 // in here and we don't want to mess that up.
 typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
+    
+    bool draw_fps;
 
     bool needs_manual_fps_lock; // If the screen's refresh rate != 60, we need to manually do this.
 

@@ -230,6 +230,10 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
+            case SDLK_BACKSPACE: {
+                if (gs->input.keys[SDL_SCANCODE_LCTRL])
+                    gs->draw_fps = !gs->draw_fps;
+            }
             case SDLK_BACKQUOTE: {
 #ifndef ALASKA_RELEASE_MODE
                 gs->creative_mode = !gs->creative_mode;
@@ -547,8 +551,21 @@ export void game_run(Game_State *state) {
     if (SDL_GetMouseFocus() == null) {
         draw_focus(RENDER_TARGET_MASTER);
     }
+    
 #endif
 
+    if (gs->draw_fps) {
+        char str[128];
+        sprintf(str, "Frametime: %.2f ms\n", 1000*gs->dt);
+        RenderTextQuick(RENDER_TARGET_MASTER,
+                        "fps",
+                        gs->fonts.font,
+                        str,
+                        WHITE,
+                        100, 100,
+                        null, null,
+                        false);
+    }
     SDL_Color border_color_desired = {0};
 
     if (gs->level_current+1 == 11) {

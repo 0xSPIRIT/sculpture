@@ -1,14 +1,14 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\titlescreen.c", "d:\\dev\\sculpture\\src\\util.c", "d:\\dev\\sculpture\\bin\\minkernel\\crts\\ucrt\\src\\appcrt\\tran\\noti386\\sqrtf.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_file.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_win.cpp", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\asan\\llvm\\compiler-rt\\lib\\sanitizer_common\\sanitizer_symbolizer_libcdep.cpp"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\chisel.c"]
 
 [MainWindow]
-X = 0
+X = 94
 Y = 46
 Width = 1801
 Height = 894
-ShowKind = "ShowNormal"
+ShowKind = "ShowMaximized"
 
 [MainDockingFrame]
 Type = "DockingFrame"
@@ -25,50 +25,40 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "level.c"
-TabWidth = 74.82993
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\level.c"
-CursorPos = 8010
-VertPos = 6456.0
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "util.c"
-TabWidth = 57.21089
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\util.c"
-CursorPos = 11255
-VertPos = 8256.0
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "render.c"
-TabWidth = 76.25851
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\render.c"
-CursorPos = 21286
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "game.c"
-TabWidth = 70.81633
+TabWidth = 80.27211
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 14265
-VertPos = 10090.54
+CursorPos = 19982
+VertPos = 14284.8
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "titlescreen.c"
-TabWidth = 98.02721
+TabLabel = "render.c"
+TabWidth = 85.71429
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\titlescreen.c"
-CursorPos = 472
+FilePath = "d:\\dev\\sculpture\\src\\render.c"
+CursorPos = 14639
+VertPos = 10944.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "Profile"
+TabWidth = 87.41496
+TabIsPinned = false
+Type = "ProfilePanel"
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "chisel.c"
+TabWidth = 80.95238
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\chisel.c"
+CursorPos = 25980
+VertPos = 18600.0
 
 [[MainDockingFrame.DockedWidgets]]
-RequestedWidth = 879.0
+RequestedWidth = 832.0
 RequestedHeight = 152.0
 Type = "DockingFrame"
 SplitType = 2
@@ -92,7 +82,7 @@ TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 335.0}, {Width = 760.0}, {Width = 253.0}]
-Items = ["debug", "debug.size", "gs->audio_channel_volumes[2]", ""]
+Items = ["gs.dt", "1/gs.dt", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"
@@ -142,12 +132,6 @@ Type = "BreakpointPanel"
 
 [[BookmarkFolders]]
 Title = ""
-
-[DebuggerDisplayTypes.pixel]
-IntDisplayType = "Hexadecimal"
-
-[DebuggerDisplayTypes.""]
-IntDisplayType = "Decimal"
 
 [OutputFilters]
 ModuleLoadMessages = false

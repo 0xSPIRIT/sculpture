@@ -8,7 +8,7 @@ LLVM\bin to the PATH, and that you're running a terminal using the
 "x64 Native Tools Command Prompt for VS 2022" or whatever version
 you're at.
 
-To build, call build_release.bat from your terminal. an executable
+To build, call build_release.bat from your terminal. An executable
 should be generated in bin_release\ and you should be good to go!
 Just make sure these relevent DLLs are in the same folder as the
 executable:

@@ -14,6 +14,21 @@
       .emscripten:not(canvas), hr {
           display: none !important;
       }
+
+      @keyframes wave {
+          0%, 100% {
+              transform: translateY(0);
+          }
+          50% {
+              transform: translateY(-10px);
+          }
+      }
+      .wavy-text {
+          font-size: 24px;
+          font-family: 'Arial', sans-serif;
+          animation: wave 2s infinite;
+      }
+
       .spinner {
         height: 50px;
         width: 50px;
@@ -50,7 +65,7 @@
   </head>
   <body>
     <hr/>
-    <figure style="overflow:visible;" id="spinner"><div class="spinner"></div><center style="margin-top:0.5em"><strong>Loading...</strong></center></figure>
+    <figure style="overflow:visible;" id="spinner"><div class="spinner"></div><center style="margin-top:0.5em"><p class="wavy-text">Loading...</strong></center></figure>
     <div class="emscripten" id="status">Downloading...</div>
     <div class="emscripten">
       <progress value="0" max="100" id="progress" hidden=1></progress>  
