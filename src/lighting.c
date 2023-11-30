@@ -107,7 +107,7 @@ static void apply_lighting_to_target(int target, Lighting *lighting) {
                 // So, we must modify the x and y values for the vignette calculation
 
                 apply_lighting_to_color(lighting, &c, x-64, y-32);
-
+                
                 RenderColor(c.r, c.g, c.b, c.a);
                 RenderPoint(target, x, y);
             }

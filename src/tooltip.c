@@ -74,10 +74,10 @@ static void tooltip_set_alpha(Tooltip *tooltip) {
 static void tooltip_draw(int output_target, Tooltip *tooltip) {
     int target = RENDER_TARGET_TOOLTIP;
 
+    if (tooltip->x == -1 || tooltip->y == -1) return;
+
     RenderColor(0, 0, 0, 0);
     RenderClear(target);
-
-    if (tooltip->x == -1 || tooltip->y == -1) return;
 
     int margin = 8; // In real pixels.
 

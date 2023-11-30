@@ -21,6 +21,7 @@ static void input_tick_mouse_pressed(Input *in) {
 static void input_set_locked(bool locked) {
 #if SIMULATE_MOUSE
     gs->input.locked = locked;
+    SDL_SetHintWithPriority(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1", SDL_HINT_OVERRIDE); // firefox cursor drifts unless we put this
     SDL_SetRelativeMouseMode(locked);
 #else
     (void)locked;

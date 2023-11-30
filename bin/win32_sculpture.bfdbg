@@ -1,14 +1,14 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\chisel.c"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\hammer.c", "d:\\dev\\sculpture\\src\\chisel.c", "d:\\dev\\sculpture\\src\\tooltip.c", "d:\\dev\\sculpture\\src\\recipes.c", "d:\\dev\\sculpture\\src\\win32_main.c"]
 
 [MainWindow]
-X = 94
-Y = 46
+X = 0
+Y = 66
 Width = 1801
 Height = 894
-ShowKind = "ShowMaximized"
+ShowKind = "ShowNormal"
 
 [MainDockingFrame]
 Type = "DockingFrame"
@@ -24,41 +24,90 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-Active = true
+TabLabel = "tooltip.c"
+TabWidth = 76.25851
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\tooltip.c"
+CursorPos = 2204
+VertPos = 1416.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "recipes.c"
+TabWidth = 79.65987
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\recipes.c"
+CursorPos = 11153
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "gui.c"
+TabWidth = 57.21089
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\gui.c"
+CursorPos = 19059
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "hammer.c"
+TabWidth = 85.78232
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\hammer.c"
+CursorPos = 4893
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "effects.c"
+TabWidth = 76.25851
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\effects.c"
+CursorPos = 11713
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "level.c"
+TabWidth = 65.37415
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\level.c"
+CursorPos = 26501
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "win32_main.c"
+TabWidth = 106.8708
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\win32_main.c"
+CursorPos = 12014
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "game.c"
-TabWidth = 80.27211
+TabWidth = 70.81633
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 19982
-VertPos = 14284.8
+CursorPos = 18877
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
+Active = true
 TabLabel = "render.c"
-TabWidth = 85.71429
+TabWidth = 76.25851
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\render.c"
-CursorPos = 14639
-VertPos = 10944.0
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "Profile"
-TabWidth = 87.41496
-TabIsPinned = false
-Type = "ProfilePanel"
+CursorPos = 9084
+VertPos = 6792.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "chisel.c"
-TabWidth = 80.95238
+TabWidth = 71.4966
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\chisel.c"
-CursorPos = 25980
-VertPos = 18600.0
+CursorPos = 23869
 
 [[MainDockingFrame.DockedWidgets]]
-RequestedWidth = 832.0
+RequestedWidth = 599.0
 RequestedHeight = 152.0
 Type = "DockingFrame"
 SplitType = 2
@@ -112,6 +161,7 @@ TabIsPinned = false
 Type = "ThreadPanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+Active = true
 TabLabel = "Call Stack"
 TabWidth = 105.102
 TabIsPinned = false
@@ -124,11 +174,15 @@ TabIsPinned = false
 Type = "ImmediatePanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
-Active = true
 TabLabel = "Breakpoints"
 TabWidth = 117.3469
 TabIsPinned = false
 Type = "BreakpointPanel"
+
+[[Breakpoints]]
+File = "d:\\dev\\sculpture\\src\\render.c"
+Line = 296
+Column = 8
 
 [[BookmarkFolders]]
 Title = ""

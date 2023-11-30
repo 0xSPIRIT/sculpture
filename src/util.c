@@ -16,6 +16,22 @@ static inline f64 __end_timer(u64 start) {
     return result;
 }
 
+static inline void prof_start(const char *func) {
+    Assert(func);
+    gs->a = SDL_GetPerformanceCounter();
+    strcpy(gs->func, func);
+}
+
+// ew
+RENDERAPI int RenderTextDebugPush(const char *string, int x, int y);
+static inline int prof_end(int y) {
+    f64 end = __end_timer(gs->a);
+    char msg[64];
+    sprintf(msg, "(%s) took %.2fms", gs->func, end*1000);
+    RenderTextDebugPush(msg, 0, y);
+    return y += 30;
+}
+
 static inline SDL_Color rgb(u8 r, u8 g, u8 b) {
     SDL_Color result;
 

@@ -415,7 +415,10 @@ static void level_draw(Level *level) {
         default: {} break;
     }
 
+    //prof_start("level_draw_popup_confirms");
     level_draw_popup_confirms(RENDER_TARGET_MASTER);
+    //int y = gs->game_height-30*3;
+    //y = prof_end(y);
 }
 
 static void level_draw_intro(Level *level) {
@@ -817,7 +820,7 @@ static void level_get_cells_from_image(const char *path,
 static void level_draw_narration(int target) {
     RenderColor(20, 20, 20, 255);
     RenderClear(target);
-
+    
     effect_draw(target, &gs->current_effect, false);
     narrator_run(target, WHITE);
 }
@@ -844,29 +847,62 @@ static void game_draw_table(int target) {
 }
 
 static void level_draw_outro_or_play(Level *level) {
+    //int y = GUI_H;
+
     int target = RENDER_TARGET_PIXELGRID;
 
     if (gs->current_preview.recording)
         RenderColor(53, 20, 20, 255);
     else
         RenderColor(0, 0, 0, 255);
+    
+    // Unnecessary
+    
     RenderClear(target);
 
     // The meat
-
+    
+    //prof_start("lighting_tick");
     lighting_tick(&gs->lighting);
+    //y = prof_end(y);
+    
+    //prof_start("background_draw");
     background_draw(target, &gs->background, 64, 0);
+    //y = prof_end(y);
+    
+    //prof_start("effect_draw");
     effect_draw    (target, &gs->current_effect, true);
+    //y = prof_end(y);
+    
+    //prof_start("draw_rain_splashes");
     draw_rain_splashes(target, &gs->current_effect.rain);
+    //y = prof_end(y);
+    
+    //prof_start("grid_draw");
     grid_draw      (target);
+    //y = prof_end(y);
+    
+    //prof_start("game_draw_table");
     game_draw_table(target);
+    //y = prof_end(y);
+    
+    //prof_start("dust_grid_run");
     dust_grid_run  (target);
+    //y = prof_end(y);
+    
+    //prof_start("grid_draw_glow");
     grid_draw_glow (target);
+    //y = prof_end(y);
 
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
+            //prof_start("chisel_draw");
             chisel_draw(target, gs->chisel);
+            //y = prof_end(y);
+            
+            //prof_start("hammer_draw");
             hammer_draw(target, &gs->hammer);
+            //y = prof_end(y);
             break;
         }
         case TOOL_PLACER: {
@@ -876,10 +912,12 @@ static void level_draw_outro_or_play(Level *level) {
         }
     }
 
+    //prof_start("draw_objects");
     draw_objects(target);
-
-    RenderColor(0,0,0,255);
-    RenderClear(RENDER_TARGET_MASTER);
+    //y = prof_end(y);
+    
+    // This eats up 5ms in the web build.
+    //RenderClear(RENDER_TARGET_MASTER);
 
     SDL_Rect src = {
         0,
@@ -900,21 +938,36 @@ static void level_draw_outro_or_play(Level *level) {
         dst.x -= gs->game_width;
     }
 
+    //prof_start("RenderPixelGridToMaster");
     RenderTargetToTarget(RENDER_TARGET_MASTER,
                          RENDER_TARGET_PIXELGRID,
                          &src,
                          &dst);
+    //y = prof_end(y);
 
+    //prof_start("draw_grid_outline");
     draw_grid_outline(RENDER_TARGET_MASTER);
+    //y = prof_end(y);
+    
     if (level->state == LEVEL_STATE_OUTRO) {
         level_draw_outro(RENDER_TARGET_MASTER, level);
         gui_draw(RENDER_TARGET_MASTER);
     } else {
+        //prof_start("gui_draw");
         gui_draw(RENDER_TARGET_MASTER);
+        //y = prof_end(y);
 
+        //prof_start("gui_popup_draw");
         gui_popup_draw(RENDER_TARGET_MASTER);
+        //y = prof_end(y);
+        
+        //prof_start("tutorial_rect_run");
         tutorial_rect_run(RENDER_TARGET_MASTER);
+        //y = prof_end(y);
+        
+        //prof_start("tooltip_draw");
         tooltip_draw(RENDER_TARGET_MASTER, &gs->gui.tooltip);
+        //y = prof_end(y);
 
         if (gs->gui.popup)
             gui_draw_profile(RENDER_TARGET_MASTER);

@@ -1,5 +1,5 @@
 // NOTE: Out of MIX_MAX_VOLUME (128)
-#define AUDIO_CHISEL_VOLUME       (55)
+#define AUDIO_CHISEL_VOLUME       (45)
 #define AUDIO_GUI_VOLUME          (30)
 #define AUDIO_MUSIC_VOLUME        (128)
 #define AUDIO_AMBIENCE_VOLUME     (29)

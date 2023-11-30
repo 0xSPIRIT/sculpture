@@ -9,8 +9,17 @@ TODO
     - Music 3: Gymnopedie-esque
     - Ending Theme: A solemn acceptance
 
-  - Profile the web build, but don't use chrome's. It seems shit.
-    Just get the times yourself from the functions.
+  - To find which SDL_SetRenderTarget takes the most time,
+    display them all in order as a list in the emscripten
+    build along with the time taken for each. Then, walk through
+    it in the desktop build until you get to the n'th function call
+    which corresponds to the function gotten.
+
+  - Bug when moving cursor end screen
+
+  - Add podldodldodlodpolpdlpdol sound to Destroy Level & Take Materials
+
+  - Bake-in the background vignette.
 
   - While converting, make Z stop the conversion first before undoing.
 

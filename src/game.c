@@ -156,19 +156,20 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
         save_game();
         is_running = false;
     }
-
+    
+#if SIMULATE_MOUSE
+    if (event->type == SDL_MOUSEMOTION) {
+        input_tick_mouse(gs, event);
+        goto event_tick_end;
+    }
+#endif
+    
     if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) {
         gs->real_width = event->window.data1;
         gs->real_height = event->window.data2;
         if (gs->real_width == 0 || gs->real_height == 0) __debugbreak();
         game_resize(gs->real_height);
     }
-
-#if SIMULATE_MOUSE
-    if (event->type == SDL_MOUSEMOTION) {
-        input_tick_mouse(gs, event);
-    }
-#endif
 
     if (event->type == SDL_MOUSEWHEEL) {
         if (gs->recipes.active) {
@@ -199,19 +200,21 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
         }
     }
 
+#ifndef __EMSCRIPTEN__
     if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_F11 && !gs->obj.active) {
         if (!gs->fullscreen) {
-#ifdef __EMSCRIPTEN__
-            SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN);
-#else
+//#ifdef __EMSCRIPTEN__
+            //SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN);
+//#else
             SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-#endif
+//#endif
             gs->fullscreen = true;
         } else {
             SDL_SetWindowFullscreen(gs->window, 0);
             gs->fullscreen = false;
         }
     }
+#endif
 
     int selected_tool = 0;
     if (event->type == SDL_KEYDOWN && gs->gamestate == GAME_STATE_PLAY && !gs->text_field.active) {
@@ -325,13 +328,13 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 c = &gs->grid[input->mx+input->my*gs->gw];
                 char name[256] = {0};
                 get_name_from_type(c->type, name);
-
+                
                 int obj = c->object;
                 if (obj == -1) obj = 0;
-
+                
                 Assert(obj != -1);
-
-
+                
+                
                 Log("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Vx: %f, Vy: %f\n",
                     input->mx,
                     input->my,
@@ -382,21 +385,24 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 selected_tool = 1;
                 break;
             }
-
+            
             case SDLK_F1: case SDLK_F2: case SDLK_F3: case SDLK_F4: case SDLK_F5: {
                 gs->current_placer = event->key.keysym.sym - SDLK_F1;
                 break;
             }
         }
     }
-
+    
+#ifdef __EMSCRIPTEN__
+event_tick_end:
+#endif
     text_field_tick();
-
+    
     if (selected_tool) {
         gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
         gs->gui.tool_buttons[gs->current_tool]->active = true;
     }
-
+    
     return is_running;
 }
 
@@ -426,7 +432,7 @@ static void audio_setup_channel_volumes(void) {
     
 #ifndef ALASKA_RELEASE_MODE
     Input *in = &gs->input;
-
+    
     if (in->keys[SDL_SCANCODE_F1]) gs->channel_editing = AUDIO_CHANNEL_CHISEL;
     if (in->keys[SDL_SCANCODE_F2]) gs->channel_editing = AUDIO_CHANNEL_GUI;
     if (in->keys[SDL_SCANCODE_F3]) gs->channel_editing = AUDIO_CHANNEL_MUSIC;
@@ -466,14 +472,19 @@ static void audio_setup_channel_volumes(void) {
 }
 
 export void game_run(Game_State *state) {
-    StartTimer();
-
+    u64 start_frame = SDL_GetPerformanceCounter();
+    
+    //u64 aa = SDL_GetPerformanceCounter();
+                    
     gs = state;
-
+    
     gs->gui.tooltip.set_this_frame = false;
     
     audio_setup_channel_volumes();
-
+    
+    gs->accum = 0;
+    gs->amt = 0;
+    
     switch (gs->gamestate) {
         case GAME_STATE_TITLESCREEN: {
             titlescreen_tick();
@@ -482,25 +493,25 @@ export void game_run(Game_State *state) {
         }
         case GAME_STATE_PLAY: {
             game_update_view();
-
+            
             audio_set_ambience_accordingly();
             audio_set_music_accordingly();
-
+            
             if (gs->obj.active) {
                 RenderColor(255, 255, 255, 255);
                 RenderClear(RENDER_TARGET_MASTER);
-
+                
                 object_draw(&gs->obj);
                 fade_draw(RENDER_TARGET_MASTER);
-
+                
                 SDL_Rect dst = {
                     0, 0,
                     RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_width,
                     RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_height
                 };
-
+                
                 u8 alpha = 255 - 255 * min(240,gs->obj.t) / 240.0;
-
+                
                 RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture, alpha);
                 RenderMaybeSwitchToTarget(RENDER_TARGET_MASTER);
                 SDL_RenderCopy(gs->render.sdl,
@@ -511,18 +522,17 @@ export void game_run(Game_State *state) {
                 if (gs->pause_menu_active) {
                     pause_menu_draw(RENDER_TARGET_MASTER);
                 } else {
+                    //int y = 2*gs->game_height/3;
+                    
                     gui_tick();
                     inventory_tick();
                     all_converters_tick();
-                    
                     level_tick(&gs->levels[gs->level_current]);
                     level_draw(&gs->levels[gs->level_current]);
-                    
                     text_field_draw(RENDER_TARGET_MASTER);
-                    
                     fade_draw(RENDER_TARGET_MASTER);
-                    
                     preview_tick();
+                    
                     if (gs->current_preview.play) {
                         preview_draw(RENDER_TARGET_MASTER,
                                      &gs->current_preview,
@@ -539,30 +549,63 @@ export void game_run(Game_State *state) {
             break;
         }
     }
-
+    
+    //f64 frame_end = __end_timer(aa);
+    
+    {
+        //char msg[64];
+        //sprintf(msg, "Frame time took %.2fms", 1000*gs->dt);
+        //RenderTextDebugPush(msg, 0, gs->game_height-35);
+        //sprintf(msg, "SDL_SetRenderTarget took %.2fms | Count: %d", gs->accum, gs->amt);
+        //RenderTextDebugPush(msg, 0, gs->game_height-65);
+    }
+    
     RenderTextDebug();
-
+    
     if (gs->input.locked && !gs->input.hide_mouse) {
         Texture *t = &GetTexture(TEXTURE_CURSOR);
         RenderTexture(RENDER_TARGET_MASTER, t, null, &(SDL_Rect){gs->input.real_mx, gs->input.real_my, t->width, t->height});
     }
-
+    
 #ifdef __EMSCRIPTEN__
     if (SDL_GetMouseFocus() == null) {
         draw_focus(RENDER_TARGET_MASTER);
+        gs->test = true;
     }
     
 #endif
-
+    
+    if (gs->timer == 0) {
+        gs->timer = 60;
+        gs->highest_frametime = 0;
+    }
+    gs->timer--;
+    if (1000*gs->dt > gs->highest_frametime)
+        gs->highest_frametime = 1000*gs->dt;
+    
     if (gs->draw_fps) {
         char str[128];
         sprintf(str, "Frametime: %.2f ms\n", 1000*gs->dt);
+        SDL_Color color = WHITE;
+        if (gs->dt*1000 >= 16.67)
+            color = RED;
+
         RenderTextQuick(RENDER_TARGET_MASTER,
                         "fps",
                         gs->fonts.font,
                         str,
-                        WHITE,
+                        color,
                         100, 100,
+                        null, null,
+                        false);
+        
+        sprintf(str, "Max Local Frametime: %.2f ms\n", gs->highest_frametime);
+        RenderTextQuick(RENDER_TARGET_MASTER,
+                        "2fps",
+                        gs->fonts.font,
+                        str,
+                        WHITE,
+                        100, 140,
                         null, null,
                         false);
     }
@@ -579,6 +622,7 @@ export void game_run(Game_State *state) {
     gs->border_color.b = interpolate(gs->border_color.b, border_color_desired.b, 2);
 
     RenderColor(gs->border_color.r, gs->border_color.g, gs->border_color.b, 255);
+    
     RenderClear(-1);
 
     RenderColor(255, 255, 255, 255);
@@ -604,7 +648,7 @@ export void game_run(Game_State *state) {
                    &src,
                    &dst);
 
-    gs->dt = EndTimer();
+    gs->dt = __end_timer(start_frame);
     
     SDL_RenderPresent(gs->renderer);
 

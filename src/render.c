@@ -282,6 +282,9 @@ RENDERAPI void RenderColorStruct(SDL_Color rgba) {
 }
 
 // When target is null, the render target is inferred to be the screen.
+// I did not forsee switching render targets to be such an expensive
+// operation on many devices- If I were to redesign this API, I would
+// not make this be implicit- it must be explicit.
 RENDERAPI Render_Target *RenderMaybeSwitchToTarget(int target_enum) {
     if (target_enum < 0) {
         SDL_SetRenderTarget(gs->render.sdl, null);
@@ -292,9 +295,27 @@ RENDERAPI Render_Target *RenderMaybeSwitchToTarget(int target_enum) {
     Render_Target *target = RenderTarget(target_enum);
     if (gs->render.current_target != target) {
         SDL_Texture *texture_target = target->texture.handle;
+        //u64 start = SDL_GetPerformanceCounter();
+        
         SDL_SetRenderTarget(gs->render.sdl, texture_target);
+        
+        //u64 f, e;
+        //e = SDL_GetPerformanceCounter();
+        //f = SDL_GetPerformanceFrequency();
+        
+        //u64 delta = e - start;
+        //f64 time = (f64)delta / f;
+        
+        //char msg[64];
+        //sprintf(msg, "%d: %.2fms", gs->amt, 1000*time);
+        //RenderTextDebugPush(msg, 0, GUI_H+gs->amt*30);
+        
+        //gs->accum += 1000*time;
+        //gs->amt++;
+        
         gs->render.current_target = target;
     }
+    
     return gs->render.current_target;
 }
 
@@ -442,6 +463,7 @@ RENDERAPI void RenderFillRect(int target_enum, SDL_Rect rect) {
 
 RENDERAPI void RenderClear(int target_enum) {
     RenderMaybeSwitchToTarget(target_enum);
+    
     SDL_RenderClear(gs->render.sdl);
 }
 
@@ -655,7 +677,10 @@ RENDERAPI void RenderTextQuick(int target_enum,
 
 // Returns the height of the text
 RENDERAPI int RenderTextDebugPush(const char *string, int x, int y) {
-#ifdef ALASKA_RELEASE_MODE
+#if !RENDER_DEBUG_TEXT
+    (void)string;
+    (void)x;
+    (void)y;
     return 0;
 #else
     Render_Text_Debug *debug = &gs->render.text_debug;
@@ -681,7 +706,7 @@ RENDERAPI int RenderTextDebugPush(const char *string, int x, int y) {
 }
 
 RENDERAPI void RenderTextDebug() {
-#ifdef ALASKA_RELEASE_MODE
+#if !RENDER_DEBUG_TEXT
     return;
 #else
     Render_Text_Debug *debug = &gs->render.text_debug;

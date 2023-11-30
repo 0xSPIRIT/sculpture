@@ -598,7 +598,7 @@ static void gui_button_draw_outline(int index) {
     }
 
     RenderColor(91, 91, 91, 255);
-    RenderDrawRect(RENDER_TARGET_GUI_TOOLBAR, rect);
+    RenderDrawRect(RENDER_TARGET_MASTER, rect);
 }
 
 static void gui_draw(int target) {
@@ -606,16 +606,17 @@ static void gui_draw(int target) {
 
     GUI *gui = &gs->gui;
 
-    RenderColor(0, 0, 0, 0);
-    RenderClear(RENDER_TARGET_GUI_TOOLBAR);
+    //RenderColor(0, 0, 0, 0);
+    //RenderClear(RENDER_TARGET_GUI_TOOLBAR);
 
     // Tool bar
     if (gs->gui.popup_inventory_y < GUI_H) {
         for (int i = 0; i < TOOL_COUNT; i++) {
-            button_draw(RENDER_TARGET_GUI_TOOLBAR, gui->tool_buttons[i]);
+            button_draw(target, gui->tool_buttons[i]);
             gui_button_draw_outline(i);
         }
 
+#if 0
         SDL_Rect src = {
             0,
             0,
@@ -634,6 +635,7 @@ static void gui_draw(int target) {
                              RENDER_TARGET_GUI_TOOLBAR,
                              &src,
                              &dst);
+#endif
     }
 
     gui_draw_wasd_popup(target);

@@ -15,6 +15,8 @@ static void rain_splash(Rain_Splash *rain, int amount, int x, int y) {
 }
 
 static void draw_rain_splashes(int target, Rain_Splash *rain) {
+    if (gs->current_effect.type != EFFECT_RAIN) return;
+    
     int sub_target = RENDER_TARGET_EFFECTS;
 
     RenderColor(0,0,0,0);
@@ -29,6 +31,7 @@ static void draw_rain_splashes(int target, Rain_Splash *rain) {
         apply_lighting_to_alpha(&gs->lighting, &col, p->x, p->y);
         col = clamp((int)col * 2, 0, 255);
         RenderColor(col, col, col, 255);
+        //RenderColor(127, 127, 127, 127);
         RenderPointRelative(sub_target, p->x, p->y);
 
         int int_x = p->x;

@@ -348,15 +348,14 @@ static void recipes_draw(int final_target) {
     int target = RENDER_TARGET_CONVERSION_PANEL;
 
     Recipes *c = &gs->recipes;
-
     gs->recipes.timer++;
+
+    if (!gs->recipes.active) return;
 
     RenderMaybeSwitchToTarget(target);
 
     RenderColor(0,0,0,175);
     RenderClear(target);
-
-    if (!gs->recipes.active) return;
 
     if (gs->input.keys[SDL_SCANCODE_ESCAPE]) {
         gui_converter_toggle();

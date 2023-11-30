@@ -97,9 +97,7 @@ static void titlescreen_draw(int target) {
                     false);
 #endif
     
-    f64 a = (1+sin(3*SDL_GetTicks()/1000.0))/2;
-    a *= 255;
-
+#ifndef __EMSCRIPTEN__
     {
         const char *text = "F11 - Fullscreen";
         int w, h;
@@ -118,6 +116,10 @@ static void titlescreen_draw(int target) {
                         null,
                         false);
     }
+#endif
+
+    f64 a = (1+sin(3*SDL_GetTicks()/1000.0))/2;
+    a *= 255;
 
     if (gs->level_current > 0) {
         char text[64];

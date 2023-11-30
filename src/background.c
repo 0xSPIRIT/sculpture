@@ -22,13 +22,19 @@ static void background_draw(int target, Background *bg, int xoff, int yoff) {
     Assert(w == 128);
     Assert(h == 96);
     Assert(bg->surface->format->BytesPerPixel == 4);
-
-    // Applying the lighting to the background.
     
+    // Draw teh background
+    SDL_Rect dst = { xoff, yoff, w, h };
+    RenderTexture(target, &GetTexture(background), null, &dst);
+    
+    // Applying the lighting to the background.
     // Start with completely transparent surface
     memset_u32((u32*)bg->surface->pixels, 0x00000000, w*h);
     u32 *pixels = (u32*)bg->surface->pixels;
     
+    // TODO: Bake in the backgroudn vignette. Don't do this surface crap.
+    
+#ifndef __EMSCRIPTEN__
     // Then apply the lighting pixel by pixel.
     for (int y = 0; y < bg->surface->h; y++) {
         for (int x = 0; x < bg->surface->w; x++) {
@@ -53,10 +59,8 @@ static void background_draw(int target, Background *bg, int xoff, int yoff) {
         }
     }
     
-    SDL_Rect dst = { xoff, yoff, w, h };
-
     Texture texture = RenderCreateTextureFromSurface(bg->surface);
-    RenderTexture(target, &GetTexture(background), null, &dst);
     RenderTexture(target, &texture, null, &dst);
     RenderDestroyTexture(&texture);
+#endif
 }

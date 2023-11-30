@@ -12,6 +12,11 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 
+EM_JS(void, focuscanvas, (), {
+          var canvas = document.getElementById("canvas");
+          canvas.focus();
+      });
+
 EM_JS(void, canvas_set_size, (int desired_width, int desired_height, double device_pixel_ratio), {
           var canvas = document.getElementById('canvas');
 
@@ -90,7 +95,7 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
     state->device_pixel_ratio = device_pixel_ratio;
 
     canvas_set_size(state->real_width, state->real_height, device_pixel_ratio);
-
+    
     game_init_sdl_audio(state);
 
     ok = (IMG_Init(IMG_INIT_PNG) != 0);
@@ -180,6 +185,11 @@ static void em_mainloop(void *arg) {
     GameLoopData *data = (GameLoopData*) arg;
 
     SDL_Event event;
+    
+    if (SDL_GetMouseFocus() != null) {
+        focuscanvas();
+        gs->test = false;
+    }
 
     while (SDL_PollEvent(&event)) {
         bool should_continue = game_handle_event(data->game_state, &event);

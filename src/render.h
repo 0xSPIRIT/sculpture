@@ -4,6 +4,7 @@
 #define RENDERAPI static inline
 #define MAX_TEXT_LENGTH 512
 #define RenderTarget(which) (gs->render.render_targets+which)
+#define RENDER_DEBUG_TEXT 1
 
 typedef enum {
     VIEW_STATE_UNDEFINED,   // Invalid

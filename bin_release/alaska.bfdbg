@@ -4,8 +4,8 @@ LastPlatform = "Win64"
 RecentFilesList = ["d:\\dev\\sculpture\\src\\titlescreen.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm"]
 
 [MainWindow]
-X = 0
-Y = 69
+X = 94
+Y = 46
 Width = 1801
 Height = 894
 ShowKind = "ShowMaximized"
@@ -24,36 +24,40 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
+Active = true
+TabLabel = "Profile"
+TabWidth = 87.41496
+TabIsPinned = false
+Type = "ProfilePanel"
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "render.c"
-TabWidth = 85.71429
+TabWidth = 76.25851
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\render.c"
-CursorPos = 8383
+CursorPos = 21295
 VertPos = 6168.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_dynapi_procs.h"
-TabWidth = 152.381
+TabWidth = 142.9252
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"
 CursorPos = 25783
-VertPos = 8280.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "game.c"
-TabWidth = 80.27211
+TabWidth = 70.81633
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\game.c"
 CursorPos = 17160
-VertPos = 11947.2
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-Active = true
 TabLabel = "titlescreen.c"
-TabWidth = 107.483
+TabWidth = 98.02721
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\titlescreen.c"

@@ -341,6 +341,8 @@ static void grid_draw_glow(int target) {
     }
 
     memset(pixels, 0, pitch*h);
+    
+    bool dont_waste_time = true;
 
     for (int i = 0; i < w*h; i++) {
         if (gs->grid[i].type != CELL_DIAMOND) continue;
@@ -354,10 +356,13 @@ static void grid_draw_glow(int target) {
                 int alpha = 1;
                 if (gs->grid[i].type == CELL_DIAMOND) alpha = 2;
                 grid_glow_set(pixels, i%w + x, i/w + y, alpha);
+                dont_waste_time = false;
             }
         }
     }
 
+    if (dont_waste_time) return;
+    
     RenderUnlockTexture(&RenderTarget(RENDER_TARGET_GLOW)->texture);
 
     SDL_Rect dst = {
