@@ -105,6 +105,27 @@ RENDERAPI Font *RenderLoadFont(const char *fp, int size) {
     return font;
 }
 
+RENDERAPI Texture RenderDuplicateTexture(Texture original) {
+    Texture result;
+    result.width = original.width;
+    result.height = original.height;
+    
+    // Create an intermediate surface
+    SDL_Surface *surface = SDL_CreateRGBSurface(0, result.width, result.height, 32, 0, 0, 0, 0);
+    
+    // Copy the original texture to the intermediate surface
+    SDL_RenderCopy(gs->renderer, original.handle, null, null);
+    SDL_RenderReadPixels(gs->renderer, null, ALASKA_PIXELFORMAT, surface->pixels, surface->pitch);
+    
+    // Create a new texture from the intermediate surface
+    result.handle = SDL_CreateTextureFromSurface(gs->renderer, surface);
+    
+    // Free the intermediate surface
+    SDL_FreeSurface(surface);
+    
+    return result;
+}
+
 //~ Render Targets
 
 RENDERAPI SDL_Rect RenderGetUpdatedRect(Render_Target *target, SDL_Rect *rect) {

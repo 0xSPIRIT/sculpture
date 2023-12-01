@@ -58,17 +58,6 @@ static void game_resize(int h) {
     }
 
     gs->resized = true;
-
-    SDL_DestroyTexture(RenderTarget(RENDER_TARGET_3D)->texture.handle);
-    RenderTarget(RENDER_TARGET_3D)->texture.handle = SDL_CreateTexture(gs->renderer,
-                                                                       ALASKA_PIXELFORMAT,
-                                                                       SDL_TEXTUREACCESS_STREAMING,
-                                                                       SCALE_3D*gs->game_width,
-                                                                       SCALE_3D*gs->game_width);
-    RenderTarget(RENDER_TARGET_3D)->texture.width = SCALE_3D * gs->game_width;
-    RenderTarget(RENDER_TARGET_3D)->texture.height = SCALE_3D * gs->game_width;
-
-    SDL_SetTextureBlendMode(RenderTarget(RENDER_TARGET_3D)->texture.handle, SDL_BLENDMODE_BLEND);
 }
 
 static void game_update_view(void) {
@@ -201,7 +190,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
     }
 
 #ifndef __EMSCRIPTEN__
-    if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_F11 && !gs->obj.active) {
+    if (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_F11) {
         if (!gs->fullscreen) {
 //#ifdef __EMSCRIPTEN__
             //SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN);
@@ -586,7 +575,7 @@ export void game_run(Game_State *state) {
     if (gs->draw_fps) {
         char str[128];
         sprintf(str, "Frametime: %.2f ms\n", 1000*gs->dt);
-        SDL_Color color = WHITE;
+        SDL_Color color = {127,127,127,255};
         if (gs->dt*1000 >= 16.67)
             color = RED;
 

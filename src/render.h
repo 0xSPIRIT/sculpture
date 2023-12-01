@@ -102,6 +102,7 @@ RENDERAPI void RenderDestroyTarget              (Render_Target *target);
 RENDERAPI void RenderDestroyTexture             (Texture *tex);
 RENDERAPI Texture RenderCreateTextureFromSurface(SDL_Surface *surf);
 RENDERAPI Font *RenderLoadFont                  (const char *fp, int size);
+RENDERAPI Texture RenderDuplicateTexture        (Texture original);
 
 RENDERAPI SDL_Rect RenderGetUpdatedRect         (Render_Target *target, SDL_Rect *rect);
 RENDERAPI SDL_FRect RenderGetUpdatedRectF       (Render_Target *target, SDL_FRect *rect);

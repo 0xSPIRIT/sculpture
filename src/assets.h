@@ -18,7 +18,7 @@
 typedef enum {
     RENDER_TARGET_MASTER, // The final full-screen resolution target. Bounds: { 0, 0, gs->game_width, gs->game_height }
     RENDER_TARGET_PIXELGRID, // The main pixel art render target Bounds: {0, 0, gs->gw*2, gs->gh*2} where the default bounds is {gs->gw/2, gs->gh/2, gs->gw*2, gs->gh*2}
-    RENDER_TARGET_GUI_TOOLBAR, // The render target showing the tool buttons
+    RENDER_TARGET_GUI_TOOLBAR, // The render target showing the tool buttons. Used only for the ending.
     RENDER_TARGET_CHISEL_BLOCKER,
     RENDER_TARGET_CHISEL, // Use the same render target for each chisel.
     RENDER_TARGET_HAMMER,
@@ -26,7 +26,6 @@ typedef enum {
     RENDER_TARGET_TOOLTIP,
     RENDER_TARGET_GRID, // Temp render target used by 3d.c
     RENDER_TARGET_EFFECTS,
-    RENDER_TARGET_3D,
     RENDER_TARGET_GLOW, // Pixel grid
     RENDER_TARGET_SHADOWS,
     RENDER_TARGET_CONVERSION_PANEL,

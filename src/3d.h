@@ -1,9 +1,3 @@
-#ifdef ALASKA_RELEASE_MODE
-    #define SCALE_3D 1
-#else
-    #define SCALE_3D 0.5
-#endif
-
 enum Object3D_State {
     OBJECT_ZOOM,
     OBJECT_ROTY,
@@ -13,12 +7,14 @@ enum Object3D_State {
 
 typedef struct {
     bool active;
-    SDL_Texture *texture;
     int state;
     f32 y, z;
     f32 yrot;
     f32 xrot;
     f32 acc, vel, jerk;
+    
+    Texture texture; // The texture on the plane
+    SDL_Surface *surf; // The surface version of teh texture.
 
     int t, hold;
     f32 t2;

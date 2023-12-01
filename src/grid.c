@@ -814,7 +814,7 @@ static void simulation_tick(void) {
     grid_array_tick(gs->gas_grid, 1, 1);
 }
 
-static void grid_array_draw(int target, Cell *array, u8 alpha) {
+static void grid_array_draw(int target, int x_start, Cell *array, u8 alpha) {
     for (int i = 0; i < gs->gw*gs->gh; i++)
         array[i].updated = 0;
 
@@ -838,12 +838,12 @@ static void grid_array_draw(int target, Cell *array, u8 alpha) {
             if (type == CELL_WATER || type == CELL_LAVA) {
                 Line l = {x, y, array[x+y*gs->gw].px, array[x+y*gs->gw].py};
                 if (array[x+y*gs->gw].px != 0 && array[x+y*gs->gw].py != 0 && array[x+y*gs->gw].type == CELL_WATER) {
-                    RenderLineRelative(target, l.x1, l.y1, l.x2, l.y2);
+                    RenderLineRelative(target, l.x1 - x_start, l.y1, l.x2 - x_start, l.y2);
                 } else {
-                    RenderPointRelative(target, l.x1, l.y1);
+                    RenderPointRelative(target, l.x1 - x_start, l.y1);
                 }
             } else {
-                RenderPointRelative(target, x, y);
+                RenderPointRelative(target, x - x_start, y);
             }
         }
     }
@@ -851,8 +851,8 @@ static void grid_array_draw(int target, Cell *array, u8 alpha) {
 
 static void grid_draw(int target) {
     // Draw all the grids in a layered order.
-    grid_array_draw(target, gs->gas_grid, 255);
-    grid_array_draw(target, gs->grid, 255);
+    grid_array_draw(target, 0, gs->gas_grid, 255);
+    grid_array_draw(target, 0, gs->grid, 255);
 
     overlay_draw(target);
 

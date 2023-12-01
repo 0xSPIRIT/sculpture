@@ -323,7 +323,7 @@ static void level_click_next_level(void) {
         popup_confirm_activate(&gs->gui.eol_popup_confirm);
     } else {
         level_set_state(gs->level_current, LEVEL_STATE_PLAY);
-        object_activate(&gs->obj);
+        object_activate_new(&gs->obj);
         effect_set(&gs->current_effect,
                    EFFECT_SNOW,
                    true,

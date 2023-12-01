@@ -207,6 +207,7 @@ static void click_gui_tool_button(void *type_ptr) {
             {
                 level_set_state(gs->level_current, LEVEL_STATE_OUTRO);
             }
+            gs->current_tool = p_tool;
             return;
         }
     }
@@ -586,7 +587,7 @@ static void gui_draw_profile(int target) {
     }
 }
 
-static void gui_button_draw_outline(int index) {
+static void gui_button_draw_outline(int target, int index) {
     GUI *gui = &gs->gui;
     Button *b = gui->tool_buttons[index];
 
@@ -598,44 +599,49 @@ static void gui_button_draw_outline(int index) {
     }
 
     RenderColor(91, 91, 91, 255);
-    RenderDrawRect(RENDER_TARGET_MASTER, rect);
+    RenderDrawRect(target, rect);
 }
 
 static void gui_draw(int target) {
     Assert(target == RENDER_TARGET_MASTER);
 
     GUI *gui = &gs->gui;
+    
+    int toolbar_target = target;
 
-    //RenderColor(0, 0, 0, 0);
-    //RenderClear(RENDER_TARGET_GUI_TOOLBAR);
+    if (gs->level_current+1 == 11) {
+        RenderColor(0, 0, 0, 0);
+        RenderClear(RENDER_TARGET_GUI_TOOLBAR);
+        toolbar_target = RENDER_TARGET_GUI_TOOLBAR;
+    }
 
     // Tool bar
     if (gs->gui.popup_inventory_y < GUI_H) {
         for (int i = 0; i < TOOL_COUNT; i++) {
-            button_draw(target, gui->tool_buttons[i]);
-            gui_button_draw_outline(i);
+            button_draw(toolbar_target, gui->tool_buttons[i]);
+            gui_button_draw_outline(toolbar_target, i);
         }
-
-#if 0
-        SDL_Rect src = {
-            0,
-            0,
-            gs->game_width,
-            GUI_H
-        };
-
-        SDL_Rect dst = {
-            0,
-            0,
-            gs->game_width,
-            GUI_H
-        };
-
-        RenderTargetToTarget(target,
-                             RENDER_TARGET_GUI_TOOLBAR,
-                             &src,
-                             &dst);
-#endif
+        
+        if (gs->level_current+1 == 11) {
+            SDL_Rect src = {
+                0,
+                0,
+                gs->game_width,
+                GUI_H
+            };
+            
+            SDL_Rect dst = {
+                0,
+                0,
+                gs->game_width,
+                GUI_H
+            };
+            
+            RenderTargetToTarget(target,
+                                 toolbar_target,
+                                 &src,
+                                 &dst);
+        }
     }
 
     gui_draw_wasd_popup(target);

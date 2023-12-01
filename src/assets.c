@@ -24,7 +24,7 @@ static void render_targets_init(void) {
                 continue;
             }
             case RENDER_TARGET_GRID: {
-                gs->render.render_targets[i] = RenderMakeTarget(gs->gw, gs->gh, VIEW_STATE_PIXELS, false);
+                gs->render.render_targets[i] = RenderMakeTarget(64, 64, VIEW_STATE_PIXELS, false);
                 continue;
             }
             case RENDER_TARGET_CONVERSION_PANEL: case RENDER_TARGET_OUTRO:
@@ -35,14 +35,6 @@ static void render_targets_init(void) {
             }
             case RENDER_TARGET_HAMMER: case RENDER_TARGET_HAMMER2: {
                 gs->render.render_targets[i] = RenderMakeTarget(gs->gw, gs->gh, VIEW_STATE_PIXELS, true);
-                continue;
-            }
-            case RENDER_TARGET_3D: {
-                gs->render.render_targets[i] = RenderMakeTargetEx(SCALE_3D*gs->game_width,
-                                                                  SCALE_3D*gs->game_width,
-                                                                  VIEW_STATE_SCREENSPACE,
-                                                                  false,
-                                                                  true);
                 continue;
             }
             case RENDER_TARGET_GLOW: case RENDER_TARGET_SHADOWS: {
