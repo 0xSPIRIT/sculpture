@@ -105,6 +105,7 @@ RENDERAPI Font *RenderLoadFont(const char *fp, int size) {
     return font;
 }
 
+#if 0
 RENDERAPI Texture RenderDuplicateTexture(Texture original) {
     Texture result;
     result.width = original.width;
@@ -125,6 +126,7 @@ RENDERAPI Texture RenderDuplicateTexture(Texture original) {
     
     return result;
 }
+#endif
 
 //~ Render Targets
 

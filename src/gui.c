@@ -723,6 +723,31 @@ static void gui_popup_draw(int target) {
 
         RenderTexture(target, &GetTexture(TEXTURE_TAB), null, &tab_icon);
     }
+    
+    int size = 32;
+    SDL_Rect speaker = {
+        gs->game_width - Scale(size) - Scale(8),
+        GUI_H + Scale(8),
+        Scale(size),
+        Scale(size)
+    };
+    u8 alpha = 255;
+    if (mouse_in_rect(speaker)) {
+        RenderTextureAlphaMod(&GetTexture(TEXTURE_SPEAKER), 255);
+        if (gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+            gs->pause_menu.active = true;
+        }
+    } else {
+        alpha = 100;
+        RenderTextureAlphaMod(&GetTexture(TEXTURE_SPEAKER), 100);
+    }
+    RenderTexture(target, &GetTexture(TEXTURE_SPEAKER), null, &speaker);
+    RenderColor(91, 91, 91, alpha);
+    speaker.x--;
+    speaker.y--;
+    speaker.w+=2;
+    speaker.h+=2;
+    RenderDrawRect(target, speaker);
 
     all_converters_draw(target);
     inventory_draw(target);

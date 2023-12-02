@@ -32,6 +32,13 @@ static inline int prof_end(int y) {
     return y += 30;
 }
 
+static inline bool mouse_in_rect(SDL_Rect rect) {
+    int mx = gs->input.real_mx;
+    int my = gs->input.real_my;
+    
+    return (mx >= rect.x && my >= rect.y && mx <= rect.x+rect.w && my <= rect.y+rect.h);
+}
+
 static inline SDL_Color rgb(u8 r, u8 g, u8 b) {
     SDL_Color result;
 

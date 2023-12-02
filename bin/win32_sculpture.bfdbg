@@ -1,10 +1,10 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\hammer.c", "d:\\dev\\sculpture\\src\\chisel.c", "d:\\dev\\sculpture\\src\\tooltip.c", "d:\\dev\\sculpture\\src\\recipes.c", "d:\\dev\\sculpture\\src\\win32_main.c"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"]
 
 [MainWindow]
-X = 0
+X = 94
 Y = 66
 Width = 1801
 Height = 894
@@ -24,90 +24,43 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "tooltip.c"
-TabWidth = 76.25851
+TabLabel = "SDL_render_d3d.c"
+TabWidth = 140.8163
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\tooltip.c"
-CursorPos = 2204
-VertPos = 1416.0
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c"
+CursorPos = 46152
+VertPos = 30816.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "recipes.c"
-TabWidth = 79.65987
+TabLabel = "SDL_render.c"
+TabWidth = 112.9252
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\recipes.c"
-CursorPos = 11153
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c"
+CursorPos = 137515
+VertPos = 100416.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "gui.c"
-TabWidth = 57.21089
+TabLabel = "SDL_dynapi_procs.h"
+TabWidth = 152.381
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\gui.c"
-CursorPos = 19059
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "hammer.c"
-TabWidth = 85.78232
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\hammer.c"
-CursorPos = 4893
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "effects.c"
-TabWidth = 76.25851
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\effects.c"
-CursorPos = 11713
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "level.c"
-TabWidth = 65.37415
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\level.c"
-CursorPos = 26501
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "win32_main.c"
-TabWidth = 106.8708
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\win32_main.c"
-CursorPos = 12014
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "game.c"
-TabWidth = 70.81633
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 18877
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"
+CursorPos = 27376
+VertPos = 8760.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "render.c"
-TabWidth = 76.25851
+TabLabel = "game.c"
+TabWidth = 80.27211
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\render.c"
-CursorPos = 9084
-VertPos = 6792.0
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "chisel.c"
-TabWidth = 71.4966
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\chisel.c"
-CursorPos = 23869
+FilePath = "d:\\dev\\sculpture\\src\\game.c"
+CursorPos = 7034
 
 [[MainDockingFrame.DockedWidgets]]
-RequestedWidth = 599.0
+RequestedWidth = 802.0
 RequestedHeight = 152.0
 Type = "DockingFrame"
 SplitType = 2
@@ -131,7 +84,7 @@ TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 335.0}, {Width = 760.0}, {Width = 253.0}]
-Items = ["gs.dt", "1/gs.dt", ""]
+Items = ["t", "surf", "rect", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"
@@ -181,8 +134,8 @@ Type = "BreakpointPanel"
 
 [[Breakpoints]]
 File = "d:\\dev\\sculpture\\src\\render.c"
-Line = 296
-Column = 8
+Line = 109
+Column = 4
 
 [[BookmarkFolders]]
 Title = ""

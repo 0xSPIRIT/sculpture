@@ -14,7 +14,6 @@ typedef struct {
     f32 acc, vel, jerk;
     
     Texture texture; // The texture on the plane
-    SDL_Surface *surf; // The surface version of teh texture.
 
     int t, hold;
     f32 t2;

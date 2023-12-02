@@ -60,6 +60,8 @@ typedef enum {
 typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
     
+    bool close_game; // Closes the game after the current frame.
+    
     // Some stupid hacky debugging variables used around the place.
     char func[64];
     f64 a; // global timer used for profiling, not used anywhere else
@@ -69,7 +71,7 @@ typedef struct Game_State {
     bool draw_fps;
     f64 highest_frametime;
     int timer;
-
+    
     bool needs_manual_fps_lock; // If the screen's refresh rate != 60, we need to manually do this.
 
     f64 dt; // Time taken for previous frame.
@@ -81,7 +83,7 @@ typedef struct Game_State {
     bool just_resized;
 
     bool web_clicked;
-    bool pause_menu_active;
+    Pause_Menu pause_menu;
 
     SDL_Color border_color;
 

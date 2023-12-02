@@ -52,3 +52,4 @@
 #include "3d.h"
 #include "titlescreen.h"
 #include "background.h"
+#include "pause_menu.h"

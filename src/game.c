@@ -37,6 +37,7 @@
 #include "background.c"
 #include "audio.c"
 #include "save.c"
+#include "pause_menu.c"
 
 static void game_resize(int h) {
     gs->gui.popup_y /= gs->gh*gs->S;
@@ -109,6 +110,8 @@ export void game_init(Game_State *state) {
 
     load_game();
 
+    pause_menu_init(&state->pause_menu);
+    
     gs->border_color = (SDL_Color){0,0,0};
 
     gs->render.view.x = 0;
@@ -204,6 +207,12 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
         }
     }
 #endif
+    
+    if (event->type == SDL_KEYDOWN) {
+        if (event->key.keysym.sym == SDLK_BACKSPACE) {
+            if (gs->input.keys[SDL_SCANCODE_LCTRL]) gs->draw_fps = !gs->draw_fps;
+        }
+    }
 
     int selected_tool = 0;
     if (event->type == SDL_KEYDOWN && gs->gamestate == GAME_STATE_PLAY && !gs->text_field.active) {
@@ -216,15 +225,9 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 } else if (gs->tutorial.active) {
                     tutorial_rect_close(null);
                 } else if (!gs->gui.popup && gs->levels[gs->level_current].state != LEVEL_STATE_OUTRO) {
-#ifndef __EMSCRIPTEN__
-                    gs->pause_menu_active = !gs->pause_menu_active;
-#endif
+                    gs->pause_menu.active = !gs->pause_menu.active;
                 }
                 break;
-            }
-            case SDLK_BACKSPACE: {
-                if (gs->input.keys[SDL_SCANCODE_LCTRL])
-                    gs->draw_fps = !gs->draw_fps;
             }
             case SDLK_BACKQUOTE: {
 #ifndef ALASKA_RELEASE_MODE
@@ -238,7 +241,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_SPACE: {
-                if (gs->pause_menu_active) {
+                if (gs->pause_menu.active) {
                     save_game();
                     is_running = false;
                 }
@@ -395,22 +398,6 @@ event_tick_end:
     return is_running;
 }
 
-static void pause_menu_draw(int target) {
-    Render_Text_Data data = {0};
-    
-    strcpy(data.identifier, "pause");
-    data.font = gs->fonts.font_times;
-    data.foreground = WHITE;
-    data.background = BLACK;
-    data.alignment = ALIGNMENT_CENTER;
-    data.render_type = TEXT_RENDER_LCD;
-    data.x = gs->game_width/2;
-    data.y = gs->game_height/2;
-    strcpy(data.str, "Paused - Press space to exit");
-    
-    RenderText(target, &data);
-}
-
 static void audio_setup_channel_volumes(void) {
     if (gs->audio_channel_volumes[AUDIO_CHANNEL_CHISEL] == 0) {
         gs->audio_channel_volumes[AUDIO_CHANNEL_CHISEL] = AUDIO_CHISEL_VOLUME;
@@ -508,8 +495,10 @@ export void game_run(Game_State *state) {
                                null,
                                &dst);
             } else {
-                if (gs->pause_menu_active) {
-                    pause_menu_draw(RENDER_TARGET_MASTER);
+                if (gs->pause_menu.active) {
+                    RenderColor(0, 0, 0, 255);
+                    RenderClear(RENDER_TARGET_MASTER);
+                    pause_menu_draw(RENDER_TARGET_MASTER, &gs->pause_menu);
                 } else {
                     //int y = 2*gs->game_height/3;
                     

@@ -498,6 +498,8 @@ static int win32_main(void) {
 
         SDL_SetWindowTitle(gs->window, title);
 #endif
+        
+        if (gs->close_game) break;
     }
 
     game_deinit(gs);

@@ -46,16 +46,17 @@ static void object_activate_new(Object3D *obj) {
     background_draw(target, &gs->background, -32, -32);
     grid_array_draw(target, 32, gs->grid, 255);
     
-    obj->surf = SDL_CreateRGBSurface(0, 64, 64, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+    SDL_Surface *surf = SDL_CreateRGBSurface(0, 64, 64, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
     SDL_RenderReadPixels(gs->renderer,
                          null,
                          ALASKA_PIXELFORMAT,
-                         obj->surf->pixels,
-                         obj->surf->pitch);
+                         surf->pixels,
+                         surf->pitch);
     
     SDL_SetRenderTarget(gs->renderer, prev);
     
-    obj->texture = RenderCreateTextureFromSurface(obj->surf);
+    obj->texture = RenderCreateTextureFromSurface(surf);
+    SDL_FreeSurface(surf);
 }
 
 static void object_draw(Object3D *obj) {
