@@ -286,8 +286,9 @@ void *_push_array(Memory_Arena *memory, u64 num, u64 size_individual, const char
 //       This is related to audio, and setting the volume of each of the
 //       channels every frame.
 static void assign_audio_channel_volumes(void) {
-    Mix_Volume(AUDIO_CHANNEL_CHISEL, gs->audio_channel_volumes[AUDIO_CHANNEL_CHISEL]);
-    Mix_Volume(AUDIO_CHANNEL_GUI,    gs->audio_channel_volumes[AUDIO_CHANNEL_GUI]); 
-    Mix_Volume(AUDIO_CHANNEL_MUSIC,  gs->audio_channel_volumes[AUDIO_CHANNEL_MUSIC]); 
-    Mix_Volume(AUDIO_CHANNEL_AMBIENCE, gs->audio_channel_volumes[AUDIO_CHANNEL_AMBIENCE]); 
+    f32 master = gs->pause_menu.slider;
+    Mix_Volume(AUDIO_CHANNEL_CHISEL,   master * gs->audio_channel_volumes[AUDIO_CHANNEL_CHISEL]);
+    Mix_Volume(AUDIO_CHANNEL_GUI,      master * gs->audio_channel_volumes[AUDIO_CHANNEL_GUI]); 
+    Mix_Volume(AUDIO_CHANNEL_MUSIC,    master * gs->audio_channel_volumes[AUDIO_CHANNEL_MUSIC]); 
+    Mix_Volume(AUDIO_CHANNEL_AMBIENCE, master * gs->audio_channel_volumes[AUDIO_CHANNEL_AMBIENCE]); 
 }

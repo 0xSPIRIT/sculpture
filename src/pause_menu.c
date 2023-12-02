@@ -1,7 +1,8 @@
+// Look at assign_audio_channel_volumes for where the master volume is set
 static void pause_menu_init(Pause_Menu *menu) {
     menu->active = false;
     menu->slider = INITIAL_VOLUME;
-    Mix_MasterVolume(MIX_MAX_VOLUME * menu->slider);
+    //Mix_MasterVolume(MIX_MAX_VOLUME * menu->slider);
 }
 
 static void pause_menu_draw(int target, Pause_Menu *menu) {
@@ -74,7 +75,7 @@ static void pause_menu_draw(int target, Pause_Menu *menu) {
         //menu->slider = (f32)(mx - (width/2-size/2)) / working_size;
         menu->slider += (f32)dx / working_size;
         menu->slider = clampf(menu->slider, 0, 1);
-        Mix_MasterVolume(MIX_MAX_VOLUME * menu->slider);
+        //Mix_MasterVolume(MIX_MAX_VOLUME * menu->slider);
     }
     
     RenderTextQuick(target,
