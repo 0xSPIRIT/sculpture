@@ -3,7 +3,8 @@
 typedef enum Effect_Type {
     EFFECT_NONE,
     EFFECT_SNOW,
-    EFFECT_RAIN
+    EFFECT_RAIN,
+    EFFECT_WIND
 } Effect_Type;
 
 typedef struct Effect_Particle {

@@ -105,7 +105,7 @@ static void levels_setup(void) {
     level_add("Transformation",
               DATA_DIR "lvl/desired/level 4.png",
               DATA_DIR "lvl/initial/level 4.png",
-              EFFECT_NONE);
+              EFFECT_WIND);
     level_add("Reformation",
               DATA_DIR "lvl/desired/level 5.png",
               DATA_DIR "lvl/initial/level 5.png",
@@ -113,15 +113,15 @@ static void levels_setup(void) {
     level_add("Monster",
               DATA_DIR "lvl/desired/level 6.png",
               DATA_DIR "lvl/initial/level 6.png",
-              EFFECT_NONE);
+              EFFECT_WIND);
     level_add("Monster (II)",
               DATA_DIR "lvl/desired/level 7.png",
               DATA_DIR "lvl/initial/level 7.png",
-              EFFECT_NONE);
+              EFFECT_WIND);
     level_add("Metamorphosis",
               DATA_DIR "lvl/desired/level 8.png",
               DATA_DIR "lvl/initial/level 8.png",
-              EFFECT_NONE);
+              EFFECT_WIND);
     level_add("Yearning",
               DATA_DIR "lvl/desired/level 9.png",
               DATA_DIR "lvl/initial/level 9.png",
@@ -139,8 +139,10 @@ static void levels_setup(void) {
 static void goto_level(int lvl) {
     gs->level_current = lvl;
     
+    // Don't ask me the difference between these two.
     gs->level_completed = false;
-
+    gs->levels[lvl].done = false;
+    
     converter_gui_init();
 
     gs->render.view.x = gs->render.to.x = 0;
@@ -866,47 +868,19 @@ static void level_draw_outro_or_play(Level *level) {
 
     // The meat
     
-    //prof_start("lighting_tick");
     lighting_tick(&gs->lighting);
-    //y = prof_end(y);
-    
-    //prof_start("background_draw");
     background_draw(target, &gs->background, 64, 0);
-    //y = prof_end(y);
-    
-    //prof_start("effect_draw");
     effect_draw    (target, &gs->current_effect, true);
-    //y = prof_end(y);
-    
-    //prof_start("draw_rain_splashes");
     draw_rain_splashes(target, &gs->current_effect.rain);
-    //y = prof_end(y);
-    
-    //prof_start("grid_draw");
     grid_draw      (target);
-    //y = prof_end(y);
-    
-    //prof_start("game_draw_table");
     game_draw_table(target);
-    //y = prof_end(y);
-    
-    //prof_start("dust_grid_run");
     dust_grid_run  (target);
-    //y = prof_end(y);
-    
-    //prof_start("grid_draw_glow");
     grid_draw_glow (target);
-    //y = prof_end(y);
 
     switch (gs->current_tool) {
         case TOOL_CHISEL_SMALL: case TOOL_CHISEL_MEDIUM: case TOOL_CHISEL_LARGE: {
-            //prof_start("chisel_draw");
             chisel_draw(target, gs->chisel);
-            //y = prof_end(y);
-            
-            //prof_start("hammer_draw");
             hammer_draw(target, &gs->hammer);
-            //y = prof_end(y);
             break;
         }
         case TOOL_PLACER: {
@@ -916,12 +890,7 @@ static void level_draw_outro_or_play(Level *level) {
         }
     }
 
-    //prof_start("draw_objects");
     draw_objects(target);
-    //y = prof_end(y);
-    
-    // This eats up 5ms in the web build.
-    //RenderClear(RENDER_TARGET_MASTER);
 
     SDL_Rect src = {
         0,
@@ -942,16 +911,12 @@ static void level_draw_outro_or_play(Level *level) {
         dst.x -= gs->game_width;
     }
 
-    //prof_start("RenderPixelGridToMaster");
     RenderTargetToTarget(RENDER_TARGET_MASTER,
                          RENDER_TARGET_PIXELGRID,
                          &src,
                          &dst);
-    //y = prof_end(y);
 
-    //prof_start("draw_grid_outline");
     draw_grid_outline(RENDER_TARGET_MASTER);
-    //y = prof_end(y);
     
     if (level->state == LEVEL_STATE_OUTRO) {
         level_draw_outro(RENDER_TARGET_MASTER, level);

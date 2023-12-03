@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\wind.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"]
 
 [MainWindow]
 X = 0
@@ -24,13 +24,31 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
+Active = true
+TabLabel = "wind.c"
+TabWidth = 76.19048
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\wind.c"
+CursorPos = 899
+VertPos = 480.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "gui.c"
+TabWidth = 57.21089
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\gui.c"
+CursorPos = 510
+VertPos = 192.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_render_d3d.c"
 TabWidth = 131.3605
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c"
 CursorPos = 46152
-VertPos = 30816.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_render.c"
@@ -49,13 +67,12 @@ FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"
 CursorPos = 27376
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-Active = true
 TabLabel = "game.c"
 TabWidth = 70.81633
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 161
+CursorPos = 183
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0
@@ -82,7 +99,7 @@ TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 335.0}, {Width = 760.0}, {Width = 253.0}]
-Items = ["t", "surf", "rect", ""]
+Items = ["t", "surf", "rect", "is_exactly", "gs.levels[level].done", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"

@@ -36,6 +36,7 @@
 #include "titlescreen.c"
 #include "background.c"
 #include "audio.c"
+#include "wind.c"
 #include "save.c"
 #include "pause_menu.c"
 
@@ -109,6 +110,7 @@ export void game_init(Game_State *state) {
     gs = state;
 
     load_game();
+    setup_winds(&state->wind);
 
     pause_menu_init(&state->pause_menu);
     
@@ -254,6 +256,9 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
 #endif
                 break;
             }
+            //case SDLK_MINUS: {
+                //wind_stream_active(&gs->wind);
+            //} break;
             case SDLK_RETURN: {
 #ifndef __EMSCRIPTEN__
                 if (gs->credits.state == CREDITS_END) is_running = false;
@@ -310,6 +315,16 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 undo();
                 break;
             }
+            case SDLK_EQUALS: {
+                Wind_Stream stream = load_wind_stream(DATA_DIR "wind1.png");
+                Log("(SDL_Point){\n");
+                for (int i = 0; i < stream.point_count; i++) {
+                    Log("    { %d, %d }", stream.points[i].x, stream.points[i].y);
+                    if (i < stream.point_count-1) Log(",");
+                    Log("\n");
+                }
+                Log("}\nCount: %d\n", stream.point_count);
+            } break;
             case SDLK_t: {
 //#ifndef ALASKA_RELEASE_MODE
                 grid_set_to_desired();

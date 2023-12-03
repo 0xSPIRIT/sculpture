@@ -11,10 +11,10 @@ static void background_draw(int target, Background *bg, int xoff, int yoff) {
 
     int level = gs->level_current+1;
 
-    if (level == 11) {
-        background = TEXTURE_BG_1;
-    } else if (level >= 5) {
+    if (level >= 4 && level <= 7) {
         background = TEXTURE_BG_2;
+    } else if (level == 11) {
+        background = TEXTURE_BG_1;
     }
 
     if (background == 0) return;

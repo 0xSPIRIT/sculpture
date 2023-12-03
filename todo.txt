@@ -4,6 +4,9 @@ TODO
     - Music 3: Gymnopedie-esque
     - Ending Theme: A solemn acceptance
 
+  - Make escape work properly when confirmation popups are
+    active - don't make it pause menu at that time
+
   - Add podldodldodlodpolpdlpdol sound to Destroy Level & Take Materials
 
   - Bake-in the background vignette.

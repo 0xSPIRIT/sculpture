@@ -320,6 +320,9 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
         return;
 
     switch (effect->type) {
+        case EFFECT_WIND: {
+            wind_streams_draw(target, &gs->wind);
+        } break;
         case EFFECT_SNOW: {
             for (int i = 0; i < effect->particle_count; i++) {
                 Effect_Particle *particle = &effect->particles[i];
@@ -414,4 +417,5 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
         }
         default: break;
     }
+    
 }

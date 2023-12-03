@@ -7,7 +7,7 @@ static void audio_set_music_accordingly(void) {
 
     if (level_number <= 3) {
         audio_set_music(MUSIC_FRONTIER);
-    } else if (level_number >= 5 && level_number < 7) {
+    } else if (level_number >= 4 && level_number < 7 && level_number != 3) {
         audio_set_music(MUSIC_PHOTOGRAPH);
     } else if (level_number == 7 && gs->overlay.changes.music_started) {
         if (gs->level_completed) {
