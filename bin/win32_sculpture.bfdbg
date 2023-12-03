@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\wind.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\wind.c", "d:\\dev\\sculpture\\src\\shared.h", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\SDL_video.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\windows\\SDL_windowsmessagebox.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"]
 
 [MainWindow]
 X = 0
@@ -24,14 +24,41 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "shared.h"
+TabWidth = 88.43537
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\shared.h"
+CursorPos = 5597
+VertPos = 5232.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_video.c"
+TabWidth = 106.8027
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\SDL_video.c"
+CursorPos = 130198
+VertPos = 106680.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_windowsmessagebox.c"
+TabWidth = 196.5986
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\windows\\SDL_windowsmessagebox.c"
+CursorPos = 32059
+VertPos = 22440.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
 TabLabel = "wind.c"
-TabWidth = 76.19048
+TabWidth = 66.7347
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\wind.c"
-CursorPos = 899
-VertPos = 480.0
+CursorPos = 4813
+VertPos = 3576.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "gui.c"
@@ -72,7 +99,7 @@ TabWidth = 70.81633
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 183
+CursorPos = 8067
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0
@@ -99,7 +126,7 @@ TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 335.0}, {Width = 760.0}, {Width = 253.0}]
-Items = ["t", "surf", "rect", "is_exactly", "gs.levels[level].done", ""]
+Items = ["instance.range_start", "instance.range_end", "stream.point_count", "i", "instance->range_start", "instance.range_end", "instance.time", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"
@@ -154,6 +181,9 @@ Column = 4
 
 [[BookmarkFolders]]
 Title = ""
+
+[DebuggerDisplayTypes.""]
+IntDisplayType = "Decimal"
 
 [OutputFilters]
 ModuleLoadMessages = false

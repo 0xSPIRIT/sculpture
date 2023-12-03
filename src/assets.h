@@ -43,7 +43,7 @@ typedef struct Audio {
     // Chunks
     Sound ambience_rain;
     Sound ambience_rain_reversed;
-    Sound ambience1;
+    Sound ambience1, ambience_wind;
 
     Sound place;
     Sound suck;
@@ -80,7 +80,7 @@ enum {
 
     TEXTURE_CHISEL_SMALL,
     TEXTURE_CHISEL_SMALL_DIAGONAL,
-    
+
     TEXTURE_CHISEL_MEDIUM,
     TEXTURE_CHISEL_MEDIUM_DIAGONAL,
 

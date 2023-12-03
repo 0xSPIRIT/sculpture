@@ -13,10 +13,12 @@ enum {
 
 typedef struct Wind_Stream_Instance {
     Wind_Stream *stream;
-    int range_start, range_end;
+    f32 range_start, range_end;
+    f32 speed;
+    f32 time;
     int state; // 0 = idle, 1 = range_end++, 2 = range_start++
     bool active;
-    int x, y;
+    f32 x, y;
 } Wind_Stream_Instance;
 
 typedef struct Wind {

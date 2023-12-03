@@ -209,6 +209,7 @@ static void audio_init(Audio *audio) {
     f64 scale = 1.5;
 
     audio->ambience1     = load_sound(DATA_DIR "audio/ambience_snow.ogg", 9.0/20.0);
+    audio->ambience_wind = load_sound(DATA_DIR "audio/ambience_wind.ogg", 0.6);
     audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg", 1);
     audio->ambience_rain_reversed = load_sound(DATA_DIR "audio/rain_reversed.ogg", 1);
     audio->music0        = load_sound(DATA_DIR "audio/music0.ogg",    0.75);
@@ -221,7 +222,7 @@ static void audio_init(Audio *audio) {
     audio->suck  = load_sound(DATA_DIR "audio/tap.ogg", scale*2);
 
     audio->pip = load_sound(DATA_DIR "audio/pip.ogg", scale*1);
-    
+
     f64 chisel_volume = 0.75;
 
     for (int i = 0; i < 6; i++) {

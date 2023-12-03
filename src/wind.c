@@ -32,10 +32,10 @@ void setup_winds(Wind *wind) {
 
 SDL_Color wind_get_pixel(SDL_Surface *surf, int x, int y) {
     SDL_Color result = {0};
-    
+
     int bpp = surf->format->BytesPerPixel;
     int w = surf->w;
-    
+
     if (bpp == 1) {
         u8 *pixels = (u8*)surf->pixels;
         u8 a = pixels[x+y*w];
@@ -55,18 +55,18 @@ SDL_Color wind_get_pixel(SDL_Surface *surf, int x, int y) {
                     &result.b,
                     &result.a);
     }
-    
+
     return result;
 }
 
 Wind_Stream load_wind_stream(const char *fp) {
     Wind_Stream stream = {0};
-    
+
     SDL_Surface *surf = IMG_Load(fp);
-    
+
     int w = surf->w;
     int h = surf->h;
-    
+
     while (true) {
         bool found = false;
         for (int i = 0; i < w*h; i++) {
@@ -78,9 +78,9 @@ Wind_Stream load_wind_stream(const char *fp) {
         }
         if (!found) break;
     }
-    
+
     SDL_FreeSurface(surf);
-    
+
     return stream;
 }
 
@@ -93,7 +93,8 @@ void wind_stream_active(Wind *wind) {
         .state = WIND_STREAM_GROW,
         .active = true,
         .x = rand()%(gs->gw-16),
-        .y = rand()%(gs->gh-8)
+        .y = rand()%(gs->gh-8),
+        .speed = 0
     };
 }
 
@@ -101,12 +102,12 @@ void wind_streams_draw(int target, Wind *wind) {
     if (!gs->paused || gs->step_one) {
         if (wind->timer == 0) {
             wind_stream_active(&gs->wind);
-            wind->timer = 10+rand()%60;
+            wind->timer = 10+rand()%20;
         } else {
             wind->timer--;
         }
     }
-    
+
     for (int i = 0; i < wind->instance_count; i++) {
         bool done = wind_stream_draw(target, &wind->instances[i]);
         if (done) {
@@ -122,37 +123,49 @@ void wind_streams_draw(int target, Wind *wind) {
 // Returns when finished.
 bool wind_stream_draw(int target, Wind_Stream_Instance *instance) {
     Wind_Stream *stream = instance->stream;
-    
+
     if (!gs->paused || gs->step_one) {
         // Tick
         switch (instance->state) {
             case WIND_STREAM_IDLE: {
             } break;
             case WIND_STREAM_GROW: {
-                instance->range_end++;
-                if (instance->range_end == stream->point_count-1) {
+                instance->range_end += instance->speed;
+                instance->speed += 0.03;
+                if (instance->range_end >= stream->point_count-1) {
+                    instance->range_end = stream->point_count-1;
                     instance->state = WIND_STREAM_SHRINK;
+                    instance->speed = 0.4;
                 }
             } break;
             case WIND_STREAM_SHRINK: {
-                instance->range_start++;
-                if (instance->range_start == stream->point_count-1+1) { // We want to display the one last pixel before stopping.
+                instance->range_start += instance->speed;
+                instance->speed += 0.02;
+                if (instance->range_start >= stream->point_count-1+1) { // We want to display the one last pixel before stopping.
                     memset(instance, 0, sizeof(Wind_Stream_Instance));
                     return true;
+                } else if (instance->range_start >= stream->point_count-1) {
+                    instance->range_start = stream->point_count-1;
                 }
             } break;
         }
+
+        instance->time += 1.0/60.0;
     }
-    
+
     Assert(instance->range_end < stream->point_count);
     Assert(instance->range_start < stream->point_count);
-    
-    for (int i = instance->range_start; i <= instance->range_end; i++) {
-        RenderColor(255, 255, 255, 30+(100+i*i*i*i+instance->x)%32);
+
+    for (int i = (int)instance->range_start; i <= (int)instance->range_end; i++) {
+        RenderColor(255, 255, 255, (100+i*i*i*i+(int)instance->x)%50);
         RenderPointRelative(target,
-                            stream->points[i].x+instance->x,
-                            stream->points[i].y+instance->y);
+                            round(stream->points[i].x+instance->x),
+                            round(stream->points[i].y+instance->y));
     }
-    
+
+    f32 k = sin(instance->time*2.5);
+    k *= k;
+    instance->x -= k;
+
     return false;
 }

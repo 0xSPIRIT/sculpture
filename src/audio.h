@@ -23,6 +23,7 @@ enum {
 typedef enum {
     AMBIENCE_NONE, // no sound
     AMBIENCE_NORMAL,
+    AMBIENCE_WIND,
     AMBIENCE_RAIN,
     AMBIENCE_RAIN_REVERSED
 } AmbienceType;
@@ -42,7 +43,7 @@ typedef struct {
     MusicType music;
     int music_volume;
     bool music_end;
-    
+
     // used for audio_lower_channel_for_ms
     f32 fader; // 0.0 to 1.0
     int old_volume;

@@ -32,8 +32,16 @@ static void audio_set_ambience_accordingly(void) {
         return;
     }
 
-    if (level->state == LEVEL_STATE_NARRATION || level->effect_type == EFFECT_SNOW || level->effect_type == EFFECT_NONE) {
+    if (level->state == LEVEL_STATE_NARRATION ||
+        level->effect_type == EFFECT_SNOW ||
+        level->effect_type == EFFECT_NONE)
+    {
         audio_set_ambience(AMBIENCE_NORMAL);
+        return;
+    }
+
+    if (level->effect_type == EFFECT_WIND) {
+        audio_set_ambience(AMBIENCE_WIND);
         return;
     }
 
@@ -69,6 +77,9 @@ static void audio_set_ambience(AmbienceType ambience) {
             case AMBIENCE_RAIN: {
                 play_sound(AUDIO_CHANNEL_AMBIENCE, gs->audio.ambience_rain, -1);
             } break;
+            case AMBIENCE_WIND: {
+                play_sound(AUDIO_CHANNEL_AMBIENCE, gs->audio.ambience_wind, -1);
+            } break;
             case AMBIENCE_RAIN_REVERSED: {
                 play_sound(AUDIO_CHANNEL_AMBIENCE, gs->audio.ambience_rain_reversed, -1);
             } break;
@@ -100,7 +111,7 @@ static void audio_halt_music(void) {
 
 static void audio_set_music(MusicType music) {
     Audio_Handler *handler = &gs->audio_handler;
-    
+
     //if (handler->music_end) return;
 
     if (handler->music != music) {
