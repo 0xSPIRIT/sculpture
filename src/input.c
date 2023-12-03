@@ -80,5 +80,7 @@ static void input_tick(Game_State *state) {
 
 static void input_tick_mouse(Game_State *state, SDL_Event *event) {
     Input *in = &state->input;
+    in->em_dx = event->motion.xrel;
+    in->em_dy = event->motion.yrel;
     input_set_mouse_position(in, in->real_mx + event->motion.xrel, in->real_my + event->motion.yrel);
 }

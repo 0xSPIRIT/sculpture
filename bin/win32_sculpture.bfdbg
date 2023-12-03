@@ -4,7 +4,7 @@ LastPlatform = "Win64"
 RecentFilesList = ["d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"]
 
 [MainWindow]
-X = 94
+X = 0
 Y = 66
 Width = 1801
 Height = 894
@@ -25,7 +25,7 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_render_d3d.c"
-TabWidth = 140.8163
+TabWidth = 131.3605
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c"
@@ -34,30 +34,28 @@ VertPos = 30816.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_render.c"
-TabWidth = 112.9252
+TabWidth = 103.4694
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c"
 CursorPos = 137515
-VertPos = 100416.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_dynapi_procs.h"
-TabWidth = 152.381
+TabWidth = 142.9252
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"
 CursorPos = 27376
-VertPos = 8760.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
 TabLabel = "game.c"
-TabWidth = 80.27211
+TabWidth = 70.81633
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 7034
+CursorPos = 161
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0

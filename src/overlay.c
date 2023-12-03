@@ -275,7 +275,8 @@ static void overlay_swap_tick(void) {
             !gs->gui.popup &&
             !gs->recipes.active)
         {
-            overlay->changes.temp += 0.5f;
+            overlay->changes.temp += 1;
+            //overlay->changes.temp += 7.5f;
         }
     }
 
@@ -284,6 +285,10 @@ static void overlay_swap_tick(void) {
     if (overlay->changes.temp >= c) {
         overlay_swap_to_next();
         overlay->changes.temp = 0;
+    }
+    
+    if (!overlay->changes.music_started && overlay->changes.index == overlay->changes.count-2) {
+        overlay->changes.music_started = true; // Check audio.c
     }
 
     overlay->changes.alpha = overlay->changes.temp/c;

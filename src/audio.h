@@ -12,12 +12,11 @@
 
 enum {
     AUDIO_CHANNEL_NONE,
-    AUDIO_CHANNEL_WOOSH,
     AUDIO_CHANNEL_CHISEL,
-    AUDIO_CHANNEL_NARRATOR,
     AUDIO_CHANNEL_GUI,
     AUDIO_CHANNEL_AMBIENCE,
     AUDIO_CHANNEL_MUSIC,
+    AUDIO_CHANNEL_MISC,
     AUDIO_CHANNEL_COUNT
 };
 
@@ -30,9 +29,10 @@ typedef enum {
 
 typedef enum {
     MUSIC_NONE,
-    MUSIC_FARCE,
+    MUSIC_FRONTIER,
     MUSIC_EXPLITIVE,
-    MUSIC_PHOTOGRAPH
+    MUSIC_PHOTOGRAPH,
+    MUSIC_WEIRD
 } MusicType;
 
 typedef struct {
@@ -42,7 +42,7 @@ typedef struct {
     MusicType music;
     int music_volume;
     bool music_end;
-
+    
     // used for audio_lower_channel_for_ms
     f32 fader; // 0.0 to 1.0
     int old_volume;

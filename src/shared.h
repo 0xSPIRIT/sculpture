@@ -185,6 +185,7 @@ typedef struct Game_State {
 
     Level levels[LEVEL_COUNT];
     int level_current, level_count, new_level;
+    bool level_completed;
 
     GUI gui;
     SDL_Texture *gui_texture;
@@ -291,4 +292,5 @@ static void assign_audio_channel_volumes(void) {
     Mix_Volume(AUDIO_CHANNEL_GUI,      master * gs->audio_channel_volumes[AUDIO_CHANNEL_GUI]); 
     Mix_Volume(AUDIO_CHANNEL_MUSIC,    master * gs->audio_channel_volumes[AUDIO_CHANNEL_MUSIC]); 
     Mix_Volume(AUDIO_CHANNEL_AMBIENCE, master * gs->audio_channel_volumes[AUDIO_CHANNEL_AMBIENCE]); 
+    Mix_Volume(AUDIO_CHANNEL_MISC, master * MIX_MAX_VOLUME);
 }

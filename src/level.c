@@ -43,8 +43,10 @@ static void play_level_end_sound(int level) {
     } else {
         sound = &gs->audio.macabre;
     }
+    
+    gs->level_completed = true;
 
-    play_sound(AUDIO_CHANNEL_GUI, *sound, 0);
+    play_sound(AUDIO_CHANNEL_MISC, *sound, 0);
 }
 
 static int level_add(const char *name, const char *desired_image, const char *initial_image, int effect_type) {
@@ -136,6 +138,8 @@ static void levels_setup(void) {
 
 static void goto_level(int lvl) {
     gs->level_current = lvl;
+    
+    gs->level_completed = false;
 
     converter_gui_init();
 

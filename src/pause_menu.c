@@ -72,6 +72,9 @@ static void pause_menu_draw(int target, Pause_Menu *menu) {
     
     if (menu->holding_slider) {
         int dx = gs->input.real_mx - gs->input.real_pmx;
+#ifdef __EMSCRIPTEN__
+        dx = gs->input.em_dx;
+#endif
         //menu->slider = (f32)(mx - (width/2-size/2)) / working_size;
         menu->slider += (f32)dx / working_size;
         menu->slider = clampf(menu->slider, 0, 1);

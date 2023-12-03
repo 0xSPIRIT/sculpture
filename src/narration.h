@@ -65,7 +65,7 @@
 "With no hesitation, Max picked up his chisel.\n"\
 
 #define NARRATION_LEVEL_8 \
-"At the end he should be proud, but how could he?\n"\
+"At the end he should've been proud, but how could he?\n"\
 "Max turned away pointedly, his chisel clattering\r"\
 "to the hardwood floor in contempt.\n"\
 "His eyes flinched in an instinctual repulsion.\n"\
@@ -77,7 +77,7 @@
 "this is all he could have settled for?\n"\
 "A bastardized fraction of what it could have been--\r"\
 "No, SHOULD have been?\n"\
-"Max, in a fit of rage, clenched the sculpture in hands\r"\
+"Max, in a fit of rage, clenched the sculpture in his hands\r"\
 "and smashes it to the floor, chucking shards of stone\r"\
 "all across his workshop.\n"\
 "\"I'll never make this mistake again,\"\r"\

@@ -190,6 +190,9 @@ static void em_mainloop(void *arg) {
         focuscanvas();
         gs->test = false;
     }
+    
+    data->game_state->input.em_dx = 0;
+    data->game_state->input.em_dy = 0;
 
     while (SDL_PollEvent(&event)) {
         bool should_continue = game_handle_event(data->game_state, &event);

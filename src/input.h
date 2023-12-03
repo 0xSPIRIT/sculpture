@@ -16,6 +16,8 @@ typedef struct Input {
     int real_pmx, real_pmy;
     u32 mouse;
     u8 *keys;
+    
+    int em_dx, em_dy;
 
     u8 keys_pressed[SDL_NUM_SCANCODES];
     u8 keys_released[SDL_NUM_SCANCODES];
