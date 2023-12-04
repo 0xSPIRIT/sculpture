@@ -24,3 +24,4 @@ Things to Remember When Doing a Release Build
   - Turn on music
   - Turn on tutorials
   - Turn on narration
+  - Remove sdlk_h for reloading textures

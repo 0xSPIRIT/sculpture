@@ -49,6 +49,8 @@ typedef struct {
     int old_volume;
     int time;
     bool fade_initted, waiting;
+
+    int channel_volumes[AUDIO_CHANNEL_COUNT];
 } Audio_Handler;
 
 typedef struct {

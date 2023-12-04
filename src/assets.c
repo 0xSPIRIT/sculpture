@@ -103,10 +103,7 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_OK_BUTTON) = RenderLoadTexture("buttons/tutorial_ok.png");
     GetTexture(TEXTURE_CHISEL_HAMMER) = RenderLoadTexture("hammer.png");
 
-    GetTexture(TEXTURE_BG_0) = RenderLoadTexture("bg_0.png");
-    GetTexture(TEXTURE_BG_1) = RenderLoadTexture("bg_1.png");
-    GetTexture(TEXTURE_BG_2) = RenderLoadTexture("bg_2.png");
-    GetTexture(TEXTURE_BG_3) = RenderLoadTexture("bg_3.png");
+    textures_load_backgrounds(textures, true);
 
     struct File_To_Index {
         const char *filename;
@@ -258,7 +255,7 @@ static void audio_init(Audio *audio) {
 
     audio->accept = load_sound(DATA_DIR "audio/accept.ogg", scale*0.75);
 
-    assign_audio_channel_volumes();
+    assign_channel_volumes(&gs->pause_menu, &gs->audio_handler);
 }
 
 // Do we really have to do this? Aren't all resources freed on exit?

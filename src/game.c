@@ -113,7 +113,7 @@ export void game_init(Game_State *state) {
     setup_winds(&state->wind);
 
     pause_menu_init(&state->pause_menu);
-    
+
     gs->border_color = (SDL_Color){0,0,0};
 
     gs->render.view.x = 0;
@@ -122,7 +122,7 @@ export void game_init(Game_State *state) {
     gs->render.view.h = gs->game_height-GUI_H;
 
     gs->show_tutorials = true;
-    
+
     levels_setup();
     previews_load();
     goto_level(gs->level_current);
@@ -150,14 +150,14 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
         save_game();
         is_running = false;
     }
-    
+
 #if SIMULATE_MOUSE
     if (event->type == SDL_MOUSEMOTION) {
         input_tick_mouse(gs, event);
         goto event_tick_end;
     }
 #endif
-    
+
     if (event->type == SDL_WINDOWEVENT && event->window.event == SDL_WINDOWEVENT_RESIZED) {
         gs->real_width = event->window.data1;
         gs->real_height = event->window.data2;
@@ -209,7 +209,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
         }
     }
 #endif
-    
+
     if (event->type == SDL_KEYDOWN) {
         if (event->key.keysym.sym == SDLK_BACKSPACE) {
             if (gs->input.keys[SDL_SCANCODE_LCTRL]) gs->draw_fps = !gs->draw_fps;
@@ -302,6 +302,9 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
+            case SDLK_h: { // TODO: Remove this on build
+                textures_load_backgrounds(&gs->textures, false);
+            } break;
             case SDLK_4: {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     set_text_field("Output current grid to image:", "../", level_output_to_png);
@@ -335,13 +338,13 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 c = &gs->grid[input->mx+input->my*gs->gw];
                 char name[256] = {0};
                 get_name_from_type(c->type, name);
-                
+
                 int obj = c->object;
                 if (obj == -1) obj = 0;
-                
+
                 Assert(obj != -1);
-                
-                
+
+
                 Log("Cell %d, %d: Pos: (%f, %f), Type: %s, ID: %d, Rand: %d, Object: %d, Vx: %f, Vy: %f\n",
                     input->mx,
                     input->my,
@@ -392,45 +395,45 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 selected_tool = 1;
                 break;
             }
-            
+
             case SDLK_F1: case SDLK_F2: case SDLK_F3: case SDLK_F4: case SDLK_F5: {
                 gs->current_placer = event->key.keysym.sym - SDLK_F1;
                 break;
             }
         }
     }
-    
+
 #ifdef __EMSCRIPTEN__
 event_tick_end:
 #endif
     text_field_tick();
-    
+
     if (selected_tool) {
         gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
         gs->gui.tool_buttons[gs->current_tool]->active = true;
     }
-    
+
     return is_running;
 }
 
 static void audio_setup_channel_volumes(void) {
-    if (gs->audio_channel_volumes[AUDIO_CHANNEL_CHISEL] == 0) {
-        gs->audio_channel_volumes[AUDIO_CHANNEL_CHISEL] = AUDIO_CHISEL_VOLUME;
-        gs->audio_channel_volumes[AUDIO_CHANNEL_GUI] = AUDIO_GUI_VOLUME;
-        gs->audio_channel_volumes[AUDIO_CHANNEL_MUSIC] = AUDIO_MUSIC_VOLUME;
-        gs->audio_channel_volumes[AUDIO_CHANNEL_AMBIENCE] = AUDIO_AMBIENCE_VOLUME;
+    if (gs->audio_handler.channel_volumes[AUDIO_CHANNEL_CHISEL] == 0) {
+        gs->audio_handler.channel_volumes[AUDIO_CHANNEL_CHISEL] = AUDIO_CHISEL_VOLUME;
+        gs->audio_handler.channel_volumes[AUDIO_CHANNEL_GUI] = AUDIO_GUI_VOLUME;
+        gs->audio_handler.channel_volumes[AUDIO_CHANNEL_MUSIC] = AUDIO_MUSIC_VOLUME;
+        gs->audio_handler.channel_volumes[AUDIO_CHANNEL_AMBIENCE] = AUDIO_AMBIENCE_VOLUME;
     }
-    
+
 #ifndef ALASKA_RELEASE_MODE
     Input *in = &gs->input;
-    
+
     if (in->keys[SDL_SCANCODE_F1]) gs->channel_editing = AUDIO_CHANNEL_CHISEL;
     if (in->keys[SDL_SCANCODE_F2]) gs->channel_editing = AUDIO_CHANNEL_GUI;
     if (in->keys[SDL_SCANCODE_F3]) gs->channel_editing = AUDIO_CHANNEL_MUSIC;
     if (in->keys[SDL_SCANCODE_F4]) gs->channel_editing = AUDIO_CHANNEL_AMBIENCE;
     if (in->keys[SDL_SCANCODE_ESCAPE]) gs->channel_editing = 0;
-    
-    int *volume = &gs->audio_channel_volumes[gs->channel_editing];
+
+    int *volume = &gs->audio_handler.channel_volumes[gs->channel_editing];
     if (in->keys[SDL_SCANCODE_EQUALS]) {
         (*volume)++;
         *volume = clamp(*volume, 0, MIX_MAX_VOLUME);
@@ -439,7 +442,7 @@ static void audio_setup_channel_volumes(void) {
         (*volume)--;
         *volume = clamp(*volume, 0, MIX_MAX_VOLUME);
     }
-    
+
     const char *channel_name[] = {
         "",
         "",
@@ -449,33 +452,33 @@ static void audio_setup_channel_volumes(void) {
         "Ambience",
         "Music",
     };
-    
+
     if (gs->channel_editing) {
         char string[128];
         sprintf(string, "Channel Editing: %s", channel_name[gs->channel_editing]);
         RenderTextDebugPush(string, 64, GUI_H+64);
-        sprintf(string, "Volume: %d/%d", gs->audio_channel_volumes[gs->channel_editing], MIX_MAX_VOLUME);
+        sprintf(string, "Volume: %d/%d", gs->audio_handler.channel_volumes[gs->channel_editing], MIX_MAX_VOLUME);
         RenderTextDebugPush(string, 64, GUI_H+64+32);
     }
 #endif
-    
-    assign_audio_channel_volumes();
+
+    assign_channel_volumes(&gs->pause_menu, &gs->audio_handler);
 }
 
 export void game_run(Game_State *state) {
     u64 start_frame = SDL_GetPerformanceCounter();
-    
+
     //u64 aa = SDL_GetPerformanceCounter();
-                    
+
     gs = state;
-    
+
     gs->gui.tooltip.set_this_frame = false;
-    
+
     audio_setup_channel_volumes();
-    
+
     gs->accum = 0;
     gs->amt = 0;
-    
+
     switch (gs->gamestate) {
         case GAME_STATE_TITLESCREEN: {
             titlescreen_tick();
@@ -484,25 +487,25 @@ export void game_run(Game_State *state) {
         }
         case GAME_STATE_PLAY: {
             game_update_view();
-            
+
             audio_set_ambience_accordingly();
             audio_set_music_accordingly();
-            
+
             if (gs->obj.active) {
                 RenderColor(255, 255, 255, 255);
                 RenderClear(RENDER_TARGET_MASTER);
-                
+
                 object_draw(&gs->obj);
                 fade_draw(RENDER_TARGET_MASTER);
-                
+
                 SDL_Rect dst = {
                     0, 0,
                     RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_width,
                     RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->working_height
                 };
-                
+
                 u8 alpha = 255 - 255 * min(240,gs->obj.t) / 240.0;
-                
+
                 RenderTextureAlphaMod(&RenderTarget(RENDER_TARGET_GUI_TOOLBAR)->texture, alpha);
                 RenderMaybeSwitchToTarget(RENDER_TARGET_MASTER);
                 SDL_RenderCopy(gs->render.sdl,
@@ -516,7 +519,7 @@ export void game_run(Game_State *state) {
                     pause_menu_draw(RENDER_TARGET_MASTER, &gs->pause_menu);
                 } else {
                     //int y = 2*gs->game_height/3;
-                    
+
                     gui_tick();
                     inventory_tick();
                     all_converters_tick();
@@ -525,7 +528,7 @@ export void game_run(Game_State *state) {
                     text_field_draw(RENDER_TARGET_MASTER);
                     fade_draw(RENDER_TARGET_MASTER);
                     preview_tick();
-                    
+
                     if (gs->current_preview.play) {
                         preview_draw(RENDER_TARGET_MASTER,
                                      &gs->current_preview,
@@ -535,16 +538,16 @@ export void game_run(Game_State *state) {
                                      false,
                                      false);
                     }
-                    
+
                     if (gs->step_one) gs->step_one = false;
                 }
             }
             break;
         }
     }
-    
+
     //f64 frame_end = __end_timer(aa);
-    
+
     {
         //char msg[64];
         //sprintf(msg, "Frame time took %.2fms", 1000*gs->dt);
@@ -552,22 +555,22 @@ export void game_run(Game_State *state) {
         //sprintf(msg, "SDL_SetRenderTarget took %.2fms | Count: %d", gs->accum, gs->amt);
         //RenderTextDebugPush(msg, 0, gs->game_height-65);
     }
-    
+
     RenderTextDebug();
-    
+
     if (gs->input.locked && !gs->input.hide_mouse) {
         Texture *t = &GetTexture(TEXTURE_CURSOR);
         RenderTexture(RENDER_TARGET_MASTER, t, null, &(SDL_Rect){gs->input.real_mx, gs->input.real_my, t->width, t->height});
     }
-    
+
 #ifdef __EMSCRIPTEN__
     if (SDL_GetMouseFocus() == null) {
         draw_focus(RENDER_TARGET_MASTER);
         gs->test = true;
     }
-    
+
 #endif
-    
+
     if (gs->timer == 0) {
         gs->timer = 60;
         gs->highest_frametime = 0;
@@ -575,7 +578,7 @@ export void game_run(Game_State *state) {
     gs->timer--;
     if (1000*gs->dt > gs->highest_frametime)
         gs->highest_frametime = 1000*gs->dt;
-    
+
     if (gs->draw_fps) {
         char str[128];
         sprintf(str, "Frametime: %.2f ms\n", 1000*gs->dt);
@@ -591,7 +594,7 @@ export void game_run(Game_State *state) {
                         100, 100,
                         null, null,
                         false);
-        
+
         sprintf(str, "Max Local Frametime: %.2f ms\n", gs->highest_frametime);
         RenderTextQuick(RENDER_TARGET_MASTER,
                         "2fps",
@@ -615,7 +618,7 @@ export void game_run(Game_State *state) {
     gs->border_color.b = interpolate(gs->border_color.b, border_color_desired.b, 2);
 
     RenderColor(gs->border_color.r, gs->border_color.g, gs->border_color.b, 255);
-    
+
     RenderClear(-1);
 
     RenderColor(255, 255, 255, 255);
@@ -642,7 +645,7 @@ export void game_run(Game_State *state) {
                    &dst);
 
     gs->dt = __end_timer(start_frame);
-    
+
     SDL_RenderPresent(gs->renderer);
 
     gs->is_mouse_over_any_button = false;

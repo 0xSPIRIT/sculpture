@@ -8,6 +8,7 @@
 //
 
 #include "headers.h" // Used to get type size information.
+#include "shared_functions.c"
 
 #define Kilobytes(x) ((u64)x*1024)
 #define Megabytes(x) ((u64)x*1024*1024)
@@ -59,9 +60,9 @@ typedef enum {
 // in here and we don't want to mess that up.
 typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
-    
+
     bool close_game; // Closes the game after the current frame.
-    
+
     // Some stupid hacky debugging variables used around the place.
     char func[64];
     f64 a; // global timer used for profiling, not used anywhere else
@@ -71,15 +72,14 @@ typedef struct Game_State {
     bool draw_fps;
     f64 highest_frametime;
     int timer;
-    
+
     Wind wind;
-    
+
     bool needs_manual_fps_lock; // If the screen's refresh rate != 60, we need to manually do this.
 
     f64 dt; // Time taken for previous frame.
     f64 device_pixel_ratio; // Only used in emscripten builds.
-    
-    int audio_channel_volumes[AUDIO_CHANNEL_COUNT];
+
     int channel_editing;
 
     bool just_resized;
@@ -282,17 +282,4 @@ void *_push_array(Memory_Arena *memory, u64 num, u64 size_individual, const char
     memory->cursor += size;
 
     return output;
-}
-
-// NOTE: Kind of a weird place to put this but it's the end of the project
-//       so I don't care about formatting it in a proper place.
-//       This is related to audio, and setting the volume of each of the
-//       channels every frame.
-static void assign_audio_channel_volumes(void) {
-    f32 master = gs->pause_menu.slider;
-    Mix_Volume(AUDIO_CHANNEL_CHISEL,   master * gs->audio_channel_volumes[AUDIO_CHANNEL_CHISEL]);
-    Mix_Volume(AUDIO_CHANNEL_GUI,      master * gs->audio_channel_volumes[AUDIO_CHANNEL_GUI]); 
-    Mix_Volume(AUDIO_CHANNEL_MUSIC,    master * gs->audio_channel_volumes[AUDIO_CHANNEL_MUSIC]); 
-    Mix_Volume(AUDIO_CHANNEL_AMBIENCE, master * gs->audio_channel_volumes[AUDIO_CHANNEL_AMBIENCE]); 
-    Mix_Volume(AUDIO_CHANNEL_MISC, master * MIX_MAX_VOLUME);
 }

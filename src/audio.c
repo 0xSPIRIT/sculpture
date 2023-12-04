@@ -99,7 +99,7 @@ static void audio_set_ambience_levels(void) {
     }
 
     gs->audio_handler.ambience_volume = interpolate(gs->audio_handler.ambience_volume, volume, 1);
-    gs->audio_channel_volumes[AUDIO_CHANNEL_AMBIENCE] = gs->audio_handler.ambience_volume;
+    gs->audio_handler.channel_volumes[AUDIO_CHANNEL_AMBIENCE] = gs->audio_handler.ambience_volume;
 }
 
 static void audio_halt_music(void) {

@@ -1,4 +1,4 @@
-// Look at assign_audio_channel_volumes for where the master volume is set
+// Look at assign_channel_volumes for where the master volume is set
 static void pause_menu_init(Pause_Menu *menu) {
     menu->active = false;
     menu->slider = INITIAL_VOLUME;
