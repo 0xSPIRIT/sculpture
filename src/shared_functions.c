@@ -4,11 +4,12 @@
 //       channels every frame.
 static void assign_channel_volumes(Pause_Menu *menu, Audio_Handler *handler) {
     f32 master = menu->slider;
-    Mix_Volume(AUDIO_CHANNEL_CHISEL,   master * handler->channel_volumes[AUDIO_CHANNEL_CHISEL]);
-    Mix_Volume(AUDIO_CHANNEL_GUI,      master * handler->channel_volumes[AUDIO_CHANNEL_GUI]);
-    Mix_Volume(AUDIO_CHANNEL_MUSIC,    master * handler->channel_volumes[AUDIO_CHANNEL_MUSIC]);
-    Mix_Volume(AUDIO_CHANNEL_AMBIENCE, master * handler->channel_volumes[AUDIO_CHANNEL_AMBIENCE]);
-    Mix_Volume(AUDIO_CHANNEL_MISC, master * MIX_MAX_VOLUME);
+    int *volumes = handler->channel_volumes;
+    Mix_Volume(AUDIO_CHANNEL_CHISEL,   master * volumes[AUDIO_CHANNEL_CHISEL]);
+    Mix_Volume(AUDIO_CHANNEL_GUI,      master * volumes[AUDIO_CHANNEL_GUI]);
+    Mix_Volume(AUDIO_CHANNEL_MUSIC,    master * volumes[AUDIO_CHANNEL_MUSIC]);
+    Mix_Volume(AUDIO_CHANNEL_AMBIENCE, master * volumes[AUDIO_CHANNEL_AMBIENCE]);
+    Mix_Volume(AUDIO_CHANNEL_MISC,     master * MIX_MAX_VOLUME);
 }
 
 static void textures_load_backgrounds(Textures *texs, bool first_time) {
