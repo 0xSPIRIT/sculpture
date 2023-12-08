@@ -106,6 +106,17 @@ static void game_update_view(void) {
     if (fabsf(gs->render.view.y - gs->render.to.y) <= 1) gs->render.view.y = gs->render.to.y;
 }
 
+bool can_activate_pause_menu() {
+    bool result;
+
+    result = !gs->gui.popup;
+    result &= gs->levels[gs->level_current].state != LEVEL_STATE_OUTRO;
+    result &= !gs->gui.eol_popup_confirm.active;
+    result &= !gs->gui.restart_popup_confirm.active;
+
+    return result;
+}
+
 export void game_init(Game_State *state) {
     gs = state;
 
@@ -226,7 +237,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
 #endif
                 } else if (gs->tutorial.active) {
                     tutorial_rect_close(null);
-                } else if (!gs->gui.popup && gs->levels[gs->level_current].state != LEVEL_STATE_OUTRO) {
+                } else if (can_activate_pause_menu()) {
                     gs->pause_menu.active = !gs->pause_menu.active;
                 }
                 break;
@@ -243,10 +254,6 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_SPACE: {
-                if (gs->pause_menu.active) {
-                    save_game();
-                    is_running = false;
-                }
 #ifndef ALASKA_RELEASE_MODE
                 if (gs->input.keys[SDL_SCANCODE_LSHIFT])
                     gs->paused = !gs->paused;
@@ -257,7 +264,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 break;
             }
             //case SDLK_MINUS: {
-                //wind_stream_active(&gs->wind);
+                //wind_stream_activate(&gs->wind);
             //} break;
             case SDLK_RETURN: {
 #ifndef __EMSCRIPTEN__

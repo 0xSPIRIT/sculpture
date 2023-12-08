@@ -25,7 +25,7 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "shared.h"
-TabWidth = 88.43537
+TabWidth = 78.97959
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\shared.h"
@@ -34,21 +34,19 @@ VertPos = 5232.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_video.c"
-TabWidth = 106.8027
+TabWidth = 97.34694
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\SDL_video.c"
 CursorPos = 130198
-VertPos = 106680.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_windowsmessagebox.c"
-TabWidth = 196.5986
+TabWidth = 187.1429
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\windows\\SDL_windowsmessagebox.c"
 CursorPos = 32059
-VertPos = 22440.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
@@ -57,8 +55,8 @@ TabWidth = 66.7347
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\wind.c"
-CursorPos = 4813
-VertPos = 3576.0
+CursorPos = 4291
+VertPos = 3448.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "gui.c"
@@ -67,7 +65,6 @@ TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\gui.c"
 CursorPos = 510
-VertPos = 192.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_render_d3d.c"
@@ -99,7 +96,7 @@ TabWidth = 70.81633
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 8067
+CursorPos = 7223
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0

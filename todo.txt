@@ -1,19 +1,15 @@
 TODO
 
   - Music
-    - Music 3: Gymnopedie-esque
-    - Ending Theme: A solemn acceptance
+      - Increase the mixing of some stuff in max's lullaby
+      - Song 2 (ending theme)
 
-  - Make escape work properly when confirmation popups are
-    active - don't make it pause menu at that time
-
-  - Add podldodldodlodpolpdlpdol sound to Destroy Level & Take Materials
-
-  - Bake-in the background vignette.
-
-  - While converting, make Z stop the conversion first before undoing.
-
-  - Re-mix some things. Export higher volume chisels perhaps.
+  - Sound Effects
+      - Destroy Level sound effect
+      - Conversion sound effect
+  - Add skip button to timelapse
+  - Make the overlay changes slightly slower.
+  - Add destruction sound to destroy level
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
 
@@ -25,3 +21,4 @@ Things to Remember When Doing a Release Build
   - Turn on tutorials
   - Turn on narration
   - Remove sdlk_h for reloading textures
+  - Remove the wind png

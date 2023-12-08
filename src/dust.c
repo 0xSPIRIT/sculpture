@@ -1,5 +1,10 @@
 static void dust_init(void) {
-    memset(gs->dust, 0, MAX_DUST_COUNT*sizeof(Dust));
+    if (!gs->dust) {
+        gs->dust = PushArray(gs->persistent_memory, MAX_DUST_COUNT, sizeof(Dust));
+    } else {
+        memset(gs->dust, 0, MAX_DUST_COUNT*sizeof(Dust));
+    }
+
     gs->dust_count = 0;
 }
 
@@ -7,7 +12,8 @@ static void emit_dust(enum Cell_Type type,
                       int x,
                       int y,
                       f64 vx,
-                      f64 vy)
+                      f64 vy,
+                      bool from_destroy_tool)
 {
     if (gs->dust_count >= MAX_DUST_COUNT) return;
 
@@ -21,6 +27,7 @@ static void emit_dust(enum Cell_Type type,
         .timer2 = 0,
         .timer_max = rand()%35+60,
         .going_into_inventory = false,
+        .destroyed_via_tool = from_destroy_tool,
         .rand = my_rand((int)(x+y+vx+vy))
     };
 }
@@ -28,7 +35,8 @@ static void emit_dust(enum Cell_Type type,
 static void emit_dust_explosion(enum Cell_Type type,
                                 int x,
                                 int y,
-                                int count)
+                                int count,
+                                bool from_destroy_tool)
 {
     for (int i = 0; i < count; i++) {
         f64 angle = randf(2*M_PI);
@@ -40,7 +48,7 @@ static void emit_dust_explosion(enum Cell_Type type,
             vx = cos(angle);
             vy = sin(angle);
         }
-        emit_dust(type, x, y, vx, vy);
+        emit_dust(type, x, y, vx, vy, from_destroy_tool);
     }
 }
 
@@ -71,6 +79,8 @@ static void dust_grid_run(int target) {
         if (!gs->paused) {
             if (distance(dust->x, dust->y, gs->gw/2, 0) < 3) {
                 dust_remove(i);
+                if (dust->destroyed_via_tool)
+                    play_sound(AUDIO_CHANNEL_PING, gs->audio.ping, 0);
                 continue;
             }
 

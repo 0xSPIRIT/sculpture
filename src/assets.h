@@ -47,11 +47,13 @@ typedef struct Audio {
 
     Sound place;
     Sound suck;
+    Sound ping;
 
     Sound music0;
     Sound music1;
     Sound music2;
     Sound music3;
+    Sound music4;
 
     Sound undo;
 

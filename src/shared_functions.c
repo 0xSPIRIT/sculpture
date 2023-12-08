@@ -10,6 +10,7 @@ static void assign_channel_volumes(Pause_Menu *menu, Audio_Handler *handler) {
     Mix_Volume(AUDIO_CHANNEL_MUSIC,    master * volumes[AUDIO_CHANNEL_MUSIC]);
     Mix_Volume(AUDIO_CHANNEL_AMBIENCE, master * volumes[AUDIO_CHANNEL_AMBIENCE]);
     Mix_Volume(AUDIO_CHANNEL_MISC,     master * MIX_MAX_VOLUME);
+    Mix_Volume(AUDIO_CHANNEL_PING,     master * MIX_MAX_VOLUME);
 }
 
 static void textures_load_backgrounds(Textures *texs, bool first_time) {

@@ -191,7 +191,7 @@ static void click_gui_tool_button(void *type_ptr) {
                         amt = (my_rand(i)%2==0) ? 2 : 1;
 
                     add_item_to_inventory_slot(gs->grid[i].type, amt);
-                    emit_dust_explosion(gs->grid[i].type, i%gs->gw, i/gs->gw, 1);
+                    emit_dust_explosion(gs->grid[i].type, i%gs->gw, i/gs->gw, 1, true);
                 }
                 gs->grid[i].type = 0;
                 gs->grid[i].object = -1;
@@ -606,7 +606,7 @@ static void gui_draw(int target) {
     Assert(target == RENDER_TARGET_MASTER);
 
     GUI *gui = &gs->gui;
-    
+
     int toolbar_target = target;
 
     if (gs->level_current+1 == 11) {
@@ -621,7 +621,7 @@ static void gui_draw(int target) {
             button_draw(toolbar_target, gui->tool_buttons[i]);
             gui_button_draw_outline(toolbar_target, i);
         }
-        
+
         if (gs->level_current+1 == 11) {
             SDL_Rect src = {
                 0,
@@ -629,14 +629,14 @@ static void gui_draw(int target) {
                 gs->game_width,
                 GUI_H
             };
-            
+
             SDL_Rect dst = {
                 0,
                 0,
                 gs->game_width,
                 GUI_H
             };
-            
+
             RenderTargetToTarget(target,
                                  toolbar_target,
                                  &src,
@@ -723,7 +723,7 @@ static void gui_popup_draw(int target) {
 
         RenderTexture(target, &GetTexture(TEXTURE_TAB), null, &tab_icon);
     }
-    
+
     int size = 32;
     SDL_Rect speaker = {
         gs->game_width - Scale(size) - Scale(8),

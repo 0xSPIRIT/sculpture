@@ -201,6 +201,15 @@ static bool converter_is_layout_valid(Converter *converter) {
     return true;
 }
 
+static bool is_any_converter_converting(void) {
+    return (gs->material_converter->state == CONVERTER_ON) || (gs->fuel_converter->state == CONVERTER_ON);
+}
+
+static void converters_stop_converting(void) {
+    gs->material_converter->state = CONVERTER_OFF;
+    gs->fuel_converter->state = CONVERTER_OFF;
+}
+
 static void converter_begin_converting(void *converter_ptr) {
     Converter *converter = (Converter *) converter_ptr;
 

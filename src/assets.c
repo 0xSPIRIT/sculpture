@@ -206,17 +206,19 @@ static void audio_init(Audio *audio) {
     f64 scale = 1.5;
 
     audio->ambience1     = load_sound(DATA_DIR "audio/ambience_snow.ogg", 9.0/20.0);
-    audio->ambience_wind = load_sound(DATA_DIR "audio/ambience_wind.ogg", 0.6);
+    audio->ambience_wind = load_sound(DATA_DIR "audio/ambience_wind.ogg", 0.8);
     audio->ambience_rain = load_sound(DATA_DIR "audio/rain.ogg", 1);
     audio->ambience_rain_reversed = load_sound(DATA_DIR "audio/rain_reversed.ogg", 1);
     audio->music0        = load_sound(DATA_DIR "audio/music0.ogg",    0.75);
     audio->music1        = load_sound(DATA_DIR "audio/music_photograph.ogg", 0.45);
     audio->music2        = load_sound(DATA_DIR "audio/music_frontier.ogg", 1);
     audio->music3        = load_sound(DATA_DIR "audio/music_weird.ogg", 0.8);
+    audio->music4        = load_sound(DATA_DIR "audio/music_max's_lullaby.ogg", 0.70);
     audio->undo          = load_sound(DATA_DIR "audio/undo.wav", scale*0.25);
 
     audio->place = load_sound(DATA_DIR "audio/place.ogg", scale*0.75);
     audio->suck  = load_sound(DATA_DIR "audio/tap.ogg", scale*2);
+    audio->ping  = load_sound(DATA_DIR "audio/ping.ogg", 1);
 
     audio->pip = load_sound(DATA_DIR "audio/pip.ogg", scale*1);
 

@@ -7,7 +7,7 @@ typedef struct {
 } Titlescreen;
 
 #ifdef ALASKA_RELEASE_MODE
-  #define SHOW_TITLESCREEN 1
+  #define SHOW_TITLESCREEN 0
 #else
   #define SHOW_TITLESCREEN 0
 #endif

@@ -189,6 +189,10 @@ static void undo(void) {
         tutorial_rect_close(null);
     }
 
+    if (is_any_converter_converting()) {
+        converters_stop_converting();
+    }
+
     if (!gs->gui.popup && gs->has_player_interacted_since_last_state) {//is_current_grid_same_as(current_state())) {
         if (gs->save_state_count <= 1) {
             return;

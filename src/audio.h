@@ -1,6 +1,6 @@
 // NOTE: Out of MIX_MAX_VOLUME (128)
 #define AUDIO_CHISEL_VOLUME       (45)
-#define AUDIO_GUI_VOLUME          (30)
+#define AUDIO_GUI_VOLUME          (38)
 #define AUDIO_MUSIC_VOLUME        (128)
 #define AUDIO_AMBIENCE_VOLUME     (29)
 #define AUDIO_TITLESCREEN_VOLUME  Volume(1.00)
@@ -17,6 +17,7 @@ enum {
     AUDIO_CHANNEL_AMBIENCE,
     AUDIO_CHANNEL_MUSIC,
     AUDIO_CHANNEL_MISC,
+    AUDIO_CHANNEL_PING,
     AUDIO_CHANNEL_COUNT
 };
 
@@ -31,9 +32,10 @@ typedef enum {
 typedef enum {
     MUSIC_NONE,
     MUSIC_FRONTIER,
-    MUSIC_EXPLITIVE,
+    MUSIC_ABCS,
     MUSIC_PHOTOGRAPH,
-    MUSIC_WEIRD
+    MUSIC_WEIRD,
+    MUSIC_EXPLITIVE,
 } MusicType;
 
 typedef struct {

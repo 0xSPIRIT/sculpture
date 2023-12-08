@@ -7,7 +7,9 @@ static void audio_set_music_accordingly(void) {
 
     if (level_number <= 3) {
         audio_set_music(MUSIC_FRONTIER);
-    } else if (level_number >= 4 && level_number < 7 && level_number != 3) {
+    } else if (level_number >= 4 && level_number <= 6) {
+        audio_set_music(MUSIC_ABCS);
+    } else if (level_number >= 8 && level_number <= 10) {
         audio_set_music(MUSIC_PHOTOGRAPH);
     } else if (level_number == 7 && gs->overlay.changes.music_started) {
         if (gs->level_completed) {
@@ -112,8 +114,6 @@ static void audio_halt_music(void) {
 static void audio_set_music(MusicType music) {
     Audio_Handler *handler = &gs->audio_handler;
 
-    //if (handler->music_end) return;
-
     if (handler->music != music) {
         switch (music) {
             case MUSIC_EXPLITIVE: {
@@ -122,11 +122,14 @@ static void audio_set_music(MusicType music) {
             case MUSIC_PHOTOGRAPH: {
                 play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music1, -1);
             } break;
+            case MUSIC_FRONTIER: {
+                play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music2, -1);
+            } break;
             case MUSIC_WEIRD: {
                 play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music3, -1);
             } break;
-            case MUSIC_FRONTIER: {
-                play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music2, -1);
+            case MUSIC_ABCS: {
+                play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music4, -1);
             } break;
             default: {
                 audio_halt_music();

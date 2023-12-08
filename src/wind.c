@@ -67,8 +67,8 @@ Wind_Stream load_wind_stream(const char *fp) {
     int w = surf->w;
     int h = surf->h;
 
-    while (true) {
-        bool found = false;
+    bool found = false;
+    do {
         for (int i = 0; i < w*h; i++) {
             SDL_Color c = wind_get_pixel(surf, i%w, i/w);
             if (c.a == 255 && c.r == stream.point_count) {
@@ -76,16 +76,15 @@ Wind_Stream load_wind_stream(const char *fp) {
                 found = true;
             }
         }
-        if (!found) break;
-    }
+    } while (found);
 
     SDL_FreeSurface(surf);
 
     return stream;
 }
 
-void wind_stream_active(Wind *wind) {
-    Wind_Stream *stream = &wind->streams[0]; // TODO: Random stream
+void wind_stream_activate(Wind *wind) {
+    Wind_Stream *stream = &wind->streams[0];
     wind->instances[wind->instance_count++] = (Wind_Stream_Instance){
         .stream = stream,
         .range_start = 0,
@@ -101,7 +100,7 @@ void wind_stream_active(Wind *wind) {
 void wind_streams_draw(int target, Wind *wind) {
     if (!gs->paused || gs->step_one) {
         if (wind->timer == 0) {
-            wind_stream_active(&gs->wind);
+            wind_stream_activate(&gs->wind);
             wind->timer = 10+rand()%20;
         } else {
             wind->timer--;

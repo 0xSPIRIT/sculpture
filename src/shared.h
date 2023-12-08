@@ -151,7 +151,7 @@ typedef struct Game_State {
 
     int blob_type;
 
-    Dust dust[MAX_DUST_COUNT];
+    Dust *dust;
     int dust_count;
 
     Cell *grid_layers[NUM_GRID_LAYERS];

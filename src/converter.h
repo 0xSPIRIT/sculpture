@@ -43,6 +43,8 @@ static void all_converters_init(void);
 static void converter_set_state(Converter *converter, enum Converter_State state);
 static bool is_level_possible(void);
 static bool converter_is_layout_valid(Converter *converter);
+static bool is_any_converter_converting(void);
+static void converters_stop_converting(void);
 static void converter_begin_converting(void *converter_ptr);
 
 static void converter_draw(int target, Converter *converter);
