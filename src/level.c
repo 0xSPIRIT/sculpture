@@ -43,7 +43,7 @@ static void play_level_end_sound(int level) {
     } else {
         sound = &gs->audio.macabre;
     }
-    
+
     gs->level_completed = true;
 
     play_sound(AUDIO_CHANNEL_MISC, *sound, 0);
@@ -138,11 +138,11 @@ static void levels_setup(void) {
 
 static void goto_level(int lvl) {
     gs->level_current = lvl;
-    
+
     // Don't ask me the difference between these two.
     gs->level_completed = false;
     gs->levels[lvl].done = false;
-    
+
     converter_gui_init();
 
     gs->render.view.x = gs->render.to.x = 0;
@@ -590,6 +590,8 @@ static void level_draw_outro(int target, Level *level) {
     int dx = rect.x + LEVEL_MARGIN;
     int dy = rect.y + Scale(100);
 
+    int result_text_x = dx+rect.w - LEVEL_MARGIN - scale*size - margin;
+    int result_text_w = 0;
 
     RenderTextQuick(outro,
                     "AAAAAj",
@@ -606,9 +608,9 @@ static void level_draw_outro(int target, Level *level) {
                     gs->fonts.font,
                     "The result",
                     WHITE,
-                    dx+rect.w - LEVEL_MARGIN - scale*size - margin,
+                    result_text_x,
                     dy,
-                    null,
+                    &result_text_w,
                     null,
                     false);
 
@@ -638,107 +640,58 @@ static void level_draw_outro(int target, Level *level) {
     //~ Buttons
 
     { // Next level button
-        Render_Text_Data text_data = {0};
-        strcpy(text_data.identifier, "nextlevel");
-        text_data.font = gs->fonts.font;
+        char text[64];
         if (gs->level_current+1 != 11) {
-            strcpy(text_data.str, "Next Level");
+            strcpy(text, "Next Level");
         } else {
-            strcpy(text_data.str, "Finish");
+            strcpy(text, "Finish");
         }
 
-        text_data.x = rect.x + rect.w - margin;
-        text_data.y = rect.y + rect.h - 3 * margin/4;
-        text_data.foreground = WHITE;
-        text_data.alignment = ALIGNMENT_BOTTOM_RIGHT;
-        text_data.render_type = TEXT_RENDER_BLENDED;
+        bool clicked = draw_text_button(outro,
+                                        "nextlevel",
+                                        text,
+                                        rect.x + rect.w - margin,
+                                        rect.y + rect.h - 3 * margin/4,
+                                        gs->fonts.font,
+                                        WHITE,
+                                        ALIGNMENT_BOTTOM_RIGHT,
+                                        TEXT_RENDER_BLENDED);
 
-        RenderText(outro, &text_data);
-
-        SDL_Rect button_rect = {
-            text_data.draw_x,
-            text_data.draw_y,
-            text_data.texture.width,
-            text_data.texture.height,
-        };
-
-        SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
-        if (is_point_in_rect(mouse, button_rect)) {
-            RenderColor(0,0,0,64);
-            RenderFillRect(outro, button_rect);
-        }
-
-        int expand = 2;
-        button_rect.x -= Scale(expand);
-        button_rect.y -= Scale(2*expand);
-        button_rect.w += Scale(2*expand);
-        button_rect.h += Scale(2*expand);
-
-        RenderColor(255, 255, 255, 255);
-        RenderDrawRect(outro, button_rect);
-
-        Button b = {0};
-        b.texture = null;
-        b.on_pressed = null;
-        b.x = button_rect.x;
-        b.y = button_rect.y;
-        b.w = button_rect.w;
-        b.h = button_rect.h;
-        b.index = -1;
-
-        bool clicked = button_tick(&b, null);
         if (clicked) {
             level_click_next_level();
         }
     }
 
     { // Close button
-        Render_Text_Data text_data = {0};
-        strcpy(text_data.identifier, "outroclose");
-        text_data.font = gs->fonts.font;
-        strcpy(text_data.str, "Close"),
-        text_data.x = rect.x + margin;
-        text_data.y = rect.y + rect.h - 3 * margin/4;
-        text_data.foreground = WHITE;
-        text_data.alignment = ALIGNMENT_BOTTOM_LEFT;
-        text_data.render_type = TEXT_RENDER_BLENDED;
-
-        RenderText(outro, &text_data);
-
-        SDL_Rect button_rect = {
-            text_data.draw_x,
-            text_data.draw_y,
-            text_data.texture.width,
-            text_data.texture.height,
-        };
-
-        SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
-        if (is_point_in_rect(mouse, button_rect)) {
-            RenderColor(0,0,0,64);
-            RenderFillRect(outro, button_rect);
-        }
-
-        int expand = 2;
-        button_rect.x -= Scale(expand);
-        button_rect.y -= Scale(2*expand);
-        button_rect.w += Scale(2*expand);
-        button_rect.h += Scale(2*expand);
-
-        RenderColor(255, 255, 255, 255);
-        RenderDrawRect(outro, button_rect);
-
-        Button b = {0};
-        b.texture = null;
-        b.on_pressed = null;
-        b.x = button_rect.x;
-        b.y = button_rect.y;
-        b.w = button_rect.w;
-        b.h = button_rect.h;
-        b.index = -1;
-
-        bool clicked = button_tick(&b, null);
+        bool clicked = draw_text_button(outro,
+                                        "outroclose",
+                                        "Close",
+                                        rect.x + margin,
+                                        rect.y + rect.h - 3 * margin/4,
+                                        gs->fonts.font,
+                                        WHITE,
+                                        ALIGNMENT_BOTTOM_LEFT,
+                                        TEXT_RENDER_BLENDED);
         if (clicked) {
             level_click_close_outro(level);
+        }
+    }
+
+    { // Skip button
+        bool clicked = draw_text_button(outro,
+                                        "skip",
+                                        "Skip",
+                                        result_text_x + result_text_w + Scale(12),
+                                        dy,
+                                        gs->fonts.font,
+                                        WHITE,
+                                        ALIGNMENT_TOP_LEFT,
+                                        TEXT_RENDER_BLENDED);
+        if (clicked) {
+            Timelapse *tl = &gs->timelapse;
+            tl->frame = gs->save_state_count; // OOB, but doesn't matter because it's not used.
+            tl->timer = 0;
+            tl->sticky = true;
         }
     }
 
@@ -826,7 +779,7 @@ static void level_get_cells_from_image(const char *path,
 static void level_draw_narration(int target) {
     RenderColor(20, 20, 20, 255);
     RenderClear(target);
-    
+
     effect_draw(target, &gs->current_effect, false);
     narrator_run(target, WHITE);
 }
@@ -861,13 +814,13 @@ static void level_draw_outro_or_play(Level *level) {
         RenderColor(53, 20, 20, 255);
     else
         RenderColor(0, 0, 0, 255);
-    
+
     // Unnecessary
-    
+
     RenderClear(target);
 
     // The meat
-    
+
     lighting_tick(&gs->lighting);
     background_draw(target, &gs->background, 64, 0);
     effect_draw    (target, &gs->current_effect, true);
@@ -917,7 +870,7 @@ static void level_draw_outro_or_play(Level *level) {
                          &dst);
 
     draw_grid_outline(RENDER_TARGET_MASTER);
-    
+
     if (level->state == LEVEL_STATE_OUTRO) {
         level_draw_outro(RENDER_TARGET_MASTER, level);
         gui_draw(RENDER_TARGET_MASTER);
@@ -929,11 +882,11 @@ static void level_draw_outro_or_play(Level *level) {
         //prof_start("gui_popup_draw");
         gui_popup_draw(RENDER_TARGET_MASTER);
         //y = prof_end(y);
-        
+
         //prof_start("tutorial_rect_run");
         tutorial_rect_run(RENDER_TARGET_MASTER);
         //y = prof_end(y);
-        
+
         //prof_start("tooltip_draw");
         tooltip_draw(RENDER_TARGET_MASTER, &gs->gui.tooltip);
         //y = prof_end(y);

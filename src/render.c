@@ -110,20 +110,20 @@ RENDERAPI Texture RenderDuplicateTexture(Texture original) {
     Texture result;
     result.width = original.width;
     result.height = original.height;
-    
+
     // Create an intermediate surface
     SDL_Surface *surface = SDL_CreateRGBSurface(0, result.width, result.height, 32, 0, 0, 0, 0);
-    
+
     // Copy the original texture to the intermediate surface
     SDL_RenderCopy(gs->renderer, original.handle, null, null);
     SDL_RenderReadPixels(gs->renderer, null, ALASKA_PIXELFORMAT, surface->pixels, surface->pitch);
-    
+
     // Create a new texture from the intermediate surface
     result.handle = SDL_CreateTextureFromSurface(gs->renderer, surface);
-    
+
     // Free the intermediate surface
     SDL_FreeSurface(surface);
-    
+
     return result;
 }
 #endif
@@ -319,26 +319,26 @@ RENDERAPI Render_Target *RenderMaybeSwitchToTarget(int target_enum) {
     if (gs->render.current_target != target) {
         SDL_Texture *texture_target = target->texture.handle;
         //u64 start = SDL_GetPerformanceCounter();
-        
+
         SDL_SetRenderTarget(gs->render.sdl, texture_target);
-        
+
         //u64 f, e;
         //e = SDL_GetPerformanceCounter();
         //f = SDL_GetPerformanceFrequency();
-        
+
         //u64 delta = e - start;
         //f64 time = (f64)delta / f;
-        
+
         //char msg[64];
         //sprintf(msg, "%d: %.2fms", gs->amt, 1000*time);
         //RenderTextDebugPush(msg, 0, GUI_H+gs->amt*30);
-        
+
         //gs->accum += 1000*time;
         //gs->amt++;
-        
+
         gs->render.current_target = target;
     }
-    
+
     return gs->render.current_target;
 }
 
@@ -486,7 +486,7 @@ RENDERAPI void RenderFillRect(int target_enum, SDL_Rect rect) {
 
 RENDERAPI void RenderClear(int target_enum) {
     RenderMaybeSwitchToTarget(target_enum);
-    
+
     SDL_RenderClear(gs->render.sdl);
 }
 

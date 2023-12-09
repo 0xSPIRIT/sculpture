@@ -29,7 +29,7 @@ static void timelapse_tick_and_draw(int xx, int yy, int cw, int ch) {
                 tl->frame++;
             }
             if (tl->frame >= gs->save_state_count) {
-                tl->sticky = 1;
+                tl->sticky = true;
             }
 
             tl->timer = 0;

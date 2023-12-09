@@ -217,7 +217,7 @@ static void audio_init(Audio *audio) {
     audio->undo          = load_sound(DATA_DIR "audio/undo.wav", scale*0.25);
 
     audio->place = load_sound(DATA_DIR "audio/place.ogg", scale*0.75);
-    audio->suck  = load_sound(DATA_DIR "audio/tap.ogg", scale*2);
+    audio->suck  = load_sound(DATA_DIR "audio/tap.ogg", 1);
     audio->ping  = load_sound(DATA_DIR "audio/ping.ogg", 1);
 
     audio->pip = load_sound(DATA_DIR "audio/pip.ogg", scale*1);

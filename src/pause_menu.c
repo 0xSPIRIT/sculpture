@@ -7,7 +7,7 @@ static void pause_menu_init(Pause_Menu *menu) {
 
 static void pause_menu_draw(int target, Pause_Menu *menu) {
     Render_Text_Data data = {0};
-    
+
     strcpy(data.identifier, "pause");
     data.font = gs->fonts.font_title;
     data.foreground = WHITE;
@@ -16,19 +16,19 @@ static void pause_menu_draw(int target, Pause_Menu *menu) {
     data.render_type = TEXT_RENDER_BLENDED;
     data.x = gs->game_width/2;
     data.y = gs->game_height/5;
-    strcpy(data.str, "Paused");
-    
+    strcpy(data.str, "Paused - Alaska");
+
     RenderText(target, &data);
-    
+
     int width = gs->game_width;
     int height = gs->game_height;
-    
+
     f32 h = Scale(20);
     f32 w = Scale(20);
-    
+
     const f32 size = gs->game_width * 0.5f;
     const f32 working_size = size - w;
-        
+
     RenderColor(127, 127, 127, 255);
     RenderLine(target,
                width/2 - size/2,
@@ -45,7 +45,7 @@ static void pause_menu_draw(int target, Pause_Menu *menu) {
                height/2 - h,
                width/2 + size/2,
                height/2 + h);
-    
+
     RenderColor(255, 255, 255, 255);
     SDL_Rect rect = {
         menu->slider * (working_size) + width/2 - size/2,
@@ -54,9 +54,9 @@ static void pause_menu_draw(int target, Pause_Menu *menu) {
         h*2
     };
     RenderFillRect(target, rect);
-    
+
     int mx = gs->input.real_mx, my = gs->input.real_my;
-    
+
     if (gs->input.mouse_pressed[SDL_BUTTON_LEFT] &&
         mx >= rect.x &&
         my >= rect.y &&
@@ -65,11 +65,11 @@ static void pause_menu_draw(int target, Pause_Menu *menu) {
     {
         menu->holding_slider = true;
     }
-    
+
     if (!(gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
         menu->holding_slider = false;
     }
-    
+
     if (menu->holding_slider) {
         int dx = gs->input.real_mx - gs->input.real_pmx;
 #ifdef __EMSCRIPTEN__
@@ -80,7 +80,7 @@ static void pause_menu_draw(int target, Pause_Menu *menu) {
         menu->slider = clampf(menu->slider, 0, 1);
         //Mix_MasterVolume(MIX_MAX_VOLUME * menu->slider);
     }
-    
+
     RenderTextQuick(target,
                     "volume",
                     gs->fonts.font_times,
@@ -89,77 +89,38 @@ static void pause_menu_draw(int target, Pause_Menu *menu) {
                     width/2 - size/2,
                     height/2 - Scale(70),
                     0, 0, false);
-    
+
 #ifndef __EMSCRIPTEN__
     {
-        Render_Text_Data text_data = {0};
-        
-        SDL_Color col = (SDL_Color){200,200,200,255};
-        
-        strcpy(text_data.identifier, "close");
-        text_data.font = gs->fonts.font_courier;
-        strcpy(text_data.str, "Exit Game");
-        text_data.foreground = col;
-        text_data.background = BLACK;
-        text_data.x = Scale(32);
-        text_data.y = height - Scale(32);
-        text_data.alignment = ALIGNMENT_BOTTOM_LEFT;
-        text_data.render_type = TEXT_RENDER_LCD;
-        
-        RenderText(target, &text_data);
-        
-        rect = (SDL_Rect){text_data.x, text_data.y - text_data.texture.height, text_data.texture.width, text_data.texture.height};
-        rect.x -= Scale(2);
-        rect.y -= Scale(2);
-        rect.w += Scale(4);
-        rect.h += Scale(4);
-        
-        if (mouse_in_rect(rect)) {
-            if (gs->input.mouse_pressed[SDL_BUTTON_LEFT])  {
-                save_game();
-                gs->close_game = true;
-            } else {
-                col = (SDL_Color){ 127, 127, 127, 255 };
-            }
+        bool clicked = draw_text_button(target,
+                                        "close",
+                                        "Exit Game",
+                                        Scale(32),
+                                        height - Scale(32),
+                                        gs->fonts.font,
+                                        WHITE,
+                                        ALIGNMENT_BOTTOM_LEFT,
+                                        TEXT_RENDER_BLENDED);
+        if (clicked) {
+            save_game();
+            gs->close_game = true;
         }
-        
-        RenderColor(col.r, col.g, col.b, 255);
-        RenderDrawRect(target, rect);
     }
 #endif
-    
+
     {
-        Render_Text_Data text_data = {0};
-        
-        SDL_Color col = (SDL_Color){200,200,200,255};
-        
-        strcpy(text_data.identifier, "5close");
-        text_data.font = gs->fonts.font_courier;
-        strcpy(text_data.str, "Back to Game");
-        text_data.foreground = col;
-        text_data.background = BLACK;
-        text_data.x = Scale(32);
-        text_data.y = height - Scale(75);
-        text_data.alignment = ALIGNMENT_BOTTOM_LEFT;
-        text_data.render_type = TEXT_RENDER_LCD;
-        
-        RenderText(target, &text_data);
-        
-        rect = (SDL_Rect){text_data.x, text_data.y - text_data.texture.height, text_data.texture.width, text_data.texture.height};
-        rect.x -= Scale(2);
-        rect.y -= Scale(2);
-        rect.w += Scale(4);
-        rect.h += Scale(4);
-        
-        if (mouse_in_rect(rect)) {
-            if (gs->input.mouse_pressed[SDL_BUTTON_LEFT])  {
-                gs->pause_menu.active = !gs->pause_menu.active;
-            } else {
-                col = (SDL_Color){ 127, 127, 127, 255 };
-            }
+        bool clicked = draw_text_button(target,
+                                        "5close",
+                                        "Back to Game",
+                                        Scale(32),
+                                        height - Scale(75),
+                                        gs->fonts.font,
+                                        WHITE,
+                                        ALIGNMENT_BOTTOM_LEFT,
+                                        TEXT_RENDER_BLENDED);
+
+        if (clicked) {
+            gs->pause_menu.active = !gs->pause_menu.active;
         }
-        
-        RenderColor(col.r, col.g, col.b, 255);
-        RenderDrawRect(target, rect);
     }
 }

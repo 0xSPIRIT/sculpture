@@ -3,5 +3,5 @@ typedef struct Timelapse {
     int timer_max;
     int frame;
 
-    int sticky;
+    bool sticky;
 } Timelapse;

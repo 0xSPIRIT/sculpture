@@ -1,13 +1,12 @@
 TODO
 
   - Music
-      - Increase the mixing of some stuff in max's lullaby
       - Song 2 (ending theme)
 
+  x Add skip button to timelapse
   - Sound Effects
       - Destroy Level sound effect
       - Conversion sound effect
-  - Add skip button to timelapse
   - Make the overlay changes slightly slower.
   - Add destruction sound to destroy level
 

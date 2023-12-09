@@ -329,6 +329,63 @@ static void button_draw(int target, Button *b) {
     button_draw_prefer_color(target, b, (SDL_Color){255,255,255,255});
 }
 
+static bool draw_text_button(int target,
+                             const char *identifier,
+                             const char *text,
+                             int x,
+                             int y,
+                             Font *font,
+                             SDL_Color color,
+                             Alignment alignment,
+                             Text_Render_Type render_type)
+{
+    // Next level button
+    Render_Text_Data text_data = {0};
+    strcpy(text_data.identifier, identifier);
+    strcpy(text_data.str, text);
+    text_data.font = font;
+    text_data.x = x;
+    text_data.y = y;
+    text_data.foreground = color;
+    text_data.alignment = alignment;
+    text_data.render_type = render_type;
+
+    RenderText(target, &text_data);
+
+    SDL_Rect button_rect = {
+        text_data.draw_x,
+        text_data.draw_y,
+        text_data.texture.width,
+        text_data.texture.height,
+    };
+
+    SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
+    if (is_point_in_rect(mouse, button_rect)) {
+        RenderColor(0,0,0,64);
+        RenderFillRect(target, button_rect);
+    }
+
+    int expand = 2;
+    button_rect.x -= Scale(expand);
+    button_rect.y -= Scale(2*expand);
+    button_rect.w += Scale(2*expand);
+    button_rect.h += Scale(2*expand);
+
+    RenderColor(255, 255, 255, 255);
+    RenderDrawRect(target, button_rect);
+
+    Button b = {0};
+    b.texture = null;
+    b.on_pressed = null;
+    b.x = button_rect.x;
+    b.y = button_rect.y;
+    b.w = button_rect.w;
+    b.h = button_rect.h;
+    b.index = -1;
+
+    return button_tick(&b, null);
+}
+
 static void gui_message_stack_push(const char *str) {
     GUI *gui = &gs->gui;
 
@@ -732,7 +789,7 @@ static void gui_popup_draw(int target) {
         Scale(size)
     };
     u8 alpha = 255;
-    if (mouse_in_rect(speaker)) {
+    if (mouse_in_rect(speaker) && !gs->gui.popup) {
         RenderTextureAlphaMod(&GetTexture(TEXTURE_SPEAKER), 255);
         if (gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
             gs->pause_menu.active = true;

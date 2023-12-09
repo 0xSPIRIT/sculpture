@@ -56,7 +56,7 @@ TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\wind.c"
 CursorPos = 4291
-VertPos = 3448.0
+VertPos = 3424.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "gui.c"
@@ -64,7 +64,7 @@ TabWidth = 57.21089
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\gui.c"
-CursorPos = 510
+CursorPos = 23636
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "SDL_render_d3d.c"
@@ -96,7 +96,7 @@ TabWidth = 70.81633
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 7223
+CursorPos = 14057
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0

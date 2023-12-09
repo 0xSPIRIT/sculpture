@@ -431,7 +431,7 @@ static void audio_setup_channel_volumes(void) {
         gs->audio_handler.channel_volumes[AUDIO_CHANNEL_AMBIENCE] = AUDIO_AMBIENCE_VOLUME;
     }
 
-#ifndef ALASKA_RELEASE_MODE
+#if 0
     Input *in = &gs->input;
 
     if (in->keys[SDL_SCANCODE_F1]) gs->channel_editing = AUDIO_CHANNEL_CHISEL;

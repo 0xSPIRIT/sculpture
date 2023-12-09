@@ -65,6 +65,7 @@ static void click_gui_tool_button(void *type_ptr);
 static bool button_tick(Button *b, void *data);
 static void button_draw_prefer_color(int target, Button *b, SDL_Color color);
 static void button_draw(int target, Button *b);
+static bool draw_text_button(int target, const char *identifier, const char *text, int x, int y, Font *font, SDL_Color color, Alignment alignment, Text_Render_Type render_type);
 static void gui_message_stack_push(const char *str);
 static void gui_init(void);
 static void gui_tick(void);
