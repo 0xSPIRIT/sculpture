@@ -275,7 +275,7 @@ static void overlay_swap_tick(void) {
             !gs->gui.popup &&
             !gs->recipes.active)
         {
-            overlay->changes.temp += 2;
+            overlay->changes.temp += 1.5f;
             //overlay->changes.temp += 7.5f;
         }
     }

@@ -48,6 +48,8 @@ typedef struct Audio {
     Sound place;
     Sound suck;
     Sound ping;
+    Sound destroy;
+    Sound converter_material;
 
     Sound music0;
     Sound music1;

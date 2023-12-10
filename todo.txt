@@ -1,14 +1,11 @@
 TODO
 
   - Music
-      - Song 2 (ending theme)
+      - Ending song
 
-  x Add skip button to timelapse
   - Sound Effects
       - Destroy Level sound effect
-      - Conversion sound effect
-  - Make the overlay changes slightly slower.
-  - Add destruction sound to destroy level
+      x Conversion sound effect
 
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
 

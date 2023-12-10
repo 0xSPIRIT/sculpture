@@ -1,9 +1,8 @@
-// NOTE: Out of MIX_MAX_VOLUME (128)
-#define AUDIO_CHISEL_VOLUME       (45)
-#define AUDIO_GUI_VOLUME          (38)
-#define AUDIO_MUSIC_VOLUME        (128)
-#define AUDIO_AMBIENCE_VOLUME     (29)
-#define AUDIO_TITLESCREEN_VOLUME  Volume(1.00)
+#define AUDIO_CHISEL_VOLUME       (Volume(45.0/128.0))
+#define AUDIO_GUI_VOLUME          (Volume(38.0/128.0))
+#define AUDIO_MUSIC_VOLUME        (Volume(128.0/128.0))
+#define AUDIO_AMBIENCE_VOLUME     (Volume(29.0/128.0))
+#define AUDIO_TITLESCREEN_VOLUME  (Volume(1.00))
 
 #define AUDIO_PLAY_AMBIANCE 1
 #define AUDIO_PLAY_MUSIC    1
@@ -18,6 +17,7 @@ enum {
     AUDIO_CHANNEL_MUSIC,
     AUDIO_CHANNEL_MISC,
     AUDIO_CHANNEL_PING,
+    AUDIO_CHANNEL_CONVERTER,
     AUDIO_CHANNEL_COUNT
 };
 

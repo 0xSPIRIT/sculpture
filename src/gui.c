@@ -182,6 +182,8 @@ static void click_gui_tool_button(void *type_ptr) {
         case TOOL_DESTROY: {
             if (is_array_empty(gs->grid)) return;
 
+            Mix_HaltChannel(AUDIO_CHANNEL_GUI);
+            play_sound(AUDIO_CHANNEL_GUI, gs->audio.destroy, 0);
             save_state_to_next();
             for (int i = 0; i < gs->gw*gs->gh; i++) {
                 int amt = 1;

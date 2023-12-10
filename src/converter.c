@@ -78,7 +78,12 @@ static void all_converters_init(void) {
 static void converter_set_state(Converter *converter, enum Converter_State state) {
     converter->state = state;
     if (state == CONVERTER_OFF) {
-        converter->state = CONVERTER_OFF;
+        //converter->state = CONVERTER_OFF;
+        if (!is_any_converter_converting()) {
+            Mix_HaltChannel(AUDIO_CHANNEL_CONVERTER);
+        }
+    } else if (state == CONVERTER_ON) {
+        play_sound(AUDIO_CHANNEL_CONVERTER, gs->audio.converter_material, -1);
     }
 }
 
@@ -188,17 +193,15 @@ static void all_converters_draw(int target) {
 }
 
 static bool converter_is_layout_valid(Converter *converter) {
-    bool is_empty = true;
-    for (int i = 0; i < converter->slot_count; i++) {
-        if (converter->slots[i].item.type) {
-            is_empty = false;
-            break;
-        }
-    }
+    Converter copy = *converter;
 
-    if (is_empty) return false;
+    // Do a virtual conversion, and see if it worked.
+    bool success = converter_convert(converter);
 
-    return true;
+    // Revert to the copy
+    *converter = copy;
+
+    return success;
 }
 
 static bool is_any_converter_converting(void) {
@@ -206,15 +209,18 @@ static bool is_any_converter_converting(void) {
 }
 
 static void converters_stop_converting(void) {
-    gs->material_converter->state = CONVERTER_OFF;
-    gs->fuel_converter->state = CONVERTER_OFF;
+    converter_set_state(gs->material_converter, CONVERTER_OFF);
+    converter_set_state(gs->fuel_converter, CONVERTER_OFF);
 }
 
+// This occurs from a hook from the "Go" button
 static void converter_begin_converting(void *converter_ptr) {
     Converter *converter = (Converter *) converter_ptr;
 
-    if (!converter_is_layout_valid(converter))
+    if (!converter_is_layout_valid(converter)) {
+        converter_set_state(converter, CONVERTER_OFF);
         return;
+    }
 
     if (converter->state == CONVERTER_OFF) {
         save_state_to_next();
@@ -634,14 +640,14 @@ static bool converter_convert(Converter *converter) {
             input1->amount -= amount;
             if (input1->amount <= 0) {
                 input1->type = 0;
-                converter->state = CONVERTER_OFF;
+                converter_set_state(converter, CONVERTER_OFF);
             }
         }
         if (input2->type) {
             input2->amount -= amount;
             if (input2->amount <= 0) {
                 input2->type = 0;
-                converter->state = CONVERTER_OFF;
+                converter_set_state(converter, CONVERTER_OFF);
             }
         }
 
@@ -651,7 +657,9 @@ static bool converter_convert(Converter *converter) {
         output->amount += amount;
 
         did_convert = true;
-    }
+    } else {
+		return false;
+	}
 
     return !final_conversion || !did_convert;
 }
