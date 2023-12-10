@@ -62,7 +62,7 @@ static bool is_either_input_stone(Converter_Checker *checker, bool restart);
 
 static int  fuel_converter_convert(Item *input1, Item *input2);
 static int  material_converter_convert(Item *input1, Item *input2, Item *fuel);
-static bool converter_convert(Converter *converter);
+static bool converter_convert(Converter *converter, bool test_only);
 static void converter_tick(Converter *converter);
 static void all_converters_tick(void);
 static void setup_item_indices();

@@ -106,7 +106,7 @@ static void game_update_view(void) {
     if (fabsf(gs->render.view.y - gs->render.to.y) <= 1) gs->render.view.y = gs->render.to.y;
 }
 
-bool can_activate_pause_menu(void) {
+static bool can_activate_pause_menu(void) {
     bool result;
 
     result = !gs->gui.popup;
@@ -434,51 +434,13 @@ event_tick_end:
     return is_running;
 }
 
-static void audio_setup_channel_volumes(void) {
+void audio_setup_channel_volumes(void) {
     if (gs->audio_handler.channel_volumes[AUDIO_CHANNEL_CHISEL] == 0) {
         gs->audio_handler.channel_volumes[AUDIO_CHANNEL_CHISEL] = AUDIO_CHISEL_VOLUME;
         gs->audio_handler.channel_volumes[AUDIO_CHANNEL_GUI] = AUDIO_GUI_VOLUME;
         gs->audio_handler.channel_volumes[AUDIO_CHANNEL_MUSIC] = AUDIO_MUSIC_VOLUME;
         gs->audio_handler.channel_volumes[AUDIO_CHANNEL_AMBIENCE] = AUDIO_AMBIENCE_VOLUME;
     }
-
-#if 0
-    Input *in = &gs->input;
-
-    if (in->keys[SDL_SCANCODE_F1]) gs->channel_editing = AUDIO_CHANNEL_CHISEL;
-    if (in->keys[SDL_SCANCODE_F2]) gs->channel_editing = AUDIO_CHANNEL_GUI;
-    if (in->keys[SDL_SCANCODE_F3]) gs->channel_editing = AUDIO_CHANNEL_MUSIC;
-    if (in->keys[SDL_SCANCODE_F4]) gs->channel_editing = AUDIO_CHANNEL_AMBIENCE;
-    if (in->keys[SDL_SCANCODE_ESCAPE]) gs->channel_editing = 0;
-
-    int *volume = &gs->audio_handler.channel_volumes[gs->channel_editing];
-    if (in->keys[SDL_SCANCODE_EQUALS]) {
-        (*volume)++;
-        *volume = clamp(*volume, 0, MIX_MAX_VOLUME);
-    }
-    if (in->keys[SDL_SCANCODE_MINUS]) {
-        (*volume)--;
-        *volume = clamp(*volume, 0, MIX_MAX_VOLUME);
-    }
-
-    const char *channel_name[] = {
-        "",
-        "",
-        "Chisel",
-        "Narrator",
-        "GUI",
-        "Ambience",
-        "Music",
-    };
-
-    if (gs->channel_editing) {
-        char string[128];
-        sprintf(string, "Channel Editing: %s", channel_name[gs->channel_editing]);
-        RenderTextDebugPush(string, 64, GUI_H+64);
-        sprintf(string, "Volume: %d/%d", gs->audio_handler.channel_volumes[gs->channel_editing], MIX_MAX_VOLUME);
-        RenderTextDebugPush(string, 64, GUI_H+64+32);
-    }
-#endif
 
     assign_channel_volumes(&gs->pause_menu, &gs->audio_handler);
 }
@@ -628,6 +590,20 @@ export void game_run(Game_State *state) {
         border_color_desired.r = 255;
         border_color_desired.g = 255;
         border_color_desired.b = 255;
+#ifdef __EMSCRIPTEN__
+        if (!gs->html_set_background_color_already) {
+            html_set_background_color_white();
+            gs->html_set_background_color_already = true;
+        }
+#endif
+    } else {
+#ifdef __EMSCRIPTEN__
+        bool prev = gs->html_set_background_color_already;
+        gs->html_set_background_color_already = false;
+        if (prev) {
+            html_set_background_color_black();
+        }
+#endif
     }
 
     gs->border_color.r = interpolate(gs->border_color.r, border_color_desired.r, 2);

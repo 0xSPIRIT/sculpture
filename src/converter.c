@@ -193,14 +193,8 @@ static void all_converters_draw(int target) {
 }
 
 static bool converter_is_layout_valid(Converter *converter) {
-    Converter copy = *converter;
-
     // Do a virtual conversion, and see if it worked.
-    bool success = converter_convert(converter);
-
-    // Revert to the copy
-    *converter = copy;
-
+    bool success = converter_convert(converter, true);
     return success;
 }
 
@@ -570,8 +564,9 @@ static int material_converter_convert(Item *input1, Item *input2, Item *fuel) {
 }
 
 // Returns if the conversion went succesfully.
-static bool converter_convert(Converter *converter) {
+static bool converter_convert(Converter *converter, bool test_only) {
     bool did_convert = false;
+    bool failed = false;
 
     int temp_output_type = 0;
 
@@ -582,6 +577,20 @@ static bool converter_convert(Converter *converter) {
 
     if (converter->type == CONVERTER_MATERIAL) {
         fuel = &converter->slots[SLOT_FUEL].item;
+    }
+
+    // Save the states for when test_only = true
+    Item input1_temp = {0};
+    Item input2_temp = {0};
+    Item output_temp = {0};
+    Item   fuel_temp = {0};
+    Converter converter_temp = {0};
+    if (test_only) {
+        input1_temp = *input1;
+        input2_temp = *input2;
+        output_temp = *output;
+        if (fuel) fuel_temp = *fuel;
+        converter_temp = *converter;
     }
 
     int number_inputs = (input1->type != 0) + (input2->type != 0);
@@ -658,13 +667,23 @@ static bool converter_convert(Converter *converter) {
 
         did_convert = true;
     } else {
-		return false;
-	}
+        failed = true;
+    }
 
+    if (test_only) { // Revert
+        *input1 = input1_temp;
+        *input2 = input2_temp;
+        *output = output_temp;
+        if (fuel) *fuel = fuel_temp;
+        *converter = converter_temp;
+    }
+
+    if (failed) return false;
     return !final_conversion || !did_convert;
 }
 
 static void converter_tick(Converter *converter) {
+    converter->go_button->disabled = !converter_is_layout_valid(converter);
     converter->arrow.y = (int) (converter->h/2 + 18);
 
     converter_setup_position(converter);
@@ -702,14 +721,14 @@ static void converter_tick(Converter *converter) {
             converter->timer_current = 0;
             switch (converter->type) {
                 case CONVERTER_MATERIAL: {
-                    bool did_convert = converter_convert(gs->material_converter);
+                    bool did_convert = converter_convert(gs->material_converter, false);
                     if (!did_convert) {
                         converter_set_state(gs->material_converter, CONVERTER_OFF);
                     }
                     break;
                 }
                 case CONVERTER_FUEL: {
-                    bool did_convert = converter_convert(gs->fuel_converter);
+                    bool did_convert = converter_convert(gs->fuel_converter, false);
                     if (!did_convert) {
                         converter_set_state(gs->fuel_converter, CONVERTER_OFF);
                     }
@@ -726,22 +745,6 @@ static void converter_tick(Converter *converter) {
 static void all_converters_tick(void) {
     // Grey out the buttons for each converter
     // if no converter are possible right now.
-
-    if (0 == material_converter_convert(&gs->material_converter->slots[SLOT_INPUT1].item,
-                                        &gs->material_converter->slots[SLOT_INPUT2].item,
-                                        &gs->material_converter->slots[SLOT_FUEL].item)) {
-        gs->material_converter->go_button->disabled = true;
-    } else {
-        gs->material_converter->go_button->disabled = false;
-    }
-
-    if (0 == fuel_converter_convert(&gs->fuel_converter->slots[SLOT_INPUT1].item,
-                                    &gs->fuel_converter->slots[SLOT_INPUT2].item))
-    {
-        gs->fuel_converter->go_button->disabled = true;
-    } else {
-        gs->fuel_converter->go_button->disabled = false;
-    }
 
     converter_tick(gs->material_converter);
     converter_tick(gs->fuel_converter);

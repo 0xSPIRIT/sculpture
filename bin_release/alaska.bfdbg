@@ -1,11 +1,11 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\titlescreen.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\assets.c", "d:\\a01\\_work\\43\\s\\src\\vctools\\crt\\vcruntime\\src\\string\\amd64\\memset.asm"]
 
 [MainWindow]
-X = 94
-Y = 46
+X = 0
+Y = 66
 Width = 1801
 Height = 894
 ShowKind = "ShowMaximized"
@@ -25,44 +25,13 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "Profile"
-TabWidth = 87.41496
-TabIsPinned = false
-Type = "ProfilePanel"
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "render.c"
-TabWidth = 76.25851
+TabLabel = "assets.c"
+TabWidth = 82.31293
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\render.c"
-CursorPos = 21295
-VertPos = 6168.0
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "SDL_dynapi_procs.h"
-TabWidth = 142.9252
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"
-CursorPos = 25783
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "game.c"
-TabWidth = 70.81633
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 17160
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "titlescreen.c"
-TabWidth = 98.02721
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\titlescreen.c"
-CursorPos = 927
-VertPos = 384.0
+FilePath = "d:\\dev\\sculpture\\src\\assets.c"
+CursorPos = 9406
+VertPos = 5184.0
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 790.0
@@ -89,7 +58,7 @@ TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 229.0}, {Width = 676.0}, {Width = 225.0}]
-Items = ["level", ""]
+Items = ["level", "gs.audio.medium_chisel", "gs.audio.small_chisel", "name", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"
@@ -119,7 +88,6 @@ TabIsPinned = false
 Type = "ThreadPanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
-Active = true
 TabLabel = "Call Stack"
 TabWidth = 105.102
 TabIsPinned = false
@@ -132,15 +100,11 @@ TabIsPinned = false
 Type = "ImmediatePanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+Active = true
 TabLabel = "Breakpoints"
 TabWidth = 117.3469
 TabIsPinned = false
 Type = "BreakpointPanel"
-
-[[Breakpoints]]
-File = "d:\\dev\\sculpture\\src\\titlescreen.c"
-Line = 38
-Column = 8
 
 [[BookmarkFolders]]
 Title = ""

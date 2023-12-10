@@ -74,6 +74,7 @@ typedef struct Game_State {
     int timer;
 
     bool show_icons;
+    bool html_set_background_color_already;
 
     Wind wind;
 

@@ -369,7 +369,7 @@ static bool draw_text_button(int target,
 
     int expand = 2;
     button_rect.x -= Scale(expand);
-    button_rect.y -= Scale(expand);
+    button_rect.y -= Scale(2*expand);
     button_rect.w += Scale(2*expand);
     button_rect.h += Scale(2*expand);
 

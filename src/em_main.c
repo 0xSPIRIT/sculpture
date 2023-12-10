@@ -39,6 +39,14 @@ EM_JS(int, canvas_get_height, (), {
           return parseInt(canvas.style.height);
       });
 
+EM_JS(void, html_set_background_color_white, (), {
+          document.body.style.backgroundColor = "white";
+      });
+
+EM_JS(void, html_set_background_color_black, (), {
+          document.body.style.backgroundColor = "black";
+      });
+
 #include "headers.h"
 
 #include "game.c"
@@ -95,7 +103,7 @@ static void game_init_sdl_em(Game_State *state, const char *window_title, int w,
     state->device_pixel_ratio = device_pixel_ratio;
 
     canvas_set_size(state->real_width, state->real_height, device_pixel_ratio);
-    
+
     game_init_sdl_audio(state);
 
     ok = (IMG_Init(IMG_INIT_PNG) != 0);
@@ -185,12 +193,12 @@ static void em_mainloop(void *arg) {
     GameLoopData *data = (GameLoopData*) arg;
 
     SDL_Event event;
-    
+
     if (SDL_GetMouseFocus() != null) {
         focuscanvas();
         gs->test = false;
     }
-    
+
     data->game_state->input.em_dx = 0;
     data->game_state->input.em_dy = 0;
 

@@ -231,29 +231,29 @@ static void audio_init(Audio *audio) {
 
     for (int i = 0; i < 6; i++) {
         char name[64];
-        sprintf(name, DATA_DIR "audio/chisel_%d.wav", i+1);
+        sprintf(name, "audio/chisel_%d.wav", i+1);
         audio->medium_chisel[i] = load_sound(name, chisel_volume);
     }
     audio->small_chisel = load_sound("audio/small_chisel.wav", 1);
 
     for (int i = 0; i < ArrayCount(audio->ice_chisel); i++) {
         char name[64];
-        sprintf(name, DATA_DIR "audio/ice_chisel_%d.wav", i+1);
+        sprintf(name, "audio/ice_chisel_%d.wav", i+1);
         audio->ice_chisel[i] = load_sound(name, chisel_volume);
     }
 
     for (int i = 0; i < ArrayCount(audio->glass_chisel); i++) {
         char name[64];
-        sprintf(name, DATA_DIR "audio/glass_chisel_%d.ogg", i+1);
+        sprintf(name, "audio/glass_chisel_%d.ogg", i+1);
 
-        if (i == 1) strcpy(name, DATA_DIR "audio/glass_chisel_2.wav");
+        if (i == 1) strcpy(name, "audio/glass_chisel_2.wav");
 
         audio->glass_chisel[i] = load_sound(name, chisel_volume);
     }
 
     for (int i = 0; i < ArrayCount(audio->small_glass_chisel); i++) {
         char name[64];
-        sprintf(name, DATA_DIR "audio/glass_small_%d.ogg", i+1);
+        sprintf(name, "audio/glass_small_%d.ogg", i+1);
         audio->small_glass_chisel[i] = load_sound(name, scale*1);
     }
 

@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\converter.c", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\dev\\sculpture\\src\\audio.c"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\assets.c", "d:\\dev\\sculpture\\src\\render.c", "d:\\dev\\sculpture\\src\\grid.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\dev\\sculpture\\src\\effects.c", "d:\\dev\\sculpture\\src\\preview.c", "d:\\dev\\sculpture\\src\\pause_menu.c", "d:\\dev\\sculpture\\src\\wind.c", "d:\\dev\\sculpture\\src\\save.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\audio\\SDL_audio.c", "d:\\dev\\sculpture\\src\\titlescreen.c"]
 
 [MainWindow]
 X = 0
@@ -24,32 +24,126 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "render.c"
+TabWidth = 85.71429
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\render.c"
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "assets.c"
+TabWidth = 82.31293
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\assets.c"
+CursorPos = 1776
+VertPos = 648.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "win32_main.c"
 TabWidth = 116.3265
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\win32_main.c"
-CursorPos = 12138
-VertPos = 10776.0
+CursorPos = 12014
+VertPos = 10454.4
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "audio.c"
-TabWidth = 80.95238
+TabLabel = "grid.c"
+TabWidth = 71.42857
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\audio.c"
-CursorPos = 1729
-VertPos = 1080.0
+FilePath = "d:\\dev\\sculpture\\src\\grid.c"
+CursorPos = 8774
+VertPos = 7824.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "effects.c"
+TabWidth = 85.71429
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\effects.c"
+CursorPos = 2986
+VertPos = 2088.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "preview.c"
+TabWidth = 92.51701
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\preview.c"
+CursorPos = 1896
+VertPos = 1224.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "level.c"
+TabWidth = 74.82993
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\level.c"
+CursorPos = 24035
+VertPos = 19608.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "pause_menu.c"
+TabWidth = 120.4082
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\pause_menu.c"
+CursorPos = 233
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "wind.c"
+TabWidth = 76.19048
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\wind.c"
+CursorPos = 654
+VertPos = 384.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_render_d3d.c"
+TabWidth = 140.8163
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c"
+CursorPos = 48335
+VertPos = 32520.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "SDL_audio.c"
+TabWidth = 108.1633
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\audio\\SDL_audio.c"
+CursorPos = 23184
+VertPos = 16920.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "converter.c"
-TabWidth = 102.0408
+TabLabel = "game.c"
+TabWidth = 80.27211
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\converter.c"
-CursorPos = 21116
-VertPos = 15360.0
+FilePath = "d:\\dev\\sculpture\\src\\game.c"
+CursorPos = 14452
+VertPos = 10152.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "save.c"
+TabWidth = 73.46938
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\save.c"
+CursorPos = 335
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "titlescreen.c"
+TabWidth = 107.483
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\titlescreen.c"
+CursorPos = 334
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0
@@ -64,19 +158,19 @@ SizePriority = 0.5652725
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
-Active = true
 TabLabel = "Output"
 TabWidth = 90.13605
 TabIsPinned = false
 Type = "OutputPanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+Active = true
 TabLabel = "Watch"
 TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 335.0}, {Width = 760.0}, {Width = 253.0}]
-Items = ["instance.range_start", "instance.range_end", "stream.point_count", "i", "instance->range_start", "instance.range_end", "instance.time", "sizeof(Converter)", "final_conversion", ""]
+Items = ["gs.audio_handler.channel_volumes[AUDIO_CHANNEL_CHISEL]", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"
