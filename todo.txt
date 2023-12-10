@@ -3,10 +3,6 @@ TODO
   - Music
       - Ending song
 
-  - Sound Effects
-      - Destroy Level sound effect
-      x Conversion sound effect
-
   - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
 
 Things to Remember When Doing a Release Build

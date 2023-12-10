@@ -11,35 +11,7 @@ static void titlescreen_init(void) {
 
 static void titlescreen_goto_next(void) {
     gs->gamestate = GAME_STATE_PLAY;
-}
-
-static void titlescreen_tick(void) {
-    u8 *keys = gs->input.keys;
-    bool mouse_pressed = gs->input.mouse_pressed[SDL_BUTTON_LEFT];
-
-    bool can_goto = true;
-
-#ifdef __EMSCRIPTEN__
-    can_goto = gs->titlescreen.clicked_yet;
-    if (!can_goto && mouse_pressed) {
-        gs->titlescreen.clicked_yet = true;
-    }
-#endif
-
-    if (can_goto &&
-       (mouse_pressed ||
-        keys[SDL_SCANCODE_RETURN] ||
-        keys[SDL_SCANCODE_SPACE]  ||
-        keys[SDL_SCANCODE_TAB]))
-    {
-        gs->titlescreen.stop = true;
-        if (Mix_PlayingMusic()) {
-            Mix_FadeOutMusic(2500);
-            Mix_HookMusicFinished(titlescreen_goto_next);
-        } else {
-            titlescreen_goto_next();
-        }
-    }
+    goto_level(gs->level_current);
 }
 
 static void draw_focus(int target) {
@@ -64,6 +36,8 @@ static void titlescreen_draw(int target) {
     RenderClear(target);
 
     if (gs->titlescreen.stop) return;
+
+    bool pressed_delete_save = false;
 
     int text_width, text_height;
     TTF_SizeText(gs->fonts.font_titlescreen->handle,
@@ -96,7 +70,7 @@ static void titlescreen_draw(int target) {
                     null,
                     false);
 #endif
-    
+
 #ifndef __EMSCRIPTEN__
     {
         const char *text = "F11 - Fullscreen";
@@ -136,12 +110,50 @@ static void titlescreen_draw(int target) {
         data.alignment = ALIGNMENT_CENTER;
 
         RenderText(target, &data);
+
+#ifndef __EMSCRIPTEN__
+        pressed_delete_save = draw_text_button(target,
+                                               "delete",
+                                               "Delete Save Data",
+                                               Scale(8+4),
+                                               gs->game_height - Scale(8+4),
+                                               gs->fonts.font_times,
+                                               WHITE,
+                                               ALIGNMENT_BOTTOM_LEFT,
+                                               TEXT_RENDER_BLENDED);
+        if (pressed_delete_save) {
+            gs->level_current = 0;
+            save_game();
+        }
+#endif
     }
 
+    if (pressed_delete_save) return;
+
+    u8 *keys = gs->input.keys;
+    bool mouse_pressed = gs->input.mouse_pressed[SDL_BUTTON_LEFT];
+
+    bool can_goto = true;
 
 #ifdef __EMSCRIPTEN__
-    if (!gs->titlescreen.clicked_yet) {
-        //draw_focus(target);
+    can_goto = gs->titlescreen.clicked_yet;
+    if (!can_goto && mouse_pressed) {
+        gs->titlescreen.clicked_yet = true;
     }
 #endif
+
+    if (can_goto &&
+       (mouse_pressed ||
+        keys[SDL_SCANCODE_RETURN] ||
+        keys[SDL_SCANCODE_SPACE]  ||
+        keys[SDL_SCANCODE_TAB]))
+    {
+        gs->titlescreen.stop = true;
+        if (Mix_PlayingMusic()) {
+            Mix_FadeOutMusic(2500);
+            Mix_HookMusicFinished(titlescreen_goto_next);
+        } else {
+            titlescreen_goto_next();
+        }
+    }
 }

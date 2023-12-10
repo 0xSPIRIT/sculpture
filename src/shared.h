@@ -73,6 +73,8 @@ typedef struct Game_State {
     f64 highest_frametime;
     int timer;
 
+    bool show_icons;
+
     Wind wind;
 
     bool needs_manual_fps_lock; // If the screen's refresh rate != 60, we need to manually do this.

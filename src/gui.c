@@ -369,7 +369,7 @@ static bool draw_text_button(int target,
 
     int expand = 2;
     button_rect.x -= Scale(expand);
-    button_rect.y -= Scale(2*expand);
+    button_rect.y -= Scale(expand);
     button_rect.w += Scale(2*expand);
     button_rect.h += Scale(2*expand);
 
@@ -748,65 +748,58 @@ static void gui_popup_draw(int target) {
     RenderColorStruct(c);
     RenderFillRect(target, bar);
 
-#if 0
-    RenderColorStruct(ColorFromInt(CONVERTER_LINE_COLOR));
-    RenderLine(target,
-               bar.x,
-               bar.y+bar.h,
-               bar.x+gs->game_width,
-               bar.y+bar.h);
-#endif
+    if (gs->show_icons) {
+        SDL_Rect tab_icon = {
+            gs->gh*gs->S - Scale(128), (int)(GUI_H + gui->popup_y) - h,
+            w, h
+        };
 
-    SDL_Rect tab_icon = {
-        gs->gh*gs->S - Scale(128), (int)(GUI_H + gui->popup_y) - h,
-        w, h
-    };
+        if (gs->level_current >= 4-1) {
+            int mx = gs->input.real_mx;
+            int my = gs->input.real_my;
+            gs->is_mouse_on_tab_icon = is_point_in_rect((SDL_Point){mx, my}, tab_icon);
 
-    if (gs->level_current >= 4-1) {
-        int mx = gs->input.real_mx;
-        int my = gs->input.real_my;
-        gs->is_mouse_on_tab_icon = is_point_in_rect((SDL_Point){mx, my}, tab_icon);
+            bool is_background_white = (gs->level_current+1 == 11);
 
-        bool is_background_white = (gs->level_current+1 == 11);
-
-        if (gs->is_mouse_on_tab_icon) {
-            if (gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
-                gui_popup_toggle();
+            if (gs->is_mouse_on_tab_icon) {
+                if (gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
+                    gui_popup_toggle();
+                }
+                RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 200);
+                if (is_background_white) RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 255);
+            } else {
+                RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 100);
+                if (is_background_white) RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 255);
             }
-            RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 200);
-            if (is_background_white) RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 255);
+
+            RenderTexture(target, &GetTexture(TEXTURE_TAB), null, &tab_icon);
+        }
+
+        int size = 32;
+        SDL_Rect speaker = {
+            gs->game_width - Scale(size) - Scale(8),
+            GUI_H + Scale(8),
+            Scale(size),
+            Scale(size)
+        };
+        u8 alpha = 255;
+        if (mouse_in_rect(speaker) && !gs->gui.popup) {
+            RenderTextureAlphaMod(&GetTexture(TEXTURE_SPEAKER), 255);
+            if (gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+                gs->pause_menu.active = true;
+            }
         } else {
-            RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 100);
-            if (is_background_white) RenderTextureAlphaMod(&GetTexture(TEXTURE_TAB), 255);
+            alpha = 100;
+            RenderTextureAlphaMod(&GetTexture(TEXTURE_SPEAKER), 100);
         }
-
-        RenderTexture(target, &GetTexture(TEXTURE_TAB), null, &tab_icon);
+        RenderTexture(target, &GetTexture(TEXTURE_SPEAKER), null, &speaker);
+        RenderColor(91, 91, 91, alpha);
+        speaker.x--;
+        speaker.y--;
+        speaker.w+=2;
+        speaker.h+=2;
+        RenderDrawRect(target, speaker);
     }
-
-    int size = 32;
-    SDL_Rect speaker = {
-        gs->game_width - Scale(size) - Scale(8),
-        GUI_H + Scale(8),
-        Scale(size),
-        Scale(size)
-    };
-    u8 alpha = 255;
-    if (mouse_in_rect(speaker) && !gs->gui.popup) {
-        RenderTextureAlphaMod(&GetTexture(TEXTURE_SPEAKER), 255);
-        if (gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-            gs->pause_menu.active = true;
-        }
-    } else {
-        alpha = 100;
-        RenderTextureAlphaMod(&GetTexture(TEXTURE_SPEAKER), 100);
-    }
-    RenderTexture(target, &GetTexture(TEXTURE_SPEAKER), null, &speaker);
-    RenderColor(91, 91, 91, alpha);
-    speaker.x--;
-    speaker.y--;
-    speaker.w+=2;
-    speaker.h+=2;
-    RenderDrawRect(target, speaker);
 
     all_converters_draw(target);
     inventory_draw(target);

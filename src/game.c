@@ -33,11 +33,11 @@
 #include "narration.c"
 #include "3d.c"
 #include "level.c"
-#include "titlescreen.c"
 #include "background.c"
 #include "audio.c"
 #include "wind.c"
 #include "save.c"
+#include "titlescreen.c"
 #include "pause_menu.c"
 
 static void game_resize(int h) {
@@ -106,7 +106,7 @@ static void game_update_view(void) {
     if (fabsf(gs->render.view.y - gs->render.to.y) <= 1) gs->render.view.y = gs->render.to.y;
 }
 
-bool can_activate_pause_menu() {
+bool can_activate_pause_menu(void) {
     bool result;
 
     result = !gs->gui.popup;
@@ -133,10 +133,18 @@ export void game_init(Game_State *state) {
     gs->render.view.h = gs->game_height-GUI_H;
 
     gs->show_tutorials = true;
+    gs->show_icons = true;
 
     levels_setup();
     previews_load();
+
+    // If the save file was deleted on the titlescreen,
+    // this will be called again.
+    // The only reason we call it here as well is because
+    // we want to initialize some important memory, notably
+    // gs->gw and gs->gh to be used in render_targets_init().
     goto_level(gs->level_current);
+
     titlescreen_init();
 
 #if SHOW_TITLESCREEN
@@ -288,6 +296,9 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 popup_confirm_activate(&gs->gui.restart_popup_confirm);
                 break;
             }
+            case SDLK_i: {
+                gs->show_icons = !gs->show_icons;
+            } break;
 #ifndef ALASKA_RELEASE_MODE
             case SDLK_e: {
                 if (gs->input.keys[SDL_SCANCODE_LCTRL]) {
@@ -488,7 +499,6 @@ export void game_run(Game_State *state) {
 
     switch (gs->gamestate) {
         case GAME_STATE_TITLESCREEN: {
-            titlescreen_tick();
             titlescreen_draw(RENDER_TARGET_MASTER);
             break;
         }

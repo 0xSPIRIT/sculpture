@@ -16,7 +16,7 @@ static void rain_splash(Rain_Splash *rain, int amount, int x, int y) {
 
 static void draw_rain_splashes(int target, Rain_Splash *rain) {
     if (gs->current_effect.type != EFFECT_RAIN) return;
-    
+
     int sub_target = RENDER_TARGET_EFFECTS;
 
     RenderColor(0,0,0,0);
@@ -95,10 +95,10 @@ static void effect_reset_snow(Effect *effect, bool high_fidelity) {
         Effect_Particle *particle = &effect->particles[i];
 
         SDL_Rect bounds = effect->bounds;
-        
+
         int desired_x = -1, desired_y = -1;
-        
-        while (desired_x == -1 || gs->grid[desired_x+desired_y*gs->gw].type) {
+
+        while (desired_x == -1 || (!high_fidelity && gs->grid[desired_x+desired_y*gs->gw].type)) {
             desired_x = bounds.x+(rand()%(bounds.w-bounds.x));
             desired_y = bounds.y+(rand()%(bounds.h-bounds.y));
         }
@@ -257,7 +257,7 @@ static ParticleSplashResult particle_tick(Effect *effect, int i) {
                 if (effect->type == EFFECT_RAIN) {
                     // Go through every pixel from (prev_x, prev_y)
                     // to (particle->x, particle->y) to find the actual contact point
-                    
+
                     f32 dx = particle->x - prev_x;
                     f32 dy = particle->y - prev_y;
 
@@ -417,5 +417,5 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
         }
         default: break;
     }
-    
+
 }

@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\wind.c", "d:\\dev\\sculpture\\src\\shared.h", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\SDL_video.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\windows\\SDL_windowsmessagebox.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c", "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\converter.c", "d:\\dev\\sculpture\\src\\win32_main.c", "d:\\dev\\sculpture\\src\\audio.c"]
 
 [MainWindow]
 X = 0
@@ -24,79 +24,32 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "shared.h"
-TabWidth = 78.97959
+TabLabel = "win32_main.c"
+TabWidth = 116.3265
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\shared.h"
-CursorPos = 5597
-VertPos = 5232.0
+FilePath = "d:\\dev\\sculpture\\src\\win32_main.c"
+CursorPos = 12138
+VertPos = 10776.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "SDL_video.c"
-TabWidth = 97.34694
+TabLabel = "audio.c"
+TabWidth = 80.95238
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\SDL_video.c"
-CursorPos = 130198
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "SDL_windowsmessagebox.c"
-TabWidth = 187.1429
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\video\\windows\\SDL_windowsmessagebox.c"
-CursorPos = 32059
+FilePath = "d:\\dev\\sculpture\\src\\audio.c"
+CursorPos = 1729
+VertPos = 1080.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "wind.c"
-TabWidth = 66.7347
+TabLabel = "converter.c"
+TabWidth = 102.0408
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\wind.c"
-CursorPos = 4291
-VertPos = 3424.0
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "gui.c"
-TabWidth = 57.21089
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\gui.c"
-CursorPos = 23636
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "SDL_render_d3d.c"
-TabWidth = 131.3605
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\direct3d\\SDL_render_d3d.c"
-CursorPos = 46152
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "SDL_render.c"
-TabWidth = 103.4694
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\render\\SDL_render.c"
-CursorPos = 137515
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "SDL_dynapi_procs.h"
-TabWidth = 142.9252
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\SDL STATIC STUFF\\SDL\\src\\dynapi\\SDL_dynapi_procs.h"
-CursorPos = 27376
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "game.c"
-TabWidth = 70.81633
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 14057
+FilePath = "d:\\dev\\sculpture\\src\\converter.c"
+CursorPos = 21116
+VertPos = 15360.0
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0
@@ -123,7 +76,7 @@ TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 335.0}, {Width = 760.0}, {Width = 253.0}]
-Items = ["instance.range_start", "instance.range_end", "stream.point_count", "i", "instance->range_start", "instance.range_end", "instance.time", ""]
+Items = ["instance.range_start", "instance.range_end", "stream.point_count", "i", "instance->range_start", "instance.range_end", "instance.time", "sizeof(Converter)", "final_conversion", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"
@@ -153,7 +106,6 @@ TabIsPinned = false
 Type = "ThreadPanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
-Active = true
 TabLabel = "Call Stack"
 TabWidth = 105.102
 TabIsPinned = false
@@ -166,15 +118,11 @@ TabIsPinned = false
 Type = "ImmediatePanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+Active = true
 TabLabel = "Breakpoints"
 TabWidth = 117.3469
 TabIsPinned = false
 Type = "BreakpointPanel"
-
-[[Breakpoints]]
-File = "d:\\dev\\sculpture\\src\\render.c"
-Line = 109
-Column = 4
 
 [[BookmarkFolders]]
 Title = ""
