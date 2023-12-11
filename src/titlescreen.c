@@ -120,7 +120,7 @@ static void titlescreen_draw(int target) {
                                            "Delete Save Data",
                                            Scale(8+4),
                                            gs->game_height - Scale(8+4),
-                                           gs->fonts.font_times,
+                                           gs->fonts.font,
                                            WHITE,
                                            ALIGNMENT_BOTTOM_LEFT,
                                            TEXT_RENDER_BLENDED);

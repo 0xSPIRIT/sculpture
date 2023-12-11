@@ -276,6 +276,7 @@ static void audio_init(Audio *audio) {
 
 // Do we really have to do this? Aren't all resources freed on exit?
 static void audio_deinit(Audio *audio) {
+    Mix_ChannelFinished(null);
     Mix_FreeMusic(audio->music_titlescreen);
 
     u8 *pointer = (u8*)audio;

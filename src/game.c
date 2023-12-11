@@ -123,6 +123,8 @@ export void game_init(Game_State *state) {
     load_game();
     setup_winds(&state->wind);
 
+    audio_handler_init();
+
     pause_menu_init(&state->pause_menu);
 
     gs->border_color = (SDL_Color){0,0,0};

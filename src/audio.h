@@ -42,7 +42,7 @@ typedef struct {
     AmbienceType ambience;
     int ambience_volume;
 
-    MusicType music;
+    MusicType music, queued_music;
     int music_volume;
     bool music_end;
 
@@ -69,4 +69,4 @@ static void audio_set_ambience(AmbienceType ambience);
 
 static void audio_halt_music(void);
 static void audio_set_music_accordingly(void);
-static void audio_set_music(MusicType music);
+static void audio_set_music(MusicType music, bool fade);

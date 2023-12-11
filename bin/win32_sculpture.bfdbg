@@ -1,14 +1,14 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\converter.c"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\assets.c", "Disassembly", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\converter.c"]
 
 [MainWindow]
-X = 94
-Y = 66
+X = -23
+Y = 68
 Width = 1801
 Height = 894
-ShowKind = "ShowMaximized"
+ShowKind = "ShowNormal"
 
 [MainDockingFrame]
 Type = "DockingFrame"
@@ -25,6 +25,29 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
+TabLabel = "assets.c"
+TabWidth = 82.31293
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\assets.c"
+CursorPos = 10736
+VertPos = 6600.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "audio.c"
+TabWidth = 80.95238
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\audio.c"
+CursorPos = 146
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "Disassembly"
+TabWidth = 109.5238
+TabIsPinned = false
+Type = "DisassemblyPanel"
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "converter.c"
 TabWidth = 92.58504
 TabIsPinned = false
@@ -88,6 +111,7 @@ TabIsPinned = false
 Type = "ThreadPanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
+Active = true
 TabLabel = "Call Stack"
 TabWidth = 105.102
 TabIsPinned = false
@@ -100,7 +124,6 @@ TabIsPinned = false
 Type = "ImmediatePanel"
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
-Active = true
 TabLabel = "Breakpoints"
 TabWidth = 117.3469
 TabIsPinned = false
