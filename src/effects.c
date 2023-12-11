@@ -368,10 +368,10 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
             break;
         }
         case EFFECT_RAIN: {
-            int sub_target = RENDER_TARGET_EFFECTS;
+            //int sub_target = RENDER_TARGET_EFFECTS;
 
-            RenderColor(0,0,0,0);
-            RenderClear(sub_target);
+            //RenderColor(0,0,0,0);
+            //RenderClear(sub_target);
 
             for (int i = 0; i < effect->particle_count; i++) {
                 Effect_Particle *p = &effect->particles[i];
@@ -404,15 +404,16 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
                     u8 alpha = normalized * 255;
 
                     apply_lighting_to_alpha(&gs->lighting, &alpha, (px+p2x)/2, (py+p2y)/2);
-                    alpha = clamp((int)alpha * 1.5, 0, 255);
+
+                    alpha *= (40.0/255.0) * 1.5;
                     RenderColor(255, 255, 255, alpha);
                 }
 
-                RenderLineRelative(sub_target, px, py, p2x, p2y);
+                RenderLineRelative(target, px, py, p2x, p2y);
             }
 
-            RenderTextureAlphaMod(&RenderTarget(sub_target)->texture, 40);
-            RenderTargetToTarget(target, sub_target, null, null);
+            //RenderTextureAlphaMod(&RenderTarget(sub_target)->texture, 40);
+            //RenderTargetToTarget(target, sub_target, null, null);
             break;
         }
         default: break;

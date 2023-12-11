@@ -2,8 +2,15 @@ TODO
 
   - Music
       - Ending song
+      - Improve titlescreen song: make it more ambient
 
-  - Make a graph of all dates of the files in C:\Users\ameer\AppVerifierLogs
+  x Click to begin
+  - Streamline the tutorials; is there a better way?
+  - Make music fade in/out.
+  x Converter On/Off text needs to be proper
+  x Is there any tutorial that tells you to hover over
+    overlay with the Pointer tool to show the desired material?
+  x Glitchy rain when in the outro menu
 
 Things to Remember When Doing a Release Build
   - Remove the resource.rc from the data directory

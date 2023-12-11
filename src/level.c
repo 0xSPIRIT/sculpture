@@ -816,7 +816,6 @@ static void level_draw_outro_or_play(Level *level) {
         RenderColor(0, 0, 0, 255);
 
     // Unnecessary
-
     RenderClear(target);
 
     // The meat

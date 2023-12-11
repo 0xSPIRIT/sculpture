@@ -59,66 +59,66 @@ static void placer_suck_circle(Placer *placer) {
         ux = dx/len;
         uy = dy/len;
     }
-    
+
     Cell *arr = gs->grid;
-    
+
     Cell_Type effect_pickup = effect_picked_up(&gs->current_effect);
-    
+
     bool took_anything = false;
     while (arr == gs->grid || arr == gs->gas_grid) {
         while (distance(x, y, (f32)placer->px, (f32)placer->py) < len) {
             // Remove cells in a circle
             const int r = placer->radius;
-            
+
             for (int ky = -r; ky <= r; ky++) {
                 for (int kx = -r; kx <= r; kx++) {
                     if (kx*kx + ky*ky > r*r)  continue;
-                    
+
                     int xx = (int) (x+kx);
                     int yy = (int) (y+ky);
                     if (!is_in_bounds(xx, yy)) continue;
-                    
+
                     int type = arr[xx+yy*gs->gw].type;
                     if (type == 0) continue;
-                    
+
                     if (is_cell_hard(type)) { placer_try_hard_tutorial(); continue; }
-                    
+
                     if (placer->contains->type == type || placer->contains->type == 0 || placer->contains->amount == 0) {
                         placer->contains->type = type;
-                        
+
                         bool is_initial = gs->grid[xx+yy*gs->gw].is_initial;
                         int amt = 1;
-                        
+
                         if (is_initial) {
                             amt = my_rand(xx+yy*gs->gw)%2 == 0 ? 1 : 2;
                         }
-                        
+
                         placer->contains->amount += amt;
                         took_anything = true;
-                        
+
                         set_array(arr, xx, yy, 0, -1);
                     }
                 }
             }
-            
+
             if (!took_anything && effect_pickup) {
                 effect_handle_placer(&gs->current_effect, x, y, r);
             }
-            
+
             x += ux;
             y += uy;
             if (ux == 0 && uy == 0) break;
-            
+
         }
-        
+
         if (arr == gs->gas_grid) break;
         arr = gs->gas_grid;
     }
-    
+
     if (took_anything) {
         play_sound(AUDIO_CHANNEL_GUI, gs->audio.suck, 0);
     }
-    
+
     objects_reevaluate();
 }
 

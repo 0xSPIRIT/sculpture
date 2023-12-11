@@ -1,7 +1,7 @@
 #ifdef ALASKA_RELEASE_MODE
   #define SHOW_TUTORIAL 1
 #else
-  #define SHOW_TUTORIAL 0
+  #define SHOW_TUTORIAL 1
 #endif
 
 #define MAX_TUTORIAL_LINES 10
@@ -9,20 +9,18 @@
 #define TUTORIAL_OVERLAY_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "Click the overlay button to show what Max\n"\
+    "Click the OVERLAY BUTTON to show what Max\n"\
     "wants to create.\n\n" \
-    "With the POINTER tool selected, you can\n"\
-    "display the desired material at any point\n" \
-    "by hovering your cursor over the overlay.\n"
+    "Select the POINTER TOOL to show the\n"\
+    "desired material on the overlay at any\n"\
+    "pixel.\n" \
 
 #define TUTORIAL_CHISEL_STRING  \
     "Tutorial\n" \
     "--------\n\n" \
     "Use the chisels to create your sculpture!\n\n"\
-    "Hold SHIFT and move your mouse to rotate\n"\
-    "chisel.\n\n" \
-    "Click the checkmark when you're satisfied\n"\
-    "with a level.\n"
+    "Hold SHIFT or RIGHT CLICK and move your\n"\
+    "mouse to rotate a chisel.\n\n" \
 
 #define TUTORIAL_UNDO_STRING \
     "Tutorial\n" \
@@ -37,17 +35,11 @@
     "restrictions on completeness, except your\n"\
     "own discretion.\n"\
 
-#define TUTORIAL_CHISEL_ROTATE_STRING \
-    "Tutorial\n" \
-    "--------\n\n" \
-
 #define TUTORIAL_PLACER_STRING \
     "Tutorial\n" \
     "--------\n\n" \
     "Use the PLACER to pick up the sand and place it into\n" \
-    "your INVENTORY [TAB].\n\n" \
-    "To place material, scroll the mouse for resizing,\n" \
-    "then click.\n\n"\
+    "your INVENTORY [TAB].\n\n"
 
 #define TUTORIAL_PLACER_HARD \
     "Tutorial\n" \
@@ -57,13 +49,13 @@
 #define TUTORIAL_PLACER_F_KEYS \
     "Tutorial\n" \
     "--------\n\n" \
-    "- Use the F1-F5 keys to switch to a\n" \
-    "  different Placer slot.\n"
+    "Use the F1-F5 keys to switch to a\n" \
+    "different Placer slot.\n"
 
 #define TUTORIAL_INVENTORY_STRING \
     "Tutorial\n" \
     "--------\n\n" \
-    "The slots in your inventory correspond to Placers 1-5.\n"
+    "The slots in your inventory correspond to Placers 1-5.\n" \
 
 #define TUTORIAL_FUEL_CONVERTER_STRING \
     "Tutorial\n" \

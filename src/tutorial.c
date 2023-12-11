@@ -150,8 +150,8 @@ static void check_for_tutorial() {
 
     switch (l+1) {
         case 1: {
-            Tutorial_Rect *t4 = tutorial_rect(TUTORIAL_COMPLETE_LEVEL, null);
-            Tutorial_Rect *t3 = tutorial_rect(TUTORIAL_UNDO_STRING,    t4);
+            Tutorial_Rect *t4 = tutorial_rect(TUTORIAL_UNDO_STRING, null);
+            Tutorial_Rect *t3 = tutorial_rect(TUTORIAL_COMPLETE_LEVEL, t4);
             Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_CHISEL_STRING,  t3);
             Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_OVERLAY_STRING, t2);
             gs->tutorial = *t1;

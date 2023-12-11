@@ -62,8 +62,8 @@ static void titlescreen_draw(int target) {
     RenderTextQuick(target,
                     "23123",
                     gs->fonts.font_times_small,
-                    "Web Version - Consider desktop version for superior performance",
-                    (SDL_Color){255,0,0,255},
+                    "Alaska: Web Build - Consider desktop version for superior performance!",
+                    (SDL_Color){100,100,100,255},
                     Scale(16),
                     gs->game_height - Scale(45),
                     null,
@@ -95,38 +95,40 @@ static void titlescreen_draw(int target) {
     f64 a = (1+sin(3*SDL_GetTicks()/1000.0))/2;
     a *= 255;
 
+    char text[64];
     if (gs->level_current > 0) {
-        char text[64];
         sprintf(text, "Continue: Level %d", gs->level_current+1);
+    } else {
+        sprintf(text, "Click to begin");
+    }
 
-        Render_Text_Data data = {0};
+    Render_Text_Data data = {0};
 
-        strcpy(data.identifier, "continuestr");
-        data.font = gs->fonts.font_title_2;
-        strcpy(data.str, text);
-        data.x = gs->game_width/2;
-        data.y = gs->game_height/2 + Scale(50);
-        data.foreground = RGBA(255, 255, 255, 180);
-        data.alignment = ALIGNMENT_CENTER;
+    strcpy(data.identifier, "continuestr");
+    data.font = gs->fonts.font_title_2;
+    strcpy(data.str, text);
+    data.x = gs->game_width/2;
+    data.y = gs->game_height/2 + Scale(50);
+    data.foreground = RGBA(255, 255, 255, 180);
+    data.alignment = ALIGNMENT_CENTER;
 
-        RenderText(target, &data);
+    RenderText(target, &data);
 
 #ifndef __EMSCRIPTEN__
-        pressed_delete_save = draw_text_button(target,
-                                               "delete",
-                                               "Delete Save Data",
-                                               Scale(8+4),
-                                               gs->game_height - Scale(8+4),
-                                               gs->fonts.font_times,
-                                               WHITE,
-                                               ALIGNMENT_BOTTOM_LEFT,
-                                               TEXT_RENDER_BLENDED);
-        if (pressed_delete_save) {
-            gs->level_current = 0;
-            save_game();
-        }
-#endif
+    pressed_delete_save = draw_text_button(target,
+                                           "delete",
+                                           "Delete Save Data",
+                                           Scale(8+4),
+                                           gs->game_height - Scale(8+4),
+                                           gs->fonts.font_times,
+                                           WHITE,
+                                           ALIGNMENT_BOTTOM_LEFT,
+                                           TEXT_RENDER_BLENDED);
+    if (pressed_delete_save) {
+        gs->level_current = 0;
+        save_game();
     }
+#endif
 
     if (pressed_delete_save) return;
 

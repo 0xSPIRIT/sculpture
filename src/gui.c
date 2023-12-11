@@ -34,6 +34,10 @@ static void tool_button_set_disabled(int level) {
         for (int i = TOOL_CHISEL_SMALL; i <= TOOL_CHISEL_LARGE; i++) {
             tools[i]->disabled = true;
         }
+    } else {
+        for (int i = TOOL_CHISEL_SMALL; i <= TOOL_CHISEL_LARGE; i++) {
+            tools[i]->disabled = false;
+        }
     }
 
     switch (level+1) {
@@ -244,7 +248,11 @@ static bool button_tick(Button *b, void *data) {
         default: b->on_pressed = null; break;
     }
 
-    if (b->disabled) return result;
+    if (b->disabled) {
+        b->just_had_tooltip = false;
+        //tooltip_reset(&gui->tooltip);  // What was the point of this?
+        return result;
+    }
 
     if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
         gui_input_my >= b->y && gui_input_my < b->y+b->h) {

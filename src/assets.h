@@ -68,8 +68,6 @@ typedef struct Audio {
     Sound glass_chisel[2];
     Sound small_glass_chisel[3];
     Sound small_chisel;
-
-    //Sound woosh[4];
 } Audio;
 #pragma pack(pop)
 
