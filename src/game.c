@@ -173,6 +173,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
 #if SIMULATE_MOUSE
     if (event->type == SDL_MOUSEMOTION) {
         input_tick_mouse(gs, event);
+        gs->input.em_got_mouse_motion_event_this_frame = true;
         goto event_tick_end;
     }
 #endif
@@ -458,6 +459,13 @@ export void game_run(Game_State *state) {
 
     gs->accum = 0;
     gs->amt = 0;
+
+#ifdef __EMSCRIPTEN__
+    if (!gs->input.em_got_mouse_motion_event_this_frame) {
+        gs->input.real_pmx = gs->input.real_mx;
+        gs->input.real_pmy = gs->input.real_my;
+    }
+#endif
 
     switch (gs->gamestate) {
         case GAME_STATE_TITLESCREEN: {

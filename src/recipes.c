@@ -8,6 +8,8 @@ static int get_item_from_any(int type, int timer, int override_index) {
         timer = override_index * step;
     }
 
+    Log("Type: %d\n", type);
+
     switch(type) {
         case CELL_ANY_STONE: {
             int t = timer % (step*7);
@@ -76,24 +78,24 @@ static void converter_gui_init(void) {
 
     const Recipe_Item conversions[] = {
         // Converter,  Fuel, Input 1, Input 2, Output, Alternate button
-        (Recipe_Item){CONVERTER_FUEL,     0,                   CELL_ANY_CONVERT_TO_COAL, 0,                 CELL_UNREFINED_COAL, false},
-        (Recipe_Item){CONVERTER_FUEL,     0,                   CELL_UNREFINED_COAL,      CELL_GLASS,        CELL_REFINED_COAL,   false},
-        (Recipe_Item){CONVERTER_FUEL,     0,                   CELL_ANY_STONE,           CELL_REFINED_COAL, CELL_LAVA,           false},
+        {CONVERTER_FUEL,     0,                   CELL_ANY_CONVERT_TO_COAL, 0,                 CELL_UNREFINED_COAL, false},
+        {CONVERTER_FUEL,     0,                   CELL_UNREFINED_COAL,      CELL_GLASS,        CELL_REFINED_COAL,   false},
+        {CONVERTER_FUEL,     0,                   CELL_ANY_STONE,           CELL_REFINED_COAL, CELL_LAVA,           false},
 
-        (Recipe_Item){CONVERTER_MATERIAL, CELL_ANY_FUEL,       CELL_STONE,            0,           CELL_MARBLE,    false},
-        (Recipe_Item){CONVERTER_MATERIAL, CELL_UNREFINED_COAL, CELL_STONE,            CELL_SAND,   CELL_SANDSTONE, false},
-        (Recipe_Item){CONVERTER_MATERIAL, CELL_REFINED_COAL,   CELL_SANDSTONE,        CELL_MARBLE, CELL_QUARTZ,    false},
-        (Recipe_Item){CONVERTER_MATERIAL, CELL_UNREFINED_COAL, CELL_SAND,             0,           CELL_GLASS,     false},
+        {CONVERTER_MATERIAL, CELL_ANY_FUEL,       CELL_STONE,            0,           CELL_MARBLE,    false},
+        {CONVERTER_MATERIAL, CELL_UNREFINED_COAL, CELL_STONE,            CELL_SAND,   CELL_SANDSTONE, false},
+        {CONVERTER_MATERIAL, CELL_REFINED_COAL,   CELL_SANDSTONE,        CELL_MARBLE, CELL_QUARTZ,    false},
+        {CONVERTER_MATERIAL, CELL_UNREFINED_COAL, CELL_SAND,             0,           CELL_GLASS,     false},
 
-        (Recipe_Item){CONVERTER_MATERIAL, CELL_ANY_NONE_OR_UNREFINED_COAL, CELL_ANY_STEAM_OR_ICE, 0, CELL_WATER, true},
-        (Recipe_Item){CONVERTER_MATERIAL, 0,                               CELL_WATER,            0, CELL_ICE,   false},
+        {CONVERTER_MATERIAL, CELL_ANY_NONE_OR_UNREFINED_COAL, CELL_ANY_STEAM_OR_ICE, 0, CELL_WATER, true},
+        {CONVERTER_MATERIAL, 0,                               CELL_WATER,            0, CELL_ICE,   false},
 
-        (Recipe_Item){CONVERTER_MATERIAL, CELL_ANY_COAL,       CELL_DIRT,             0,         CELL_STONE,     false},
-        (Recipe_Item){CONVERTER_MATERIAL, CELL_ANY_COAL,       CELL_ANY_WATER_OR_ICE, 0,         CELL_STEAM,     true},
+        {CONVERTER_MATERIAL, CELL_ANY_COAL,       CELL_DIRT,             0,         CELL_STONE,     false},
+        {CONVERTER_MATERIAL, CELL_ANY_COAL,       CELL_ANY_WATER_OR_ICE, 0,         CELL_STEAM,     true},
 
-        (Recipe_Item){CONVERTER_MATERIAL, CELL_LAVA, CELL_ANY_COAL, 0,            CELL_BASALT,  false},
-        (Recipe_Item){CONVERTER_MATERIAL, CELL_LAVA, CELL_QUARTZ,   CELL_MARBLE,  CELL_GRANITE, false},
-        (Recipe_Item){CONVERTER_MATERIAL, CELL_LAVA, CELL_BASALT,   CELL_GRANITE, CELL_DIAMOND, false},
+        {CONVERTER_MATERIAL, CELL_LAVA, CELL_ANY_COAL, 0,            CELL_BASALT,  false},
+        {CONVERTER_MATERIAL, CELL_LAVA, CELL_QUARTZ,   CELL_MARBLE,  CELL_GRANITE, false},
+        {CONVERTER_MATERIAL, CELL_LAVA, CELL_BASALT,   CELL_GRANITE, CELL_DIAMOND, false},
     };
 
     Recipe_Item *ptr = c->conversions;
@@ -113,7 +115,7 @@ static void converter_gui_init(void) {
     }
 }
 
-static bool converter_gui_item_draw(int target, Cell_Type item, int override_index, int x, int y, int w, int h) {
+static bool converter_gui_item_draw(int target, int item, int override_index, int x, int y, int w, int h) {
     bool mouse_in_rect = false;
 
     SDL_Rect r = { x, y, w, h };
@@ -224,18 +226,18 @@ static inline int _recipes_get_output_offset(void) {
 
 // Beginning to regret using C....!
 typedef struct GuiConversionPair {
-    Cell_Type output;
+    int output;
     SDL_Rect rectangle;
 } GuiConversionPair;
 
 // Add the rectangle to the array.
-static void recipe_pair_add(GuiConversionPair *pairs, int *pair_count, Cell_Type output, int x, int y) {
+static void recipe_pair_add(GuiConversionPair *pairs, int *pair_count, int output, int x, int y) {
     Assert(pairs);
     Assert(pair_count);
     pairs[(*pair_count)++] = (GuiConversionPair){ output, (SDL_Rect){x, y, Scale(238), Scale(200)} };
 }
 
-static SDL_Rect recipes_get_rect(GuiConversionPair *pairs, int pair_count, Cell_Type output) {
+static SDL_Rect recipes_get_rect(GuiConversionPair *pairs, int pair_count, int output) {
     for (int i = 0; i < pair_count; i++) {
         if (pairs[i].output == output) {
             return pairs[i].rectangle;

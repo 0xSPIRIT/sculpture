@@ -65,6 +65,15 @@ static void textures_init(Textures *textures) {
 
         GetTexture(TEXTURE_ITEMS+i) = RenderCreateTextureFromSurface(surf);
 
+        Texture *t = &GetTexture(TEXTURE_ITEMS+i);
+        char name[64];
+        get_name_from_type(i, name);
+        Log("Texture \"%s\": Handle: %p, Width: %d, Height: %d\n",
+            name,
+            t->handle,
+            t->width,
+            t->height);
+
         SDL_FreeSurface(surf);
     }
 

@@ -1,7 +1,7 @@
 #ifdef ALASKA_RELEASE_MODE
-#define DATA_DIR "data/"
+  #define DATA_DIR "data/"
 #else
-#define DATA_DIR "../data/"
+  #define DATA_DIR "../data/"
 #endif
 
 #define ALASKA_PIXELFORMAT SDL_PIXELFORMAT_ABGR8888

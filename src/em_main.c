@@ -201,6 +201,7 @@ static void em_mainloop(void *arg) {
 
     data->game_state->input.em_dx = 0;
     data->game_state->input.em_dy = 0;
+    data->game_state->input.em_got_mouse_motion_event_this_frame = false;
 
     while (SDL_PollEvent(&event)) {
         bool should_continue = game_handle_event(data->game_state, &event);
