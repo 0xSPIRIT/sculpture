@@ -145,7 +145,7 @@ static void tutorial_rect_run(int target) {
     button_draw(target, tut->ok_button);
 }
 
-static void check_for_tutorial() {
+static void check_for_tutorial(void) {
     int l = gs->level_current;
 
     switch (l+1) {

@@ -96,3 +96,4 @@ typedef struct Tutorial_Rect {
 
 static Tutorial_Rect* tutorial_rect(const char *str, Tutorial_Rect *next);
 static void tutorial_rect_close(void*);
+static void check_for_tutorial(void);

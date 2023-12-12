@@ -12,7 +12,7 @@ static void audio_handler_init(void) {
 // This is called every frame and sets the current music according to certain conditions.
 static void audio_set_music_accordingly(void) {
 #if !AUDIO_PLAY_MUSIC
-    audio_set_music(MUSIC_NONE);
+    audio_set_music(MUSIC_NONE, false);
 #else
     int level_number = gs->level_current+1;
 
@@ -39,6 +39,10 @@ static void audio_set_music_accordingly(void) {
 // Called every frame.
 static void audio_set_ambience_accordingly(void) {
     Level *level = &gs->levels[gs->level_current];
+
+#ifndef ALASKA_RELEASE_MODE
+    audio_handler_init(); // Because of the DLL reloading the hooks don't point to the correct spot sometimes
+#endif
 
     if (level->state == LEVEL_STATE_INTRO || gs->obj.active) {
         audio_set_ambience(0);

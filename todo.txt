@@ -4,9 +4,6 @@ TODO
       - Ending song
       - Improve titlescreen song: make it more ambient
 
-  - Streamline the tutorials; is there a better way?
-  x Make music fade in/out.
-
 Things to Remember When Doing a Release Build
   - Remove the resource.rc from the data directory
   - Remove Ctrl+G functionality, or gate it into a debug mode

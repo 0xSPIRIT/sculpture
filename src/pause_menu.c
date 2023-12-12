@@ -91,6 +91,24 @@ static void pause_menu_draw(int target, Pause_Menu *menu) {
                     0, 0, false);
 
 #ifndef __EMSCRIPTEN__
+    RenderTextQuick(target,
+                    "p",
+                    gs->fonts.font_times,
+                    "F11 - Fullscreen",
+                    WHITE,
+                    width - Scale(200),
+                    height - Scale(64),
+                    0, 0, false);
+
+    RenderTextQuick(target,
+                    "e",
+                    gs->fonts.font_times,
+                    "I - Toggle Icons",
+                    WHITE,
+                    width - Scale(200),
+                    height - Scale(105),
+                    0, 0, false);
+
     {
         bool clicked = draw_text_button(target,
                                         "close",

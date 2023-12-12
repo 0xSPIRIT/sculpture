@@ -1,10 +1,10 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\assets.c", "Disassembly", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\converter.c"]
+RecentFilesList = ["Disassembly", "d:\\dev\\sculpture\\src\\wind.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\assets.c", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\converter.c"]
 
 [MainWindow]
-X = -23
+X = 0
 Y = 68
 Width = 1801
 Height = 894
@@ -24,26 +24,44 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-Active = true
+TabLabel = "gui.c"
+TabWidth = 66.66666
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\gui.c"
+CursorPos = 24920
+VertPos = 6264.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "wind.c"
+TabWidth = 76.19048
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\wind.c"
+CursorPos = 788
+VertPos = 528.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "assets.c"
-TabWidth = 82.31293
+TabWidth = 72.85715
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\assets.c"
-CursorPos = 10736
-VertPos = 6600.0
+CursorPos = 3195
+VertPos = 6376.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "audio.c"
-TabWidth = 80.95238
+TabWidth = 71.4966
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\audio.c"
-CursorPos = 146
+CursorPos = 488
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
+Active = true
 TabLabel = "Disassembly"
-TabWidth = 109.5238
+TabWidth = 120.068
 TabIsPinned = false
 Type = "DisassemblyPanel"
 
@@ -54,7 +72,6 @@ TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\converter.c"
 CursorPos = 18873
-VertPos = 13558.88
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0

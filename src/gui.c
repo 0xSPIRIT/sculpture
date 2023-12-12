@@ -714,6 +714,27 @@ static void gui_draw(int target) {
     gui_draw_wasd_popup(target);
 }
 
+static bool gui_draw_misc_button(int target, int texture, SDL_Rect rect) {
+    bool result = false;
+
+    if (gs->gui.popup) return result;
+
+    u8 alpha = 255;
+    if (mouse_in_rect(rect)) {
+        RenderTextureAlphaMod(&GetTexture(texture), 255);
+        if (gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
+            result = true;
+        }
+    } else {
+        alpha = 100;
+        RenderTextureAlphaMod(&GetTexture(texture), 100);
+    }
+
+    RenderTexture(target, &GetTexture(texture), null, &rect);
+
+    return result;
+}
+
 static void gui_popup_draw(int target) {
     Assert(target == RENDER_TARGET_MASTER);
 
@@ -783,30 +804,29 @@ static void gui_popup_draw(int target) {
             RenderTexture(target, &GetTexture(TEXTURE_TAB), null, &tab_icon);
         }
 
+
         int size = 32;
-        SDL_Rect speaker = {
+        SDL_Rect speaker_rect = {
             gs->game_width - Scale(size) - Scale(8),
             GUI_H + Scale(8),
             Scale(size),
             Scale(size)
         };
-        u8 alpha = 255;
-        if (mouse_in_rect(speaker) && !gs->gui.popup) {
-            RenderTextureAlphaMod(&GetTexture(TEXTURE_SPEAKER), 255);
-            if (gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT)) {
-                gs->pause_menu.active = true;
-            }
-        } else {
-            alpha = 100;
-            RenderTextureAlphaMod(&GetTexture(TEXTURE_SPEAKER), 100);
+        if (gui_draw_misc_button(target, TEXTURE_SPEAKER, speaker_rect)) {
+            gs->pause_menu.active = !gs->pause_menu.active;
         }
-        RenderTexture(target, &GetTexture(TEXTURE_SPEAKER), null, &speaker);
-        RenderColor(91, 91, 91, alpha);
-        speaker.x--;
-        speaker.y--;
-        speaker.w+=2;
-        speaker.h+=2;
-        RenderDrawRect(target, speaker);
+
+        if (gs->level_current+1 == 1) {
+            SDL_Rect info_rect = {
+                speaker_rect.x,
+                speaker_rect.y + speaker_rect.h + Scale(8),
+                speaker_rect.w,
+                speaker_rect.h
+            };
+            if (!gs->tutorial.active && gui_draw_misc_button(target, TEXTURE_INFO, info_rect)) {
+                check_for_tutorial();
+            }
+        }
     }
 
     all_converters_draw(target);
