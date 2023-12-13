@@ -318,6 +318,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 gs->do_draw_blobs = !gs->do_draw_blobs;
                 break;
             }
+#if 0
             case SDLK_g: {
                 if (input->keys[SDL_SCANCODE_LCTRL] || input->keys[SDL_SCANCODE_RCTRL]) {
                     set_text_field("Goto Level", "", goto_level_string_hook);
@@ -326,7 +327,6 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
-#if 0
             case SDLK_h: {
                 textures_load_backgrounds(&gs->textures, false);
             } break;

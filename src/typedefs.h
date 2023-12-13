@@ -8,9 +8,9 @@
   #define Log(...) ((void)0)
 #endif
 
-#ifdef __EMSCRIPTEN__
-  #define Log(...) do{ char msg[8192]; sprintf(msg, "%s: %s(%d)  ", __FILE__, __func__, __LINE__); printf(__VA_ARGS__); }while(0);
-#endif
+//#ifdef __EMSCRIPTEN__
+  //#define Log(...) do{ char msg[8192]; sprintf(msg, "%s: %s(%d)  ", __FILE__, __func__, __LINE__); printf(__VA_ARGS__); }while(0);
+//#endif
 
 #define BLACK ((SDL_Color){0,0,0,255})
 #define WHITE ((SDL_Color){255,255,255,255})

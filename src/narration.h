@@ -49,7 +49,7 @@
 "intensely from Max's mind.\n"\
 
 #define NARRATION_LEVEL_7 \
-"Surely by then he must've been ready...?\n"\
+"Surely by then he must've been ready..?\n"\
 "He understood his previous sculptures only served as\r"\
 "stepping stones to something greater,\r"\
 "but it's been too long.\n"\

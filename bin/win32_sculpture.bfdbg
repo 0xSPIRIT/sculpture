@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\wind.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\assets.c", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\converter.c"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\background.c"]
 
 [MainWindow]
 X = 0
@@ -24,47 +24,23 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "gui.c"
-TabWidth = 57.21089
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\gui.c"
-CursorPos = 24920
-VertPos = 6264.0
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "wind.c"
-TabWidth = 66.7347
+TabLabel = "level.c"
+TabWidth = 74.82993
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\wind.c"
-CursorPos = 788
-VertPos = 528.0
+FilePath = "d:\\dev\\sculpture\\src\\level.c"
+CursorPos = 11513
+VertPos = 10680.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "assets.c"
-TabWidth = 72.85715
+TabLabel = "background.c"
+TabWidth = 117.0068
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\assets.c"
-CursorPos = 3195
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "audio.c"
-TabWidth = 71.4966
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\audio.c"
-CursorPos = 488
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "converter.c"
-TabWidth = 92.58504
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\converter.c"
-CursorPos = 18873
+FilePath = "d:\\dev\\sculpture\\src\\background.c"
+CursorPos = 1142
+VertPos = 772.0
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0
@@ -91,7 +67,7 @@ TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 335.0}, {Width = 760.0}, {Width = 253.0}]
-Items = ["gs.audio_handler.channel_volumes[AUDIO_CHANNEL_CHISEL]", "converter", ""]
+Items = ["dst", "dst.x", "w", "w", "xx", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"

@@ -13,7 +13,7 @@
     "wants to create.\n\n" \
     "Select the POINTER TOOL to show the\n"\
     "desired material on the overlay at any\n"\
-    "pixel.\n" \
+    "point.\n" \
 
 #define TUTORIAL_CHISEL_STRING  \
     "Tutorial\n" \
