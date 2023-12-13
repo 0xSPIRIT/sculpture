@@ -1,4 +1,9 @@
-static Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*)) {
+static Button *button_allocate(Button_Type type,
+                               Texture *texture,
+                               const char *tooltip_text,
+                               const char *tooltip_desc,
+                               void (*on_pressed)(void*))
+{
     Button *b = PushSize(gs->persistent_memory, sizeof(Button));
 
     b->type = type;
@@ -12,7 +17,8 @@ static Button *button_allocate(Button_Type type, Texture *texture, const char *t
         b->h = b->texture->height;
     }
 
-    strcpy(b->tooltip_text, tooltip_text);
+    if (tooltip_text) strcpy(b->tooltip_text, tooltip_text);
+    if (tooltip_desc) strcpy(b->tooltip_desc, tooltip_desc);
     b->on_pressed = on_pressed;
 
     return b;
@@ -269,6 +275,12 @@ static bool button_tick(Button *b, void *data) {
         if (b->tooltip_text[0]) {
             memset(gui->tooltip.str, 0, MAX_TOOLTIP_LINE_LEN*MAX_TOOLTIP_LEN);
             strcpy(gui->tooltip.str[0], b->tooltip_text);
+
+            // this is the last thing i'm programming for the game!!!!
+            // Just a little description for the pointer tool
+            if (b->tooltip_desc[0]) {
+                strcpy(gui->tooltip.str[1], b->tooltip_desc);
+            }
         }
 
         if (input->mouse_pressed[SDL_BUTTON_LEFT]) {
@@ -441,12 +453,19 @@ static void gui_init(void) {
 
     for (int i = 0; i < TOOL_COUNT; i++) {
         char name[128] = {0};
+        char desc[128] = {0};
         get_name_from_tool(i, name);
+
+        // the final thing i'm programming for alaska.
+        if (i == TOOL_POINTER) {
+            strcpy(desc, "Hover over overlay with pointer to show material");
+        }
 
         if (gui->tool_buttons[i] == null) {
             gui->tool_buttons[i] = button_allocate(BUTTON_TOOL_BAR,
                                                    &GetTexture(TEXTURE_TOOL_BUTTONS + i),
                                                    name,
+                                                   desc,
                                                    click_gui_tool_button);
             gui->tool_buttons[i]->w = gui->tool_buttons[i]->h = GUI_H;
             SDL_SetTextureScaleMode(gui->tool_buttons[i]->texture->handle, 1); // filering

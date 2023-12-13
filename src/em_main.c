@@ -235,8 +235,7 @@ int main(int argc, char **argv) {
 
     render_targets_init();
 
-    // TODO: How do I make this ensure 60fps?
-    emscripten_set_main_loop_arg(em_mainloop, &data, 0, 1);
+    emscripten_set_main_loop_arg(em_mainloop, &data, 60, 1);
 
     free(data.persistent_memory.data);
 }

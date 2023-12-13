@@ -24,4 +24,5 @@ static void textures_load_backgrounds(Textures *texs, bool first_time) {
     texs->texs[TEXTURE_BG_1] = RenderLoadTexture("bg_1.png");
     texs->texs[TEXTURE_BG_2] = RenderLoadTexture("bg_2.png");
     texs->texs[TEXTURE_BG_3] = RenderLoadTexture("bg_3.png");
+    texs->texs[TEXTURE_PSYCHEDELIC] = RenderLoadTexture("psychedelic.png");
 }

@@ -148,9 +148,11 @@ static Popup_Confirm popup_confirm_init(const char *string,
     result.a = button_allocate(confirm_type,
                                &GetTexture(TEXTURE_CONFIRM_BUTTON),
                                "",
+                               "",
                                on_confirm);
     result.b = button_allocate(cancel_type,
                                &GetTexture(TEXTURE_CANCEL_BUTTON),
+                               "",
                                "",
                                on_exit);
 

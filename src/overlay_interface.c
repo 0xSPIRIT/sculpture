@@ -87,8 +87,9 @@ static void overlay_interface_init(void) {
         Button *b = 0;
 
         b = button_allocate(BUTTON_OVERLAY_INTERFACE,
-                            &GetTexture(TEXTURE_TOOL_BUTTONS + TOOL_GRABBER),
+                            &GetTexture(TEXTURE_TOOL_BUTTONS + TOOL_POINTER),
                             overlay_interface_names[i],
+                            "",
                             click_overlay_interface);
 
         b->x = 20;

@@ -2,7 +2,7 @@
 #define AUDIO_GUI_VOLUME          (Volume(38.0/128.0))
 #define AUDIO_MUSIC_VOLUME        (Volume(128.0/128.0))
 #define AUDIO_AMBIENCE_VOLUME     (Volume(29.0/128.0))
-#define AUDIO_TITLESCREEN_VOLUME  (Volume(1.00))
+#define AUDIO_TITLESCREEN_VOLUME  (Volume(0.50))
 
 #define AUDIO_PLAY_AMBIANCE 1
 #define AUDIO_PLAY_MUSIC    1
@@ -35,7 +35,7 @@ typedef enum {
     MUSIC_ABCS,
     MUSIC_PHOTOGRAPH,
     MUSIC_WEIRD,
-    MUSIC_EXPLITIVE,
+    MUSIC_COMING_HOME,
 } MusicType;
 
 typedef struct {
@@ -45,6 +45,8 @@ typedef struct {
     MusicType music, queued_music;
     int music_volume;
     bool music_end;
+
+    bool started_playing_coming_home;
 
     // used for audio_lower_channel_for_ms
     f32 fader; // 0.0 to 1.0

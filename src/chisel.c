@@ -681,11 +681,11 @@ static void chisel_tick(Chisel *chisel) {
             if (idx == -1) {
                 chisel->x = -1;
                 chisel->y = -1;
-                gs->current_tool = TOOL_GRABBER;
+                gs->current_tool = TOOL_POINTER;
                 for (int i = 0; i < TOOL_COUNT; i++) {
                     gs->gui.tool_buttons[i]->active = false;
                 }
-                gs->gui.tool_buttons[TOOL_GRABBER]->active = true;
+                gs->gui.tool_buttons[TOOL_POINTER]->active = true;
                 return;
             } else {
                 chisel->x = idx % gs->gw;

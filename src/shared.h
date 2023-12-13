@@ -77,6 +77,7 @@ typedef struct Game_State {
     bool html_set_background_color_already;
 
     Wind wind;
+    Intro_Background intro_bg;
 
     bool needs_manual_fps_lock; // If the screen's refresh rate != 60, we need to manually do this.
 

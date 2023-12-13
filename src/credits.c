@@ -62,7 +62,7 @@ static void credits_run(int target) {
             break;
         }
         case CREDITS_SHOW_2: {
-            const char *lines[] = { "Background Art by:", "Tarrandat", "Knightmere" };
+            const char *lines[] = { "Background Art by:", "Joshwa with a W", "knightmere" };
             if (credits_screen(target, &c->s, lines, ArrayCount(lines))) {
                 c->state = CREDITS_SHOW_3;
                 memset(&c->s, 0, sizeof(Credits_Screen));

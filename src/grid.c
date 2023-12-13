@@ -922,7 +922,7 @@ static void calculate_pressure(Cell *grid) {
 // Try to move us down 1 cell.
 // If any cell is unable to move, undo the work.
 static void object_tick(int obj) {
-    if (gs->current_tool == TOOL_GRABBER && gs->grabber.object_holding == obj) return;
+    if (gs->current_tool == TOOL_POINTER && gs->grabber.object_holding == obj) return;
 
     // Copy of grid to fall back to if we abort.
     Cell *grid_temp = PushArray(gs->transient_memory, gs->gw*gs->gh, sizeof(Cell));

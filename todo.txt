@@ -1,9 +1,5 @@
 TODO
 
-  - Music
-      - Ending song
-      - Improve titlescreen song: make it more ambient
-
 Things to Remember When Doing a Release Build
   - Remove the resource.rc from the data directory
   - Remove Ctrl+G functionality, or gate it into a debug mode

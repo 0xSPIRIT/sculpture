@@ -47,7 +47,7 @@ static Tutorial_Rect* tutorial_rect(const char *str, Tutorial_Rect *next) {
     strncpy(tut->str, str, 64*8-1);
     memset(tut->lines, 0, MAX_TUTORIAL_LINES*64);
 
-    tut->ok_button = button_allocate(BUTTON_TUTORIAL, &GetTexture(TEXTURE_OK_BUTTON), "", null);
+    tut->ok_button = button_allocate(BUTTON_TUTORIAL, &GetTexture(TEXTURE_OK_BUTTON), "", "", null);
     tut->ok_button->w = Scale(tut->ok_button->w);
     tut->ok_button->h = Scale(tut->ok_button->h);
 

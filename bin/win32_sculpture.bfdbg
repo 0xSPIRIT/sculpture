@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["Disassembly", "d:\\dev\\sculpture\\src\\wind.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\assets.c", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\converter.c"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\wind.c", "d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\assets.c", "d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\converter.c"]
 
 [MainWindow]
 X = 0
@@ -25,7 +25,7 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "gui.c"
-TabWidth = 66.66666
+TabWidth = 57.21089
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\gui.c"
@@ -33,8 +33,9 @@ CursorPos = 24920
 VertPos = 6264.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
+Active = true
 TabLabel = "wind.c"
-TabWidth = 76.19048
+TabWidth = 66.7347
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\wind.c"
@@ -48,7 +49,6 @@ TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\assets.c"
 CursorPos = 3195
-VertPos = 6376.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "audio.c"
@@ -57,13 +57,6 @@ TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\audio.c"
 CursorPos = 488
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-Active = true
-TabLabel = "Disassembly"
-TabWidth = 120.068
-TabIsPinned = false
-Type = "DisassemblyPanel"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "converter.c"

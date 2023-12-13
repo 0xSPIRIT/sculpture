@@ -87,6 +87,8 @@ static void textures_init(Textures *textures) {
 
     GetTexture(TEXTURE_PLANK) = RenderLoadTexture("plank.png");
 
+    GetTexture(TEXTURE_PSYCHEDELIC) = RenderLoadTexture("psychedelic.png");
+
     GetTexture(TEXTURE_W_KEY) = RenderLoadTexture("buttons/W.png");
     GetTexture(TEXTURE_A_KEY) = RenderLoadTexture("buttons/A.png");
     GetTexture(TEXTURE_S_KEY) = RenderLoadTexture("buttons/S.png");
@@ -222,10 +224,10 @@ static void audio_init(Audio *audio) {
     audio->ambience_wind = load_sound("audio/ambience_wind.ogg", 0.8);
     audio->ambience_rain = load_sound("audio/rain.ogg", 1);
     audio->ambience_rain_reversed = load_sound("audio/rain_reversed.ogg", 1);
-    audio->music0        = load_sound("audio/music0.ogg",    1);
+    audio->music0        = load_sound("audio/music_coming_home.ogg", 1);
     audio->music1        = load_sound("audio/music_photograph.ogg", 0.45);
     audio->music2        = load_sound("audio/music_frontier.ogg", 1);
-    audio->music3        = load_sound("audio/music_weird.ogg", 0.8);
+    audio->music3        = load_sound("audio/music_weird.ogg", 0.6);
     audio->music4        = load_sound("audio/music_max's_lullaby.ogg", 0.70);
     audio->undo          = load_sound("audio/undo.wav", scale*0.25);
 

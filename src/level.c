@@ -143,6 +143,8 @@ static void goto_level(int lvl) {
     gs->level_completed = false;
     gs->levels[lvl].done = false;
 
+    background_intro_init(&gs->intro_bg);
+
     converter_gui_init();
 
     gs->render.view.x = gs->render.to.x = 0;
@@ -166,7 +168,7 @@ static void goto_level(int lvl) {
            sizeof(Source_Cell)*SOURCE_CELL_MAX);
     gs->levels[lvl].source_cell_count = gs->levels[lvl].default_source_cell_count;
 
-    gs->current_tool = TOOL_GRABBER;
+    gs->current_tool = TOOL_POINTER;
 
     gs->item_holding = (Item){0};
     gs->current_placer = 0;
@@ -398,7 +400,7 @@ static void level_tick_play(Level *level) {
                 placer_tick(&gs->placers[gs->current_placer]);
             break;
         }
-        case TOOL_GRABBER: {
+        case TOOL_POINTER: {
             grabber_tick();
             break;
         }
@@ -428,16 +430,36 @@ static void level_draw(Level *level) {
 }
 
 static void level_draw_intro(Level *level) {
-    RenderColor(0,0,0,255);
+    RenderColor(0,0,0,0);
 
     RenderClear(RENDER_TARGET_MASTER);
     RenderClear(RENDER_TARGET_PIXELGRID);
+
+    background_intro_draw(RENDER_TARGET_MASTER, &gs->intro_bg);
+
+    f32 t = SDL_GetTicks()/100.0;
 
     for (int y = 0; y < gs->gh; y++) {
         for (int x = 0; x < gs->gw; x++) {
             if (level->desired_grid[x+y*gs->gw].type == 0) continue;
             SDL_Color col = pixel_from_index(level->desired_grid[x+y*gs->gw].type, x+y*gs->gw);
-            RenderColor(col.r, col.g, col.b, 255);
+
+            f32 p_a = t+x-y;
+            p_a *= 0.3;
+
+            f32 p_b = t+x+y;
+            p_b *= 0.2;
+
+            u8 a = 12.5+20*(1+cos(t*0.1))/2 * (1+sin(p_a))/2;
+            u8 b = 25+35*(1+sin(t*0.1))/2 * (1+cos(p_b))/2;
+
+            int sp = 1;
+
+            u8 c = 125;
+            c = clamp(125-sp+rand()%(sp*2), 0, 255);
+
+            RenderColor(col.r, col.g, col.b, a + b + c);
+
             RenderPointRelative(RENDER_TARGET_PIXELGRID, x, y);
         }
     }
@@ -469,13 +491,15 @@ static void level_draw_intro(Level *level) {
 
     TTF_SizeText(font->handle, name, &width, &height);
 
+    int off = 4;
+
     RenderTextQuick(RENDER_TARGET_MASTER,
                     "bg",
                     font,
                     name,
                     BLACK,
-                    gs->game_width/2 - width/2+5,
-                    64+5,
+                    gs->game_width/2 - width/2+Scale(off),
+                    Scale(64+off),
                     null,
                     null,
                     false);
@@ -485,7 +509,7 @@ static void level_draw_intro(Level *level) {
                     name,
                     WHITE,
                     gs->game_width/2 - width/2,
-                    64,
+                    Scale(64),
                     null,
                     null,
                     false);

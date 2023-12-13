@@ -47,6 +47,7 @@ typedef struct Button {
     int index;
     Texture *texture;
     char tooltip_text[128];
+    char tooltip_desc[128]; // only used for the pointer tool
     bool active;
     bool disabled;
     bool highlighted;
@@ -59,7 +60,7 @@ typedef struct Arrow {
     int x, y;
 } Arrow;
 
-static Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_text, void (*on_pressed)(void*));
+static Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_text, const char *tooltip_desc, void (*on_pressed)(void*));
 static void tool_button_set_disabled(int level);
 static void click_gui_tool_button(void *type_ptr);
 static bool button_tick(Button *b, void *data);

@@ -287,6 +287,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 if (gs->credits.state == CREDITS_END) is_running = false;
 #endif
             } break;
+#if 0
             case SDLK_n: {
                 gs->step_one = 1;
                 break;
@@ -295,8 +296,10 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 gs->do_draw_objects = !gs->do_draw_objects;
                 break;
             }
+#endif
             case SDLK_r: {
-                popup_confirm_activate(&gs->gui.restart_popup_confirm);
+                if (!gs->obj.active)
+                    popup_confirm_activate(&gs->gui.restart_popup_confirm);
                 break;
             }
             case SDLK_i: {
@@ -323,9 +326,11 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
-            case SDLK_h: { // TODO: Remove this on build
+#if 0
+            case SDLK_h: {
                 textures_load_backgrounds(&gs->textures, false);
             } break;
+#endif
             case SDLK_4: {
                 if (input->keys[SDL_SCANCODE_LCTRL]) {
                     set_text_field("Output current grid to image:", "../", level_output_to_png);
@@ -339,21 +344,12 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 undo();
                 break;
             }
-            case SDLK_EQUALS: {
-                Wind_Stream stream = load_wind_stream(DATA_DIR "wind1.png");
-                Log("(SDL_Point){\n");
-                for (int i = 0; i < stream.point_count; i++) {
-                    Log("    { %d, %d }", stream.points[i].x, stream.points[i].y);
-                    if (i < stream.point_count-1) Log(",");
-                    Log("\n");
-                }
-                Log("}\nCount: %d\n", stream.point_count);
-            } break;
             case SDLK_t: {
-//#ifndef ALASKA_RELEASE_MODE
+#ifndef ALASKA_RELEASE_MODE
                 grid_set_to_desired();
-//#endif
+#endif
             } break;
+#if 0
             case SDLK_q: {
                 Cell *c;
                 c = &gs->grid[input->mx+input->my*gs->gw];
@@ -379,6 +375,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                     c->vy);
                 break;
             }
+#endif
             case SDLK_1: {
                 if (!gs->gui.tool_buttons[TOOL_CHISEL_SMALL]->disabled) {
                     gs->current_tool = TOOL_CHISEL_SMALL;
@@ -407,7 +404,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 break;
             }
             case SDLK_5: {
-                gs->current_tool = TOOL_GRABBER;
+                gs->current_tool = TOOL_POINTER;
                 selected_tool = 1;
                 break;
             }

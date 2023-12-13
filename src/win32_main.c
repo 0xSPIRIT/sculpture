@@ -164,6 +164,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
         renderer_flags = SDL_RENDERER_ACCELERATED;
     }
 
+#ifndef __EMSCRIPTEN__
     SDL_DisplayMode dm;
     SDL_GetCurrentDisplayMode(0, &dm);
 
@@ -172,6 +173,8 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
     } else {
         state->needs_manual_fps_lock = true;
     }
+#else
+#endif
 
     state->renderer = SDL_CreateRenderer(state->window, -1, renderer_flags);
     if (!state->renderer) fail(7);

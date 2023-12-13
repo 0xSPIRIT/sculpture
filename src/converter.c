@@ -286,6 +286,7 @@ static void converter_setup_position(Converter *converter) {
         converter->go_button = button_allocate(BUTTON_CONVERTER,
                                                null,
                                                "Convert On/Off",
+                                               "",
                                                converter_begin_converting);
     }
     converter->go_button->w = Scale(48);

@@ -29,7 +29,7 @@ static void audio_set_music_accordingly(void) {
             audio_set_music(MUSIC_WEIRD, true);
         }
     } else if (gs->obj.active) {
-        audio_set_music(MUSIC_EXPLITIVE, true);
+        audio_set_music(MUSIC_COMING_HOME, true);
     } else {
         audio_set_music(MUSIC_NONE, true);
     }
@@ -132,8 +132,11 @@ static void audio_set_music(MusicType music, bool fade) {
     if (!fade || handler->music == 0) {
         handler->music = music;
         switch (music) {
-            case MUSIC_EXPLITIVE: {
-                play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music0, -1);
+            case MUSIC_COMING_HOME: {
+                if (!handler->started_playing_coming_home) {
+                    play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music0, 0);
+                    handler->started_playing_coming_home = true;
+                }
             } break;
             case MUSIC_PHOTOGRAPH: {
                 play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music1, -1);
