@@ -1,7 +1,6 @@
 TODO
 
 Things to Remember When Doing a Release Build
-  - Remove the resource.rc from the data directory
   x Titlescreen
   x Remove Ctrl+G functionality, or gate it into a debug mode
   x Remove the T key

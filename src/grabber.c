@@ -28,6 +28,7 @@ static void grabber_tick(void) {
         tooltip_set_position_to_cursor(&gs->gui.tooltip, TOOLTIP_TYPE_ITEM);
 
         gs->overlay.current_material = gs->overlay.grid[gx+gy*gs->gw];
+        gs->hovered_over_overlay = true;
 
         gs->is_mouse_over_any_button = true;
 

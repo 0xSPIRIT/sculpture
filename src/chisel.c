@@ -713,6 +713,8 @@ static void chisel_tick(Chisel *chisel) {
 
             // Only rotate if the mouse has moved
             if (gs->input.mx != chisel->stored_mx || gs->input.my != chisel->stored_my) {
+                gs->did_rotate_chisel = true;
+
                 chisel->prev_angle = chisel->angle;
 
                 f64 rmx = (f64)(gs->input.real_mx + gs->render.view.x) / (f64)gs->S;

@@ -440,11 +440,11 @@ static void inventory_tick() {
     if (gs->recipes.active) return;
 
     if (gs->level_current == 6-1 && !gs->did_fuel_converter_tutorial) {
-        gs->tutorial = *tutorial_rect(TUTORIAL_FUEL_CONVERTER_STRING, null);
+        gs->tutorial = *tutorial_rect(TUTORIAL_FUEL_CONVERTER_STRING, null, true);
         gs->did_fuel_converter_tutorial = true;
     }
     if (gs->level_current == 4-1 && !gs->did_inventory_tutorial) {
-        gs->tutorial = *tutorial_rect(TUTORIAL_INVENTORY_STRING, null);
+        gs->tutorial = *tutorial_rect(TUTORIAL_INVENTORY_STRING, null, true);
         gs->did_inventory_tutorial = true;
     }
 

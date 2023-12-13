@@ -76,6 +76,10 @@ typedef struct Game_State {
     bool show_icons;
     bool html_set_background_color_already;
 
+    bool hovered_over_overlay;
+    bool clicked_overlay_button;
+    bool did_rotate_chisel;
+
     Wind wind;
     Intro_Background intro_bg;
 
@@ -129,8 +133,6 @@ typedef struct Game_State {
 
     Tutorial_Rect tutorial;
     bool show_tutorials;
-
-    bool level1_set_highlighted;
 
     Credits credits;
     Narrator narrator;

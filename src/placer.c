@@ -35,7 +35,7 @@ static void placer_init(int num) {
 
 static void placer_try_hard_tutorial() {
     if (!gs->did_placer_hard_tutorial) {
-        gs->tutorial = *tutorial_rect(TUTORIAL_PLACER_HARD, null);
+        gs->tutorial = *tutorial_rect(TUTORIAL_PLACER_HARD, null, true);
         gs->did_placer_hard_tutorial = true;
     }
 }
@@ -474,7 +474,7 @@ static void placer_tick(Placer *placer) {
             if (skip) break;
 
             if (!gs->did_placer_rectangle_tutorial) {
-                Tutorial_Rect *t = tutorial_rect(TUTORIAL_RECTANGLE_PLACE, null);
+                Tutorial_Rect *t = tutorial_rect(TUTORIAL_RECTANGLE_PLACE, null, true);
                 gs->tutorial = *t;
                 gs->did_placer_rectangle_tutorial = true;
             }

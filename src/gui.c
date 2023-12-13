@@ -142,6 +142,8 @@ static void gui_draw_wasd_popup(int target) {
 static void gui_click_overlay_button(void) {
     bool special_case = (gs->level_current+1 == 7);
 
+    gs->clicked_overlay_button = true; // used to help make gs->tutorial.ok_button->disabled = false; it is true at the start
+
     if (gs->overlay.show && special_case) {
         gs->overlay.show = false;
         return;
@@ -276,8 +278,6 @@ static bool button_tick(Button *b, void *data) {
             memset(gui->tooltip.str, 0, MAX_TOOLTIP_LINE_LEN*MAX_TOOLTIP_LEN);
             strcpy(gui->tooltip.str[0], b->tooltip_text);
 
-            // this is the last thing i'm programming for the game!!!!
-            // Just a little description for the pointer tool
             if (b->tooltip_desc[0]) {
                 strcpy(gui->tooltip.str[1], b->tooltip_desc);
             }
@@ -327,7 +327,7 @@ static void button_draw_prefer_color(int target, Button *b, SDL_Color color) {
     SDL_Rect dst = button_get_rect(b);
 
     if (b->disabled) {
-        RenderTextureColorMod(b->texture, 90, 90, 90);
+        RenderTextureColorMod(b->texture, 45, 45, 45);
     } else if (b->active) {
         RenderTextureColorMod(b->texture, 200, 200, 200);
     } else if (b->highlighted) {
@@ -456,7 +456,6 @@ static void gui_init(void) {
         char desc[128] = {0};
         get_name_from_tool(i, name);
 
-        // the final thing i'm programming for alaska.
         if (i == TOOL_POINTER) {
             strcpy(desc, "Hover over overlay with pointer to show material");
         }

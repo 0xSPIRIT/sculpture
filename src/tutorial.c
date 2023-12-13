@@ -34,7 +34,7 @@ static void calculate_tutorial_rect_size(Tutorial_Rect *tut) {
     tut->ok_button->y = tut->rect.y + tut->rect.h - tut->ok_button->h - tut->margin;
 }
 
-static Tutorial_Rect* tutorial_rect(const char *str, Tutorial_Rect *next) {
+static Tutorial_Rect* tutorial_rect(const char *str, Tutorial_Rect *next, bool button_active) {
     Tutorial_Rect *tut = PushSize(gs->persistent_memory, sizeof(Tutorial_Rect));
 
     tut->x = -1;
@@ -48,6 +48,7 @@ static Tutorial_Rect* tutorial_rect(const char *str, Tutorial_Rect *next) {
     memset(tut->lines, 0, MAX_TUTORIAL_LINES*64);
 
     tut->ok_button = button_allocate(BUTTON_TUTORIAL, &GetTexture(TEXTURE_OK_BUTTON), "", "", null);
+    tut->ok_button->disabled = !button_active;
     tut->ok_button->w = Scale(tut->ok_button->w);
     tut->ok_button->h = Scale(tut->ok_button->h);
 
@@ -96,8 +97,19 @@ static void tutorial_rect_run(int target) {
 
     if (!tut->active) return;
 
-    if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.keys_pressed[SDL_SCANCODE_SPACE]) {
-        tutorial_rect_close(null);
+    // special case for the first level
+    if (tut->ok_button->disabled && gs->level_current+1 == 1) {
+        if (strcmp(TUTORIAL_OVERLAY_STRING, tut->str)==0 && gs->clicked_overlay_button && gs->hovered_over_overlay) {
+            tut->ok_button->disabled = false;
+        } else if (strcmp(TUTORIAL_CHISEL_STRING, tut->str)==0 && gs->did_rotate_chisel) {
+            tut->ok_button->disabled = false;
+        }
+    }
+
+    if (!tut->ok_button->disabled) {
+        if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.keys_pressed[SDL_SCANCODE_SPACE]) {
+            tutorial_rect_close(null);
+        }
     }
 
     calculate_tutorial_rect_size(tut);
@@ -150,18 +162,18 @@ static void check_for_tutorial(void) {
 
     switch (l+1) {
         case 1: {
-            Tutorial_Rect *t4 = tutorial_rect(TUTORIAL_UNDO_STRING, null);
-            Tutorial_Rect *t3 = tutorial_rect(TUTORIAL_COMPLETE_LEVEL, t4);
-            Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_CHISEL_STRING,  t3);
-            Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_OVERLAY_STRING, t2);
+            Tutorial_Rect *t4 = tutorial_rect(TUTORIAL_UNDO_STRING, null, true);
+            Tutorial_Rect *t3 = tutorial_rect(TUTORIAL_COMPLETE_LEVEL, t4, true);
+            Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_CHISEL_STRING,  t3, false);
+            Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_OVERLAY_STRING, t2, false);
             gs->tutorial = *t1;
 
             gs->gui.tool_buttons[TOOL_OVERLAY]->highlighted = true;
             break;
         }
         case 4: {
-            Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_PLACER_F_KEYS, null);
-            Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_PLACER_STRING, t2);
+            Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_PLACER_F_KEYS, null, true);
+            Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_PLACER_STRING, t2, true);
             gs->tutorial = *t1;
             break;
         }

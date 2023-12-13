@@ -246,7 +246,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
 #ifndef __EMSCRIPTEN__
                     is_running = false;
 #endif
-                } else if (gs->tutorial.active) {
+                } else if (gs->tutorial.active && !gs->tutorial.ok_button->disabled) {
                     tutorial_rect_close(null);
                 } else if (can_activate_pause_menu()) {
                     gs->pause_menu.active = !gs->pause_menu.active;
