@@ -168,6 +168,8 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
     SDL_DisplayMode dm;
     SDL_GetCurrentDisplayMode(0, &dm);
 
+    state->hz = dm.refresh_rate;
+
     if (dm.refresh_rate == 60) {
         renderer_flags |= SDL_RENDERER_PRESENTVSYNC;
     } else {

@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\background.c"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\background.c"]
 
 [MainWindow]
 X = 0
@@ -25,8 +25,17 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
+TabLabel = "gui.c"
+TabWidth = 66.66666
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\gui.c"
+CursorPos = 10285
+VertPos = 3216.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "level.c"
-TabWidth = 74.82993
+TabWidth = 65.37415
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\level.c"
@@ -35,12 +44,11 @@ VertPos = 10680.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "background.c"
-TabWidth = 117.0068
+TabWidth = 107.551
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\background.c"
 CursorPos = 1142
-VertPos = 772.0
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0

@@ -11,6 +11,8 @@ typedef struct Hammer {
     int dir;
     bool flip;
 
+    bool dont_chisel_this_frame; // something you can set
+
     int x, y;
     f64 base_angle, angle, temp_angle;
     Texture *tex;

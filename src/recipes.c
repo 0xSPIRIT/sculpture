@@ -8,8 +8,6 @@ static int get_item_from_any(int type, int timer, int override_index) {
         timer = override_index * step;
     }
 
-    Log("Type: %d\n", type);
-
     switch(type) {
         case CELL_ANY_STONE: {
             int t = timer % (step*7);
@@ -387,80 +385,82 @@ static void recipes_draw(int final_target) {
     int pair_count = 0;
 
     // Fuel recipes
-    RenderTextQuick(target,
-                    "fuelc",
-                    title_font,
-                    "Fuel Conversions",
-                    WHITE,
-                    dx,
-                    GUI_H+yoff,
-                    null,
-                    null,
-                    false);
+    if (gs->level_current+1 >= 6) {
+        RenderTextQuick(target,
+                        "fuelc",
+                        title_font,
+                        "Fuel Conversions",
+                        WHITE,
+                        dx,
+                        GUI_H+yoff,
+                        null,
+                        null,
+                        false);
 
-    for (int i = 0; i < 3; i++) {
-        Recipe_Item item = c->conversions[i];
+        for (int i = 0; i < 3; i++) {
+            Recipe_Item item = c->conversions[i];
 
-        Assert(item.converter == CONVERTER_FUEL);
+            Assert(item.converter == CONVERTER_FUEL);
 
-        {
-            int x = dx;
-            int y = dy + cum;
+            {
+                int x = dx;
+                int y = dy + cum;
 
-            recipe_pair_add(pairs, &pair_count, item.output, x - pad, y-gs->recipes.y - pad);
+                recipe_pair_add(pairs, &pair_count, item.output, x - pad, y-gs->recipes.y - pad);
 
-            recipes_draw_text(target, "Input 1", x, y, size);
-            bool mouse_in = converter_gui_item_draw(target,
-                                                    item.input1,
-                                                    c->override_indices[i],
-                                                    x,
-                                                    y,
-                                                    size,
-                                                    size);
-            if (mouse_in) mouse_in_none = false;
-        }
-
-        {
-            int x = dx + _recipes_get_input_dx();
-            int y = dy + cum;
-
-            recipes_draw_text(target, "Input 2", x, y, size);
-            bool mouse_in = converter_gui_item_draw(target,
-                                                    item.input2,
-                                                    c->override_indices[i],
-                                                    x,
-                                                    y,
-                                                    size,
-                                                    size);
-            if (mouse_in) mouse_in_none = false;
-        }
-
-        {
-            int x = ((dx)+(dx+_recipes_get_input_dx()))/2;
-            int y = dy + _recipes_get_output_offset() + cum;
-
-            { // Arrow
-                RenderColor(255,255,255,255);
-                int xx = dx + size/2 + dx + _recipes_get_input_dx() + size/2;
-                xx /= 2;
-
-                int yy = dy+cum+20;
-
-                converter_draw_arrow(target, xx, yy);
+                recipes_draw_text(target, "Input 1", x, y, size);
+                bool mouse_in = converter_gui_item_draw(target,
+                                                        item.input1,
+                                                        c->override_indices[i],
+                                                        x,
+                                                        y,
+                                                        size,
+                                                        size);
+                if (mouse_in) mouse_in_none = false;
             }
 
-            recipes_draw_text(target, "Output", x, y, size);
-            bool mouse_in = converter_gui_item_draw(target,
-                                                    item.output,
-                                                    c->override_indices[i],
-                                                    x,
-                                                    y,
-                                                    size,
-                                                    size);
-            if (mouse_in) mouse_in_none = false;
-        }
+            {
+                int x = dx + _recipes_get_input_dx();
+                int y = dy + cum;
 
-        cum += _recipes_get_jump_dy();
+                recipes_draw_text(target, "Input 2", x, y, size);
+                bool mouse_in = converter_gui_item_draw(target,
+                                                        item.input2,
+                                                        c->override_indices[i],
+                                                        x,
+                                                        y,
+                                                        size,
+                                                        size);
+                if (mouse_in) mouse_in_none = false;
+            }
+
+            {
+                int x = ((dx)+(dx+_recipes_get_input_dx()))/2;
+                int y = dy + _recipes_get_output_offset() + cum;
+
+                { // Arrow
+                    RenderColor(255,255,255,255);
+                    int xx = dx + size/2 + dx + _recipes_get_input_dx() + size/2;
+                    xx /= 2;
+
+                    int yy = dy+cum+20;
+
+                    converter_draw_arrow(target, xx, yy);
+                }
+
+                recipes_draw_text(target, "Output", x, y, size);
+                bool mouse_in = converter_gui_item_draw(target,
+                                                        item.output,
+                                                        c->override_indices[i],
+                                                        x,
+                                                        y,
+                                                        size,
+                                                        size);
+                if (mouse_in) mouse_in_none = false;
+            }
+
+            cum += _recipes_get_jump_dy();
+        }
     }
 
     // Material recipes

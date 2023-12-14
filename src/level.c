@@ -236,7 +236,7 @@ static void goto_level(int lvl) {
 
     timelapse_init();
 
-    check_for_tutorial();
+    check_for_tutorial(false);
 }
 
 static void level_set_state(int level, enum Level_State state) {

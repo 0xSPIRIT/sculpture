@@ -35,7 +35,7 @@ static inline int prof_end(int y) {
 static inline bool mouse_in_rect(SDL_Rect rect) {
     int mx = gs->input.real_mx;
     int my = gs->input.real_my;
-    
+
     return (mx >= rect.x && my >= rect.y && mx <= rect.x+rect.w && my <= rect.y+rect.h);
 }
 
@@ -51,6 +51,10 @@ static inline SDL_Color rgb(u8 r, u8 g, u8 b) {
 }
 
 static int sign(int a) {
+    return (a > 0) ? 1 : ((a == 0) ? 0 : -1);
+}
+
+static f64 signf(f64 a) {
     return (a > 0) ? 1 : ((a == 0) ? 0 : -1);
 }
 
@@ -98,7 +102,7 @@ static f64 interpolate64(f64 a, f64 b, f64 t) {
 }
 
 static f64 goto64(f64 a, f64 b, f64 t) {
-    int x = sign(b-a);
+    int x = signf(b-a);
     if (x > 0) {
         if (fabs(a+t*x) > fabs(b))
             return b;

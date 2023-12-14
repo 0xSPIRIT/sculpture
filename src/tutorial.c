@@ -44,6 +44,8 @@ static Tutorial_Rect* tutorial_rect(const char *str, Tutorial_Rect *next, bool b
     tut->active = gs->show_tutorials;
     tut->next = next;
 
+    gs->finished_tutorial_for_now=false;
+
     strncpy(tut->str, str, 64*8-1);
     memset(tut->lines, 0, MAX_TUTORIAL_LINES*64);
 
@@ -81,6 +83,8 @@ static void tutorial_rect_close(void *ptr) {
     if (tut->next) {
         gs->tutorial = *tut->next;
         gs->tutorial.active = true;
+    } else {
+        gs->finished_tutorial_for_now = true;
     }
 }
 
@@ -157,7 +161,7 @@ static void tutorial_rect_run(int target) {
     button_draw(target, tut->ok_button);
 }
 
-static void check_for_tutorial(void) {
+static void check_for_tutorial(bool info_button) {
     int l = gs->level_current;
 
     switch (l+1) {
@@ -172,7 +176,13 @@ static void check_for_tutorial(void) {
             break;
         }
         case 4: {
-            Tutorial_Rect *t2 = tutorial_rect(TUTORIAL_PLACER_F_KEYS, null, true);
+            Tutorial_Rect *t2;
+            if (info_button) {
+                Tutorial_Rect *t3 = tutorial_rect(TUTORIAL_RECTANGLE_PLACE, null, true);
+                t2 = tutorial_rect(TUTORIAL_PLACER_F_KEYS, t3, true);
+            } else {
+                t2 = tutorial_rect(TUTORIAL_PLACER_F_KEYS, null, true);
+            }
             Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_PLACER_STRING, t2, true);
             gs->tutorial = *t1;
             break;

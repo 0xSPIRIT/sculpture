@@ -48,7 +48,7 @@ static void tool_button_set_disabled(int level) {
 
     switch (level+1) {
         case 1: {
-            if (!gs->gui.tool_buttons[TOOL_OVERLAY]->highlighted) {
+            if (strcmp(TUTORIAL_CHISEL_STRING, gs->tutorial.str)==0) {
                 // If any chisel has not been chiseled yet,
                 // set its button highlight to true!
 
@@ -234,6 +234,16 @@ static void click_gui_tool_button(void *type_ptr) {
     }
 
     tooltip_reset(&gui->tooltip);
+}
+
+static bool is_mouse_over_button(Button *b) {
+    int gui_input_mx = gs->input.real_mx;
+    int gui_input_my = gs->input.real_my;
+    if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
+        gui_input_my >= b->y && gui_input_my < b->y+b->h) {
+        return true;
+    }
+    return false;
 }
 
 static bool button_tick(Button *b, void *data) {
@@ -646,8 +656,11 @@ static void gui_draw_profile(int target) {
         strcpy(text_data.str, "Minimum Amounts:");
         text_data.x = Scale(50);
         text_data.y = GUI_H+Scale(50);
-        text_data.foreground = ColorFromInt(SLOT_OUTLINE_SELECTED_COLOR);
-        text_data.background = BLACK;
+        if (gs->level_current+1 <= 7) {
+            text_data.foreground = BLACK;
+        } else {
+            text_data.foreground = WHITE;
+        }
         text_data.render_type = TEXT_RENDER_BLENDED;
 
         RenderText(target, &text_data);
@@ -663,8 +676,11 @@ static void gui_draw_profile(int target) {
         strcpy(text_data.str, level->profile_lines[i]);
         text_data.x = Scale(50);
         text_data.y = GUI_H+Scale(50)+c;
-        text_data.foreground = WHITE;
-        text_data.background = BLACK;
+        if (gs->level_current+1 <= 7) {
+            text_data.foreground = BLACK;
+        } else {
+            text_data.foreground = WHITE;
+        }
 
         RenderText(target, &text_data);
 
@@ -705,6 +721,15 @@ static void gui_draw(int target) {
         for (int i = 0; i < TOOL_COUNT; i++) {
             button_draw(toolbar_target, gui->tool_buttons[i]);
             gui_button_draw_outline(toolbar_target, i);
+
+            if (i == TOOL_OVERLAY && gs->overlay.show) {
+                Button *b = gui->tool_buttons[i];
+                RenderColor(70, 70, 70, 255);
+                RenderFillCircle(target, b->x + 2*b->w/5, b->y + 7*b->h/8, Scale(3));
+                if (gs->overlay.alpha_coefficient == OVERLAY_ALPHA_1) {
+                    RenderFillCircle(target, b->x + 3*b->w/5, b->y + 7*b->h/8, Scale(3));
+                }
+            }
         }
 
         if (gs->level_current+1 == 11) {
@@ -742,6 +767,7 @@ static bool gui_draw_misc_button(int target, int texture, SDL_Rect rect) {
         RenderTextureAlphaMod(&GetTexture(texture), 255);
         if (gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
             result = true;
+            gs->hammer.dont_chisel_this_frame = true;
         }
     } else {
         alpha = 100;
@@ -808,7 +834,7 @@ static void gui_popup_draw(int target) {
 
             bool is_background_white = (gs->level_current+1 == 11);
 
-            if (gs->is_mouse_on_tab_icon) {
+            if (!gs->recipes.active && gs->is_mouse_on_tab_icon) {
                 if (gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
                     gui_popup_toggle();
                 }
@@ -824,25 +850,51 @@ static void gui_popup_draw(int target) {
 
 
         int size = 32;
-        SDL_Rect speaker_rect = {
+        gs->gui.speaker_rect = (SDL_Rect){
             gs->game_width - Scale(size) - Scale(8),
             GUI_H + Scale(8),
             Scale(size),
             Scale(size)
         };
+        SDL_Rect speaker_rect = gs->gui.speaker_rect;
         if (gui_draw_misc_button(target, TEXTURE_SPEAKER, speaker_rect)) {
             gs->pause_menu.active = !gs->pause_menu.active;
         }
 
-        if (gs->level_current+1 == 1) {
-            SDL_Rect info_rect = {
+        if (gs->level_current+1 == 1 || gs->level_current+1 == 4 || gs->level_current+1 == 6) {
+            gs->gui.info_rect = (SDL_Rect){
                 speaker_rect.x,
                 speaker_rect.y + speaker_rect.h + Scale(8),
                 speaker_rect.w,
                 speaker_rect.h
             };
+            SDL_Rect info_rect = gs->gui.info_rect;
+
             if (!gs->tutorial.active && gui_draw_misc_button(target, TEXTURE_INFO, info_rect)) {
-                check_for_tutorial();
+                if (gs->level_current+1 == 6) {
+                    gs->tutorial = *tutorial_rect(TUTORIAL_FUEL_CONVERTER_STRING, null, true);
+                } else {
+                    check_for_tutorial(true);
+                }
+                gs->gui.dont_draw_tips_rect = true;
+            }
+
+            if (!gs->gui.dont_draw_tips_rect && gs->level_current+1 == 1 && gs->finished_tutorial_for_now && gs->gui.tips_alpha < 1) {
+                SDL_Rect tips_rect = {
+                    info_rect.x - Scale(165+8),
+                    info_rect.y - Scale(48/2) + info_rect.h/2,
+                    Scale(165),
+                    Scale(48)
+                };
+
+                gs->gui.t += 1.0/180.0;
+
+                gs->gui.tips_alpha = (1-sin(gs->gui.t));
+                gs->gui.tips_alpha *= gs->gui.tips_alpha;
+                if (gs->gui.tips_alpha > 1) gs->gui.tips_alpha = 1;
+
+                RenderTextureAlphaMod(&GetTexture(TEXTURE_TIPS), 255*(1-gs->gui.tips_alpha));
+                RenderTexture(target, &GetTexture(TEXTURE_TIPS), null, &tips_rect);
             }
         }
     }

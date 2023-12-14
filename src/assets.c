@@ -84,6 +84,7 @@ static void textures_init(Textures *textures) {
     GetTexture(TEXTURE_TAB)   = RenderLoadTexture("tab.png");
     GetTexture(TEXTURE_SPEAKER) = RenderLoadTexture("speaker.png");
     GetTexture(TEXTURE_INFO) = RenderLoadTexture("info.png");
+    GetTexture(TEXTURE_TIPS) = RenderLoadTexture("tips.png");
 
     GetTexture(TEXTURE_PLANK) = RenderLoadTexture("plank.png");
 

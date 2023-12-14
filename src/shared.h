@@ -60,8 +60,10 @@ typedef enum {
 // in here and we don't want to mess that up.
 typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
+    int hz;
 
     bool close_game; // Closes the game after the current frame.
+    bool debug_mode;
 
     // Some stupid hacky debugging variables used around the place.
     char func[64];
@@ -79,6 +81,8 @@ typedef struct Game_State {
     bool hovered_over_overlay;
     bool clicked_overlay_button;
     bool did_rotate_chisel;
+
+    bool finished_tutorial_for_now;
 
     Wind wind;
     Intro_Background intro_bg;

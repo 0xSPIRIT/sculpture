@@ -160,6 +160,13 @@ export void game_init(Game_State *state) {
 #endif
 }
 
+static void debug_mode(const char *str) {
+    if (strcmp(str, "yes")==0)
+        gs->debug_mode = true;
+    else if (strcmp(str, "no")==0)
+        gs->debug_mode = false;
+}
+
 export bool game_handle_event(Game_State *state, SDL_Event *event) {
     gs = state;
     gs->event = event;
@@ -253,17 +260,6 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 }
                 break;
             }
-            case SDLK_BACKQUOTE: {
-#ifndef ALASKA_RELEASE_MODE
-                gs->creative_mode = !gs->creative_mode;
-                if (gs->creative_mode) {
-                    gui_message_stack_push("Creative Mode: On");
-                } else {
-                    gui_message_stack_push("Creative Mode: Off");
-                }
-#endif
-                break;
-            }
             case SDLK_SPACE: {
 #ifndef ALASKA_RELEASE_MODE
                 if (gs->input.keys[SDL_SCANCODE_LSHIFT])
@@ -318,15 +314,18 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                 gs->do_draw_blobs = !gs->do_draw_blobs;
                 break;
             }
-#if 0
+            case SDLK_BACKQUOTE: {
+                set_text_field("Turn on Debug Mode? (Press Escape to Exit)", "", debug_mode);
+            } break;
             case SDLK_g: {
-                if (input->keys[SDL_SCANCODE_LCTRL] || input->keys[SDL_SCANCODE_RCTRL]) {
-                    set_text_field("Goto Level", "", goto_level_string_hook);
-                } else {
-                    //play_sound(-1, gs->audio.chisel[rand()%6], 0);
+                if (gs->debug_mode) {
+                    if (input->keys[SDL_SCANCODE_LCTRL] || input->keys[SDL_SCANCODE_RCTRL]) {
+                        set_text_field("Goto Level", "", goto_level_string_hook);
+                    }
                 }
                 break;
             }
+#if 0
             case SDLK_h: {
                 textures_load_backgrounds(&gs->textures, false);
             } break;
@@ -590,6 +589,16 @@ export void game_run(Game_State *state) {
                         100, 140,
                         null, null,
                         false);
+
+        sprintf(str, "Refresh Rate: %d\n", gs->hz);
+        RenderTextQuick(RENDER_TARGET_MASTER,
+                        "3fps",
+                        gs->fonts.font,
+                        str,
+                        WHITE,
+                        100, 180,
+                        null, null,
+                        false);
     }
     SDL_Color border_color_desired = {0};
 
@@ -644,11 +653,11 @@ export void game_run(Game_State *state) {
                    &src,
                    &dst);
 
-    gs->dt = __end_timer(start_frame);
-
     SDL_RenderPresent(gs->renderer);
 
     gs->is_mouse_over_any_button = false;
 
     RenderCleanupTextCache(&gs->render.temp_text_cache);
+
+    gs->dt = __end_timer(start_frame);
 }

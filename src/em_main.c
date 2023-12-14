@@ -48,9 +48,11 @@ EM_JS(void, html_set_background_color_black, (), {
       });
 
 #include "headers.h"
+#include "vsync.c"
 
 #include "game.c"
 #include "assets.c"
+
 
 typedef struct GameLoopData {
     Memory_Arena persistent_memory, transient_memory;
@@ -163,6 +165,8 @@ static void game_init_emscripten(Game_State *state) {
                      state->game_height,
                      device_pixel_ratio);
 
+    //gs->needs_manual_fps_lock = true;
+
     // Load all assets... except for render targets.
     // We can't create render targets until levels
     // are initialized.
@@ -236,6 +240,4 @@ int main(int argc, char **argv) {
     render_targets_init();
 
     emscripten_set_main_loop_arg(em_mainloop, &data, 60, 1);
-
-    free(data.persistent_memory.data);
 }

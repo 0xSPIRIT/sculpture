@@ -61,11 +61,21 @@ static void titlescreen_draw(int target) {
 #ifdef __EMSCRIPTEN__
     RenderTextQuick(target,
                     "23123",
-                    gs->fonts.font_times_small,
-                    "Alaska: Web Build - Consider desktop version for superior performance!",
+                    gs->fonts.font_times,
+                    "Consider desktop version for superior performance!",
                     (SDL_Color){100,100,100,255},
                     Scale(16),
                     gs->game_height - Scale(45),
+                    null,
+                    null,
+                    false);
+    RenderTextQuick(target,
+                    "r3123",
+                    gs->fonts.font_times,
+                    "Firefox is NOT recommended to play on.",
+                    (SDL_Color){245,230,93,255},
+                    Scale(16),
+                    gs->game_height - Scale(75),
                     null,
                     null,
                     false);

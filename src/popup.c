@@ -15,7 +15,8 @@ static void text_field_tick(void) {
 
     switch (gs->event->type) {
         case SDL_TEXTINPUT: {
-            strcat(text_field->text, gs->event->text.text);
+            if (gs->event->text.text[0] != '`')
+                strcat(text_field->text, gs->event->text.text);
             break;
         }
         case SDL_KEYDOWN: {

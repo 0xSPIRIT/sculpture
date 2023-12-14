@@ -29,8 +29,10 @@ static void hammer_tick(Hammer *hammer) {
     hammer->y = gs->chisel->draw_y;
 
     if (gs->input.real_my > GUI_H &&
-        !gs->tutorial.active &&
         !gs->gui.popup &&
+        !is_mouse_over_button(gs->tutorial.ok_button) &&
+        !mouse_in_rect(gs->gui.speaker_rect) &&
+        !mouse_in_rect(gs->gui.info_rect) &&
         !gs->recipes.active &&
         chisel_click_repeatedly(gs->chisel) &&
         gs->chisel->highlight_count > 0 &&

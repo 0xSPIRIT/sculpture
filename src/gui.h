@@ -35,6 +35,11 @@ typedef struct GUI {
 
     Button *tool_buttons[TOOL_COUNT];
 
+    SDL_Rect speaker_rect, info_rect;
+    f32 tips_alpha;
+    f32 t;
+    bool dont_draw_tips_rect;
+
     Popup_Confirm eol_popup_confirm, restart_popup_confirm;
 
     Message message_stack[MAX_MESSAGE_STACK];
@@ -63,6 +68,7 @@ typedef struct Arrow {
 static Button *button_allocate(Button_Type type, Texture *texture, const char *tooltip_text, const char *tooltip_desc, void (*on_pressed)(void*));
 static void tool_button_set_disabled(int level);
 static void click_gui_tool_button(void *type_ptr);
+static bool is_mouse_over_button(Button *b);
 static bool button_tick(Button *b, void *data);
 static void button_draw_prefer_color(int target, Button *b, SDL_Color color);
 static void button_draw(int target, Button *b);
