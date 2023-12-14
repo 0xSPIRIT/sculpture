@@ -3,6 +3,7 @@
 // Include all files to compile in one translation unit for
 // compilation speed's sake. (Unity Build)
 
+#include "timer.c"
 #include "input.c"
 #include "util.c"
 #include "lighting.c"
@@ -445,9 +446,10 @@ void audio_setup_channel_volumes(void) {
 }
 
 export void game_run(Game_State *state) {
-    u64 start_frame = SDL_GetPerformanceCounter();
-
-    //u64 aa = SDL_GetPerformanceCounter();
+    if (state->start_frame) {
+        gs->dt = __end_timer(state->start_frame);
+    }
+    state->start_frame = SDL_GetPerformanceCounter();
 
     gs = state;
 
@@ -529,16 +531,6 @@ export void game_run(Game_State *state) {
             }
             break;
         }
-    }
-
-    //f64 frame_end = __end_timer(aa);
-
-    {
-        //char msg[64];
-        //sprintf(msg, "Frame time took %.2fms", 1000*gs->dt);
-        //RenderTextDebugPush(msg, 0, gs->game_height-35);
-        //sprintf(msg, "SDL_SetRenderTarget took %.2fms | Count: %d", gs->accum, gs->amt);
-        //RenderTextDebugPush(msg, 0, gs->game_height-65);
     }
 
     RenderTextDebug();
@@ -658,6 +650,4 @@ export void game_run(Game_State *state) {
     gs->is_mouse_over_any_button = false;
 
     RenderCleanupTextCache(&gs->render.temp_text_cache);
-
-    gs->dt = __end_timer(start_frame);
 }

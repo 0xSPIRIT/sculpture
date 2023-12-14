@@ -73,6 +73,11 @@ static void credits_run(int target) {
             const char *lines[] = { "Thank you for playing." };
             if (credits_screen(target, &c->s, lines, ArrayCount(lines))) {
                 c->state = CREDITS_END;
+#ifdef __EMSCRIPTEN__
+                SDL_ShowCursor(SDL_ENABLE);
+                SDL_SetRelativeMouseMode(false);
+                removefocuscanvas();
+#endif
             }
             break;
         }
@@ -82,7 +87,6 @@ static void credits_run(int target) {
 }
 
 /////////////////////////////////
-
 // `screen` should be simply a zeroed Credits_Screen struct on the first
 // call to this function. It's used to keep state.
 //

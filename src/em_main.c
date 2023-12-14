@@ -17,6 +17,10 @@ EM_JS(void, focuscanvas, (), {
           canvas.focus();
       });
 
+EM_JS(void, removefocuscanvas, (), {
+          var canvas = document.getElementById("canvas");
+          canvas.blur();
+      });
 EM_JS(void, canvas_set_size, (int desired_width, int desired_height, double device_pixel_ratio), {
           var canvas = document.getElementById('canvas');
 
@@ -239,5 +243,5 @@ int main(int argc, char **argv) {
 
     render_targets_init();
 
-    emscripten_set_main_loop_arg(em_mainloop, &data, 60, 1);
+    emscripten_set_main_loop_arg(em_mainloop, &data, 0, 1);
 }

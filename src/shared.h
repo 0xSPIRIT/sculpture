@@ -61,6 +61,9 @@ typedef enum {
 typedef struct Game_State {
     Memory_Arena *persistent_memory, *transient_memory;
     int hz;
+    u64 start_frame;
+
+    f64 main_timer;
 
     bool close_game; // Closes the game after the current frame.
     bool debug_mode;
