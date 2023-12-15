@@ -81,7 +81,7 @@ static void narrator_init(int level) {
 static void narrator_next_line(bool init) {
     Narrator *n = &gs->narrator;
 
-    n->update = true; // Gets reset in narrator_run
+    n->update = true; // Gets reset in narrator_draw
 
     if (!init)
         n->line_curr++;
@@ -113,6 +113,8 @@ static void narrator_next_line(bool init) {
 
 static void narrator_tick() {
     Narrator *n = &gs->narrator;
+
+    if (!gs->should_update) return;
 
     n->delay--;
     if (n->delay > 0) return;
@@ -159,7 +161,7 @@ static int get_glitched_offset(void) {
     return xoff;
 }
 
-static void narrator_run(int target, SDL_Color col) {
+static void narrator_draw(int target, SDL_Color col) {
     Narrator *n = &gs->narrator;
 
     RenderMaybeSwitchToTarget(target);
@@ -167,7 +169,7 @@ static void narrator_run(int target, SDL_Color col) {
     if (n->off) return;
     if (n->delay > 0) return;
 
-    if (wait_for_fade(FADE_NARRATOR)) {
+    if (gs->should_update && wait_for_fade(FADE_NARRATOR)) {
         reset_fade();
 
         if (gs->level_current+1 == 11 && gs->obj.active) {

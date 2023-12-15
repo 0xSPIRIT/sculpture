@@ -9,15 +9,17 @@ static void credits_init_timers(Credits *c) {
 static bool credits_timer(int index, int timer_max) {
     Credits *c = &gs->credits;
 
-    if (c->timers[index] == -2) return true;
+    if (gs->should_update) {
+        if (c->timers[index] == -2) return true;
 
-    if (c->timers[index] == -1) { // -1 means unset & ready to do another timer
-        c->timers[index] = timer_max;
-    } else {
-        c->timers[index]--;
-        if (c->timers[index] <= 0) {
-            c->timers[index] = -2; // -2 means unset & finished time.
-            return true;
+        if (c->timers[index] == -1) { // -1 means unset & ready to do another timer
+            c->timers[index] = timer_max;
+        } else {
+            c->timers[index]--;
+            if (c->timers[index] <= 0) {
+                c->timers[index] = -2; // -2 means unset & finished time.
+                return true;
+            }
         }
     }
 
@@ -94,36 +96,38 @@ static void credits_run(int target) {
 //
 // Returns when that screen is done
 static bool credits_screen(int target, Credits_Screen *screen, const char *lines[], int line_count) {
-    // times in frames
-    f64 time = 360;
-    f64 hang_time = 60; // The hang-time after the text fades out.
-    f64 fade_time = 50;
+    if (gs->should_update) {
+        // times in frames
+        f64 time = 360;
+        f64 hang_time = 60; // The hang-time after the text fades out.
+        f64 fade_time = 50;
 
-    if (screen->timer >= time) {
+        if (screen->timer >= time) {
+            screen->timer++;
+            return (screen->timer >= time+hang_time);
+        }
+
+        int fade_state = FADE_FULL;
+        if (screen->timer < 45) {
+            fade_state = FADE_IN;
+        } else if (screen->timer >= time-fade_time) {
+            fade_state = FADE_OUT;
+        }
+
+        switch (fade_state) {
+            case FADE_IN: {
+                screen->fade += 1.0/fade_time;
+            } break;
+            case FADE_FULL: {
+                screen->fade = 1;
+            } break;
+            case FADE_OUT: {
+                screen->fade -= 1.0/fade_time;
+            } break;
+        }
+
         screen->timer++;
-        return (screen->timer >= time+hang_time);
     }
-
-    int fade_state = FADE_FULL;
-    if (screen->timer < 45) {
-        fade_state = FADE_IN;
-    } else if (screen->timer >= time-fade_time) {
-        fade_state = FADE_OUT;
-    }
-
-    switch (fade_state) {
-        case FADE_IN: {
-            screen->fade += 1.0/fade_time;
-        } break;
-        case FADE_FULL: {
-            screen->fade = 1;
-        } break;
-        case FADE_OUT: {
-            screen->fade -= 1.0/fade_time;
-        } break;
-    }
-
-    screen->timer++;
 
     f64 fade = 255 * (1 - screen->fade);
     SDL_Color col = { fade, fade, fade, 255 };

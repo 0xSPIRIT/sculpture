@@ -101,18 +101,20 @@ static void tutorial_rect_run(int target) {
 
     if (!tut->active) return;
 
-    // special case for the first level
-    if (tut->ok_button->disabled && gs->level_current+1 == 1) {
-        if (strcmp(TUTORIAL_OVERLAY_STRING, tut->str)==0 && gs->clicked_overlay_button && gs->hovered_over_overlay) {
-            tut->ok_button->disabled = false;
-        } else if (strcmp(TUTORIAL_CHISEL_STRING, tut->str)==0 && gs->did_rotate_chisel) {
-            tut->ok_button->disabled = false;
+    if (gs->should_update) {
+        // special case for the first level
+        if (tut->ok_button->disabled && gs->level_current+1 == 1) {
+            if (strcmp(TUTORIAL_OVERLAY_STRING, tut->str)==0 && gs->clicked_overlay_button && gs->hovered_over_overlay) {
+                tut->ok_button->disabled = false;
+            } else if (strcmp(TUTORIAL_CHISEL_STRING, tut->str)==0 && gs->did_rotate_chisel) {
+                tut->ok_button->disabled = false;
+            }
         }
-    }
 
-    if (!tut->ok_button->disabled) {
-        if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.keys_pressed[SDL_SCANCODE_SPACE]) {
-            tutorial_rect_close(null);
+        if (!tut->ok_button->disabled) {
+            if (gs->input.keys_pressed[SDL_SCANCODE_RETURN] || gs->input.keys_pressed[SDL_SCANCODE_SPACE]) {
+                tutorial_rect_close(null);
+            }
         }
     }
 

@@ -28,9 +28,11 @@ static void hammer_tick(Hammer *hammer) {
     hammer->x = gs->chisel->draw_x + dist;
     hammer->y = gs->chisel->draw_y;
 
+    bool mouse_not_over_button = (!gs->tutorial.active || (gs->tutorial.ok_button && gs->tutorial.active && !is_mouse_over_button(gs->tutorial.ok_button)));
+
     if (gs->input.real_my > GUI_H &&
         !gs->gui.popup &&
-        !is_mouse_over_button(gs->tutorial.ok_button) &&
+        mouse_not_over_button &&
         !mouse_in_rect(gs->gui.speaker_rect) &&
         !mouse_in_rect(gs->gui.info_rect) &&
         !gs->recipes.active &&

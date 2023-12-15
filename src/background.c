@@ -33,13 +33,15 @@ static void background_intro_draw(int target, Intro_Background *bg) {
     int w = gs->game_width;
     int h = gs->game_height;
 
-    f32 speed = 1;
+    if (gs->should_update) {
+        f32 speed = 1;
 
-    bg->x -= speed;
-    bg->y -= speed * (f32)h/w;
+        bg->x -= speed;
+        bg->y -= speed * (f32)h/w;
 
-    if (bg->x <= -w) bg->x += 2*w;
-    if (bg->y <= -h) bg->y += 2*h;
+        if (bg->x <= -w) bg->x += 2*w;
+        if (bg->y <= -h) bg->y += 2*h;
+    }
 
     Texture t = GetTexture(TEXTURE_PSYCHEDELIC);
 

@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\gui.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\background.c"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\hammer.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\fades.c", "d:\\dev\\sculpture\\src\\narration.c"]
 
 [MainWindow]
 X = 0
@@ -25,30 +25,37 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "gui.c"
-TabWidth = 66.66666
+TabLabel = "hammer.c"
+TabWidth = 85.78232
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\gui.c"
-CursorPos = 10285
-VertPos = 3216.0
+FilePath = "d:\\dev\\sculpture\\src\\hammer.c"
+CursorPos = 886
+VertPos = 240.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "level.c"
-TabWidth = 65.37415
+TabLabel = "game.c"
+TabWidth = 70.81633
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\level.c"
-CursorPos = 11513
-VertPos = 10680.0
+FilePath = "d:\\dev\\sculpture\\src\\game.c"
+CursorPos = 18052
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "background.c"
-TabWidth = 107.551
+TabLabel = "fades.c"
+TabWidth = 69.45579
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\background.c"
-CursorPos = 1142
+FilePath = "d:\\dev\\sculpture\\src\\fades.c"
+CursorPos = 1059
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "narration.c"
+TabWidth = 91.90476
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\narration.c"
+CursorPos = 3009
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0
@@ -75,7 +82,7 @@ TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 335.0}, {Width = 760.0}, {Width = 253.0}]
-Items = ["dst", "dst.x", "w", "w", "xx", ""]
+Items = ["start", "end", "gs.fade", "gs.should_update", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"

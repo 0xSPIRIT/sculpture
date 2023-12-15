@@ -65,6 +65,7 @@ typedef struct Game_State {
 
     f64 main_timer;
 
+    bool should_update;
     bool close_game; // Closes the game after the current frame.
     bool debug_mode;
 
@@ -89,8 +90,6 @@ typedef struct Game_State {
 
     Wind wind;
     Intro_Background intro_bg;
-
-    bool needs_manual_fps_lock; // If the screen's refresh rate != 60, we need to manually do this.
 
     f64 dt; // Time taken for previous frame.
     f64 device_pixel_ratio; // Only used in emscripten builds.

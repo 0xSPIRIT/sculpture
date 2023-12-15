@@ -16,16 +16,17 @@ static void reset_fade() {
 }
 
 static void fade_draw(int target) {
-    if (!gs->fade.active) return;
+    if (gs->fade.active && gs->should_update) {
+        gs->fade.alpha = goto64(gs->fade.alpha, gs->fade.desired_alpha, 5);
 
-    gs->fade.alpha = goto64(gs->fade.alpha, gs->fade.desired_alpha, 5);
-
-    //gs->fade.alpha = lerp64(gs->fade.alpha, gs->fade.desired_alpha, FADE_T);
-    if (fabs(gs->fade.alpha - gs->fade.desired_alpha) < FADE_EPSILON) {
-        gs->fade.alpha = gs->fade.desired_alpha;
-        gs->fade.time = 0;
-        gs->fade.active = false;
+        //gs->fade.alpha = lerp64(gs->fade.alpha, gs->fade.desired_alpha, FADE_T);
+        if (fabs(gs->fade.alpha - gs->fade.desired_alpha) < FADE_EPSILON) {
+            gs->fade.alpha = gs->fade.desired_alpha;
+            gs->fade.time = 0;
+            gs->fade.active = false;
+        }
     }
+
 
     if (gs->obj.active) return; // Hack for ending. We need the fade to be active for other things to occur, but we don't want to draw the fade.
 
@@ -36,5 +37,6 @@ static void fade_draw(int target) {
         gs->game_width, gs->game_height
     };
 
-    RenderFillRect(target, rect);
+    if (gs->fade.alpha)
+        RenderFillRect(target, rect);
 }

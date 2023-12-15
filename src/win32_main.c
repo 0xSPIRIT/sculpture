@@ -47,7 +47,6 @@
 #endif
 
 #include "assets.c"
-#include "vsync.c"
 
 // Defines
 
@@ -164,19 +163,18 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
         renderer_flags = SDL_RENDERER_ACCELERATED;
     }
 
-#ifndef __EMSCRIPTEN__
+#if 0
     SDL_DisplayMode dm;
     SDL_GetCurrentDisplayMode(0, &dm);
 
     state->hz = dm.refresh_rate;
 
     if (dm.refresh_rate == 60) {
-        renderer_flags |= SDL_RENDERER_PRESENTVSYNC;
     } else {
         state->needs_manual_fps_lock = true;
     }
-#else
 #endif
+    renderer_flags |= SDL_RENDERER_PRESENTVSYNC;
 
     state->renderer = SDL_CreateRenderer(state->window, -1, renderer_flags);
     if (!state->renderer) fail(7);
@@ -457,8 +455,6 @@ static int win32_main(void) {
             }
         }
 
-        input_tick(gs);
-
 #ifndef ALASKA_RELEASE_MODE
         game_code.game_run(gs);
 #else
@@ -467,17 +463,6 @@ static int win32_main(void) {
         // Zero out the transient memory for next frame!
         memset(transient_memory.data, 0, transient_memory.size);
         transient_memory.cursor = transient_memory.data;
-
-        if (gs->needs_manual_fps_lock) { // Manual fallback FPS locker
-            u64 d = SDL_GetPerformanceCounter() - start_frame;
-            f64 seconds = d / freq;
-            f64 desired_frame_time = 1.0/60.0;
-
-            f64 time_to_sleep_for = (desired_frame_time - seconds);
-            if (time_to_sleep_for > 0) {
-                precise_sleep(time_to_sleep_for);
-            }
-        }
 
 #ifndef ALASKA_RELEASE_MODE
         u64 end = SDL_GetPerformanceCounter();

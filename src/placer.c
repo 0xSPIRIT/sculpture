@@ -556,40 +556,6 @@ static void placer_draw(int target, Placer *placer, bool full_size) {
         }
     }
 
-#if 0
-    SDL_Rect dst = {
-        placer->x - placer->w/2, placer->y - placer->h,
-        placer->w, placer->h
-    };
-
-    dst.x *= scale;
-    dst.y *= scale;
-    dst.w *= scale;
-    dst.h *= scale;
-
-    dst.y += y_off;
-
-    switch (placer->index) {
-        case 0: {
-            RenderTextureColorMod(placer->texture, 255, 0, 0);
-            break;
-        }
-        case 1: {
-            RenderTextureColorMod(placer->texture, 0, 255, 0);
-            break;
-        }
-        case 2: {
-            RenderTextureColorMod(placer->texture, 0, 0, 255);
-            break;
-        }
-    }
-
-    RenderTexture(target,
-                  placer->texture,
-                  null,
-                  &dst);
-#endif
-
     if (placer->state == PLACER_PLACE_RECT_MODE && placer->rect.x != -1) {
         // Make sure the area is enough before you start drawing the rectangle.
         SDL_Rect c = placer->rect;

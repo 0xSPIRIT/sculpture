@@ -76,7 +76,7 @@ static void dust_grid_run(int target) {
     for (int i = gs->dust_count-1; i >= 0; i--) {
         Dust *dust = &gs->dust[i];
 
-        if (!gs->paused) {
+        if (gs->should_update && !gs->paused) {
             if (distance(dust->x, dust->y, gs->gw/2, 0) < 3) {
                 dust_remove(i);
                 if (dust->destroyed_via_tool)

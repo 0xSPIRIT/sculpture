@@ -438,6 +438,7 @@ static void slot_tick(Slot *slot) {
 static void inventory_tick() {
     if (!gs->gui.popup) return;
     if (gs->recipes.active) return;
+    if (!gs->should_update) return;
 
     if (gs->level_current == 6-1 && !gs->did_fuel_converter_tutorial) {
         gs->tutorial = *tutorial_rect(TUTORIAL_FUEL_CONVERTER_STRING, null, true);

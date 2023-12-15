@@ -255,9 +255,6 @@ static void recipes_draw_scroll_bar(int target) {
     int logical_height = gs->game_height-GUI_H-bar_height;
 
 
-    SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
-
-
     SDL_Rect scroll_bar_full = {
         gs->game_width - w,
         GUI_H,
@@ -271,22 +268,26 @@ static void recipes_draw_scroll_bar(int target) {
         w,
         bar_height
     };
-    if (is_point_in_rect(mouse, scroll_bar) && gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
-        c->holding_scroll_bar = true;
-    }
 
-    if (!(gs->input.mouse & SDL_BUTTON_LEFT)) {
-        c->holding_scroll_bar = false;
-    }
+    if (gs->should_update) {
+        SDL_Point mouse = {gs->input.real_mx, gs->input.real_my};
 
-    if (c->holding_scroll_bar) {
-        f64 mouse_dy = gs->input.real_my - gs->input.real_pmy;
+        if (is_point_in_rect(mouse, scroll_bar) && gs->input.mouse_pressed[SDL_BUTTON_LEFT]) {
+            c->holding_scroll_bar = true;
+        }
+        if (!(gs->input.mouse & SDL_BUTTON_LEFT)) {
+            c->holding_scroll_bar = false;
+        }
 
-        // Set the view y position based on the scroll bar.
-        c->y -= mouse_dy/logical_height * c->max_height;
+        if (c->holding_scroll_bar) {
+            f64 mouse_dy = gs->input.real_my - gs->input.real_pmy;
 
-        c->y = clamp(c->y, -c->max_height, 0);
-        c->y_to = c->y;
+            // Set the view y position based on the scroll bar.
+            c->y -= mouse_dy/logical_height * c->max_height;
+
+            c->y = clamp(c->y, -c->max_height, 0);
+            c->y_to = c->y;
+        }
     }
 
     RenderColor(32, 32, 32, 255);
@@ -372,7 +373,9 @@ static void recipes_draw(int final_target) {
 
     int size = Scale(48);
 
-    gs->recipes.y = lerp64(gs->recipes.y, gs->recipes.y_to, 0.5);
+    if (gs->should_update) {
+        gs->recipes.y = lerp64(gs->recipes.y, gs->recipes.y_to, 0.5);
+    }
 
     bool mouse_in_none = true;
 

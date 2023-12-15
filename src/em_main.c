@@ -52,7 +52,6 @@ EM_JS(void, html_set_background_color_black, (), {
       });
 
 #include "headers.h"
-#include "vsync.c"
 
 #include "game.c"
 #include "assets.c"
@@ -218,7 +217,7 @@ static void em_mainloop(void *arg) {
         }
     }
 
-    input_tick(data->game_state);
+    //input_tick(data->game_state);
 
     game_run(data->game_state);
 

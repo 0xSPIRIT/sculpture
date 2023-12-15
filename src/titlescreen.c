@@ -69,16 +69,6 @@ static void titlescreen_draw(int target) {
                     null,
                     null,
                     false);
-    RenderTextQuick(target,
-                    "r3123",
-                    gs->fonts.font_times,
-                    "Firefox is NOT recommended to play on.",
-                    (SDL_Color){245,230,93,255},
-                    Scale(16),
-                    gs->game_height - Scale(75),
-                    null,
-                    null,
-                    false);
 #endif
 
 #ifndef __EMSCRIPTEN__

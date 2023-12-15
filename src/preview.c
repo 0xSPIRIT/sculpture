@@ -224,8 +224,10 @@ static SDL_Rect preview_draw(int final_target, Preview *p, int dx, int dy, int s
         }
     }
 
-    p->index++;
-    if (p->index >= p->length) p->index = 0;
+    if (gs->should_update) {
+        p->index++;
+        if (p->index >= p->length) p->index = 0;
+    }
 
     SDL_Rect target_dst = {
         dx,

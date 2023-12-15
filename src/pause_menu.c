@@ -55,30 +55,32 @@ static void pause_menu_draw(int target, Pause_Menu *menu) {
     };
     RenderFillRect(target, rect);
 
-    int mx = gs->input.real_mx, my = gs->input.real_my;
+    if (gs->should_update) {
+        int mx = gs->input.real_mx, my = gs->input.real_my;
 
-    if (gs->input.mouse_pressed[SDL_BUTTON_LEFT] &&
-        mx >= rect.x &&
-        my >= rect.y &&
-        mx <= rect.x+rect.w &&
-        my <= rect.y+rect.h)
-    {
-        menu->holding_slider = true;
-    }
+        if (gs->input.mouse_pressed[SDL_BUTTON_LEFT] &&
+            mx >= rect.x &&
+            my >= rect.y &&
+            mx <= rect.x+rect.w &&
+            my <= rect.y+rect.h)
+        {
+            menu->holding_slider = true;
+        }
 
-    if (!(gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
-        menu->holding_slider = false;
-    }
+        if (!(gs->input.mouse & SDL_BUTTON(SDL_BUTTON_LEFT))) {
+            menu->holding_slider = false;
+        }
 
-    if (menu->holding_slider) {
-        int dx = gs->input.real_mx - gs->input.real_pmx;
+        if (menu->holding_slider) {
+            int dx = gs->input.real_mx - gs->input.real_pmx;
 #ifdef __EMSCRIPTEN__
-        dx = gs->input.em_dx;
+            dx = gs->input.em_dx;
 #endif
-        //menu->slider = (f32)(mx - (width/2-size/2)) / working_size;
-        menu->slider += (f32)dx / working_size;
-        menu->slider = clampf(menu->slider, 0, 1);
-        //Mix_MasterVolume(MIX_MAX_VOLUME * menu->slider);
+            //menu->slider = (f32)(mx - (width/2-size/2)) / working_size;
+            menu->slider += (f32)dx / working_size;
+            menu->slider = clampf(menu->slider, 0, 1);
+            //Mix_MasterVolume(MIX_MAX_VOLUME * menu->slider);
+        }
     }
 
     RenderTextQuick(target,

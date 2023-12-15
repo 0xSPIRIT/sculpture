@@ -249,6 +249,8 @@ static bool is_mouse_over_button(Button *b) {
 static bool button_tick(Button *b, void *data) {
     bool result = false;
 
+    if (!gs->should_update) return result;
+
     Input *input = &gs->input;
     GUI *gui = &gs->gui;
 
@@ -509,6 +511,8 @@ static void gui_popup_toggle(void) {
 
 static void gui_tick(void) {
     if (gs->levels[gs->level_current].state != LEVEL_STATE_PLAY)
+        return;
+    if (!gs->should_update)
         return;
 
     GUI *gui = &gs->gui;
@@ -887,11 +891,13 @@ static void gui_popup_draw(int target) {
                     Scale(48)
                 };
 
-                gs->gui.t += 1.0/180.0;
+                if (gs->should_update) {
+                    gs->gui.t += 1.0/180.0;
 
-                gs->gui.tips_alpha = (1-sin(gs->gui.t));
-                gs->gui.tips_alpha *= gs->gui.tips_alpha;
-                if (gs->gui.tips_alpha > 1) gs->gui.tips_alpha = 1;
+                    gs->gui.tips_alpha = (1-sin(gs->gui.t));
+                    gs->gui.tips_alpha *= gs->gui.tips_alpha;
+                    if (gs->gui.tips_alpha > 1) gs->gui.tips_alpha = 1;
+                }
 
                 RenderTextureAlphaMod(&GetTexture(TEXTURE_TIPS), 255*(1-gs->gui.tips_alpha));
                 RenderTexture(target, &GetTexture(TEXTURE_TIPS), null, &tips_rect);

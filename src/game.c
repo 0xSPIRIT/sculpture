@@ -446,12 +446,18 @@ void audio_setup_channel_volumes(void) {
 }
 
 export void game_run(Game_State *state) {
-    if (state->start_frame) {
-        gs->dt = __end_timer(state->start_frame);
-    }
-    state->start_frame = SDL_GetPerformanceCounter();
-
     gs = state;
+
+    if (gs->start_frame) {
+        gs->dt = __end_timer(gs->start_frame);
+    }
+    gs->start_frame = SDL_GetPerformanceCounter();
+
+    gs->should_update = (seconds_elapsed(gs->dt, 1.0/60.0));
+
+    // Begin frame
+
+    if (gs->should_update || !gs->input.initted) input_tick(gs);
 
     gs->gui.tooltip.set_this_frame = false;
 
@@ -473,10 +479,11 @@ export void game_run(Game_State *state) {
             break;
         }
         case GAME_STATE_PLAY: {
-            game_update_view();
-
-            audio_set_ambience_accordingly();
-            audio_set_music_accordingly();
+            if (gs->should_update) {
+                game_update_view();
+                audio_set_ambience_accordingly();
+                audio_set_music_accordingly();
+            }
 
             if (gs->obj.active) {
                 RenderColor(255, 255, 255, 255);
@@ -560,8 +567,6 @@ export void game_run(Game_State *state) {
         char str[128];
         sprintf(str, "Frametime: %.2f ms\n", 1000*gs->dt);
         SDL_Color color = {127,127,127,255};
-        if (gs->dt*1000 >= 16.67)
-            color = RED;
 
         RenderTextQuick(RENDER_TARGET_MASTER,
                         "fps",

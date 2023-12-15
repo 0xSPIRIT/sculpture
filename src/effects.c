@@ -22,7 +22,7 @@ static void draw_rain_splashes(int target, Rain_Splash *rain) {
     RenderColor(0,0,0,0);
     RenderClear(sub_target);
 
-    bool should_tick = !gs->paused || gs->step_one;
+    bool should_tick = gs->should_update && (!gs->paused || gs->step_one);
 
     for (int i = rain->splash_count-1; i >= 0; i--) {
         Effect_Particle *p = &rain->splashes[i];
@@ -45,12 +45,12 @@ static void draw_rain_splashes(int target, Rain_Splash *rain) {
             int_y = p->y;
 
             p->vy += 0.1; // gravity
-        }
 
-        if (p->y > gs->gh || gs->grid[int_x+int_y*gs->gw].type) {
-            rain->splash_count--;
-            for (int j = i; j < rain->splash_count; j++)
-                rain->splashes[j] = rain->splashes[j+1];
+            if (p->y > gs->gh || gs->grid[int_x+int_y*gs->gw].type) {
+                rain->splash_count--;
+                for (int j = i; j < rain->splash_count; j++)
+                    rain->splashes[j] = rain->splashes[j+1];
+            }
         }
     }
 
@@ -328,11 +328,12 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
                 Effect_Particle *particle = &effect->particles[i];
                 f32 length = (f32) sqrt(particle->vx*particle->vx + particle->vy*particle->vy);
 
-                particle_tick(effect, i);
-
-                if (!effect->high_fidelity) {
-                    if (particle->x < 32 + (gs->render.view.x-30)/gs->S) continue;
-                    if (particle->x > 32 + 64 + gs->render.view.x/gs->S) continue;
+                if (gs->should_update) {
+                    particle_tick(effect, i);
+                    if (!effect->high_fidelity) {
+                        if (particle->x < 32 + (gs->render.view.x-30)/gs->S) continue;
+                        if (particle->x > 32 + 64 + gs->render.view.x/gs->S) continue;
+                    }
                 }
 
                 f32 max;
@@ -368,11 +369,6 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
             break;
         }
         case EFFECT_RAIN: {
-            //int sub_target = RENDER_TARGET_EFFECTS;
-
-            //RenderColor(0,0,0,0);
-            //RenderClear(sub_target);
-
             for (int i = 0; i < effect->particle_count; i++) {
                 Effect_Particle *p = &effect->particles[i];
 
@@ -381,12 +377,14 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
                 int px = (int)p->x;
                 int py = (int)p->y;
 
-                ParticleSplashResult splash = particle_tick(effect, i);
+                if (gs->should_update) {
+                    ParticleSplashResult splash = particle_tick(effect, i);
 
-                if (gs->level_current+1 == 11) splash.hit = false;
+                    if (gs->level_current+1 == 11) splash.hit = false;
 
-                if (splash.hit && length > _get_particle_square_limit(effect->type) && rand()<RAND_MAX/7) {
-                    rain_splash(&effect->rain, 7, splash.x, splash.y);
+                    if (splash.hit && length > _get_particle_square_limit(effect->type) && rand()<RAND_MAX/7) {
+                        rain_splash(&effect->rain, 7, splash.x, splash.y);
+                    }
                 }
 
                 // Updated from the particle_tick()
@@ -411,9 +409,6 @@ static void effect_draw(int target, Effect *effect, bool draw_points) {
 
                 RenderLineRelative(target, px, py, p2x, p2y);
             }
-
-            //RenderTextureAlphaMod(&RenderTarget(sub_target)->texture, 40);
-            //RenderTargetToTarget(target, sub_target, null, null);
             break;
         }
         default: break;

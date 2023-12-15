@@ -242,16 +242,6 @@ static void goto_level(int lvl) {
 static void level_set_state(int level, enum Level_State state) {
     Level *l = &gs->levels[level];
 
-#if AUDIO_PLAY_AMBIANCE
-    if (state == LEVEL_STATE_PLAY || state == LEVEL_STATE_NARRATION) {
-        if (gs->levels[level].effect_type == EFFECT_RAIN) {
-            //play_music(AMBIENCE_RAIN);
-        } else {
-            //play_music(AMBIENCE_NORMAL);
-        }
-    }
-#endif
-
     if (state == LEVEL_STATE_PLAY) {
         if (gs->current_effect.type != l->effect_type) {
             effect_set(&gs->current_effect,
@@ -293,6 +283,7 @@ static void goto_level_string_hook(const char *string) {
 static void level_tick(Level *level) {
     if (gs->text_field.active) return;
     if (gs->gui.popup) return;
+    if (!gs->should_update) return;
 
     switch (level->state) {
         case LEVEL_STATE_NARRATION: {
@@ -513,27 +504,6 @@ static void level_draw_intro(Level *level) {
                     null,
                     null,
                     false);
-
-#if 0
-    TTF_Font *font = gs->fonts.font_title->handle;
-    if (gs->level_current+1 == 8)
-        font = gs->fonts.font_title_2->handle;
-
-    SDL_Surface *surf = TTF_RenderText_Blended(font,
-                                               name,
-                                               WHITE);
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(gs->renderer, surf);
-
-    SDL_Rect dst = {
-        gs->game_width/2 - surf->w/2,
-        surf->h * .5,
-        surf->w, surf->h
-    };
-    SDL_RenderCopy(gs->renderer, texture, null, &dst);
-
-    SDL_FreeSurface(surf);
-    SDL_DestroyTexture(texture);
-#endif
 }
 
 #define LEVEL_MARGIN Scale(36)
@@ -805,7 +775,7 @@ static void level_draw_narration(int target) {
     RenderClear(target);
 
     effect_draw(target, &gs->current_effect, false);
-    narrator_run(target, WHITE);
+    narrator_draw(target, WHITE);
 }
 
 static void game_draw_table(int target) {
@@ -844,7 +814,7 @@ static void level_draw_outro_or_play(Level *level) {
 
     // The meat
 
-    lighting_tick(&gs->lighting);
+    if (gs->should_update) lighting_tick(&gs->lighting);
     background_draw(target, &gs->background, 64, 0);
     effect_draw    (target, &gs->current_effect, true);
     draw_rain_splashes(target, &gs->current_effect.rain);

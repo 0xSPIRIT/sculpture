@@ -747,6 +747,8 @@ static void all_converters_tick(void) {
     // Grey out the buttons for each converter
     // if no converter are possible right now.
 
+    if (!gs->should_update) return;
+
     converter_tick(gs->material_converter);
     converter_tick(gs->fuel_converter);
 

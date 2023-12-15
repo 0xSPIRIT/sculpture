@@ -11,9 +11,9 @@
     "---\n\n" \
     "Click the OVERLAY BUTTON to show what Max\n"\
     "wants to create.\n\n" \
-    "Select the POINTER TOOL and hover over\n"\
+    "Select the POINTER TOOL and HOVER over\n"\
     "the overlay at any point to show the\n"\
-    "material needed for that pixel.\n" \
+    "material needed for that point.\n" \
 
 #define TUTORIAL_CHISEL_STRING  \
     "Tip\n" \
@@ -39,7 +39,7 @@
     "Tip\n" \
     "---\n\n" \
     "Use the PLACER to pick up the sand and place it into\n" \
-    "your INVENTORY [TAB].\n\n"
+    "your INVENTORY using the TAB key / button.\n\n"
 
 #define TUTORIAL_PLACER_HARD \
     "Tip\n" \
@@ -68,8 +68,8 @@
 #define TUTORIAL_RECTANGLE_PLACE \
     "Tip\n" \
     "---\n\n" \
-    "To place material down, scroll the mouse to change\n" \
-    "the size of the rectangle, then click.\n"
+    "To place material down, SCROLL the mouse to change\n" \
+    "the size of the rectangle, then CLICK.\n"
 
 // A rectangle containing text, and an "Okay" button.
 typedef struct Tutorial_Rect {

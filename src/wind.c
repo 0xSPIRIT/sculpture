@@ -98,12 +98,14 @@ void wind_stream_activate(Wind *wind) {
 }
 
 void wind_streams_draw(int target, Wind *wind) {
-    if (!gs->paused || gs->step_one) {
-        if (wind->timer == 0) {
-            wind_stream_activate(&gs->wind);
-            wind->timer = 10+rand()%20;
-        } else {
-            wind->timer--;
+    if (gs->should_update) {
+        if (!gs->paused || gs->step_one) {
+            if (wind->timer == 0) {
+                wind_stream_activate(&gs->wind);
+                wind->timer = 10+rand()%20;
+            } else {
+                wind->timer--;
+            }
         }
     }
 
@@ -123,33 +125,35 @@ void wind_streams_draw(int target, Wind *wind) {
 bool wind_stream_draw(int target, Wind_Stream_Instance *instance) {
     Wind_Stream *stream = instance->stream;
 
-    if (!gs->paused || gs->step_one) {
-        // Tick
-        switch (instance->state) {
-            case WIND_STREAM_IDLE: {
-            } break;
-            case WIND_STREAM_GROW: {
-                instance->range_end += instance->speed;
-                instance->speed += 0.03;
-                if (instance->range_end >= stream->point_count-1) {
-                    instance->range_end = stream->point_count-1;
-                    instance->state = WIND_STREAM_SHRINK;
-                    instance->speed = 0.4;
-                }
-            } break;
-            case WIND_STREAM_SHRINK: {
-                instance->range_start += instance->speed;
-                instance->speed += 0.02;
-                if (instance->range_start >= stream->point_count-1+1) { // We want to display the one last pixel before stopping.
-                    memset(instance, 0, sizeof(Wind_Stream_Instance));
-                    return true;
-                } else if (instance->range_start >= stream->point_count-1) {
-                    instance->range_start = stream->point_count-1;
-                }
-            } break;
-        }
+    if (gs->should_update) {
+        if (!gs->paused || gs->step_one) {
+            // Tick
+            switch (instance->state) {
+                case WIND_STREAM_IDLE: {
+                } break;
+                case WIND_STREAM_GROW: {
+                    instance->range_end += instance->speed;
+                    instance->speed += 0.03;
+                    if (instance->range_end >= stream->point_count-1) {
+                        instance->range_end = stream->point_count-1;
+                        instance->state = WIND_STREAM_SHRINK;
+                        instance->speed = 0.4;
+                    }
+                } break;
+                case WIND_STREAM_SHRINK: {
+                    instance->range_start += instance->speed;
+                    instance->speed += 0.02;
+                    if (instance->range_start >= stream->point_count-1+1) { // We want to display the one last pixel before stopping.
+                        memset(instance, 0, sizeof(Wind_Stream_Instance));
+                        return true;
+                    } else if (instance->range_start >= stream->point_count-1) {
+                        instance->range_start = stream->point_count-1;
+                    }
+                } break;
+            }
 
-        instance->time += 1.0/60.0;
+            instance->time += 1.0/60.0;
+        }
     }
 
     Assert(instance->range_end < stream->point_count);
@@ -162,9 +166,11 @@ bool wind_stream_draw(int target, Wind_Stream_Instance *instance) {
                             round(stream->points[i].y+instance->y));
     }
 
-    f32 k = sin(instance->time*2.5);
-    k *= k;
-    instance->x -= k;
+    if (gs->should_update) {
+        f32 k = sin(instance->time*2.5);
+        k *= k;
+        instance->x -= k;
+    }
 
     return false;
 }

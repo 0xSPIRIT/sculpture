@@ -7,7 +7,7 @@
 #ifdef ALASKA_RELEASE_MODE
   #define SHOW_NARRATION 1
 #else
-  #define SHOW_NARRATION 0
+  #define SHOW_NARRATION 1
 #endif
 
 ////////////////////////////////////////////////////////////////

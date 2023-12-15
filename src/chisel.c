@@ -814,7 +814,7 @@ static void chisel_draw(int final_target, Chisel *chisel) {
         diagonal_offset_angle = 45;
     }
 
-    { // Lerp the chisel angle
+    if (gs->should_update) { // Lerp the chisel angle
         chisel->angle += 180;
         chisel->draw_angle += 180;
 
