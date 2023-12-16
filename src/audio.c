@@ -1,7 +1,11 @@
 void channel_finished(int channel) {
     Audio_Handler *handler = &gs->audio_handler;
-    if (channel == AUDIO_CHANNEL_MUSIC && handler->queued_music) {
-        audio_set_music(handler->queued_music, false);
+    if (channel == AUDIO_CHANNEL_MUSIC) {
+        if (handler->queued_music) {
+            audio_set_music(handler->queued_music, false);
+        } else {
+            handler->music = 0;
+        }
     }
 }
 
@@ -9,30 +13,47 @@ static void audio_handler_init(void) {
     Mix_ChannelFinished(channel_finished);
 }
 
+static MusicType audio_get_music_for_level(int level_number) {
+    if (level_number <= 3) return MUSIC_FRONTIER;
+    if (level_number >= 4 && level_number <= 6) return MUSIC_ABCS;
+    if (level_number >= 8 && level_number <= 10) return MUSIC_PHOTOGRAPH;
+    return MUSIC_NONE;
+}
+
 static void audio_set_music_accordingly(void) {
 #if !AUDIO_PLAY_MUSIC
     audio_set_music(MUSIC_NONE, false);
 #else
-    int level_number = gs->level_current+1;
+    Audio_Handler *handler = &gs->audio_handler;
 
-    if (level_number <= 3) {
-        audio_set_music(MUSIC_FRONTIER, true);
-    } else if (level_number >= 4 && level_number <= 6) {
-        audio_set_music(MUSIC_ABCS, true);
-    } else if (level_number >= 8 && level_number <= 10) {
-        Audio_Handler *handler = &gs->audio_handler;
-        handler->timer += 1.0/60.0;
-        audio_set_music(MUSIC_PHOTOGRAPH, true);
-    } else if (level_number == 7 && gs->overlay.changes.music_started) {
-        if (gs->level_completed) {
-            audio_set_music(MUSIC_NONE, true);
+    int level_no = gs->level_current+1;
+    MusicType music = audio_get_music_for_level(level_no);
+
+    if (!handler->first) {
+        handler->first = true;
+
+        if (music == MUSIC_PHOTOGRAPH && music == audio_get_music_for_level(gs->level_previous+1)) {
         } else {
-            audio_set_music(MUSIC_WEIRD, true);
+            handler->photograph_timer = 0;
+            audio_set_music(music, true); // queues the music for us
         }
-    } else if (gs->obj.active) {
-        audio_set_music(MUSIC_COMING_HOME, true);
     } else {
-        audio_set_music(MUSIC_NONE, true);
+        if (level_no == 7 && gs->overlay.changes.music_started) {
+            if (gs->level_completed) {
+                audio_set_music(MUSIC_NONE, false);
+            } else {
+                audio_set_music(MUSIC_WEIRD, true);
+            }
+        } else if (gs->obj.active && !handler->object_started) {
+            audio_set_music(MUSIC_COMING_HOME, true);
+            handler->object_started = true;
+        } else if (music == MUSIC_PHOTOGRAPH) {
+            handler->photograph_timer += 1.0/60.0;
+            if (handler->photograph_timer >= 5*60) {
+                audio_set_music(MUSIC_PHOTOGRAPH, true);
+                handler->photograph_timer = 0;
+            }
+        }
     }
 #endif
 }
@@ -121,31 +142,27 @@ static void audio_set_ambience_levels(void) {
 }
 
 static void audio_halt_music(void) {
-    Mix_HaltChannel(AUDIO_CHANNEL_MUSIC);
     gs->audio_handler.music = 0;
-    gs->audio_handler.music_volume = 0;
-    gs->audio_handler.music_end = true;
+    gs->audio_handler.queued_music = 0;
+    Mix_HaltChannel(AUDIO_CHANNEL_MUSIC);
 }
 
 static void audio_set_music(MusicType music, bool fade) {
     Audio_Handler *handler = &gs->audio_handler;
 
+    if (fade && handler->music != music && handler->music != 0) {
+        Mix_FadeOutChannel(AUDIO_CHANNEL_MUSIC, 1000);
+        handler->queued_music = music;
+        return;
+    }
+
     if (!fade || handler->music == 0) {
-        if (!fade && music == MUSIC_PHOTOGRAPH) {
-            if (handler->music != music) {
-                // we good
-            } else {
-                handler->music = MUSIC_NONE;
-                return; // never ever do this
-            }
-        }
         handler->music = music;
+        handler->queued_music = 0;
+
         switch (music) {
             case MUSIC_COMING_HOME: {
-                if (!handler->started_playing_coming_home) {
-                    play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music0, 0);
-                    handler->started_playing_coming_home = true;
-                }
+                play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music0, 0);
             } break;
             case MUSIC_PHOTOGRAPH: {
                 play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music1, 0);
@@ -162,14 +179,6 @@ static void audio_set_music(MusicType music, bool fade) {
             default: {
                 audio_halt_music();
             } break;
-        }
-    } else if (handler->music != music) {
-        if (handler->music == MUSIC_NONE) {
-            handler->queued_music = 0;
-            audio_set_music(music, false);
-        } else {
-            Mix_FadeOutChannel(AUDIO_CHANNEL_MUSIC, 1000);
-            handler->queued_music = music;
         }
     }
 }

@@ -138,6 +138,7 @@ static void titlescreen_draw(int target) {
                                            ALIGNMENT_BOTTOM_LEFT,
                                            TEXT_RENDER_BLENDED);
     if (pressed_delete_save) {
+        gs->level_previous = 0;
         gs->level_current = 0;
         save_game();
     }

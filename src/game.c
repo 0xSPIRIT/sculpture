@@ -150,6 +150,8 @@ export void game_init(Game_State *state) {
 
     titlescreen_init();
 
+    gs->level_previous = -1;
+
 #if SHOW_TITLESCREEN
     gs->gamestate = GAME_STATE_TITLESCREEN;
 

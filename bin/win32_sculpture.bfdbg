@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\hammer.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\fades.c", "d:\\dev\\sculpture\\src\\narration.c"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\game.c"]
 
 [MainWindow]
 X = 0
@@ -24,46 +24,32 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "game.c"
+TabWidth = 80.27211
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\game.c"
+CursorPos = 3948
+VertPos = 2990.4
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "level.c"
+TabWidth = 74.82993
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\level.c"
+CursorPos = 4300
+VertPos = 3000.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
 TabLabel = "audio.c"
 TabWidth = 71.4966
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\audio.c"
-CursorPos = 538
-VertPos = 336.0
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "hammer.c"
-TabWidth = 85.78232
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\hammer.c"
-CursorPos = 548
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "game.c"
-TabWidth = 70.81633
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 18052
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "fades.c"
-TabWidth = 69.45579
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\fades.c"
-CursorPos = 1059
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "narration.c"
-TabWidth = 91.90476
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\narration.c"
-CursorPos = 3009
+CursorPos = 1794
+VertPos = 816.0
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0
@@ -90,7 +76,7 @@ TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 335.0}, {Width = 760.0}, {Width = 253.0}]
-Items = ["handler.timer", "7*60", ""]
+Items = ["handler.music", "music", "handler.photograph_timer", "gs.level_previous", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"

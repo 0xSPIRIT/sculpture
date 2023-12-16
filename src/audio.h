@@ -42,19 +42,13 @@ typedef struct {
     AmbienceType ambience;
     int ambience_volume;
 
+    bool first; // reset at goto_level
+
+    bool object_started;
+
+    f32 photograph_timer;
+
     MusicType music, queued_music;
-    int music_volume;
-    bool music_end;
-
-    f32 timer;
-
-    bool started_playing_coming_home;
-
-    // used for audio_lower_channel_for_ms
-    f32 fader; // 0.0 to 1.0
-    int old_volume;
-    int time;
-    bool fade_initted, waiting;
 
     int channel_volumes[AUDIO_CHANNEL_COUNT];
 } Audio_Handler;

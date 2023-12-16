@@ -137,7 +137,14 @@ static void levels_setup(void) {
 }
 
 static void goto_level(int lvl) {
+    if (gs->level_previous == -1) {
+        gs->level_previous = 0;
+    } else {
+        gs->level_previous = gs->level_current;
+    }
     gs->level_current = lvl;
+
+    gs->audio_handler.first = false;
 
     // Don't ask me the difference between these two.
     gs->level_completed = false;

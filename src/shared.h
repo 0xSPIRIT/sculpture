@@ -198,7 +198,7 @@ typedef struct Game_State {
     int current_placer;
 
     Level levels[LEVEL_COUNT];
-    int level_current, level_count, new_level;
+    int level_current, level_previous, level_count, new_level;
     bool level_completed;
 
     GUI gui;
