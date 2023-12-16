@@ -1,11 +1,1 @@
 TODO
-
-Things to Remember When Doing a Release Build
-  x Titlescreen
-  x Remove Ctrl+G functionality, or gate it into a debug mode
-  x Remove the T key
-  x Turn on music
-  x Turn on tutorials
-  x Turn on narration
-  x Remove sdlk_h for reloading textures
-  x Remove the wind png

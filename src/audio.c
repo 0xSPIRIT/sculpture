@@ -1,7 +1,7 @@
 void channel_finished(int channel) {
     Audio_Handler *handler = &gs->audio_handler;
-    if (channel == AUDIO_CHANNEL_MUSIC && handler->music) {
-        audio_set_music(handler->music, false);
+    if (channel == AUDIO_CHANNEL_MUSIC && handler->queued_music) {
+        audio_set_music(handler->queued_music, false);
     }
 }
 
@@ -9,7 +9,6 @@ static void audio_handler_init(void) {
     Mix_ChannelFinished(channel_finished);
 }
 
-// This is called every frame and sets the current music according to certain conditions.
 static void audio_set_music_accordingly(void) {
 #if !AUDIO_PLAY_MUSIC
     audio_set_music(MUSIC_NONE, false);
@@ -21,6 +20,8 @@ static void audio_set_music_accordingly(void) {
     } else if (level_number >= 4 && level_number <= 6) {
         audio_set_music(MUSIC_ABCS, true);
     } else if (level_number >= 8 && level_number <= 10) {
+        Audio_Handler *handler = &gs->audio_handler;
+        handler->timer += 1.0/60.0;
         audio_set_music(MUSIC_PHOTOGRAPH, true);
     } else if (level_number == 7 && gs->overlay.changes.music_started) {
         if (gs->level_completed) {
@@ -130,6 +131,14 @@ static void audio_set_music(MusicType music, bool fade) {
     Audio_Handler *handler = &gs->audio_handler;
 
     if (!fade || handler->music == 0) {
+        if (!fade && music == MUSIC_PHOTOGRAPH) {
+            if (handler->music != music) {
+                // we good
+            } else {
+                handler->music = MUSIC_NONE;
+                return; // never ever do this
+            }
+        }
         handler->music = music;
         switch (music) {
             case MUSIC_COMING_HOME: {
@@ -139,7 +148,7 @@ static void audio_set_music(MusicType music, bool fade) {
                 }
             } break;
             case MUSIC_PHOTOGRAPH: {
-                play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music1, -1);
+                play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music1, 0);
             } break;
             case MUSIC_FRONTIER: {
                 play_sound(AUDIO_CHANNEL_MUSIC, gs->audio.music2, -1);
@@ -155,7 +164,12 @@ static void audio_set_music(MusicType music, bool fade) {
             } break;
         }
     } else if (handler->music != music) {
-        Mix_FadeOutChannel(AUDIO_CHANNEL_MUSIC, 1000);
-        handler->music = music;
+        if (handler->music == MUSIC_NONE) {
+            handler->queued_music = 0;
+            audio_set_music(music, false);
+        } else {
+            Mix_FadeOutChannel(AUDIO_CHANNEL_MUSIC, 1000);
+            handler->queued_music = music;
+        }
     }
 }

@@ -1,7 +1,7 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\hammer.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\fades.c", "d:\\dev\\sculpture\\src\\narration.c"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\hammer.c", "d:\\dev\\sculpture\\src\\game.c", "d:\\dev\\sculpture\\src\\fades.c", "d:\\dev\\sculpture\\src\\narration.c"]
 
 [MainWindow]
 X = 0
@@ -25,13 +25,21 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
+TabLabel = "audio.c"
+TabWidth = 71.4966
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\audio.c"
+CursorPos = 538
+VertPos = 336.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "hammer.c"
 TabWidth = 85.78232
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\hammer.c"
-CursorPos = 886
-VertPos = 240.0
+CursorPos = 548
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "game.c"
@@ -82,7 +90,7 @@ TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 335.0}, {Width = 760.0}, {Width = 253.0}]
-Items = ["start", "end", "gs.fade", "gs.should_update", ""]
+Items = ["handler.timer", "7*60", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"

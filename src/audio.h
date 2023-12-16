@@ -46,6 +46,8 @@ typedef struct {
     int music_volume;
     bool music_end;
 
+    f32 timer;
+
     bool started_playing_coming_home;
 
     // used for audio_lower_channel_for_ms

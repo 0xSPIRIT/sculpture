@@ -153,7 +153,7 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
     ok = (TTF_Init() == 0);
     if (!ok) fail(5);
 
-    ok = (Mix_OpenAudio(44100, AUDIO_S16, 2, 4096) >= 0);
+    ok = (Mix_OpenAudio(44100, AUDIO_F32SYS, 2, 4096) >= 0);
     if (!ok) fail(6);
 
     int renderer_flags = 0;
@@ -239,6 +239,7 @@ static void win32_game_init(Game_State *state) {
     SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
 
     fonts_init(&state->fonts);
+    Log("%d\n", MIX_MAX_VOLUME);
 }
 
 static void game_deinit(Game_State *state) {

@@ -58,6 +58,19 @@ static void titlescreen_draw(int target) {
                     null,
                     false);
 
+    TTF_SizeText(gs->fonts.font_times->handle,
+                 "by spiritwolf",
+                 &text_width,
+                 &text_height);
+    RenderTextQuick(target,
+                    "spirit",
+                    gs->fonts.font_times,
+                    "by spiritwolf",
+                    (SDL_Color){200,200,200,255},
+                    gs->game_width/2 - text_width/2,
+                    gs->game_height/2 - Scale(150),
+                    null, null, false);
+
 #ifdef __EMSCRIPTEN__
     RenderTextQuick(target,
                     "23123",

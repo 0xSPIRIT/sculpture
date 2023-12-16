@@ -92,6 +92,15 @@ static void pause_menu_draw(int target, Pause_Menu *menu) {
                     height/2 - Scale(70),
                     0, 0, false);
 
+    RenderTextQuick(target,
+                    "e",
+                    gs->fonts.font_times,
+                    "I - Toggle Icons",
+                    WHITE,
+                    width - Scale(200),
+                    height - Scale(105),
+                    0, 0, false);
+
 #ifndef __EMSCRIPTEN__
     RenderTextQuick(target,
                     "p",
@@ -100,15 +109,6 @@ static void pause_menu_draw(int target, Pause_Menu *menu) {
                     WHITE,
                     width - Scale(200),
                     height - Scale(64),
-                    0, 0, false);
-
-    RenderTextQuick(target,
-                    "e",
-                    gs->fonts.font_times,
-                    "I - Toggle Icons",
-                    WHITE,
-                    width - Scale(200),
-                    height - Scale(105),
                     0, 0, false);
 
     {
