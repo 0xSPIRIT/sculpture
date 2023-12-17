@@ -6,7 +6,9 @@ out and such.
 Ensure you have MSVC installed, as well as clang. Ensure you add
 LLVM\bin to the PATH, and that you're running a terminal using the
 "x64 Native Tools Command Prompt for VS 2022" or whatever version
-you're at.
+you're at. Ensure that you install (x64) SDL2, SDL2_ttf, SDL2_image, and
+SDL2_mixer to MSVC (put the include files into the include directory
+and add the lib files to the lib directory).
 
 To build, call build_release.bat from your terminal. An executable
 should be generated in bin_release\ and you should be good to go!
