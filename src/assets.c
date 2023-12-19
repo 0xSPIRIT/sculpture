@@ -271,7 +271,7 @@ static void audio_init(Audio *audio) {
     }
 
     audio->sprinkle = load_sound("audio/win.ogg", 1);
-    audio->macabre = load_sound("audio/macabre.ogg", 1);
+    audio->macabre = load_sound("audio/macabre.ogg", 0.75);
 
     audio->accept = load_sound("audio/accept.ogg", scale*0.75);
 

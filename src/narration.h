@@ -115,7 +115,7 @@
 "yearning to masquerade around as some auteur.\n"\
 "Maybe that's not such a bad thing.\n"\
 "...\n"\
-"Let's move to Alaska.\n"\
+"Let's go to Alaska.\n"\
 "We'll sculpt the little birds and trees.\n"\
 "And it'll feel good.\n"
 

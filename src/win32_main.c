@@ -90,8 +90,10 @@ static f64 calculate_scale(bool fullscreen, int *dw, int *dh) {
     SDL_DisplayMode dm;
 
     if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
-        SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
-        __debugbreak();
+        char msg[1024];
+        sprintf(msg, "SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Fatal Error", msg, null);
+        exit(1);
     }
 
     int w, h;
@@ -210,6 +212,10 @@ static void make_memory_arena(Memory_Arena *persistent_memory, Memory_Arena *tra
                                            MEM_COMMIT | MEM_RESERVE,
                                            PAGE_READWRITE);
     if (!persistent_memory->data) {
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
+                                 "Fatal Error!",
+                                 "Not enough memory!\nPlease close other programs before running!",
+                                 null);
         fail(GetLastError());
     }
 

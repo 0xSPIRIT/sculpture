@@ -136,7 +136,7 @@ export void game_init(Game_State *state) {
     gs->render.view.h = gs->game_height-GUI_H;
 
     gs->show_tutorials = true;
-    gs->show_icons = true;
+    gs->show_icons = true; // TODO
 
     levels_setup();
     previews_load();

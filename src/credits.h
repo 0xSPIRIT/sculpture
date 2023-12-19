@@ -6,6 +6,7 @@ enum Credits_State {
     CREDITS_SHOW_1,
     CREDITS_SHOW_2,
     CREDITS_SHOW_3,
+    CREDITS_SHOW_4,
     CREDITS_END
 };
 
