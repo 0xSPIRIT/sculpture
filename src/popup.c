@@ -51,75 +51,55 @@ static void text_field_draw(int target) {
 
     if (!text_field->active) return;
 
-    // TODO: Replace with our new font renderer.
-    //       Jesus H Christ this is bad lmao.
+    const int hh = 140;
 
-    SDL_Surface *description_surf = 0, *text_surf = 0;
-    SDL_Texture *description_texture = 0, *text_texture = 0;
+    Render_Text_Data data_desc = {0};
+    Render_Text_Data data_text = {0};
 
-    SDL_Rect field_rect = {0}, text_field_rect = {0}, description_rect = {0};
+    { // Description
+        strcpy(data_desc.identifier, "fielda");
+        data_desc.font = gs->fonts.font_courier;
+        strcpy(data_desc.str, text_field->description);
+        data_desc.x = gs->game_width/2;
+        data_desc.y = GUI_H + gs->game_height/2 - Scale(hh);
+        data_desc.foreground = (SDL_Color){180,180,180,255};
+        data_desc.alignment = ALIGNMENT_CENTER;
+        data_desc.render_type = TEXT_RENDER_BLENDED;
 
-    if (*text_field->description)
-        description_surf = TTF_RenderText_Blended(gs->fonts.font_courier->handle, text_field->description, (SDL_Color){180,180,180,255});
-    if (*text_field->text)
-        text_surf = TTF_RenderText_Blended(gs->fonts.font_courier->handle, text_field->text, WHITE);
-
-    if (text_surf) {
-        field_rect = (SDL_Rect){
-            (gs->gh*gs->S)/2 - text_surf->w/2 - 16,
-            GUI_H + (gs->gh*gs->S)/2 - text_surf->h/2 - 16,
-            text_surf->w + 32,
-            text_surf->h + 32
-        };
-        text_field_rect = (SDL_Rect){
-            (gs->gh*gs->S)/2 - text_surf->w/2,
-            GUI_H + (gs->gh*gs->S)/2 - text_surf->h/2,
-            text_surf->w,
-            text_surf->h
-        };
+        RenderText(target, &data_desc);
     }
-    RenderColor(0, 0, 0, 255);
 
-    if (text_surf)
+    if (text_field->text[0]) {
+        RenderColor(0, 0, 0, 255);
+
+        int at_x = gs->game_width/2;
+        int at_y = gs->game_height/2;
+
+        int w, h;
+        RenderSizeText(gs->fonts.font_courier, text_field->text, &w, &h);
+
+        SDL_Rect field_rect = {
+            at_x - w/2 - 16,
+            at_y - h/2 - 16,
+            w + 32,
+            h + 32
+        };
+
         RenderFillRect(target, field_rect);
 
-    if (description_surf)
-        description_texture = SDL_CreateTextureFromSurface(gs->renderer, description_surf);
-    if (text_surf)
-        text_texture = SDL_CreateTextureFromSurface(gs->renderer, text_surf);
-
-    RenderColor(255, 255, 255, 255);
-
-    if (text_surf) {
-        RenderDrawRect(target, field_rect);
-        SDL_RenderCopy(gs->renderer, text_texture, null, &text_field_rect);
-    }
-
-    if (description_surf) {
-        int x = gs->gh*gs->S/2;
-        int y = gs->gh*gs->S/2;
-        int hh = 0;
-
-        if (text_surf) {
-            hh = field_rect.h;
-        } else {
-            hh = 32;
-        }
-
-        description_rect = (SDL_Rect){
-            x - description_surf->w/2, GUI_H + y - hh,
-            description_surf->w, description_surf->h
-        };
-
-        RenderColor(0, 0, 0, 255);
-        RenderFillRectRelative(target, description_rect);
         RenderColor(255, 255, 255, 255);
-        SDL_RenderCopy(gs->render.sdl,
-                       description_texture,
-                       null,
-                       &description_rect);
+        RenderDrawRect(target, field_rect);
 
-        SDL_DestroyTexture(description_texture);
-        SDL_FreeSurface(description_surf);
+        // Text Surface
+        strcpy(data_text.identifier, "fieldb");
+        data_text.font = gs->fonts.font_courier;
+        strcpy(data_text.str, text_field->text);
+        data_text.x = at_x;
+        data_text.y = at_y;
+        data_text.foreground = WHITE;
+        data_text.render_type = TEXT_RENDER_BLENDED;
+        data_text.alignment = ALIGNMENT_CENTER;
+
+        RenderText(target, &data_text);
     }
 }

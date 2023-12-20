@@ -743,6 +743,10 @@ RENDERAPI void RenderTextDebug() {
 #endif
 }
 
+RENDERAPI void RenderSizeText(Font *font, const char *str, int *w, int *h) {
+    TTF_SizeText(font->handle, str, w, h);
+}
+
 RENDERAPI void RenderCleanupTextCache(Render_Text_Data_Cache *cache) {
     for (int i = 0; i < cache->size; i++) {
         Render_Text_Data *text_data = &cache->data[i];

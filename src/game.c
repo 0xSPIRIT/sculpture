@@ -136,7 +136,7 @@ export void game_init(Game_State *state) {
     gs->render.view.h = gs->game_height-GUI_H;
 
     gs->show_tutorials = true;
-    gs->show_icons = true; // TODO
+    gs->show_icons = true;
 
     levels_setup();
     previews_load();
@@ -170,16 +170,15 @@ static void debug_mode(const char *str) {
         gs->debug_mode = false;
 }
 
-export bool game_handle_event(Game_State *state, SDL_Event *event) {
+export void game_handle_event(Game_State *state, SDL_Event *event) {
     gs = state;
     gs->event = event;
 
-    bool is_running = true;
     Input *input = &gs->input;
 
     if (event->type == SDL_QUIT) {
         save_game();
-        is_running = false;
+        gs->close_game = true;
     }
 
 #if SIMULATE_MOUSE
@@ -254,7 +253,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
             case SDLK_ESCAPE: {
                 if (gs->credits.state == CREDITS_END) {
 #ifndef __EMSCRIPTEN__
-                    is_running = false;
+                    gs->close_game = true;
 #endif
                 } else if (gs->tutorial.active && !gs->tutorial.ok_button->disabled) {
                     tutorial_rect_close(null);
@@ -269,7 +268,7 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
                     gs->paused = !gs->paused;
 #endif
 #ifndef __EMSCRIPTEN__
-                if (gs->credits.state == CREDITS_END) is_running = false;
+                if (gs->credits.state == CREDITS_END) gs->close_game = true;
 #endif
                 break;
             }
@@ -278,12 +277,12 @@ export bool game_handle_event(Game_State *state, SDL_Event *event) {
             //} break;
             case SDLK_RETURN: {
 #ifndef __EMSCRIPTEN__
-                if (gs->credits.state == CREDITS_END) is_running = false;
+                if (gs->credits.state == CREDITS_END) gs->close_game = true;
 #endif
             } break;
             case SDLK_TAB: {
 #ifndef __EMSCRIPTEN__
-                if (gs->credits.state == CREDITS_END) is_running = false;
+                if (gs->credits.state == CREDITS_END) gs->close_game = true;
 #endif
             } break;
 #if 0
@@ -432,8 +431,6 @@ event_tick_end:
         gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
         gs->gui.tool_buttons[gs->current_tool]->active = true;
     }
-
-    return is_running;
 }
 
 void audio_setup_channel_volumes(void) {
@@ -514,8 +511,6 @@ export void game_run(Game_State *state) {
                     RenderClear(RENDER_TARGET_MASTER);
                     pause_menu_draw(RENDER_TARGET_MASTER, &gs->pause_menu);
                 } else {
-                    //int y = 2*gs->game_height/3;
-
                     gui_tick();
                     inventory_tick();
                     all_converters_tick();

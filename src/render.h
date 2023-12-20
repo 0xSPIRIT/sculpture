@@ -139,6 +139,7 @@ RENDERAPI void RenderTextureRelative            (int target, Texture *texture, S
 
 RENDERAPI void RenderText                       (int target, Render_Text_Data *text_data);
 RENDERAPI void RenderTextQuick                  (int target_enum, const char *identifier, Font *font, const char *str, SDL_Color color, int x, int y, int *w, int *h, bool force_redraw);
+RENDERAPI void RenderSizeText                   (Font *font, const char *str, int *w, int *h);
 RENDERAPI void RenderCleanupTextCache           (Render_Text_Data_Cache *cache);
 RENDERAPI void RenderSetFontSize                (Font *font, int size);
 RENDERAPI void RenderReadPixels                 (int target, u8 *pixels, int pitch);

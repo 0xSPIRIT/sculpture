@@ -63,7 +63,7 @@
 // Some function pointers for the hot-loading.
 
 typedef void (*GameInitProc)(Game_State*);
-typedef bool (*GameTickEventProc)(Game_State*, SDL_Event*);
+typedef void (*GameTickEventProc)(Game_State*, SDL_Event*);
 typedef void (*GameRunProc)(Game_State*);
 
 typedef struct Game_Code {
@@ -165,17 +165,11 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
         renderer_flags = SDL_RENDERER_ACCELERATED;
     }
 
-#if 0
     SDL_DisplayMode dm;
     SDL_GetCurrentDisplayMode(0, &dm);
 
     state->hz = dm.refresh_rate;
 
-    if (dm.refresh_rate == 60) {
-    } else {
-        state->needs_manual_fps_lock = true;
-    }
-#endif
     renderer_flags |= SDL_RENDERER_PRESENTVSYNC;
 
     state->renderer = SDL_CreateRenderer(state->window, -1, renderer_flags);
@@ -186,6 +180,8 @@ static void game_init_sdl(Game_State *state, const char *window_title, bool use_
     if (state->fullscreen) {
         SDL_SetWindowFullscreen(gs->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
     }
+
+    state->close_game = false;
 
 #if SIMULATE_MOUSE
     input_set_locked(true);
@@ -245,7 +241,6 @@ static void win32_game_init(Game_State *state) {
     SDL_SetRenderDrawBlendMode(state->renderer, SDL_BLENDMODE_BLEND);
 
     fonts_init(&state->fonts);
-    Log("%d\n", MIX_MAX_VOLUME);
 }
 
 static void game_deinit(Game_State *state) {
@@ -439,9 +434,7 @@ static int win32_main(void) {
 
     render_targets_init();
 
-    bool running = true;
-
-    while (running) {
+    while (!gs->close_game) {
         u64 start_frame = SDL_GetPerformanceCounter();
 
 #ifndef ALASKA_RELEASE_MODE
@@ -453,13 +446,10 @@ static int win32_main(void) {
         gs->resized = false;
         while (SDL_PollEvent(&event)) {
 #ifndef ALASKA_RELEASE_MODE
-            bool should_continue = game_code.game_handle_event(gs, &event);
+            game_code.game_handle_event(gs, &event);
 #else
-            bool should_continue = game_handle_event(gs, &event);
+            game_handle_event(gs, &event);
 #endif
-            if (!should_continue) {
-                running = false;
-            }
         }
 
 #ifndef ALASKA_RELEASE_MODE
@@ -478,10 +468,6 @@ static int win32_main(void) {
         f64 d = (f64)delta / freq; // should be ~16.67 ms
         (void)d;
 
-        // NOTE: d != gs->dt.
-        //  d = Time taken with the vsync sleep taken into account.
-        //  gs->dt = Time taken for frame alone.
-
         u64 size_current = persistent_memory.cursor - persistent_memory.data;
         u64 size_max = persistent_memory.size;
         f32 percentage = (f32)size_current / (f32)size_max;
@@ -495,8 +481,6 @@ static int win32_main(void) {
 
         SDL_SetWindowTitle(gs->window, title);
 #endif
-
-        if (gs->close_game) break;
     }
 
     game_deinit(gs);
