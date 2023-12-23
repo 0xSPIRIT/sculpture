@@ -226,7 +226,7 @@ static void get_filename_from_type(int type, char *out) {
 
 static void get_name_from_type(int type, char *out) {
     switch (type) {
-        case CELL_NONE:        strcpy(out, "nothing"); break;
+        case CELL_NONE:        strcpy(out, "None"); break;
 
         case CELL_DIRT:        strcpy(out, "Dirt"); break;
         case CELL_SAND:        strcpy(out, "Sand"); break;

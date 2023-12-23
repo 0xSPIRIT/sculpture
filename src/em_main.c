@@ -211,10 +211,7 @@ static void em_mainloop(void *arg) {
     data->game_state->input.em_got_mouse_motion_event_this_frame = false;
 
     while (SDL_PollEvent(&event)) {
-        bool should_continue = game_handle_event(data->game_state, &event);
-        if (!should_continue) {
-            emscripten_cancel_main_loop();
-        }
+        game_handle_event(data->game_state, &event);
     }
 
     //input_tick(data->game_state);
@@ -223,6 +220,10 @@ static void em_mainloop(void *arg) {
 
     memset(data->transient_memory.data, 0, data->transient_memory.size);
     data->transient_memory.cursor = data->transient_memory.data;
+
+    if (gs->close_game) {
+        emscripten_cancel_main_loop();
+    }
 }
 
 int main(int argc, char **argv) {

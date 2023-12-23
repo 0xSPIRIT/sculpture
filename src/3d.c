@@ -72,7 +72,7 @@ static void object_draw(Object3D *obj) {
             obj->timer++;
         }
 
-        if (obj->timer >= 6*60) { // 6*60
+        if (obj->timer >= 6*60) {
             narrator_init(11);
             obj->timer = -1;
         }

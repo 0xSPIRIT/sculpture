@@ -166,9 +166,9 @@ static void tooltip_draw(int output_target, Tooltip *tooltip) {
         SDL_Color text_color;
 
         if (i == 0) {
-            text_color = (SDL_Color){200,200,200,255};
+            text_color = (SDL_Color){225,225,225,255};
         } else {
-            text_color = WHITE;
+            text_color = (SDL_Color){175,175,175,255};
         }
 
         RenderTextQuick(target,

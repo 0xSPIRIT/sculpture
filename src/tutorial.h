@@ -13,7 +13,8 @@
     "wants to create.\n\n" \
     "Select the POINTER TOOL and HOVER over\n"\
     "the overlay at any point to show the\n"\
-    "material needed for that point.\n" \
+    "material preferred for the sculpture, and\n" \
+    "the material that is currently there.\n"
 
 #define TUTORIAL_CHISEL_STRING  \
     "Tip\n" \

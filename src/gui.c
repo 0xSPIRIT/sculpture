@@ -493,8 +493,6 @@ static void gui_init(void) {
 
         cum += gui->tool_buttons[i]->w;
     }
-
-    //overlay_interface_init();
 }
 
 static void gui_popup_toggle(void) {
@@ -506,6 +504,8 @@ static void gui_popup_toggle(void) {
     gui->popup = !gui->popup;
     gui->popup_y_vel = 0;
     gui->popup_inventory_y_vel = 0;
+    gs->recipes.active = false;
+
     tooltip_reset(&gui->tooltip);
 }
 

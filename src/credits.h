@@ -30,3 +30,5 @@ typedef struct Credits {
 
     Credits_Screen s;
 } Credits;
+
+static bool credits_screen(int target, Credits_Screen *screen, bool true_centered, const char *lines[], int line_count);

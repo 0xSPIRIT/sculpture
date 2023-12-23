@@ -44,6 +44,6 @@ goto end
 echo.
 echo Invalid current path. Execute from the base directory (one up from src/)
 echo.
-   
+
 :end
 exit /b %err%

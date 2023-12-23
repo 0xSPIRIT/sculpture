@@ -37,14 +37,18 @@ static void grabber_tick(void) {
 
         get_name_from_type(gs->overlay.grid[gx+gy*gs->gw], type_name);
 
-        if (gs->level_current == 0 || gs->level_current+1 > 7)
-            sprintf(tooltip_text, "Material: %s", type_name);
+        if (gs->level_current+1 > 7)
+            sprintf(tooltip_text, "Required Material: %s", type_name);
         else
             sprintf(tooltip_text, "Preferred Material: %s", type_name);
 
         memset(gs->gui.tooltip.str, 0, MAX_TOOLTIP_LINE_LEN * MAX_TOOLTIP_LEN);
 
         strcpy(gs->gui.tooltip.str[0], tooltip_text);
+
+        get_name_from_type(gs->grid[gx+gy*gs->gw].type, type_name);
+        sprintf(tooltip_text, "Current Material: %s", type_name);
+        strcpy(gs->gui.tooltip.str[1], tooltip_text);
     } else {
         gs->overlay.current_material = -1;
         tooltip_reset(&gs->gui.tooltip);

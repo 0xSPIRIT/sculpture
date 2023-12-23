@@ -1,5 +1,3 @@
-static bool credits_screen(int target, Credits_Screen *screen, const char *lines[], int line_count);
-
 static void credits_init_timers(Credits *c) {
     for (int i = 0; i < TIMERS_COUNT; i++) {
         c->timers[i] = -1;
@@ -49,7 +47,7 @@ static void credits_run(int target) {
 
     switch (c->state) {
         case CREDITS_DELAY: {
-            if (credits_timer(0, 4*60)) { // 4*60
+            if (credits_timer(0, 4*60)) {
                 c->state = CREDITS_SHOW_1;
                 credits_timer_reset(0);
             }
@@ -57,7 +55,7 @@ static void credits_run(int target) {
         }
         case CREDITS_SHOW_1: {
             const char *lines[] = { "Created by spiritwolf" };
-            if (credits_screen(target, &c->s, lines, ArrayCount(lines))) {
+            if (credits_screen(target, &c->s, false, lines, ArrayCount(lines))) {
                 c->state = CREDITS_SHOW_2;
                 memset(&c->s, 0, sizeof(Credits_Screen));
             }
@@ -65,15 +63,15 @@ static void credits_run(int target) {
         }
         case CREDITS_SHOW_2: {
             const char *lines[] = { "Background Art by:", "Joshwa with a W", "knightmere" };
-            if (credits_screen(target, &c->s, lines, ArrayCount(lines))) {
+            if (credits_screen(target, &c->s, false, lines, ArrayCount(lines))) {
                 c->state = CREDITS_SHOW_3;
                 memset(&c->s, 0, sizeof(Credits_Screen));
             }
             break;
         }
         case CREDITS_SHOW_3: {
-            const char *lines[] = { "Beta Testers:", "Aliyah", "Daniel", "Tyler", "Edgy", "knightmere" };
-            if (credits_screen(target, &c->s, lines, ArrayCount(lines))) {
+            const char *lines[] = { "Beta Testers:", "", "", "knightmere", "Edgy", "Aliyah Ali", "Daniel Paponette", "Tyler Peters", "Keilah-Marie Daniel", };
+            if (credits_screen(target, &c->s, true, lines, ArrayCount(lines))) {
                 c->state = CREDITS_SHOW_4;
                 memset(&c->s, 0, sizeof(Credits_Screen));
             }
@@ -81,7 +79,7 @@ static void credits_run(int target) {
         }
         case CREDITS_SHOW_4: {
             const char *lines[] = { "Thank you for playing." };
-            if (credits_screen(target, &c->s, lines, ArrayCount(lines))) {
+            if (credits_screen(target, &c->s, false, lines, ArrayCount(lines))) {
                 c->state = CREDITS_END;
 #ifdef __EMSCRIPTEN__
                 SDL_ShowCursor(SDL_ENABLE);
@@ -103,7 +101,7 @@ static void credits_run(int target) {
 // This should be called every frame.
 //
 // Returns when that screen is done
-static bool credits_screen(int target, Credits_Screen *screen, const char *lines[], int line_count) {
+static bool credits_screen(int target, Credits_Screen *screen, bool true_centered, const char *lines[], int line_count) {
     if (gs->should_update) {
         // times in frames
         f64 time = 360;
@@ -141,12 +139,18 @@ static bool credits_screen(int target, Credits_Screen *screen, const char *lines
     SDL_Color col = { fade, fade, fade, 255 };
 
     for (int i = 0; i < line_count; i++) {
+        if (!lines[i][0]) continue;
+
         Render_Text_Data text_data = {0};
         sprintf(text_data.identifier, "end%d", i);
         text_data.font = gs->fonts.font_times;
         strcpy(text_data.str, lines[i]);
         text_data.x = gs->game_width/2;
-        text_data.y = gs->game_height/2 - Scale(100) + i * text_data.font->char_height;
+        if (true_centered) {
+            text_data.y = gs->game_height/2 - line_count*text_data.font->char_height/2 + i * text_data.font->char_height;
+        } else {
+            text_data.y = gs->game_height/2 - Scale(100) + i * text_data.font->char_height;
+        }
         text_data.foreground = col;
         text_data.alignment = ALIGNMENT_CENTER;
         text_data.render_type = TEXT_RENDER_BLENDED;
