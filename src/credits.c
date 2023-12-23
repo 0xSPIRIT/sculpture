@@ -70,7 +70,7 @@ static void credits_run(int target) {
             break;
         }
         case CREDITS_SHOW_3: {
-            const char *lines[] = { "Beta Testers:", "", "", "knightmere", "Edgy", "Aliyah Ali", "Daniel Paponette", "Tyler Peters", "Keilah-Marie Daniel", };
+            const char *lines[] = { "Beta Testers", "", "knightmere", "Edgy", "Aliyah Ali", "Daniel Paponette", "Tyler Peters", "Keilah-Marie Daniel", "Nirav Paltoo" };
             if (credits_screen(target, &c->s, true, lines, ArrayCount(lines))) {
                 c->state = CREDITS_SHOW_4;
                 memset(&c->s, 0, sizeof(Credits_Screen));
