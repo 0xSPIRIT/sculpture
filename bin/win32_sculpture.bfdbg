@@ -1,11 +1,11 @@
 FileVersion = 1
 LastConfig = "Debug"
 LastPlatform = "Win64"
-RecentFilesList = ["d:\\dev\\sculpture\\src\\audio.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\game.c"]
+RecentFilesList = ["d:\\dev\\sculpture\\src\\titlescreen.c", "d:\\dev\\sculpture\\src\\fades.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\game.c"]
 
 [MainWindow]
 X = 0
-Y = 68
+Y = 51
 Width = 1801
 Height = 894
 ShowKind = "ShowNormal"
@@ -24,32 +24,40 @@ DefaultDocumentsTabbedView = true
 Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
-TabLabel = "game.c"
-TabWidth = 80.27211
-TabIsPinned = false
-Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\game.c"
-CursorPos = 3948
-VertPos = 2990.4
-
-[[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "level.c"
 TabWidth = 74.82993
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\level.c"
-CursorPos = 4300
-VertPos = 3000.0
+CursorPos = 8008
+VertPos = 6288.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "fades.c"
+TabWidth = 78.91156
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\fades.c"
+CursorPos = 300
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 Active = true
-TabLabel = "audio.c"
-TabWidth = 71.4966
+TabLabel = "titlescreen.c"
+TabWidth = 98.02721
 TabIsPinned = false
 Type = "SourceViewPanel"
-FilePath = "d:\\dev\\sculpture\\src\\audio.c"
-CursorPos = 1794
-VertPos = 816.0
+FilePath = "d:\\dev\\sculpture\\src\\titlescreen.c"
+CursorPos = 8319
+VertPos = 6144.0
+
+[[MainDockingFrame.DockedWidgets.Tabs]]
+TabLabel = "game.c"
+TabWidth = 70.81633
+TabIsPinned = false
+Type = "SourceViewPanel"
+FilePath = "d:\\dev\\sculpture\\src\\game.c"
+CursorPos = 3888
+VertPos = 3216.0
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0
@@ -76,7 +84,7 @@ TabWidth = 86.05442
 TabIsPinned = false
 Type = "WatchPanel"
 Columns = [{Width = 335.0}, {Width = 760.0}, {Width = 253.0}]
-Items = ["handler.music", "music", "handler.photograph_timer", "gs.level_previous", ""]
+Items = ["handler.music", "music", "handler.photograph_timer", "gs.level_previous", "field", "gs.event.text.text", ""]
 
 [[MainDockingFrame.DockedWidgets.DockedWidgets.Tabs]]
 TabLabel = "Auto"

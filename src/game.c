@@ -147,6 +147,7 @@ export void game_init(Game_State *state) {
     // we want to initialize some important memory, notably
     // gs->gw and gs->gh to be used in render_targets_init().
     goto_level(gs->level_current);
+    gs->tutorial = (Tutorial_Rect){0}; // harcoded stupid thing
 
     titlescreen_init();
 
@@ -426,6 +427,7 @@ export void game_handle_event(Game_State *state, SDL_Event *event) {
 event_tick_end:
 #endif
     text_field_tick();
+    if (gs->gamestate == GAME_STATE_TITLESCREEN) titlescreen_tick_goto_level(&gs->titlescreen.goto_level_field);
 
     if (selected_tool) {
         gs->gui.tool_buttons[gs->current_tool]->on_pressed(&gs->gui.tool_buttons[gs->current_tool]->index);
