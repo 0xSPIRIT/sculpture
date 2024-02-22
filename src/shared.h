@@ -69,6 +69,8 @@ typedef struct Game_State {
     bool close_game; // Closes the game after the current frame.
     bool debug_mode;
 
+    bool tutorial_flag_1;
+
     // Some stupid hacky debugging variables used around the place.
     char func[64];
     f64 a; // global timer used for profiling, not used anywhere else

@@ -49,6 +49,7 @@ typedef struct GUI {
 typedef struct Button {
     Button_Type type;
     f64 x, y, w, h;
+    f64 green_timer;
     int index;
     Texture *texture;
     char tooltip_text[128];

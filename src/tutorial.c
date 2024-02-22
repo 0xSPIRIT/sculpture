@@ -83,8 +83,18 @@ static void tutorial_rect_close(void *ptr) {
     if (tut->next) {
         gs->tutorial = *tut->next;
         gs->tutorial.active = true;
+        gs->tutorial_flag_1 = false; // for level 1.
     } else {
         gs->finished_tutorial_for_now = true;
+
+        if (gs->level_current+1 == 1) {
+            for (int i = 0; i < TOOL_COUNT; i++) {
+                gs->gui.tool_buttons[i]->disabled = false;
+            }
+            gs->gui.tool_buttons[TOOL_PLACER]->disabled = true;
+
+            gui_wasd_popup_init(gs->level_current);
+        }
     }
 }
 
@@ -106,8 +116,12 @@ static void tutorial_rect_run(int target) {
         if (tut->ok_button->disabled && gs->level_current+1 == 1) {
             if (strcmp(TUTORIAL_OVERLAY_STRING, tut->str)==0 && gs->clicked_overlay_button && gs->hovered_over_overlay) {
                 tut->ok_button->disabled = false;
+                tut->ok_button->green_timer = 0.5;
+                play_sound(AUDIO_CHANNEL_PING, gs->audio.sprinkle, 0);
             } else if (strcmp(TUTORIAL_CHISEL_STRING, tut->str)==0 && gs->did_rotate_chisel) {
                 tut->ok_button->disabled = false;
+                tut->ok_button->green_timer = 0.5;
+                play_sound(AUDIO_CHANNEL_PING, gs->audio.sprinkle, 0);
             }
         }
 
@@ -174,7 +188,16 @@ static void check_for_tutorial(bool info_button) {
             Tutorial_Rect *t1 = tutorial_rect(TUTORIAL_OVERLAY_STRING, t2, false);
             gs->tutorial = *t1;
 
+            gs->tutorial_flag_1 = true; // disable all tools except overlay
+
+            for (int i = 0; i < TOOL_COUNT; i++) {
+                gs->gui.tool_buttons[i]->disabled = true;
+            }
+
             gs->gui.tool_buttons[TOOL_OVERLAY]->highlighted = true;
+            gs->gui.tool_buttons[TOOL_OVERLAY]->disabled = false;
+            gs->gui.tool_buttons[TOOL_POINTER]->highlighted = true;
+            gs->gui.tool_buttons[TOOL_POINTER]->disabled = false;
             break;
         }
         case 4: {

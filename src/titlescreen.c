@@ -79,7 +79,7 @@ static void titlescreen_draw_goto_level(int target, Titlescreen_Goto_Level *fiel
 
     strcpy(data.identifier, "sdlf");
     data.font = gs->fonts.font_times;
-    strcpy(data.str, "Skip to level (1 to 11):");
+    strcpy(data.str, "Begin game at level (1 to 11):");
     data.x = gs->game_width/2;
     data.y = gs->game_height/2;
     data.foreground = WHITE;
@@ -242,6 +242,7 @@ static void titlescreen_draw(int target) {
         if (pressed_delete_save) {
             gs->level_previous = 0;
             gs->level_current = 0;
+            sprintf(gs->titlescreen.goto_level_field.text_input, "%d", gs->level_current+1);
             save_game();
         }
 #endif

@@ -4,11 +4,11 @@ LastPlatform = "Win64"
 RecentFilesList = ["d:\\dev\\sculpture\\src\\titlescreen.c", "d:\\dev\\sculpture\\src\\fades.c", "d:\\dev\\sculpture\\src\\level.c", "d:\\dev\\sculpture\\src\\game.c"]
 
 [MainWindow]
-X = 0
-Y = 51
+X = 93
+Y = 63
 Width = 1801
 Height = 894
-ShowKind = "ShowNormal"
+ShowKind = "ShowMaximized"
 
 [MainDockingFrame]
 Type = "DockingFrame"
@@ -25,7 +25,7 @@ Type = "TabbedView"
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "level.c"
-TabWidth = 74.82993
+TabWidth = 65.37415
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\level.c"
@@ -34,7 +34,7 @@ VertPos = 6288.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "fades.c"
-TabWidth = 78.91156
+TabWidth = 69.45579
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\fades.c"
@@ -47,8 +47,8 @@ TabWidth = 98.02721
 TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\titlescreen.c"
-CursorPos = 8319
-VertPos = 6144.0
+CursorPos = 7941
+VertPos = 6004.0
 
 [[MainDockingFrame.DockedWidgets.Tabs]]
 TabLabel = "game.c"
@@ -57,7 +57,6 @@ TabIsPinned = false
 Type = "SourceViewPanel"
 FilePath = "d:\\dev\\sculpture\\src\\game.c"
 CursorPos = 3888
-VertPos = 3216.0
 
 [[MainDockingFrame.DockedWidgets]]
 RequestedWidth = 802.0

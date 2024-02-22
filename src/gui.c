@@ -36,7 +36,7 @@ static void tool_button_set_disabled(int level) {
         tools[TOOL_FINISH_LEVEL]->highlighted = true;
     }
 
-    if (is_grid_empty) {
+    if (is_grid_empty || gs->tutorial_flag_1) {
         for (int i = TOOL_CHISEL_SMALL; i <= TOOL_CHISEL_LARGE; i++) {
             tools[i]->disabled = true;
         }
@@ -274,6 +274,11 @@ static bool button_tick(Button *b, void *data) {
         return result;
     }
 
+    if (b->green_timer) {
+        b->green_timer -= gs->dt;
+        if (b->green_timer < 0) b->green_timer = 0;
+    }
+
     if (gui_input_mx >= b->x && gui_input_mx < b->x+b->w &&
         gui_input_my >= b->y && gui_input_my < b->y+b->h) {
 
@@ -340,6 +345,9 @@ static void button_draw_prefer_color(int target, Button *b, SDL_Color color) {
 
     if (b->disabled) {
         RenderTextureColorMod(b->texture, 45, 45, 45);
+    } else if (b->green_timer) {
+        f64 a = 255 * b->green_timer / 0.5;
+        RenderTextureColorMod(b->texture, 255 - a, 255, 255 - a);
     } else if (b->active) {
         RenderTextureColorMod(b->texture, 200, 200, 200);
     } else if (b->highlighted) {
@@ -459,7 +467,6 @@ static void gui_init(void) {
                                                        restart_popup_confirm_cancel);
 
     tooltip_reset(&gui->tooltip);
-    gui_wasd_popup_init(gs->level_current);
 
     int cum = 0;
 
